@@ -4,6 +4,7 @@
 class Item : public gameNode
 {
 private:
+	tagItem _item;	
 
 public:
 	HRESULT init();

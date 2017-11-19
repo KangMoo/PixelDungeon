@@ -13,10 +13,19 @@ private:
 	vector<Item*> _vItem;
 	vector<Item*>::iterator _viItem;
 
+	vector<Item*> _vBag;
+	vector<Item*>::iterator _viBag;
+
+private:
 	EnemyManager* _em;
 	Map* _map;
 	UI* _ui;
 	Player* _player;
+
+private:
+	int _potion[7];
+	int _wand[3];
+	int _scroll[5];
 
 public:
 	HRESULT init();
@@ -24,7 +33,8 @@ public:
 	void update();
 	void render();
 
-
+	void swap();
+	void imgInit();
 
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }
 	void setMapAddressLink(Map* map) { _map = map; }
