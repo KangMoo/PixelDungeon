@@ -44,7 +44,7 @@ HRESULT GameScene::init()
 	//초기화
 	_ui->init();
 	_map->init();
-	_player->init();
+	_player->init(PointMake(0,0));
 	_em->init();
 	_im->init();
 
@@ -63,7 +63,7 @@ void GameScene::update()
 	_player->update();
 	_ui->update();
 	_map->update();
-
+	_im->update();
 	//ui로부터 카메라 정보 받아오기
 	_camera = _ui->getCamera();
 
@@ -74,10 +74,11 @@ void GameScene::update()
 void GameScene::render()
 {
 	_map->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
+	_im->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
 	_em->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
 	_player->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
 	_ui->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
-
+	
 	//test~
 	TextOut(getMemDC(), 100, 100, "게임씬", strlen("게임씬"));
 	//~test

@@ -22,8 +22,8 @@ public:
 	HRESULT init();
 	void release();
 	void update();
-	void render();
-
+	void render(POINT camera);
+	void draw(POINT camera);
 
 
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }

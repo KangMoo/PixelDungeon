@@ -23,11 +23,15 @@ void ItemManager::release()
 {
 
 }
-void ItemManager::update() 
+void ItemManager::update()
 {
 
 }
-void ItemManager::render() 
+void ItemManager::render(POINT camera)
+{
+	draw(camera);
+}
+void ItemManager::draw(POINT camera)
 {
 
 }

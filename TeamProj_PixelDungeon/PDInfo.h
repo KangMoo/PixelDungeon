@@ -1,5 +1,5 @@
 #pragma once
-
+#define TILESIZE 32
 
 
 enum BUFF {
