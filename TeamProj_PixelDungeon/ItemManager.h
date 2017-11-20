@@ -10,11 +10,11 @@ class Player;
 class ItemManager :public gameNode
 {
 private:
-	vector<Item*> _vItem;
-	vector<Item*>::iterator _viItem;
+	vector<tagItem> _vItem;
+	vector<tagItem>::iterator _viItem;
 
-	vector<Item*> _vBag;
-	vector<Item*>::iterator _viBag;
+	vector<tagItem> _vBag;
+	vector<tagItem>::iterator _viBag;
 
 private:
 	EnemyManager* _em;
@@ -26,6 +26,7 @@ private:
 	int _potion[7];
 	int _wand[3];
 	int _scroll[5];
+	int _acc[2];
 
 public:
 	HRESULT init();
@@ -35,6 +36,11 @@ public:
 
 	void swap();
 	void imgInit();
+
+	void setItemToBag(ITEMNAME name);
+	void setItemToField(ITEMNAME name);
+	void setItemToBag(ITEMNAME name, int upgrade);
+	void setItemToField(ITEMNAME name, int upgrade);
 
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }
 	void setMapAddressLink(Map* map) { _map = map; }
