@@ -12,6 +12,11 @@ MapToolScene::~MapToolScene()
 }
 HRESULT MapToolScene::init()
 {
+	_check = 0;
+	_showTile = false;
+	_showTileIndex = 0;
+
+
 	_paletteImg = IMAGEMANAGER->addFrameImage("mapTiles", "Img/Map/tile.bmp", 0, 0, 512, 288, 16, 9, true, RGB(255, 0, 255));
 
 	//카메라
@@ -21,11 +26,14 @@ HRESULT MapToolScene::init()
 	for (int i = 0; i < GRIDNUM; i++) {
 		int x = (i % GRIDX + 1) * TILESIZE;
 		int y = (i / GRIDX + 1) * TILESIZE;
-		_mapRect[i].rc = RectMake(x, y, TILESIZE, TILESIZE);
+		_mapRect[i].x = x;
+		_mapRect[i].y = y;
+		_mapRect[i].index = i;
+		_mapRect[i].rc = RectMake(x, y, TILESIZE, TILESIZE);		
 	}
 	
-	int palPosX = _mapRect[GRIDY].rc.right;
-	int palPosY = _mapRect[GRIDY].rc.top;
+	int palPosX = _mapRect[GRIDX - 1].rc.right;
+	int palPosY = _mapRect[GRIDX - 1].rc.top;
 	
 	//팔레트 rect
 	for (int i = 0; i < PALETTENUM; i++) {
@@ -33,14 +41,30 @@ HRESULT MapToolScene::init()
 		int y = (i / PALETTEX);
 		_paletRect[i].x = x;
 		_paletRect[i].y = y;
-		_paletRect[i].rc = RectMake((x + 2) * TILESIZE + palPosX, y * TILESIZE + palPosY, TILESIZE, TILESIZE);
+		_paletRect[i].index = i;
+		_paletRect[i].rc = RectMake((x + 1) * TILESIZE + palPosX + x, y * TILESIZE + palPosY + y, TILESIZE, TILESIZE);
 	}
+	_paletPage = 0;
 
 
 
 	//버튼
-	_buttonRect[0] = RectMake(WINSIZEX - 85, WINSIZEY - 40, WINSIZEX - 20, WINSIZEY - 20);
-	
+	_buttonRect[0].rc = RectMake(WINSIZEX - 85, WINSIZEY - 40, WINSIZEX - 20, WINSIZEY - 20);//돌아가기
+				  																			 
+	_buttonRect[1].rc = RectMakeCenter(300, 15, 20, 20);									 //카메라
+	_buttonRect[2].rc = RectMakeCenter(300, WINSIZEY - 40, 20, 20);							 //
+	_buttonRect[3].rc = RectMakeCenter(15, WINSIZEY / 2 - 20, 20, 20);						 //
+	_buttonRect[4].rc = RectMakeCenter(560, WINSIZEY / 2 - 20, 20, 20);						 //
+
+	_buttonRect[5].rc = RectMakeCenter(_paletRect[PALETTEX / 2].rc.left - 52, _paletRect[PALETTENUM-1].rc.bottom + 20, 40, 20);
+	_buttonRect[6].rc = RectMakeCenter(_paletRect[PALETTEX / 2].rc.right + 12, _paletRect[PALETTENUM - 1].rc.bottom + 20, 40, 20);
+
+
+	for (int i = 0; i < BUTTONNUM; i++) {
+		_buttonRect[i].isClicked = false;
+	}
+
+
 	paletteSetup();
 	return S_OK;
 }
@@ -54,17 +78,19 @@ void MapToolScene::paletteSetup()
 	for (int i = 0; i < _paletteImg->getMaxFrameY();  i++) {
 		for (int j = 0; j < _paletteImg->getMaxFrameX(); j++) {
 			tagTile palTile;
+			ZeroMemory(&palTile, sizeof(tagTile));
 			palTile.img = _paletteImg;
 			palTile.sourX = j;
 			palTile.sourY = i;
 
-			palTile.destX = (j + i * _paletteImg->getMaxFrameX()) % PALETTEX;
-			palTile.destY = (j + i * _paletteImg->getMaxFrameX()) / PALETTEX;
-			_paletTile.push_back(palTile);
+			palTile.index = (j + i * _paletteImg->getMaxFrameX());
+			
+			palTile.destX = palTile.index % PALETTEX;
+			palTile.destY = palTile.index / PALETTEX;
+
+			_vPaletTile.push_back(palTile);
 		}		
 	}
-
-
 }
 
 
@@ -83,36 +109,89 @@ void MapToolScene::buttonInput()
 
 	for (int i = 0; i < GRIDNUM; i++) {
 		if (PtInRect(&_mapRect[i].rc, _ptMouse)) {
-		
-		//	if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && _mapSelected.size != 0) {
-		//		if (_sele 
-		//	}
 
-			if (KEYMANAGER->isStayKeyDown(VK_LCONTROL) && KEYMANAGER->isOnceKeyDown(VK_LBUTTON)) {
-				_mapSelected.push_back(_mapRect[i]);
+			//	if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && _mapSelected.size != 0) {
+			//		if (_sele 
+			//	}
+
+			if (!_paletSelected.empty()) {
+
+				_showTile = true;
+				_showTileIndex = i;
+
+				//	if (KEYMANAGER->isStayKeyDown(VK_LCONTROL) && KEYMANAGER->isOnceKeyDown(VK_LBUTTON)) {
+				//		//_mapSelected.push_back(_mapRect[i]);
+				//		break;
+				//	}
+
+				if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON) || KEYMANAGER->isStayKeyDown(VK_LBUTTON)) {
+					int newMapIndex = i + _cameraX + (_cameraY * GRIDX);
+					int paletIndex = _paletSelected[0].index;
+
+					if (paletIndex > _vPaletTile.size()) return;
+
+					//이미 있는 경우를 확인, 지운다.
+					for (_viMapTile = _vMapTile.begin(); _viMapTile != _vMapTile.end();) {
+						if (_viMapTile->index == newMapIndex) {
+							_viMapTile = _vMapTile.erase(_viMapTile);
+							break;
+						}
+						else
+							_viMapTile++;
+					}
+
+					tagTile inputTile;
+					ZeroMemory(&inputTile, sizeof(tagTile));
+					inputTile.img = _vPaletTile[paletIndex].img;
+					inputTile.sourX = _vPaletTile[paletIndex].sourX;
+					inputTile.sourY = _vPaletTile[paletIndex].sourY;
+
+
+
+					inputTile.destX = i % GRIDX + _cameraX;
+					inputTile.destY = i / GRIDX + _cameraY;
+
+					inputTile.index = newMapIndex;
+
+					_vMapTile.push_back(inputTile);
+				}
+				//_mapSelected.clear();
+				//_mapSelected.push_back(_mapRect[i]);
 				break;
 			}
-			
-			else if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON)) {
-				_mapSelected.clear();
-				_mapSelected.push_back(_mapRect[i]);
-				break;
-			}
-
-					
-		}		
+		}
+		else _showTile = false;		
 	}
+
+
 
 	for (int i = 0; i < PALETTENUM; i++) {
 		if (PtInRect(&_paletRect[i].rc, _ptMouse)) {
 			if (KEYMANAGER->isStayKeyDown(VK_LCONTROL) && KEYMANAGER->isOnceKeyDown(VK_LBUTTON)) {
-				_paletSelected.push_back(_paletRect[i]);
+				tagSelectTile selectTile;
+
+				int paletIndex = _paletRect[i].index + _paletPage * PALETTENUM;
+
+				selectTile.img = _vPaletTile[paletIndex].img;
+				selectTile.index = paletIndex;
+				selectTile.rc = _paletRect[i].rc;
+
+				_paletSelected.clear();
+				_paletSelected.push_back(selectTile);
 				break;
 			}
 
 			else if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON)) {
+				tagSelectTile selectTile;
+
+				int paletIndex = _paletRect[i].index + _paletPage * PALETTENUM;
+
+				selectTile.img = _vPaletTile[paletIndex].img;
+				selectTile.index = paletIndex;
+				selectTile.rc = _paletRect[i].rc;
+
 				_paletSelected.clear();
-				_paletSelected.push_back(_paletRect[i]);
+				_paletSelected.push_back(selectTile);
 				break;
 			}
 
@@ -120,13 +199,47 @@ void MapToolScene::buttonInput()
 	}
 
 	for (int i = 0; i < BUTTONNUM; i++) {
-		if (PtInRect(&_buttonRect[i], _ptMouse))
+		if (PtInRect(&_buttonRect[i].rc, _ptMouse))
 		{
-			if (KEYMANAGER->isOnceKeyUp(VK_LBUTTON))
-			{
-				SCENEMANAGER->changeScene("메인메뉴씬");				
+			if (KEYMANAGER->isStayKeyDown(VK_LBUTTON))  _buttonRect[i].isClicked = true;
+
+			if (KEYMANAGER->isOnceKeyUp(VK_LBUTTON) && _buttonRect[i].isClicked) {
+				switch (i) {
+				case 0:
+					SCENEMANAGER->changeScene("메인메뉴씬");
+				break;
+				case 1:
+
+					if (_cameraY > 0) _cameraY--;
+				break;
+
+				case 2:
+					_cameraY++;
+				break;
+				case 3:
+					if (_cameraX > 0) _cameraX--;
+				break;
+				case 4:
+					_cameraX++;
+				break;
+
+				case 5:
+					if (_paletPage > 0) {
+						_paletPage--;
+						_paletSelected.clear();
+						_showTile = false;
+					}
+					break;
+				case 6:
+					_paletPage++;
+					_paletSelected.clear();
+					_showTile = false;
+					break;
+				}
+				_buttonRect[i].isClicked = false;
 			}
 		}
+		else if (_buttonRect[i].isClicked) _buttonRect[i].isClicked = false;	
 	}
 }
 
@@ -135,38 +248,140 @@ void MapToolScene::render()
 {	
 	for (int i = 0; i < GRIDNUM; i++) {
 		Rectangle(getMemDC(), _mapRect[i].rc.left, _mapRect[i].rc.top, _mapRect[i].rc.right, _mapRect[i].rc.bottom);
+		
+		//char str[128];
+		//sprintf(str, "%d", i);
+		//TextOut(getMemDC(), _mapRect[i].rc.left, _mapRect[i].rc.top, str, strlen(str));
 	}
 	for (int i = 0; i < PALETTENUM; i++) {
 		Rectangle(getMemDC(), _paletRect[i].rc.left, _paletRect[i].rc.top, _paletRect[i].rc.right, _paletRect[i].rc.bottom);
 	}
 
-	
+	if (!_vMapTile.empty()) { _check = _vMapTile[0].sourX; }
+
+	//test
+	char str[128];
+	sprintf(str, "CAMERA x : %d y : %d", _cameraX, _cameraY);
+	TextOut(getMemDC(), 10, 10, str, strlen(str));
+	//test
 
 	for (int i = 0; i < PALETTENUM; i++) {
-		if (i >= _paletTile.size()) break;
+
+		int tileIndex = i + _paletPage * PALETTENUM;
+		if (tileIndex >= _vPaletTile.size()) break;
+
+		int rectIndex = _vPaletTile[tileIndex].destX + (_vPaletTile[tileIndex].destY - _paletPage * PALETTEY) * PALETTEX;
+
+		int destX = _paletRect[rectIndex].rc.left;
+		int destY = _paletRect[rectIndex].rc.top;
+
+		_vPaletTile[i].img->frameRender(getMemDC(), destX, destY, _vPaletTile[tileIndex].sourX, _vPaletTile[tileIndex].sourY);
+	}
+
+	for (int i = 0; i < GRIDNUM; i++) {
+		if (i >= _vMapTile.size()) break;
+		if (_vMapTile[i].destX - _cameraX < 0 || _vMapTile[i].destY - _cameraY < 0) continue;
 		
-		int destX = _paletRect[_paletTile[i].destX + _paletTile[i].destY * PALETTEX].rc.left;
-		int destY = _paletRect[_paletTile[i].destX + _paletTile[i].destY * PALETTEX].rc.top;
+		int index = _vMapTile[i].destX - _cameraX + (_vMapTile[i].destY - _cameraY) * GRIDX;
 
-		_paletTile[i].img->frameRender(getMemDC(), destX, destY, _paletTile[i].sourX, _paletTile[i].sourY);
+		int destX = _mapRect[index].rc.left;
+		int destY = _mapRect[index].rc.top;
+
+		_vMapTile[i].img->frameRender(getMemDC(), destX, destY, _vMapTile[i].sourX, _vMapTile[i].sourY);
 	}
 
 
-	for (int i = 0; i < _mapSelected.size(); i++) {
-		HBRUSH color = CreateSolidBrush(RGB(0, 0, 255));
-		FillRect(getMemDC(), &_mapSelected[i].rc, color);	
-	}
-	
-	for (int i = 0; i < _paletSelected.size(); i++) {
-		HBRUSH color = CreateSolidBrush(RGB(255, 0, 255));
-		FillRect(getMemDC(), &_paletSelected[i].rc, color);
+	if (_showTile) {
+		_paletSelected[0].img->alphaFrameRender(getMemDC(), _mapRect[_showTileIndex].rc.left, _mapRect[_showTileIndex].rc.top, _vPaletTile[_paletSelected[0].index].sourX, _vPaletTile[_paletSelected[0].index].sourY, 150);
 	}
 
-	for (int i = 0; i < BUTTONNUM; i++){
-		Rectangle(getMemDC(), _buttonRect[i].left, _buttonRect[i].top, _buttonRect[i].right, _buttonRect[i].bottom);
+
+	//선택 내용 색칠 등
+	HBRUSH myBrush, oldBrush;
+	myBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
+
+	HPEN hPen, oPen;
+	hPen = CreatePen(PS_SOLID, 4, RGB(255, 0, 255));
+	for (auto select : _mapSelected) {
+		oPen = (HPEN)SelectObject(getMemDC(), hPen);
+		oldBrush = (HBRUSH)SelectObject(getMemDC(), myBrush);
+		Rectangle(getMemDC(), select.rc.left, select.rc.top, select.rc.right + 1, select.rc.bottom + 1);
+		SelectObject(getMemDC(), oPen);
+		HBRUSH oldBrush = (HBRUSH)SelectObject(getMemDC(), myBrush);
+		SelectObject(getMemDC(), oldBrush);
 	}
+	DeleteObject(hPen);
+
+
+	for (auto select : _paletSelected) {
+		HPEN hPen2, oPen2;
+		hPen2 = CreatePen(PS_SOLID, 4, RGB(255, 0, 255));
+		oPen2 = (HPEN)SelectObject(getMemDC(), hPen2);
+		oldBrush = (HBRUSH)SelectObject(getMemDC(), myBrush);
+		Rectangle(getMemDC(), select.rc.left, select.rc.top, select.rc.right + 1, select.rc.bottom + 1);
+		SelectObject(getMemDC(), oPen2);
+		SelectObject(getMemDC(), oldBrush);
+		DeleteObject(hPen2);
+	}
+	DeleteObject(myBrush);
+
+	HBRUSH btBrush, obtBrush;
+	for (int i = 0; i < BUTTONNUM; i++) {
+		if (_buttonRect[i].isClicked) {
+			btBrush = (HBRUSH)CreateSolidBrush(RGB(100, 100, 100));
+			obtBrush = (HBRUSH)SelectObject(getMemDC(), btBrush);
+			Rectangle(getMemDC(), _buttonRect[i].rc.left, _buttonRect[i].rc.top, _buttonRect[i].rc.right, _buttonRect[i].rc.bottom);
+		}
+		else {
+			btBrush = (HBRUSH)CreateSolidBrush(RGB(255, 255, 255));
+			obtBrush = (HBRUSH)SelectObject(getMemDC(), btBrush);
+			Rectangle(getMemDC(), _buttonRect[i].rc.left, _buttonRect[i].rc.top, _buttonRect[i].rc.right, _buttonRect[i].rc.bottom);
+		}
+	}
+	DeleteObject(btBrush);
+
 	//test~
 	TextOut(getMemDC(), WINSIZEX - 50, 5, "맵툴씬", strlen("맵툴씬"));
 	TextOut(getMemDC(), WINSIZEX - 70, WINSIZEY - 25, "돌아가기", strlen("돌아가기"));
+
+	TextOut(getMemDC(), _buttonRect[5].rc.left + 2, _buttonRect[5].rc.top + 2,  "prev", strlen("prev"));
+	TextOut(getMemDC(), _buttonRect[6].rc.left + 2, _buttonRect[6].rc.top + 2, "next", strlen("next"));
+
+	char page[128];
+	sprintf(page, "page : %d", _paletPage);
+	TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 2, page, strlen(page));
 	//~test
+}
+
+void MapToolScene::save()
+{
+
+
+
+	HANDLE file;
+	DWORD write;
+
+	file = CreateFile("mapSave.map", GENERIC_WRITE, 0, NULL,
+		CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+
+//	WriteFile(file, _tiles, sizeof(tagTile) * TILEX * TILEY, &write, NULL);
+//	WriteFile(file, _pos, sizeof(int) * 2, &write, NULL);
+
+	CloseHandle(file);
+
+
+}
+
+void MapToolScene::load()
+{
+	HANDLE file;
+	DWORD read;
+
+	file = CreateFile("mapSave.map", GENERIC_READ, 0, NULL,
+		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+//	ReadFile(file, _tiles, sizeof(tagTile) * TILEX * TILEY, &read, NULL);
+//	ReadFile(file, _pos, sizeof(int) * 2, &read, NULL);
+
+	CloseHandle(file);
 }
