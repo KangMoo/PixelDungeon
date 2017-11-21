@@ -22,7 +22,10 @@ public:
 	void update();
 	void render(POINT camera);
 	void draw(POINT camera);
-	
+
+	void BackPack();
+	void TestFunctin();
+
 	POINT getCamera() { return _camera; }
 	void setCamera(POINT camera) { _camera = camera; }
 
@@ -32,5 +35,41 @@ public:
 	void setItemManagerAddressLink(ItemManager* im) { _im = im; }
 	UI();
 	~UI();
+
+private:
+
+	POINT _status_pane_pos;
+
+	RECT _backPack;
+
+	//RECT _inventory[4][6];
+
+	int _selectInterface;
+	int _selectItem = 0;
+
+	typedef struct TagInventory
+	{
+		RECT inventoryRect = { 0,0,0,0 };
+		int itemNumber = 0;
+	}Inventory;
+
+	enum ITEMLIST
+	{
+		ITEMLIST_NULL,
+		ITEMLIST_TESTITEM1,
+		ITEMLIST_TESTITEM2,
+		ITEMLIST_TESTITEM3,
+		ITEMLIST_TESTITEM4,
+		ITEMLIST_END,
+	};
+
+	enum INTERFACEMENU
+	{
+		INTERFACEMENU_NULL,
+		INTERFACEMENU_BACKPACK,
+		INTERFACEMENU_END,
+	};
+
+	Inventory _inventory[4][6];
 };
 
