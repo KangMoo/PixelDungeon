@@ -36,7 +36,7 @@ private:
 
 	struct sightAngle {
 		float sangle;
-		float eanlge;
+		float eangle;
 	};
 
 	vector<sightAngle> angleCanTSee;

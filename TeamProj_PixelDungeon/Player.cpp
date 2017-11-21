@@ -128,7 +128,7 @@ void Player::draw(POINT camera)
 			break;
 		}
 	}
-	
+
 	if (KEYMANAGER->isStayKeyDown(VK_SPACE))
 	{
 		for (int i = 0; i < 20; i++)
@@ -156,12 +156,13 @@ void Player::draw(POINT camera)
 			}
 		}
 	}
-	//for (auto i : angleCanTSee)
-	//{
-	//	MoveToEx(getMemDC(), _playerPoint.x, _playerPoint.y, NULL);
-	//	LineTo(getMemDC(), _playerPoint.x + cosf(i.sangle) * 100, _playerPoint.y - sinf(i.sanlge) * 100);
-	//	LineTo(getMemDC(), _playerPoint.x + cosf(i.eangle) * 100, _playerPoint.y - sinf(i.eanlge) * 100);
-	//}
+	for (auto i : angleCanTSee)
+	{
+		MoveToEx(getMemDC(), _playerPoint.x, _playerPoint.y, NULL);
+		LineTo(getMemDC(), _playerPoint.x + cosf(i.sangle) * 100, _playerPoint.y - sinf(i.sangle) * 100);
+		LineTo(getMemDC(), _playerPoint.x + cosf(i.eangle) * 100, _playerPoint.y - sinf(i.eangle) * 100);
+		LineTo(getMemDC(), _playerPoint.x, _playerPoint.y);
+	}
 	RectangleMakeCenter(getMemDC(), _playerPoint.x, _playerPoint.y, 7, 7);
 	//~test
 }
@@ -171,34 +172,39 @@ void Player::addCanTSeeAngle(float sangle, float eangle)
 	//추가
 	sightAngle temp;
 	temp.sangle = sangle;
-	temp.eanlge = eangle;
+	temp.eangle = eangle;
 	angleCanTSee.push_back(temp);
 
 	vector<int> deleteNum;
-
-	//중복되는 각도 합치기
-	for (int i = 0; i < angleCanTSee.size(); i++)
+	
+	bool isTherNoIntersection = false;
+	while (!isTherNoIntersection)
 	{
-		for (int j = i + 1; j < angleCanTSee.size(); j++)
+		isTherNoIntersection = true;
+		//중복되는 각도 합치기
+		for (int i = 0; i < angleCanTSee.size(); i++)
 		{
-			//겹치는 각도가 있을 시
-			if ((angleCanTSee[i].sangle <= angleCanTSee[j].sangle && angleCanTSee[j].sangle <= angleCanTSee[i].eanlge) || (angleCanTSee[i].sangle <= angleCanTSee[j].eanlge && angleCanTSee[j].eanlge <= angleCanTSee[i].eanlge))
+			for (int j = i + 1; j < angleCanTSee.size(); j++)
 			{
-				//
-				if (angleCanTSee[i].sangle >= angleCanTSee[j].sangle) angleCanTSee[i].sangle = angleCanTSee[j].sangle;
-				if (angleCanTSee[i].eanlge <= angleCanTSee[j].eanlge) angleCanTSee[i].eanlge = angleCanTSee[j].eanlge;
-				angleCanTSee.erase(angleCanTSee.begin() + j);
-				break;
+				//겹치는 각도가 있을 시
+				if ((angleCanTSee[i].sangle <= angleCanTSee[j].sangle && angleCanTSee[j].sangle <= angleCanTSee[i].eangle) ||
+					(angleCanTSee[i].sangle <= angleCanTSee[j].eangle && angleCanTSee[j].eangle <= angleCanTSee[i].eangle))
+				{
+					//
+					if (angleCanTSee[i].sangle >= angleCanTSee[j].sangle) angleCanTSee[i].sangle = angleCanTSee[j].sangle;
+					if (angleCanTSee[i].eangle <= angleCanTSee[j].eangle) angleCanTSee[i].eangle = angleCanTSee[j].eangle;
+					angleCanTSee.erase(angleCanTSee.begin() + j);
+					isTherNoIntersection = false;
+					break;
+				}
 			}
 		}
 	}
 
 
 
-	for (int i = 0; i < deleteNum.size(); i++)
-	{
-		//angleCanTSee.erase(angleCanTSee.begin() + deleteNum[i]);
-	}
+
+
 }
 
 void Player::addCanTSeeRect(RECT rc)
@@ -225,7 +231,8 @@ void Player::addCanTSeeRect(RECT rc)
 		//동일 x축 위
 		if (_playerPoint.y == rcpoint.y)
 		{
-			addCanTSeeAngle(-getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.bottom), getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.top));
+			addCanTSeeAngle(0, getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.top));
+			addCanTSeeAngle(getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.bottom), PI2);
 		}
 		//1사분면
 		else if (_playerPoint.y > rcpoint.y)
@@ -290,7 +297,7 @@ void Player::fovCheck()
 	RECT sightChkRC;
 	tileCanSee.clear();
 	angleCanTSee.clear();
-	for (int a = 0; a <4; a++)
+	for (int a = 0; a < 4; a++)
 	{
 		sightChkRC = RectMakeCenter(_playerPoint.x, _playerPoint.y, a * 40, a * 40);
 		for (int i = 0; i < 20; i++)
@@ -303,7 +310,7 @@ void Player::fovCheck()
 					bool addRECT = true;
 					for (auto k : angleCanTSee)
 					{
-						if (k.sangle <= getAngle(_playerPoint.x, _playerPoint.y, tile[i][j].point.x, tile[i][j].point.y) && getAngle(_playerPoint.x, _playerPoint.y, tile[i][j].point.x, tile[i][j].point.y) <= k.eanlge)
+						if (k.sangle <= getAngle(_playerPoint.x, _playerPoint.y, tile[i][j].point.x, tile[i][j].point.y) && getAngle(_playerPoint.x, _playerPoint.y, tile[i][j].point.x, tile[i][j].point.y) <= k.eangle)
 						{
 							addRECT = false;
 						}
