@@ -18,6 +18,10 @@ private:
 	POINT _playerPoint;
 	RECT _playerRC;
 	image* _image;
+	int _currentFrameX, _currentFrameY;
+	PLAYERSTATE _playerState;
+
+	int _frameUpdateTimer;
 	bool _action;
 
 
@@ -46,8 +50,13 @@ public:
 	void update();
 	void render(POINT camera);
 	void draw(POINT camera);
+	
+	void actionCheck();
 	void action();
 
+	void frameUpdate();
+	void imageChange(const char* str);
+	void fovCheck();
 
 	void getDamaged(int damange);
 

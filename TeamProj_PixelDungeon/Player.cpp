@@ -38,7 +38,9 @@ HRESULT Player::init(POINT point)
 			}
 		}
 	}
-
+	_playerState = PLAYERSTATE_IDLE;
+	_frameUpdateTimer = TIMEMANAGER->getWorldTime();
+	_currentFrameX = _currentFrameY = 0;
 	_playerPoint = PointMake(tile[10][10].rc.left + 10, tile[10][10].rc.top + 10);
 
 	//~test
@@ -51,79 +53,38 @@ void Player::release()
 void Player::update()
 {
 
-	//FOV테스트~
-	_playerRC = RectMakeCenter(_playerPoint.x, _playerPoint.y, 20, 20);
-
-	RECT sightChkRC;
-	tileCanSee.clear();
-	angleCanTSee.clear();
-	for (int a = 0; a <4; a++)
-	{
-		sightChkRC = RectMakeCenter(_playerPoint.x, _playerPoint.y, a * 40, a * 40);
-		for (int i = 0; i < 20; i++)
-		{
-			for (int j = 0; j < 20; j++)
-			{
-				RECT temp;
-				if (IntersectRect(&temp, &sightChkRC, &tile[i][j].rc))
-				{
-					bool addRECT = true;
-					for (auto k : angleCanTSee)
-					{
-						if (k.sangle <= getAngle(_playerPoint.x, _playerPoint.y, tile[i][j].point.x, tile[i][j].point.y) && getAngle(_playerPoint.x, _playerPoint.y, tile[i][j].point.x, tile[i][j].point.y) <= k.eanlge)
-						{
-							addRECT = false;
-						}
-
-					}
-
-					if (addRECT)
-					{
-						tileCanSee.push_back(tile[i][j]);
-						switch (tile[i][j].type)
-						{
-						case 0:
-
-							break;
-							//벽
-						case 1:
-							addCanTSeeRect(tile[i][j].rc);
-							break;
-						case 2:
-							break;
-						case 3:
-							break;
-						}
-
-					}
-				}
-			}
-		}
-	}
-
-	if (KEYMANAGER->isOnceKeyDown(VK_LEFT))
-	{
-		_playerPoint.x -= 20;
-	}
-	if (KEYMANAGER->isOnceKeyDown(VK_RIGHT))
-	{
-		_playerPoint.x += 20;
-	}
-	if (KEYMANAGER->isOnceKeyDown(VK_UP))
-	{
-		_playerPoint.y -= 20;
-	}
-	if (KEYMANAGER->isOnceKeyDown(VK_DOWN))
-	{
-		_playerPoint.y += 20;
-	}
-	//~FOV테스트
+	//frameUpdate();
+	fovCheck();
 	if (_action) action();
 }
+
 
 void Player::action()
 {
 
+	//무슨행동인지 판별
+	switch (_playerState)
+	{
+	case PLAYERSTATE_IDLE:
+		//마우스 클릭에 따른 액션 변경
+		break;
+	case PLAYERSTATE_MOVE:
+		//행동에 따른 이미지 변경
+		//행동
+		break;
+	case PLAYERSTATE_ATTACK:
+		//행동에 따른 이미지 변경
+		//행동
+		break;
+	case PLAYERSTATE_EAT:
+		//행동에 따른 이미지 변경
+		//행동
+		break;
+	case PLAYERSTATE_SCROLL:
+		//행동에 따른 이미지 변경
+		//행동
+		break;
+	}
 	//행동 종료 후 action값 false로 바꿔주기
 
 	//행동이 종료됐다면 적에게 턴 넘기기
@@ -195,7 +156,12 @@ void Player::draw(POINT camera)
 			}
 		}
 	}
-
+	//for (auto i : angleCanTSee)
+	//{
+	//	MoveToEx(getMemDC(), _playerPoint.x, _playerPoint.y, NULL);
+	//	LineTo(getMemDC(), _playerPoint.x + cosf(i.sangle) * 100, _playerPoint.y - sinf(i.sanlge) * 100);
+	//	LineTo(getMemDC(), _playerPoint.x + cosf(i.eangle) * 100, _playerPoint.y - sinf(i.eanlge) * 100);
+	//}
 	RectangleMakeCenter(getMemDC(), _playerPoint.x, _playerPoint.y, 7, 7);
 	//~test
 }
@@ -259,7 +225,7 @@ void Player::addCanTSeeRect(RECT rc)
 		//동일 x축 위
 		if (_playerPoint.y == rcpoint.y)
 		{
-			addCanTSeeAngle(getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.bottom), getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.top));
+			addCanTSeeAngle(-getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.bottom), getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.top));
 		}
 		//1사분면
 		else if (_playerPoint.y > rcpoint.y)
@@ -291,4 +257,98 @@ void Player::addCanTSeeRect(RECT rc)
 			addCanTSeeAngle(getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.top), getAngle(_playerPoint.x, _playerPoint.y, rc.right, rc.bottom));
 		}
 	}
+}
+
+void Player::frameUpdate()
+{
+	if (_currentFrameX < _image->getMaxFrameX())
+	{
+		_currentFrameX++;
+	}
+	else
+	{
+		_currentFrameX = 0;
+		if (_playerState != PLAYERSTATE_IDLE)
+		{
+			_playerState = PLAYERSTATE_IDLE;
+		}
+	}
+}
+
+void Player::imageChange(const char* str)
+{
+	_image = IMAGEMANAGER->findImage(str);
+	_currentFrameX = 0;
+	_currentFrameY = 0;
+}
+
+void Player::fovCheck()
+{
+	//FOV테스트~
+	_playerRC = RectMakeCenter(_playerPoint.x, _playerPoint.y, 20, 20);
+
+	RECT sightChkRC;
+	tileCanSee.clear();
+	angleCanTSee.clear();
+	for (int a = 0; a <4; a++)
+	{
+		sightChkRC = RectMakeCenter(_playerPoint.x, _playerPoint.y, a * 40, a * 40);
+		for (int i = 0; i < 20; i++)
+		{
+			for (int j = 0; j < 20; j++)
+			{
+				RECT temp;
+				if (IntersectRect(&temp, &sightChkRC, &tile[i][j].rc))
+				{
+					bool addRECT = true;
+					for (auto k : angleCanTSee)
+					{
+						if (k.sangle <= getAngle(_playerPoint.x, _playerPoint.y, tile[i][j].point.x, tile[i][j].point.y) && getAngle(_playerPoint.x, _playerPoint.y, tile[i][j].point.x, tile[i][j].point.y) <= k.eanlge)
+						{
+							addRECT = false;
+						}
+
+					}
+
+					if (addRECT)
+					{
+						tileCanSee.push_back(tile[i][j]);
+						switch (tile[i][j].type)
+						{
+						case 0:
+
+							break;
+							//벽
+						case 1:
+							addCanTSeeRect(tile[i][j].rc);
+							break;
+						case 2:
+							break;
+						case 3:
+							break;
+						}
+
+					}
+				}
+			}
+		}
+	}
+
+	if (KEYMANAGER->isOnceKeyDown(VK_LEFT))
+	{
+		_playerPoint.x -= 20;
+	}
+	if (KEYMANAGER->isOnceKeyDown(VK_RIGHT))
+	{
+		_playerPoint.x += 20;
+	}
+	if (KEYMANAGER->isOnceKeyDown(VK_UP))
+	{
+		_playerPoint.y -= 20;
+	}
+	if (KEYMANAGER->isOnceKeyDown(VK_DOWN))
+	{
+		_playerPoint.y += 20;
+	}
+	//~FOV테스트
 }

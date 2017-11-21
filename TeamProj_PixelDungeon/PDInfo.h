@@ -57,7 +57,6 @@ enum ITEMSTATE {
 	ITEMSTATE_INVENTORY,//가방안에 있음
 	ITEMSTATE_EQUIP		//착용중
 };
-
 typedef struct tagPlayerStat {
 	int lv;			//레벨
 	int hp;			//체력
@@ -67,7 +66,14 @@ typedef struct tagPlayerStat {
 	float atk_lck;	//명중률
 	float avd_lck;	//회피율
 }PLAYERSTAT;
-
+enum PLAYERSTATE {
+	PLAYERSTATE_IDLE,
+	PLAYERSTATE_MOVE,
+	PLAYERSTATE_ATTACK,
+	PLAYERSTATE_EAT,
+	PLAYERSTATE_SCROLL,
+	PLAYERSTATE_END
+};
 typedef struct tagEnemyStat {
 	int hp;			//체력
 	int str;		//힘
