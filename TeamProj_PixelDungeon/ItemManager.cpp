@@ -16,9 +16,11 @@ ItemManager::~ItemManager()
 }
 HRESULT ItemManager::init()
 {
-
+	_item = new Item;
+	_item->init();
 	//================ F U N C T I O N =================
 	swap();
+	imgInit();
 
 	return S_OK;
 }
@@ -28,15 +30,17 @@ void ItemManager::release()
 }
 void ItemManager::update() 
 {
-
+	_item->update();
 }
 void ItemManager::render() 
 {
-
+	_item->render(_ui->getCamera());
 }
 
 void ItemManager::setItemToBag(ITEMNAME name)
 {
+	int count = 0;
+	bool end = false;
 	tagItem item;
 
 	ZeroMemory(&item, sizeof(tagItem));
@@ -46,21 +50,23 @@ void ItemManager::setItemToBag(ITEMNAME name)
 	{
 	case NAME_OLD_SHORT_SWORD:
 		item.type = TYPE_WEAPON;
-		item.image = IMAGEMANAGER->findImage("sword");
+		item.img = IMAGEMANAGER->findImage("old_short_sword");
 		item.equip = false;
+		item.isCursed = false;
 		item.range = 1;
-		item.minPoint= 1;
-		item.maxPoint= 10;
+		item.minPoint= 1 + item.upgrade * 2;
+		item.maxPoint= 10 + item.upgrade * 2;
 		item.tier = 1;
 		item.Power = 10;
 		item.upgrade = 0;
 		break;
 	case NAME_SHORT_SWORD:
 		item.type = TYPE_WEAPON;
-		item.image = IMAGEMANAGER->findImage("longsword");
+		item.img = IMAGEMANAGER->findImage("short_sword");
 		item.equip = false;
-		item.minPoint = 2;
-		item.maxPoint = 15;
+		item.isCursed = false;
+		item.minPoint = 2 + item.upgrade * 2;
+		item.maxPoint = 15 + item.upgrade * 2;
 		item.tier = 2;
 		item.Power = 12;
 		item.range = 1;
@@ -68,10 +74,11 @@ void ItemManager::setItemToBag(ITEMNAME name)
 		break;
 	case NAME_SWORD:
 		item.type = TYPE_WEAPON;
-		item.image = IMAGEMANAGER->findImage("scimitar");
+		item.img = IMAGEMANAGER->findImage("sword");
 		item.equip = false;
-		item.minPoint = 3;
-		item.maxPoint = 20;
+		item.isCursed = false;
+		item.minPoint = 3 + item.upgrade * 2;
+		item.maxPoint = 20 + item.upgrade * 2;
 		item.tier = 3;
 		item.Power = 14;
 		item.range = 1;
@@ -79,10 +86,11 @@ void ItemManager::setItemToBag(ITEMNAME name)
 		break;
 	case NAME_SPEAR:
 		item.type = TYPE_WEAPON;
-		item.image = IMAGEMANAGER->findImage("spear");
+		item.img = IMAGEMANAGER->findImage("spear");
 		item.equip = false;
-		item.minPoint = 2;
-		item.maxPoint = 20;
+		item.isCursed = false;
+		item.minPoint = 2 + item.upgrade * 2;
+		item.maxPoint = 20 + item.upgrade * 2;
 		item.tier = 2;
 		item.Power = 12;
 		item.range = 2;
@@ -90,58 +98,91 @@ void ItemManager::setItemToBag(ITEMNAME name)
 		break;
 	case NAME_BATTLE_AXE:
 		item.type = TYPE_WEAPON;
-		item.image = IMAGEMANAGER->findImage("hammer");
+		item.img = IMAGEMANAGER->findImage("hammer");
 		item.equip = false;
-		item.minPoint = 4;
-		item.maxPoint = 20;
+		item.isCursed = false;
+		item.minPoint = 4 + item.upgrade * 2;
+		item.maxPoint = 20 + item.upgrade * 2;
 		item.tier = 4;
 		item.Power = 16;
 		item.range = 1;
 		item.upgrade = 0;
+		item.stat.atk_lck = 5;
 		break;
 	case NAME_CLOTH:
 		item.type = TYPE_ARMOR;
-		item.image = IMAGEMANAGER->findImage("cloth");
+		item.img = IMAGEMANAGER->findImage("cloth");
 		item.equip = false;
-		item.minPoint = 0;
-		item.maxPoint = 2;
+		item.isCursed = false;
+		item.minPoint = 0 + item.upgrade;
+		item.maxPoint = 2 + item.upgrade;
 		item.tier = 1;
 		item.Power = 10;
 		item.upgrade = 0;
 		break;
 	case NAME_LEATHER:
 		item.type = TYPE_ARMOR;
-		item.image = IMAGEMANAGER->findImage("leather");
+		item.img = IMAGEMANAGER->findImage("leather");
 		item.equip = false;
-		item.minPoint = 0;
-		item.maxPoint = 4;
+		item.isCursed = false;
+		item.minPoint = 0 + item.upgrade;
+		item.maxPoint = 4 + item.upgrade;
 		item.tier = 2;
 		item.Power = 12;
 		item.upgrade = 0;
 		break;
 	case NAME_MAIL:
 		item.type = TYPE_ARMOR;
-		item.image = IMAGEMANAGER->findImage("mail");
+		item.img = IMAGEMANAGER->findImage("mail");
 		item.equip = false;
-		item.minPoint = 0;
-		item.maxPoint = 6;
+		item.isCursed = false;
+		item.minPoint = 0 + item.upgrade;
+		item.maxPoint = 6 + item.upgrade;
 		item.tier = 3;
 		item.Power = 14;
 		item.upgrade = 0;
 		break;
-	case NAME_RING_RESIST:
+	case NAME_RING_POWER:
 		item.type = TYPE_ACC;
-		item.image = IMAGEMANAGER->findImage("mail");
+		switch (_acc[0])
+		{
+		case 0:
+			item.img = IMAGEMANAGER->findImage("ring_blue");
+			break;
+		case 1:
+			item.img = IMAGEMANAGER->findImage("ring_red");
+			break;
+		}
 		item.equip = false;
-		item.minPoint = 0;
-		item.maxPoint = 6;
-		item.tier = 3;
-		item.Power = 14;
+		item.isCursed = false;
 		item.upgrade = 0;
+		item.stat.str = 1 + item.upgrade;
 		break;
 	case NAME_RING_RECHARGE:
+		item.type = TYPE_ACC;
+		switch (_acc[1])
+		{
+		case 0:
+			item.img = IMAGEMANAGER->findImage("ring_blue");
+			break;
+		case 1:
+			item.img = IMAGEMANAGER->findImage("ring_red");
+			break;
+		}
+		item.equip = false;
+		item.isCursed = false;
+		item.upgrade = 0;
 		break;
-	case NAME_WAND:
+	case NAME_LIOYDS_BEACON:
+		item.type = TYPE_ACC;
+		item.img = IMAGEMANAGER->findImage("acc_wand");
+		item.throwImg = IMAGEMANAGER->findImage("magic_missile_beacon");
+		item.equip = false;
+		item.isCursed = false;
+		item.maxCharge = 3 + item.upgrade;
+		item.currentCharge = item.maxCharge;
+		item.range = 4;
+		item.upgrade = 0;
 		break;
 	case NAME_DART:
 		break;
@@ -150,20 +191,68 @@ void ItemManager::setItemToBag(ITEMNAME name)
 	case NAME_POISON_DART:
 		break;
 	case NAME_LIGHTNING:
+		item.type = TYPE_WAND;
+		item.img = IMAGEMANAGER->findImage("wand_lightning");
+		item.throwImg = IMAGEMANAGER->findImage("magic_missile_lightning");
+		item.equip = false;
+		item.isCursed = false;
+		item.minPoint = 4 + item.upgrade * 2;
+		item.maxPoint = 10 + item.upgrade * 2;
+		item.maxCharge = 3 + item.upgrade;
+		item.currentCharge = item.maxCharge;
+		item.range = 4;
+		item.upgrade = 0;
 		break;
 	case NAME_NORMAL:
+		item.type = TYPE_WAND;
+		item.img = IMAGEMANAGER->findImage("wand_normal");
+		item.throwImg = IMAGEMANAGER->findImage("magic_missile");
+		item.equip = false;
+		item.isCursed = false;
+		item.minPoint = 4 + item.upgrade * 2;
+		item.maxPoint = 6 + item.upgrade * 2;
+		item.maxCharge = 4 + item.upgrade;
+		item.currentCharge = item.maxCharge;
+		item.range = 4;
+		item.upgrade = 0;
 		break;
 	case NAME_POISON:
+		item.type = TYPE_WAND;
+		item.img = IMAGEMANAGER->findImage("wand_poison");
+		item.throwImg = IMAGEMANAGER->findImage("magic_missile_poison");
+		item.equip = false;
+		item.isCursed = false;
+		item.minPoint = 4 + item.upgrade * 2;
+		item.maxPoint = 6 + item.upgrade * 2;
+		item.maxCharge = 3 + item.upgrade;
+		item.currentCharge = item.maxCharge;
+		item.range = 4;
+		item.upgrade = 0;
 		break;
 	case NAME_EMERGENCY:
+		item.type = TYPE_FOOD;
+		item.img = IMAGEMANAGER->findImage("emergency_food");
+		item.minPoint = 220;
 		break;
 	case NAME_PASTY:
+		item.type = TYPE_FOOD;
+		item.img = IMAGEMANAGER->findImage("pasty");
+		item.minPoint = 300;
 		break;
 	case NAME_UNKNOWN_MEAT:
+		item.type = TYPE_FOOD;
+		item.img = IMAGEMANAGER->findImage("meat_unknown");
+		item.minPoint = 80;
 		break;
 	case NAME_COOKED_MEAT:
+		item.type = TYPE_FOOD;
+		item.img = IMAGEMANAGER->findImage("meat_cooked");
+		item.minPoint = 80;
 		break;
 	case NAME_FROZEN_MEAT:
+		item.type = TYPE_FOOD;
+		item.img = IMAGEMANAGER->findImage("meat_frozen");
+		item.minPoint = 80;
 		break;
 	case NAME_IDENTIFY:
 		break;
@@ -200,6 +289,39 @@ void ItemManager::setItemToBag(ITEMNAME name)
 	case NAME_SEED_FROST:
 		break;
 	}
+
+	while (true)
+	{
+		if (!_vBag.size())
+		{
+			end = true;
+		}
+		else
+		{
+
+			for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+			{
+				if (_viBag->position == count)
+				{
+					count++;
+					end = false;
+					break;
+				}
+				end = true;
+			}
+		}
+
+		if (end)
+		{
+			item.position = count;
+			break;
+		}
+	}
+
+	item.numOfItem = 1;
+
+	_vBag.push_back(item);
+
 }
 
 void ItemManager::setItemToField(ITEMNAME name)
@@ -207,11 +329,11 @@ void ItemManager::setItemToField(ITEMNAME name)
 
 }
 
-void ItemManager::setItemToBag(ITEMNAME name, int upgrade)
+void ItemManager::setItemToBag(ITEMNAME name, bool isCursed, int upgrade)
 {
 
 }
-void ItemManager::setItemToField(ITEMNAME name, int upgrade)
+void ItemManager::setItemToField(ITEMNAME name, bool isCursed, int upgrade)
 {
 
 }
@@ -299,11 +421,11 @@ void ItemManager::swap()
 void ItemManager::imgInit()
 {
 	//=========================== W E A P O N ===========================
-	IMAGEMANAGER->addImage("sword", "Img/Item/sword.bmp", 32, 32, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addImage("longsword", "Img/Item/longsword.bmp", 32, 32, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addImage("scimitar", "Img/Item/scimitar.bmp", 32, 32, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addImage("spear", "Img/Item/spear.bmp", 32, 32, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addImage("hammer", "Img/Item/hammer.bmp", 32, 32, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("old_short_sword", "Img/Item/weapon_old_short_sword.bmp", 32, 32, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("short_sword", "Img/Item/weapon_short_sword.bmp", 32, 32, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("sword", "Img/Item/weapon_sword.bmp", 32, 32, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("spear", "Img/Item/weapon_spear.bmp", 32, 32, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("hammer", "Img/Item/weapon_hammer.bmp", 32, 32, true, RGB(255, 0, 255));
 	//=========================== A R M O R =============================
 	IMAGEMANAGER->addImage("cloth", "Img/Item/cloth.bmp", 32, 32, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("leather", "Img/Item/light_armor.bmp", 32, 32, true, RGB(255, 0, 255));
@@ -348,4 +470,9 @@ void ItemManager::imgInit()
 	//=========================== S P E C I A L ===========================
 	IMAGEMANAGER->addImage("dew", "Img/Item/dew.bmp", 32, 32, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("money", "Img/Item/money.bmp", 32, 32, true, RGB(255, 0, 255));
+	//=========================== T H R O W ===============================
+	IMAGEMANAGER->addImage("magic_missile", "Img/Item/magic_missile.bmp",16,16, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("magic_missile_lightning", "Img/Item/magic_missile_lightning.bmp", 16, 16, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("magic_missile_poison", "Img/Item/magic_missile_poison.bmp", 16, 16, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("magic_missile_beacon", "Img/Item/magic_missile_beacon.bmp", 16, 16, true, RGB(255, 0, 255));
 }

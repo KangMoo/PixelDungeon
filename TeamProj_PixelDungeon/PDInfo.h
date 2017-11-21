@@ -32,7 +32,8 @@ enum ITEMTYPE {
 	TYPE_SEED,		//씨앗
 	TYPE_FOOD,		//먹을거
 	TYPE_THROW,		//투척 무기
-	TYPE_WAND		//마법 막대
+	TYPE_WAND,		//마법 막대
+	TYPE_SPECIAL	//특수
 };
 
 enum ITEMNAME {
@@ -42,11 +43,11 @@ enum ITEMNAME {
 	NAME_SPEAR,				//창
 	NAME_BATTLE_AXE,		//전투 도끼
 	NAME_CLOTH,				//일반 옷	============ 방 어 구 =======
-	NAME_LEATHER,		//경갑
-	NAME_MAIL,		//중갑
-	NAME_RING_RESIST,		//저항 반지	============ 악 세 ==========
+	NAME_LEATHER,			//경갑
+	NAME_MAIL,				//중갑
+	NAME_RING_POWER,		//저항 반지	============ 악 세 ==========
 	NAME_RING_RECHARGE,		//충전 반지
-	NAME_WAND,				//완드
+	NAME_LIOYDS_BEACON,		//완드
 	NAME_DART,				//다트		============ 투 척 ==========
 	NAME_PARALYSIS_DART,	//마비 다트
 	NAME_POISON_DART,		//독 다트
@@ -75,6 +76,7 @@ enum ITEMNAME {
 	NAME_SEED_FIRE,			//화염초
 	NAME_SEED_SNAKE,		//뱀뿌리
 	NAME_SEED_FROST,		//얼음
+	NAME_DEWW				//이슬		============ 특 수 ==========
 
 };
 
@@ -96,13 +98,16 @@ typedef struct tagEnemyStat {
 }ENEMYSTAT;
 
 typedef struct tagItem {
-	image* image;
+	image* img;
+	image* throwImg;
 	ITEMTYPE type;
 	ITEMNAME name;
+	tagPlayerStat stat;
 	POINT point;
 	RECT rc;
 	float range;
 	bool equip;
+	bool isCursed;
 	int tier;
 	int upgrade;
 	int Power;

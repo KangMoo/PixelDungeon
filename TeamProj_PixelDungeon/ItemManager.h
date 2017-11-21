@@ -21,6 +21,7 @@ private:
 	Map* _map;
 	UI* _ui;
 	Player* _player;
+	Item* _item;
 
 private:
 	int _potion[7];
@@ -39,13 +40,19 @@ public:
 
 	void setItemToBag(ITEMNAME name);
 	void setItemToField(ITEMNAME name);
-	void setItemToBag(ITEMNAME name, int upgrade);
-	void setItemToField(ITEMNAME name, int upgrade);
+	void setItemToBag(ITEMNAME name, bool isCursed, int upgrade);
+	void setItemToField(ITEMNAME name, bool isCursed, int upgrade);
 
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }
 	void setMapAddressLink(Map* map) { _map = map; }
 	void setUiAddressLink(UI* ui) { _ui = ui; }
 	void setPlayerAddressLink(Player* player) { _player = player; }
+
+	vector<tagItem> getvItem() { return _vItem; }
+	vector<tagItem>::iterator getvItemIter() { return _viItem; }
+
+	vector<tagItem> getvBag() { return _vBag; }
+	vector<tagItem>::iterator getvBagIter() { return _viBag; }
 
 	ItemManager();
 	~ItemManager();
