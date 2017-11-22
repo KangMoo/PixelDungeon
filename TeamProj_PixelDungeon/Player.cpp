@@ -17,7 +17,7 @@ HRESULT Player::init() { return S_OK; }
 HRESULT Player::init(POINT point)
 {
 
-
+	addImg();
 	//test~
 	for (int i = 0; i < 20; i++)
 	{
@@ -38,12 +38,12 @@ HRESULT Player::init(POINT point)
 			}
 		}
 	}
+	_playerPoint = PointMake(tile[10][10].rc.left + 10, tile[10][10].rc.top + 10);
+	//~test
 	_playerState = PLAYERSTATE_IDLE;
 	_frameUpdateTimer = TIMEMANAGER->getWorldTime();
 	_currentFrameX = _currentFrameY = 0;
-	_playerPoint = PointMake(tile[10][10].rc.left + 10, tile[10][10].rc.top + 10);
-
-	//~test
+	_image = IMAGEMANAGER->findImage("warrior_idle");
 	return S_OK;
 }
 void Player::release()
@@ -83,6 +83,8 @@ void Player::action()
 	case PLAYERSTATE_SCROLL:
 		//행동에 따른 이미지 변경
 		//행동
+		break;
+	case PLAYERSTATE_DEAD:
 		break;
 	}
 	//행동 종료 후 action값 false로 바꿔주기
@@ -286,7 +288,6 @@ void Player::imageChange(const char* str)
 {
 	_image = IMAGEMANAGER->findImage(str);
 	_currentFrameX = 0;
-	_currentFrameY = 0;
 }
 
 void Player::fovCheck()
@@ -358,4 +359,15 @@ void Player::fovCheck()
 		_playerPoint.y += 20;
 	}
 	//~FOV테스트
+}
+
+void Player::addImg()
+{
+	IMAGEMANAGER->addFrameImage("warrior_Idle", "Img//Player//warrior_idle.bmp", 48, 210, 2, 7, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("warrior_Dead", "Img//Player//warrior_dead.bmp", 120, 210, 5, 7, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("warrior_Eat", "Img//Player//warrior_eat.bmp", 48, 210, 2, 7, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("warrior_Attack", "Img//Player//warrior_attack.bmp", 72, 210, 3, 7, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("warrior_Scroll", "Img//Player//warrior_scroll.bmp", 72, 210, 3, 7, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("warrior_Move", "Img//Player//warrior_move.bmp", 144, 210, 6, 7, true, RGB(255, 0, 255));
+
 }

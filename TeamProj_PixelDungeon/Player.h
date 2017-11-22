@@ -51,6 +51,7 @@ public:
 	void render(POINT camera);
 	void draw(POINT camera);
 	
+	void addImg();
 	void actionCheck();
 	void action();
 
