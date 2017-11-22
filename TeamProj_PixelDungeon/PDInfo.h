@@ -64,7 +64,7 @@ enum ITEMNAME {
 	NAME_PURIFY,			//정화
 	NAME_MAP,				//지도
 	NAME_RECHARGE,			//재충전
-	NAME_DEW,				//이슬		============ 포 션 ==========
+	NAME_BOTTLE,				//이슬		============ 포 션 ==========
 	NAME_HEAL,				//회복
 	NAME_STR,				//힘
 	NAME_EX,				//숙련도
@@ -76,9 +76,24 @@ enum ITEMNAME {
 	NAME_SEED_FIRE,			//화염초
 	NAME_SEED_SNAKE,		//뱀뿌리
 	NAME_SEED_FROST,		//얼음
-	NAME_DEWW				//이슬		============ 특 수 ==========
+	NAME_DEW			//이슬		============ 특 수 ==========
 
 };
+
+enum ITEMUSEMETHOD 
+{
+	ITEM_DROP,	//떨어뜨리다
+	ITEM_THROW,	//던지다
+	ITEM_PLANT,	//심다 (씨앗용)
+	ITEM_DRINK, //마시다(포션)
+	ITEM_READ,	//읽다 (주문서)
+	ITEM_EAT	//먹다 ( 음식)
+
+};
+
+
+
+
 typedef struct tagPlayerStat {
 	int lv;			//레벨
 	int hp;			//체력
@@ -105,23 +120,24 @@ typedef struct tagEnemyStat {
 }ENEMYSTAT;
 
 typedef struct tagItem {
-	image* img;
-	image* throwImg;
-	ITEMTYPE type;
-	ITEMNAME name;
-	tagPlayerStat stat;
+	image* img;			// 아이템 이미지
+	image* throwImg;	// 아이템 투척 이미지
+	ITEMTYPE type;		// 아이템 타입
+	ITEMNAME name;		// 아이템 이름
+	tagPlayerStat stat;	
 	POINT point;
-	RECT rc;
-	float range;
-	bool equip;
-	bool isCursed;
-	int tier;
-	int upgrade;
-	int Power;
-	int minPoint;
-	int maxPoint;
-	int maxCharge;
-	int currentCharge;
-	int numOfItem;
+	RECT rc;			// 아이템 충돌용 렉트
+	float range;		// 완드 스킬 사거리
+	bool equip;			// 창착 여부
+	bool isCursed;		// 저주 여부
+	bool contentsHide;	// 아이템 확인 여부 ( 주문서 , 물약 , 장비 )
+	int tier;			// 아이템 등급 (1,2,3,4 티어)
+	int upgrade;		// 강화 횟수
+	int Power;			// 필요 힘
+	int minPoint;		// 최소 데미지
+	int maxPoint;		// 최대 데미지
+	int maxCharge;		//최대 충전 횟수(완드)
+	int currentCharge;	//현재 사용 가능 횟수 ( 완드 )
+	int numOfItem;		// 아이템 개수
 	int position;
 }ITEM;

@@ -39,6 +39,15 @@ public:
 	void swap();
 	void imgInit();
 
+
+
+	// 아이템 사용 함수 ( 주문서, 씨앗, 포션, 다트) 
+	void useToScroll(ITEMNAME name, ITEMUSEMETHOD method);
+	void useToSeed(ITEMNAME name, ITEMUSEMETHOD method);
+	void useToPotion(ITEMNAME name, ITEMUSEMETHOD method);
+	void useToDart(ITEMNAME name, ITEMUSEMETHOD method);
+
+
 	void setItemToBag(ITEMNAME name);
 	void setItemToField(ITEMNAME name);
 	void setItemToBag(ITEMNAME name, bool isCursed, int upgrade);
@@ -48,6 +57,10 @@ public:
 	void setMapAddressLink(Map* map) { _map = map; }
 	void setUiAddressLink(UI* ui) { _ui = ui; }
 	void setPlayerAddressLink(Player* player) { _player = player; }
+
+
+
+
 
 	vector<tagItem> getvItem() { return _vItem; }
 	vector<tagItem>::iterator getvItemIter() { return _viItem; }
