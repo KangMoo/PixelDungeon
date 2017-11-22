@@ -155,3 +155,74 @@ typedef struct tagItem {
 	int numOfItem;		// 아이템 개수
 	int position;
 }ITEM;
+
+
+
+
+// 맵
+enum TERRAIN {
+	TERRAIN_NULL = 0,
+	TERRAIN_FLOOR,
+
+	TERRAIN_WALL,
+
+	TERRAIN_TRAP,
+
+	TERRAIN_GRASS
+};
+
+enum OBJ {
+	OBJ_NONE,
+
+	OBJ_TRAP,
+	OBJ_TRAP_UNSIGHT,
+	OBJ_TRAP_ACTIVATE
+};
+
+enum INPUTMODE {
+	FLOOR,
+	WALL,
+	VIEWING
+};
+
+
+typedef struct tagTile {
+	image* img; //받아올 이미지
+	int sourX, sourY; //받아올 타일 좌표값
+	int destX, destY; //뿌릴 타일 좌표값
+	int index;
+
+	TERRAIN terrain;
+	OBJ obj;
+}TILE;
+
+typedef struct tagSaveTile {
+	//string imgName; //받아올 이미지
+	int sourX, sourY; //받아올 타일 좌표값
+	int destX, destY; //뿌릴 타일 좌표값
+	int index;
+
+	TERRAIN terrain;
+	OBJ obj;
+
+}SAVETILE;
+
+typedef struct tagGrid {
+	image* img; //들어있는 이미지
+	int x, y;
+	int index;
+	RECT rc;
+}GRID;
+
+typedef struct tagSelectTile {
+	image* img; //받아올 이미지
+	int sourX, sourY; //받아올 타일 좌표값
+	int index;
+	RECT rc; // 선택한 팔레트 rect
+}S_TILE;
+
+typedef struct tagButton {
+	RECT rc;
+	char text[128];
+	bool isClicked;
+}BUTTON;

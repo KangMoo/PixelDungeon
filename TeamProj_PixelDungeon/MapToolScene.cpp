@@ -17,7 +17,7 @@ HRESULT MapToolScene::init()
 	_showTileIndex = 0;
 
 
-	_paletteImg = IMAGEMANAGER->addFrameImage("mapTiles", "Img/Map/tiles_sewers.bmp", 0, 0, 512, 512, 16, 16, true, RGB(255, 0, 255));
+	_paletteImg = IMAGEMANAGER->findImage("mapTiles");
 
 	//카메라
 	_cameraX = _cameraY = 0;
@@ -46,6 +46,9 @@ HRESULT MapToolScene::init()
 	}
 	_paletPage = 0;
 
+
+	//인풋모드(임시)
+	_inputMode = FLOOR;
 
 
 	//버튼
@@ -105,6 +108,11 @@ void MapToolScene::update()
 void MapToolScene::buttonInput()
 {
 	
+	if (KEYMANAGER->isOnceKeyDown('1')) _inputMode = FLOOR;
+	if (KEYMANAGER->isOnceKeyDown('2')) _inputMode = WALL;
+	if (KEYMANAGER->isOnceKeyDown('3')) _inputMode = VIEWING;
+
+
 
 
 	if (KEYMANAGER->isOnceKeyDown(VK_DELETE)) {
@@ -143,6 +151,8 @@ void MapToolScene::buttonInput()
 
 			if (!_paletSelected.empty()) {
 
+				if (_inputMode == VIEWING) return; //읽기 모드
+
 				_showTile = true;
 				_showTileIndex = i;
 
@@ -170,6 +180,8 @@ void MapToolScene::buttonInput()
 					inputTile.sourX = _vPaletTile[paletIndex].sourX;
 					inputTile.sourY = _vPaletTile[paletIndex].sourY;
 
+					if (_inputMode == FLOOR) inputTile.terrain = TERRAIN_FLOOR;
+					if (_inputMode == WALL) inputTile.terrain = TERRAIN_WALL;
 
 
 					inputTile.destX = i % GRIDX + _cameraX;
@@ -177,6 +189,7 @@ void MapToolScene::buttonInput()
 
 					inputTile.index = newMapIndex;
 
+					
 					_vMapTile.push_back(inputTile);
 				}
 				//_mapSelected.clear();
@@ -311,7 +324,13 @@ void MapToolScene::render()
 		int destX = _mapRect[index].rc.left;
 		int destY = _mapRect[index].rc.top;
 
-		_vMapTile[i].img->frameRender(getMemDC(), destX, destY, _vMapTile[i].sourX, _vMapTile[i].sourY);
+		int alpha;
+		if (_vMapTile[i].terrain == TERRAIN_FLOOR && _inputMode == FLOOR) alpha = 0;
+		else if (_vMapTile[i].terrain == TERRAIN_WALL && _inputMode == WALL)  alpha = 0;
+		else if (_inputMode == VIEWING)  alpha = 0;
+		else alpha = 100;
+
+		_vMapTile[i].img->alphaFrameRender(getMemDC(), destX, destY, _vMapTile[i].sourX, _vMapTile[i].sourY, alpha);
 	}
 
 
@@ -374,6 +393,18 @@ void MapToolScene::render()
 	char page[128];
 	sprintf(page, "page : %d", _paletPage);
 	TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 2, page, strlen(page));
+	
+	if (_inputMode == FLOOR) {
+		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "FLOOR", strlen("FLOOR"));
+	}
+	else if (_inputMode == WALL) {
+		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "WALL", strlen("WALL"));
+	}
+	else if (_inputMode == VIEWING) {
+		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "VIEWING", strlen("VIEWING"));
+	}
+
+	
 	//~test
 }
 
@@ -392,7 +423,7 @@ void MapToolScene::save()
 			saveMap[i].sourY = _vMapTile[i].sourY;
 			saveMap[i].index = _vMapTile[i].index;
 			saveMap[i].obj = OBJ_NONE;
-			saveMap[i].terrain = TERRAIN_FLOOR;
+			saveMap[i].terrain = _vMapTile[i].terrain;
 		}
 		else {
 			saveMap[i].destX = 0;
@@ -451,5 +482,6 @@ void MapToolScene::load()
 		_vMapTile.push_back(tile);
 	}
 
+	
 	CloseHandle(file);
 }
