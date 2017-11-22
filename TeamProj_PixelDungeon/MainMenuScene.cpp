@@ -14,6 +14,7 @@ MainMenuScene::~MainMenuScene()
 HRESULT MainMenuScene::init()
 {
 
+
 	return S_OK;
 }
 void MainMenuScene::release()

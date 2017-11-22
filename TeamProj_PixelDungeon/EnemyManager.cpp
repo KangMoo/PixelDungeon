@@ -82,9 +82,9 @@ void EnemyManager::render()
 //그릴 때	x좌표에 camera.x 만큼
 //			y좌표에 camera.y 만큼 더해주기!!!!
 void EnemyManager::render(POINT camera)
-{
+{	
 	for (auto i : _vEnemy)
-	{
+	{		
 		i->render(camera);
 	}
 }
