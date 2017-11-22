@@ -23,69 +23,6 @@
 
 
 
-enum TERRAIN {
-	TERRAIN_NULL = 0,
-	TERRAIN_FLOOR,
-
-	TERRAIN_TRAP,
-	TERRAIN_TRAP_ACTIVATE = TERRAIN_TRAP + ATTRIBUTE_ACTIVATE,
-
-	TERRAIN_GRASS	
-};
-
-enum OBJ {
-	OBJ_NONE,
-
-	OBJ_TRAP,
-	OBJ_TRAP_UNSIGHT,
-	OBJ_TRAP_ACTIVATE
-};
-
-
-
-typedef struct tagTile {
-	image* img; //받아올 이미지
-	int sourX, sourY; //받아올 타일 좌표값
-	int destX, destY; //뿌릴 타일 좌표값
-	int index;
-
-	TERRAIN terrain;
-	OBJ obj;
-
-}TILE;
-
-typedef struct tagSaveTile {
-	//string imgName; //받아올 이미지
-	int sourX, sourY; //받아올 타일 좌표값
-	int destX, destY; //뿌릴 타일 좌표값
-	int index;
-
-	TERRAIN terrain;
-	OBJ obj;
-
-}SAVETILE;
-
-typedef struct tagGrid {
-	image* img; //들어있는 이미지
-	int x, y;
-	int index;
-	RECT rc;
-}GRID;
-
-typedef struct tagSelectTile {
-	image* img; //받아올 이미지
-	int sourX, sourY; //받아올 타일 좌표값
-	int index;
-	RECT rc; // 선택한 팔레트 rect
-}S_TILE;
-
-typedef struct tagButton {
-	RECT rc;
-	char text[128];
-	bool isClicked;	
-}BUTTON;
-
-
 class MapToolScene : public gameNode
 {
 	typedef vector<GRID> vGrid;
@@ -131,7 +68,7 @@ private:
 
 	vTile _copyTile;
 		
-	
+	INPUTMODE _inputMode;
 	
 	vector<RECT> _tileButton;
 	

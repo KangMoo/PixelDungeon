@@ -16,6 +16,9 @@ HRESULT mainGame::init(void)
 {
 	gameNode::init(true);
 	
+	IMAGEMANAGER->addFrameImage("mapTiles", "Img/Map/tiles_sewers.bmp", 0, 0, 512, 512, 16, 16, true, RGB(255, 0, 255));
+
+
 	SCENEMANAGER->addScene("°ÔÀÓ¾À", new GameScene);
 	SCENEMANAGER->addScene("¸ŞÀÎ¸Ş´º¾À", new MainMenuScene);
 	SCENEMANAGER->addScene("¸ÊÅø¾À", new MapToolScene);

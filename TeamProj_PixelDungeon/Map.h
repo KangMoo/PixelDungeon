@@ -12,6 +12,18 @@ private:
 	Player* _player;
 	UI* _ui;
 	ItemManager* _im;
+
+	bool start;
+
+	vector<TILE> _vMapTile;
+
+	TILE _map[100][100];
+
+	TILE _mapTest[10000];
+
+	SAVETILE loadMap[10000];
+
+
 public:
 	HRESULT init();
 	void release();
@@ -20,6 +32,9 @@ public:
 	void render(POINT camera);
 	void draw(POINT camera);
 
+	void load();
+
+	TILE getMap(int i, int j) { return _map[i][j]; }
 
 	void setPlayerAddressLink(Player* player) { _player = player; }
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }
