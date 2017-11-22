@@ -110,7 +110,8 @@ typedef struct tagEnemyStat {
 }ENEMYSTAT;
 enum ENEMYSTATE
 {
-	ENEMYSTATE_IDLE,
+	ENEMYSTATE_SLEEP,	//플레이어를 찾지 못한상태/수면상태
+	ENEMYSTATE_IDLE,	//플레이어를 찾은 상태에서의 기본
 	ENEMYSTATE_MOVE,
 	ENEMYSTATE_ATTACK,
 	ENEMYSTATE_END

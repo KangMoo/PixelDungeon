@@ -17,6 +17,10 @@ HRESULT Enemy::init()
 {
 	return S_OK;
 }
+HRESULT Enemy::init(POINT _point) //포인트 추가
+{
+	return S_OK;
+}
 void Enemy::release()
 {
 
@@ -41,6 +45,21 @@ void Enemy::render(POINT camera)
 	draw(camera);
 }
 void Enemy::draw(POINT camera)
+{
+
+}
+
+void Enemy::attack()
+{
+
+
+}
+void Enemy::move()
+{
+
+}
+
+void Enemy::frameUpdate()
 {
 
 }

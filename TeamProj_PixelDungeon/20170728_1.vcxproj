@@ -106,6 +106,7 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="progressBar.h" />
     <ClInclude Include="randomFunction.h" />
+    <ClInclude Include="Rat.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="sceneManager.h" />
     <ClInclude Include="singletonBase.h" />
@@ -144,6 +145,7 @@
     <ClCompile Include="MapToolScene.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="progressBar.cpp" />
+    <ClCompile Include="Rat.cpp" />
     <ClCompile Include="sceneManager.cpp" />
     <ClCompile Include="soundManager.cpp" />
     <ClCompile Include="stdafx.cpp">
