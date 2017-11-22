@@ -1,5 +1,5 @@
 #pragma once
-
+#define TILESIZE 32
 
 
 enum BUFF {
@@ -79,7 +79,6 @@ enum ITEMNAME {
 	NAME_DEWW				//이슬		============ 특 수 ==========
 
 };
-
 typedef struct tagPlayerStat {
 	int lv;			//레벨
 	int hp;			//체력
@@ -89,7 +88,14 @@ typedef struct tagPlayerStat {
 	float atk_lck;	//명중률
 	float avd_lck;	//회피율
 }PLAYERSTAT;
-
+enum PLAYERSTATE {
+	PLAYERSTATE_IDLE,
+	PLAYERSTATE_MOVE,
+	PLAYERSTATE_ATTACK,
+	PLAYERSTATE_EAT,
+	PLAYERSTATE_SCROLL,
+	PLAYERSTATE_END
+};
 typedef struct tagEnemyStat {
 	int hp;			//체력
 	int str;		//힘

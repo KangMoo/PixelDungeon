@@ -12,7 +12,6 @@ struct tagBullet
 	float speed;
 	bool fire;
 	int count;
-	
 };
 
 class Item : public gameNode
@@ -31,9 +30,12 @@ public:
 	void fire(image* img, float x, float y, float dextX, float destY);
 	void bulletMove();
 	void removeBullet(int arrNum);
+	void itemUse(int position);
+	void itemUse(ITEMNAME name);
+	void itemUse(ITEMNAME name, int position);
 
-	vector<tagBullet> _vBullet;
-	vector<tagBullet>::iterator _viBullet;
+	vector<tagBullet> getVBullet() { return _vBullet; }
+	vector<tagBullet>::iterator getVBulletIter() { return _viBullet; }
 
 	Item();
 	~Item();

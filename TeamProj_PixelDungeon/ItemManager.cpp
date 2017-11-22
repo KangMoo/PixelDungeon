@@ -16,11 +16,13 @@ ItemManager::~ItemManager()
 }
 HRESULT ItemManager::init()
 {
-	_item = new Item;
-	_item->init();
 	//================ F U N C T I O N =================
 	swap();
 	imgInit();
+
+	//==================================================
+	_item = new Item;
+	_item->init();
 
 	return S_OK;
 }
@@ -28,24 +30,33 @@ void ItemManager::release()
 {
 
 }
-void ItemManager::update() 
+void ItemManager::update()
 {
 	_item->update();
 }
-void ItemManager::render() 
+void ItemManager::render(POINT camera)
+{
+	draw(camera);
+}
+void ItemManager::draw(POINT camera)
 {
 	_item->render(_ui->getCamera());
 }
 
 void ItemManager::setItemToBag(ITEMNAME name)
 {
+	if (_vBag.size() > 24) return;
+
 	int count = 0;
 	bool end = false;
+	bool overlap = false;
 	tagItem item;
 
 	ZeroMemory(&item, sizeof(tagItem));
 
 	item.name = name;
+
+
 	switch (name)
 	{
 	case NAME_OLD_SHORT_SWORD:
@@ -290,37 +301,51 @@ void ItemManager::setItemToBag(ITEMNAME name)
 		break;
 	}
 
-	while (true)
+	for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
 	{
-		if (!_vBag.size())
+		if (_viBag->name == item.name && (item.type == TYPE_SCROLL ||
+			item.type == TYPE_SEED || item.type == TYPE_POTION))
 		{
-			end = true;
-		}
-		else
-		{
-
-			for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
-			{
-				if (_viBag->position == count)
-				{
-					count++;
-					end = false;
-					break;
-				}
-				end = true;
-			}
-		}
-
-		if (end)
-		{
-			item.position = count;
-			break;
+			overlap = true;
+			_viBag->numOfItem++;
 		}
 	}
 
-	item.numOfItem = 1;
+	if (!overlap)
+	{
+		while (true)
+		{
+			if (!_vBag.size())
+			{
+				end = true;
+			}
+			else
+			{
 
-	_vBag.push_back(item);
+				for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+				{
+					if (_viBag->position == count)
+					{
+						count++;
+						end = false;
+						break;
+					}
+					end = true;
+				}
+			}
+
+			if (end)
+			{
+				item.position = count;
+				break;
+			}
+		}
+
+		item.numOfItem = 1;
+
+		_vBag.push_back(item);
+
+	}
 
 }
 
@@ -329,11 +354,11 @@ void ItemManager::setItemToField(ITEMNAME name)
 
 }
 
-void ItemManager::setItemToBag(ITEMNAME name, bool isCursed, int upgrade)
+void ItemManager::setItemToBag(ITEMNAME name, bool identify, bool isCursed, int upgrade)
 {
 
 }
-void ItemManager::setItemToField(ITEMNAME name, bool isCursed, int upgrade)
+void ItemManager::setItemToField(ITEMNAME name, bool identyfy, bool isCursed, int upgrade)
 {
 
 }
