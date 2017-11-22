@@ -17,7 +17,7 @@ HRESULT MapToolScene::init()
 	_showTileIndex = 0;
 
 
-	_paletteImg = IMAGEMANAGER->addFrameImage("mapTiles", "Img/Map/tile.bmp", 0, 0, 512, 288, 16, 9, true, RGB(255, 0, 255));
+	_paletteImg = IMAGEMANAGER->addFrameImage("mapTiles", "Img/Map/tiles_sewers.bmp", 0, 0, 512, 512, 16, 16, true, RGB(255, 0, 255));
 
 	//카메라
 	_cameraX = _cameraY = 0;
@@ -77,8 +77,8 @@ void MapToolScene::paletteSetup()
 {
 	for (int i = 0; i < _paletteImg->getMaxFrameY();  i++) {
 		for (int j = 0; j < _paletteImg->getMaxFrameX(); j++) {
-			tagTile palTile;
-			ZeroMemory(&palTile, sizeof(tagTile));
+			TILE palTile;
+			ZeroMemory(&palTile, sizeof(TILE));
 			palTile.img = _paletteImg;
 			palTile.sourX = j;
 			palTile.sourY = i;
@@ -107,6 +107,27 @@ void MapToolScene::buttonInput()
 	
 
 
+	if (KEYMANAGER->isOnceKeyDown(VK_DELETE)) {
+		if (!_mapSelected.empty()) {
+			for (_viMapTile = _vMapTile.begin(); _viMapTile != _vMapTile.end();) {
+				if (_viMapTile->index == _mapSelected[0].index + _cameraX + (_cameraY * GRIDX)) {
+					_viMapTile = _vMapTile.erase(_viMapTile);
+					break;						
+				}
+				else _viMapTile++;
+
+			}
+		}
+	}
+
+	if (KEYMANAGER->isStayKeyDown(VK_LCONTROL) && KEYMANAGER->isOnceKeyDown('S')) {
+		save();
+	}
+	if (KEYMANAGER->isStayKeyDown(VK_LCONTROL) && KEYMANAGER->isOnceKeyDown('O')) {
+		load();
+	}
+
+
 	for (int i = 0; i < GRIDNUM; i++) {
 		if (PtInRect(&_mapRect[i].rc, _ptMouse)) {
 
@@ -114,15 +135,18 @@ void MapToolScene::buttonInput()
 			//		if (_sele 
 			//	}
 
+			if (KEYMANAGER->isOnceKeyDown(VK_RBUTTON)) {
+				_mapSelected.clear();
+				_mapSelected.push_back(_mapRect[i]);
+				break;
+			}
+
 			if (!_paletSelected.empty()) {
 
 				_showTile = true;
 				_showTileIndex = i;
 
-				//	if (KEYMANAGER->isStayKeyDown(VK_LCONTROL) && KEYMANAGER->isOnceKeyDown(VK_LBUTTON)) {
-				//		//_mapSelected.push_back(_mapRect[i]);
-				//		break;
-				//	}
+					
 
 				if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON) || KEYMANAGER->isStayKeyDown(VK_LBUTTON)) {
 					int newMapIndex = i + _cameraX + (_cameraY * GRIDX);
@@ -140,8 +164,8 @@ void MapToolScene::buttonInput()
 							_viMapTile++;
 					}
 
-					tagTile inputTile;
-					ZeroMemory(&inputTile, sizeof(tagTile));
+					TILE inputTile;
+					ZeroMemory(&inputTile, sizeof(TILE));
 					inputTile.img = _vPaletTile[paletIndex].img;
 					inputTile.sourX = _vPaletTile[paletIndex].sourX;
 					inputTile.sourY = _vPaletTile[paletIndex].sourY;
@@ -168,7 +192,7 @@ void MapToolScene::buttonInput()
 	for (int i = 0; i < PALETTENUM; i++) {
 		if (PtInRect(&_paletRect[i].rc, _ptMouse)) {
 			if (KEYMANAGER->isStayKeyDown(VK_LCONTROL) && KEYMANAGER->isOnceKeyDown(VK_LBUTTON)) {
-				tagSelectTile selectTile;
+				S_TILE selectTile;
 
 				int paletIndex = _paletRect[i].index + _paletPage * PALETTENUM;
 
@@ -182,7 +206,7 @@ void MapToolScene::buttonInput()
 			}
 
 			else if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON)) {
-				tagSelectTile selectTile;
+				S_TILE selectTile;
 
 				int paletIndex = _paletRect[i].index + _paletPage * PALETTENUM;
 
@@ -261,7 +285,7 @@ void MapToolScene::render()
 
 	//test
 	char str[128];
-	sprintf(str, "CAMERA x : %d y : %d", _cameraX, _cameraY);
+	sprintf(str, "CAMERA x : %d y : %d    %d", _cameraX, _cameraY, _vMapTile.size());
 	TextOut(getMemDC(), 10, 10, str, strlen(str));
 	//test
 
@@ -355,7 +379,31 @@ void MapToolScene::render()
 
 void MapToolScene::save()
 {
+	//임시로 만듬. 나중에 바꿔야지...
 
+	const int size = _vMapTile.size();
+
+	for (int i = 0; i < 10000; i++) {
+		//saveMap[i].imgName = "mapTiles";
+		if (i < _vMapTile.size()) {
+			saveMap[i].destX = _vMapTile[i].destX;
+			saveMap[i].destY = _vMapTile[i].destY;
+			saveMap[i].sourX = _vMapTile[i].sourX;
+			saveMap[i].sourY = _vMapTile[i].sourY;
+			saveMap[i].index = _vMapTile[i].index;
+			saveMap[i].obj = OBJ_NONE;
+			saveMap[i].terrain = TERRAIN_FLOOR;
+		}
+		else {
+			saveMap[i].destX = 0;
+			saveMap[i].destY = 0;
+			saveMap[i].sourX = 0;
+			saveMap[i].sourY = 0;
+			saveMap[i].index = 0;
+			saveMap[i].obj = OBJ_NONE;
+			saveMap[i].terrain = TERRAIN_NULL;
+		}
+	}
 
 
 	HANDLE file;
@@ -364,8 +412,7 @@ void MapToolScene::save()
 	file = CreateFile("mapSave.map", GENERIC_WRITE, 0, NULL,
 		CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
-//	WriteFile(file, _tiles, sizeof(tagTile) * TILEX * TILEY, &write, NULL);
-//	WriteFile(file, _pos, sizeof(int) * 2, &write, NULL);
+	WriteFile(file, saveMap, sizeof(SAVETILE) * 10000, &write, NULL);
 
 	CloseHandle(file);
 
@@ -374,14 +421,35 @@ void MapToolScene::save()
 
 void MapToolScene::load()
 {
+	//임시로 만듬. 나중에 바꿔야지...
+
+	
 	HANDLE file;
 	DWORD read;
 
 	file = CreateFile("mapSave.map", GENERIC_READ, 0, NULL,
 		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
-//	ReadFile(file, _tiles, sizeof(tagTile) * TILEX * TILEY, &read, NULL);
-//	ReadFile(file, _pos, sizeof(int) * 2, &read, NULL);
+	ReadFile(file, loadMap, sizeof(SAVETILE) * 10000, &read, NULL);
+
+	_vMapTile.clear();
+
+	for (int i = 0; i < 10000; i++) {
+		if (loadMap[i].terrain == TERRAIN_NULL) break;
+		TILE tile;
+
+		tile.img = IMAGEMANAGER->findImage("mapTiles");
+
+		tile.destX = loadMap[i].destX;
+		tile.destY = loadMap[i].destY;
+		tile.sourX = loadMap[i].sourX;
+		tile.sourY = loadMap[i].sourY;
+		tile.index = loadMap[i].index;
+		tile.obj = loadMap[i].obj;
+		tile.terrain = loadMap[i].terrain;
+
+		_vMapTile.push_back(tile);
+	}
 
 	CloseHandle(file);
 }
