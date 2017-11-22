@@ -16,6 +16,12 @@ protected:
 	image* _image;				//그려줄 이미지~
 	bool _action;				//액션값이 참일 경우 몬스터 행동
 
+	RECT _hitBox;			//히트박스
+	RECT _attBox;			//공격렉트 생성할 박스입니다. 초기화 꼭 해주셔야 합니다.
+	bool _isLive;			//생존여부
+	bool _right;			//오른쪽을 바라보고 있는지 여부
+
+	int _currntFrameX, _currntFrameY; //프레임
 public:
 	virtual HRESULT init();
 	virtual void release();

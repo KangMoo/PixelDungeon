@@ -101,7 +101,20 @@ typedef struct tagEnemyStat {
 	int str;		//힘
 	float atk_lck;	//명중률
 	float avd_lck;	//회피율
+
+	int def;		//방어력
+	int lv;			//현재 레벨 = 플레이어와 비례합니다.
+	int maxLv;		//최대 레벨, 몬스터는 최대 레벨이 있는 몬스터가 있고 최대 레벨이 없는 몬스터가 있습니다.
+	int exp;		//사망시 플레이어에 전달할 경험치
+
 }ENEMYSTAT;
+enum ENEMYSTATE
+{
+	ENEMYSTATE_IDLE,
+	ENEMYSTATE_MOVE,
+	ENEMYSTATE_ATTACK,
+	ENEMYSTATE_END
+};
 
 typedef struct tagItem {
 	image* img;
