@@ -91,9 +91,6 @@ enum ITEMUSEMETHOD
 
 };
 
-
-
-
 typedef struct tagPlayerStat {
 	int lv;			//레벨
 	int hp;			//체력

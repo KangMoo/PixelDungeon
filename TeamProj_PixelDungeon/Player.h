@@ -49,17 +49,17 @@ public:
 	void release();
 	void update();
 	void render(POINT camera);
-	void draw(POINT camera);
+	//void draw(POINT camera);
 	
-	void addImg();
-	void actionCheck();
+	//void addImg();
+	//void actionCheck();
 	void action();
 
-	void frameUpdate();
-	void imageChange(const char* str);
-	void fovCheck();
+	//void frameUpdate();
+	//void imageChange(const char* str);
+	//void fovCheck();
 
-	void getDamaged(int damange);
+	//void getDamaged(int damange);
 
 	//게터세터
 	bool getAction() { return _action; }
@@ -73,8 +73,8 @@ public:
 	bool getTurn() { return _action; }
 	void setTurn(bool turn) { _action = turn; }
 
-	void addCanTSeeAngle(float sangle, float eangle);
-	void addCanTSeeRect(RECT rc);
+	//void addCanTSeeAngle(float sangle, float eangle);
+	//void addCanTSeeRect(RECT rc);
 
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }
 	void setMapAddressLink(Map* map) { _map = map; }

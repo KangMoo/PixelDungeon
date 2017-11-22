@@ -50,8 +50,8 @@ public:
 
 	void setItemToBag(ITEMNAME name);
 	void setItemToField(ITEMNAME name);
-	void setItemToBag(ITEMNAME name, bool isCursed, int upgrade);
-	void setItemToField(ITEMNAME name, bool isCursed, int upgrade);
+	void setItemToBag(ITEMNAME name, bool identify, bool isCursed, int upgrade);
+	void setItemToField(ITEMNAME name, bool identify, bool isCursed, int upgrade);
 
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }
 	void setMapAddressLink(Map* map) { _map = map; }

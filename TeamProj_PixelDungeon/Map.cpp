@@ -143,4 +143,4 @@ void Map::load() {
 
 	CloseHandle(file);
 	
-}-
+}
