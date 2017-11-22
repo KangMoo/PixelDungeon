@@ -34,7 +34,9 @@ public:
 
 	void load();
 
-	TILE getMap(int i, int j) { return _map[i][j]; }
+	TILE* getMap() { return *_map; }
+	TILE getTile(int i, int j) { return _map[i][j]; }
+	void setTile(TILE tile, int i, int j) { _map[i][j] = tile; }
 
 	void setPlayerAddressLink(Player* player) { _player = player; }
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }

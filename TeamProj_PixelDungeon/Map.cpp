@@ -18,7 +18,7 @@ HRESULT Map::init()
 		for (int j = 0; j < 100; j++) {
 			_map[i][j].terrain = TERRAIN_NULL;
 		}
-	
+
 	}
 
 
@@ -27,8 +27,8 @@ HRESULT Map::init()
 
 
 
-	
-		return S_OK;
+
+	return S_OK;
 }
 void Map::release()
 {
@@ -56,16 +56,31 @@ void Map::draw(POINT camera)
 			for (int j = 0; j < 100; j++) {
 				if (_map[i][j].terrain != TERRAIN_NULL)
 				{
-					RectangleMake(getMemDC(), _map[i][j].destX * 10, _map[i][j].destY * 10, 10, 10);
-					_map[i][j].img->frameRender(getMemDC(), i * 32, j * 32, _map[i][j].sourX, _map[i][j].sourY);
+					switch (_map[i][j].tileview)
+					{
+					case TILEVIEW_NO:
+						_map[i][j].img->frameRender(getMemDC(), i * TILESIZE, j * TILESIZE, _map[i][j].sourX, _map[i][j].sourY);
+						IMAGEMANAGER->render("blackTile", getMemDC(), i*TILESIZE, j*TILESIZE);
+						break;
+					case TILEVIEW_HALF:
+						_map[i][j].img->frameRender(getMemDC(), i * TILESIZE, j * TILESIZE, _map[i][j].sourX, _map[i][j].sourY);
+						IMAGEMANAGER->alphaRender("blackTile", getMemDC(), i*TILESIZE, j*TILESIZE, 150);
+						break;
+					case TILEVIEW_ALL:
+						_map[i][j].img->frameRender(getMemDC(), i * TILESIZE, j * TILESIZE, _map[i][j].sourX, _map[i][j].sourY);
+						break;
+					case TILEVIEW_END:
+						break;
+					}
+
 				}
-					
+
 			}
 		}
 	}
 
 
-	
+
 }
 
 
@@ -76,8 +91,8 @@ void Map::load() {
 
 
 
-	
-	
+
+
 
 
 	//TILE loadMap[10000];
@@ -98,7 +113,7 @@ void Map::load() {
 	////}
 
 	/////**/
-	
+
 	HANDLE file;
 	DWORD read;
 	file = CreateFile("mapSave.map", GENERIC_READ, 0, NULL,
@@ -129,7 +144,7 @@ void Map::load() {
 		if (i >= _vMapTile.size()) break;
 
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].img = IMAGEMANAGER->findImage("mapTiles");
-	
+
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].destX = _vMapTile[i].destX;
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].destY = _vMapTile[i].destY;
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].sourX = _vMapTile[i].sourX;
@@ -137,10 +152,11 @@ void Map::load() {
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].index = _vMapTile[i].index;
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].obj = _vMapTile[i].obj;
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].terrain = _vMapTile[i].terrain;
+		_map[_vMapTile[i].destX][_vMapTile[i].destY].tileview = TILEVIEW_NO;
 	}
 
 
 
 	CloseHandle(file);
-	
+
 }

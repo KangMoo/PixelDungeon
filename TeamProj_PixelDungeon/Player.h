@@ -2,6 +2,11 @@
 #include "gameNode.h"
 #include "UI.h"
 
+struct sightAngle {
+	float sangle;
+	float eangle;
+};
+
 class EnemyManager;
 class Map;
 class UI;
@@ -18,6 +23,7 @@ private:
 	POINT _playerPoint;
 	RECT _playerRC;
 	image* _image;
+	TILE* _maptile;
 	int _currentFrameX, _currentFrameY;
 	PLAYERSTATE _playerState;
 
@@ -26,18 +32,9 @@ private:
 
 
 	//test~
-	struct TILE {
-		POINT point;
-		RECT rc;
-		int type;
-	};
-	TILE tile[20][20];
 	vector<TILE> tileCanSee;
 
-	struct sightAngle {
-		float sangle;
-		float eangle;
-	};
+	
 
 	vector<sightAngle> angleCanTSee;
 
@@ -49,17 +46,20 @@ public:
 	void release();
 	void update();
 	void render(POINT camera);
-	//void draw(POINT camera);
+	void draw(POINT camera);
 	
-	//void addImg();
-	//void actionCheck();
+	void addImg();
+	void actionCheck();
 	void action();
 
-	//void frameUpdate();
-	//void imageChange(const char* str);
-	//void fovCheck();
+	void frameUpdate();
+	void imageChange(const char* str);
+	void fovCheck();
 
-	//void getDamaged(int damange);
+	void getDamaged(int damange);
+
+	void addCanTSeeAngle(float sangle, float eangle);
+	void addCanTSeeAngleByRect(RECT rc);
 
 	//게터세터
 	bool getAction() { return _action; }
@@ -73,8 +73,7 @@ public:
 	bool getTurn() { return _action; }
 	void setTurn(bool turn) { _action = turn; }
 
-	//void addCanTSeeAngle(float sangle, float eangle);
-	//void addCanTSeeRect(RECT rc);
+	
 
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }
 	void setMapAddressLink(Map* map) { _map = map; }

@@ -1,6 +1,7 @@
 #pragma once
 #define TILESIZE 32
-
+#define TILEXMAX 100
+#define TILEYMAX 100
 
 enum BUFF {
 	BUFF_INVISIBLE,		//투명화
@@ -184,7 +185,6 @@ enum TERRAIN {
 
 enum OBJ {
 	OBJ_NONE,
-
 	OBJ_TRAP,
 	OBJ_TRAP_UNSIGHT,
 	OBJ_TRAP_ACTIVATE
@@ -196,13 +196,19 @@ enum INPUTMODE {
 	VIEWING
 };
 
+enum TILEVIEW {
+	TILEVIEW_NO,
+	TILEVIEW_HALF,
+	TILEVIEW_ALL,
+	TILEVIEW_END
+};
 
 typedef struct tagTile {
 	image* img; //받아올 이미지
 	int sourX, sourY; //받아올 타일 좌표값
 	int destX, destY; //뿌릴 타일 좌표값
 	int index;
-
+	TILEVIEW tileview;
 	TERRAIN terrain;
 	OBJ obj;
 }TILE;
@@ -212,7 +218,7 @@ typedef struct tagSaveTile {
 	int sourX, sourY; //받아올 타일 좌표값
 	int destX, destY; //뿌릴 타일 좌표값
 	int index;
-
+	TILEVIEW tileview;
 	TERRAIN terrain;
 	OBJ obj;
 

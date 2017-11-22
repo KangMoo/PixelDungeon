@@ -13,6 +13,7 @@ GameScene::~GameScene()
 }
 HRESULT GameScene::init()
 {
+	addImg();
 	_em = new EnemyManager;
 	_player = new Player;
 	_map = new Map;
@@ -48,6 +49,7 @@ HRESULT GameScene::init()
 	_em->init();
 	_im->init();
 
+
 	_player->setAction(true);
 	_camera = PointMake(WINSIZEX, WINSIZEY);
 
@@ -82,4 +84,9 @@ void GameScene::render()
 	//test~
 	TextOut(getMemDC(), 100, 100, "°ÔÀÓ¾À", strlen("°ÔÀÓ¾À"));
 	//~test
+}
+
+void GameScene::addImg()
+{
+	IMAGEMANAGER->addImage("blackTile", "Img//Map//blacktile.bmp", 32, 32, true, RGB(255, 0, 255));
 }
