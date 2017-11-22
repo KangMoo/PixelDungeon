@@ -16,9 +16,13 @@ ItemManager::~ItemManager()
 }
 HRESULT ItemManager::init()
 {
+	_item = new Item;
+	_item->init();
+	imgInit();
+
 	//================ F U N C T I O N =================
 	swap();
-	imgInit();
+
 
 	//==================================================
 	_item = new Item;
@@ -582,7 +586,8 @@ void ItemManager::setItemToBag(ITEMNAME name)
 		item.img = IMAGEMANAGER->findImage("dew");
 		item.numOfItem = 0;
 		break;
-
+	case NAME_END:
+		break;
 	}
 
 	for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
