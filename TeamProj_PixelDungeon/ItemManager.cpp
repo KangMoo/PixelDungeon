@@ -18,9 +18,15 @@ HRESULT ItemManager::init()
 {
 	_item = new Item;
 	_item->init();
+	imgInit();
+
+	setItemToBag(NAME_OLD_SHORT_SWORD);
+	setItemToBag(NAME_SHORT_SWORD);
+	setItemToBag(NAME_SWORD);
+
 	//================ F U N C T I O N =================
 	swap();
-	imgInit();
+
 
 	return S_OK;
 }
@@ -292,6 +298,8 @@ void ItemManager::setItemToBag(ITEMNAME name)
 		break;
 	case NAME_SEED_FROST:
 		break;
+	case NAME_END:
+		break;
 	}
 
 	while (true)
@@ -325,7 +333,6 @@ void ItemManager::setItemToBag(ITEMNAME name)
 	item.numOfItem = 1;
 
 	_vBag.push_back(item);
-
 }
 
 void ItemManager::setItemToField(ITEMNAME name)

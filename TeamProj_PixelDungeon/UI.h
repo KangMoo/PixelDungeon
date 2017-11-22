@@ -22,6 +22,8 @@ public:
 	void update();
 	void render(POINT camera);
 	void draw(POINT camera);
+	void fream_window_draw(size_t sizeX, size_t sizeY);
+	void button_interface(int itemName, int itemtype, int createNumber, int fream_window_sizeX, int fream_window_sizeY, int positionX = 0, int positionY = 0);
 
 	void BackPack();
 	void TestFunctin();
@@ -44,32 +46,36 @@ private:
 
 	//RECT _inventory[4][6];
 
-	int _selectInterface;
-	int _selectItem = 0;
+	int _selectInterface = INTERFACEMENU_END;
+	int _selectItem = NAME_END;
 
 	typedef struct TagInventory
 	{
 		RECT inventoryRect = { 0,0,0,0 };
-		int itemNumber = 0;
+		int itemNumber = NAME_END;
 	}Inventory;
 
-	enum ITEMLIST
-	{
-		ITEMLIST_NULL,
-		ITEMLIST_TESTITEM1,
-		ITEMLIST_TESTITEM2,
-		ITEMLIST_TESTITEM3,
-		ITEMLIST_TESTITEM4,
-		ITEMLIST_END,
-	};
+	//enum ITEMSELECT
+	//{
+	//	ITEMSELECT_SOWRD,
+	//	ITEMSELECT_END,
+	//};
 
 	enum INTERFACEMENU
 	{
-		INTERFACEMENU_NULL,
 		INTERFACEMENU_BACKPACK,
+		INTERFACEMENU_SEARCH,
+		INTERFACEMENU_TURNSKIP,
 		INTERFACEMENU_END,
 	};
 
 	Inventory _inventory[4][6];
+	int fream_valueX = 0;
+	int fream_valueY = 0;
+	int button_option_value[10];
+	RECT button_option_intersectRect[10];
+
+	int savepositionX = 0;
+	int savepositionY = 0;
 };
 

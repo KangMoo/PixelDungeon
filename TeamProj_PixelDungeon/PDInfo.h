@@ -76,9 +76,24 @@ enum ITEMNAME {
 	NAME_SEED_FIRE,			//화염초
 	NAME_SEED_SNAKE,		//뱀뿌리
 	NAME_SEED_FROST,		//얼음
-	NAME_DEWW				//이슬		============ 특 수 ==========
-
+	NAME_DEWW,				//이슬		============ 특 수 ==========
+	NAME_END				//포문 돌리기 위함
 };
+
+enum BUTTONOPTION
+{
+	BUTTONOPTION_DROP,
+	BUTTONOPTION_DRINK,
+	BUTTONOPTION_THROW,
+	BUTTONOPTION_READ,
+	BUTTONOPTION_LAUNCH,
+	BUTTONOPTION_EAT,
+	BUTTONOPTION_PLANT,
+	BUTTONOPTION_REMEMBER,
+	BUTTONOPTION_WEAR,
+	BUTTONOPTION_END,
+};
+
 typedef struct tagPlayerStat {
 	int lv;			//레벨
 	int hp;			//체력
