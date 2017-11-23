@@ -446,9 +446,9 @@ void UI::BackPack()
 			break;
 
 		//서리
-		case NAME_FORZEN:
+		case NAME_FROZEN:
 			fream_window_draw(28, 12);
-			button_interface(NAME_FORZEN, TYPE_POTION, 3, 28, 12);
+			button_interface(NAME_FROZEN, TYPE_POTION, 3, 28, 12);
 			break;
 
 		//액체 화염

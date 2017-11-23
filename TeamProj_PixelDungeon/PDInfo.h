@@ -64,13 +64,13 @@ enum ITEMNAME {
 	NAME_PURIFY,			//정화
 	NAME_MAP,				//지도
 	NAME_RECHARGE,			//재충전
-	NAME_BOTTLE,				//이슬		============ 포 션 ==========
+	NAME_BOTTLE,			//이슬		============ 포 션 ==========
 	NAME_HEAL,				//회복
 	NAME_STR,				//힘
 	NAME_EX,				//숙련도
 	NAME_INVISIBLE,			//투명화
 	NAME_LEVITATION,		//공중부양
-	NAME_FORZEN,			//서리
+	NAME_FROZEN,			//서리
 	NAME_LIQUID_FIRE,		//액체 화염
 	NAME_SEED_HEAL,			//치유		============ 씨 앗 ==========
 	NAME_SEED_FIRE,			//화염초
@@ -141,8 +141,8 @@ typedef struct tagItem {
 	image* throwImg;	// 아이템 투척 이미지
 	ITEMTYPE type;		// 아이템 타입
 	ITEMNAME name;		// 아이템 이름
-	tagPlayerStat stat;	
-	POINT point;
+	tagPlayerStat stat;	// 스탯 증가
+	POINT point;		// 필드위 중심좌표
 	RECT rc;			// 아이템 충돌용 렉트
 	float range;		// 완드 스킬 사거리
 	bool equip;			// 창착 여부
@@ -153,10 +153,10 @@ typedef struct tagItem {
 	int Power;			// 필요 힘
 	int minPoint;		// 최소 데미지
 	int maxPoint;		// 최대 데미지
-	int maxCharge;		//최대 충전 횟수(완드)
-	int currentCharge;	//현재 사용 가능 횟수 ( 완드 )
+	int maxCharge;		// 최대 충전 횟수(완드)
+	int currentCharge;	// 현재 사용 가능 횟수 ( 완드 )
 	int numOfItem;		// 아이템 개수
-	int position;
+	int position;		// 포지션 저장용
 }ITEM;
 
 

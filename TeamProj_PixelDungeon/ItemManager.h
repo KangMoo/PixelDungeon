@@ -18,6 +18,7 @@ struct tagBullet
 	float speed;
 	bool fire;
 	int count;
+	int position;
 };
 
 
@@ -71,7 +72,7 @@ public:
 
 	//=========== T H R O W ===============
 	void fire(image* img, float x, float y, float dextX, float destY);
-	void throwItem(image* img, float x, float y, float destX, float destY);
+	void throwItem(int position, float x, float y, float destX, float destY);
 	void bulletMove();
 	void throwMove();
 	void removeBullet(int arrNum);

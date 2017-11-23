@@ -21,21 +21,6 @@ HRESULT ItemManager::init()
 	swap();
 	imgInit();
 	
-	setItemToBag(NAME_CLOTH);
-	setItemToBag(NAME_SHORT_SWORD);
-	setItemToBag(NAME_BATTLE_AXE);
-	setItemToBag(NAME_SPEAR);
-	setItemToBag(NAME_SWORD);
-	setItemToBag(NAME_OLD_SHORT_SWORD);
-	setItemToBag(NAME_LEATHER);
-	setItemToBag(NAME_MAIL);
-
-	//setItemToBag(NAME_UNKNOWN_MEAT);
-	//setItemToBag(NAME_IDENTIFY);
-	//setItemToBag(NAME_FORZEN);
-	//setItemToBag(NAME_PURIFY);
-	//setItemToBag(NAME_UPGRADE);
-
 
 	return S_OK;
 }
@@ -105,9 +90,15 @@ void ItemManager::update()
 			_viBag->maxCharge = 3 + _viBag->upgrade;
 			break;
 		}
-
 	}
 
+	for (int i = 0; i < _vBag.size(); i++)
+	{
+		_vBag[i].position = i;
+	}
+
+	bulletMove();
+	throwMove();
 }
 void ItemManager::render(POINT camera)
 {
@@ -115,6 +106,14 @@ void ItemManager::render(POINT camera)
 }
 void ItemManager::draw(POINT camera)
 {
+	for ( _viBullet = _vBullet.begin(); _viBullet < _vBullet.end(); ++_viBullet)
+	{
+		_viBullet->img->render(getMemDC(), _viBullet->x + camera.x, _viBullet->y + camera.y);
+	}
+	for ( _viThrow = _vThrow.begin(); _viThrow != _vThrow.end(); ++_viThrow)
+	{
+		_viThrow->img->render(getMemDC(), _viThrow->x + camera.x, _viThrow->y + camera.y);
+	}
 }
 
 void ItemManager::setItemToBag(ITEMNAME name)
@@ -132,7 +131,7 @@ void ItemManager::setItemToBag(ITEMNAME name)
 
 	setItem(&item, name);
 
-	if (item.name == NAME_DEW) overlap = true;
+	if (item.type == TYPE_SPECIAL) overlap = true;
 
 
 	item.numOfItem = 1;
@@ -602,7 +601,7 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 			break;
 		case 2:item->img = IMAGEMANAGER->findImage("scroll_kaunan");
 			break;
-		case 3:item->img = IMAGEMANAGER->findImage("scroll_laguz ");
+		case 3:item->img = IMAGEMANAGER->findImage("scroll_laguz");
 			break;
 		case 4:item->img = IMAGEMANAGER->findImage("scroll_yngvi");
 			break;
@@ -621,7 +620,7 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 			break;
 		case 2:item->img = IMAGEMANAGER->findImage("scroll_kaunan");
 			break;
-		case 3:item->img = IMAGEMANAGER->findImage("scroll_laguz ");
+		case 3:item->img = IMAGEMANAGER->findImage("scroll_laguz");
 			break;
 		case 4:item->img = IMAGEMANAGER->findImage("scroll_yngvi");
 			break;
@@ -639,7 +638,7 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 			break;
 		case 2:item->img = IMAGEMANAGER->findImage("scroll_kaunan");
 			break;
-		case 3:item->img = IMAGEMANAGER->findImage("scroll_laguz ");
+		case 3:item->img = IMAGEMANAGER->findImage("scroll_laguz");
 			break;
 		case 4:item->img = IMAGEMANAGER->findImage("scroll_yngvi");
 			break;
@@ -657,7 +656,7 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 			break;
 		case 2:item->img = IMAGEMANAGER->findImage("scroll_kaunan");
 			break;
-		case 3:item->img = IMAGEMANAGER->findImage("scroll_laguz ");
+		case 3:item->img = IMAGEMANAGER->findImage("scroll_laguz");
 			break;
 		case 4:item->img = IMAGEMANAGER->findImage("scroll_yngvi");
 			break;
@@ -675,7 +674,7 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 			break;
 		case 2:item->img = IMAGEMANAGER->findImage("scroll_kaunan");
 			break;
-		case 3:item->img = IMAGEMANAGER->findImage("scroll_laguz ");
+		case 3:item->img = IMAGEMANAGER->findImage("scroll_laguz");
 			break;
 		case 4:item->img = IMAGEMANAGER->findImage("scroll_yngvi");
 			break;
@@ -701,7 +700,7 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 			break;
 		case 2:item->img = IMAGEMANAGER->findImage("potion_magenta");
 			break;
-		case 3:item->img = IMAGEMANAGER->findImage("potion_orange ");
+		case 3:item->img = IMAGEMANAGER->findImage("potion_orange");
 			break;
 		case 4:item->img = IMAGEMANAGER->findImage("potion_purple");
 			break;
@@ -723,7 +722,7 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 			break;
 		case 2:item->img = IMAGEMANAGER->findImage("potion_magenta");
 			break;
-		case 3:item->img = IMAGEMANAGER->findImage("potion_orange ");
+		case 3:item->img = IMAGEMANAGER->findImage("potion_orange");
 			break;
 		case 4:item->img = IMAGEMANAGER->findImage("potion_purple");
 			break;
@@ -745,7 +744,7 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 			break;
 		case 2:item->img = IMAGEMANAGER->findImage("potion_magenta");
 			break;
-		case 3:item->img = IMAGEMANAGER->findImage("potion_orange ");
+		case 3:item->img = IMAGEMANAGER->findImage("potion_orange");
 			break;
 		case 4:item->img = IMAGEMANAGER->findImage("potion_purple");
 			break;
@@ -767,7 +766,7 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 			break;
 		case 2:item->img = IMAGEMANAGER->findImage("potion_magenta");
 			break;
-		case 3:item->img = IMAGEMANAGER->findImage("potion_orange ");
+		case 3:item->img = IMAGEMANAGER->findImage("potion_orange");
 			break;
 		case 4:item->img = IMAGEMANAGER->findImage("potion_purple");
 			break;
@@ -789,7 +788,7 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 			break;
 		case 2:item->img = IMAGEMANAGER->findImage("potion_magenta");
 			break;
-		case 3:item->img = IMAGEMANAGER->findImage("potion_orange ");
+		case 3:item->img = IMAGEMANAGER->findImage("potion_orange");
 			break;
 		case 4:item->img = IMAGEMANAGER->findImage("potion_purple");
 			break;
@@ -801,7 +800,7 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 		item->equip = false;
 		item->contentsHide = true;
 		break;
-	case NAME_FORZEN:
+	case NAME_FROZEN:
 		item->type = TYPE_POTION;
 		switch (_potion[5])
 		{
@@ -811,7 +810,7 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 			break;
 		case 2:item->img = IMAGEMANAGER->findImage("potion_magenta");
 			break;
-		case 3:item->img = IMAGEMANAGER->findImage("potion_orange ");
+		case 3:item->img = IMAGEMANAGER->findImage("potion_orange");
 			break;
 		case 4:item->img = IMAGEMANAGER->findImage("potion_purple");
 			break;
@@ -833,7 +832,7 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 			break;
 		case 2:item->img = IMAGEMANAGER->findImage("potion_magenta");
 			break;
-		case 3:item->img = IMAGEMANAGER->findImage("potion_orange ");
+		case 3:item->img = IMAGEMANAGER->findImage("potion_orange");
 			break;
 		case 4:item->img = IMAGEMANAGER->findImage("potion_purple");
 			break;
@@ -1090,7 +1089,7 @@ void ItemManager::useItem(int position, float x, float y)
 			case TYPE_WAND:
 				if (_viBag->currentCharge > 0)
 				{
-					fire(_viBag->img, _player->getPoint().x, _player->getPoint().y, x, y);
+					fire(_viBag->throwImg, _player->getPoint().x, _player->getPoint().y, x, y);
 					_viBag->currentCharge--;
 				}
 				break;
@@ -1148,7 +1147,7 @@ void ItemManager::fire(image* img, float x, float y, float destX, float destY)
 	_vBullet.push_back(bullet);
 }
 
-void ItemManager::throwItem(image* img, float x, float y, float destX, float destY)
+void ItemManager::throwItem(int position, float x, float y, float destX, float destY)
 {
 	tagBullet bullet;
 	ZeroMemory(&bullet, sizeof(tagBullet));
@@ -1158,7 +1157,15 @@ void ItemManager::throwItem(image* img, float x, float y, float destX, float des
 	bullet.destY = destY;
 	bullet.angle = getAngle(x, y, destX, destY);
 	bullet.speed = 7;
-	bullet.img = img;
+	bullet.position = position;
+	for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); _viBag++)
+	{
+		if (_viBag->position == bullet.position)
+		{
+			bullet.img = _viBag->img;
+			break;
+		}
+	}
 	bullet.rc = RectMakeCenter(bullet.x, bullet.y,
 		bullet.img->getWidth(), bullet.img->getHeight());
 	bullet.fire = false;
@@ -1201,6 +1208,21 @@ void ItemManager::throwMove()
 		if (getDistance(_viThrow->initX, _viThrow->initY, _viThrow->x, _viThrow->y) >
 			getDistance(_viThrow->initX, _viThrow->initY, _viThrow->destX, _viThrow->destY))
 		{
+			for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); )
+			{
+				if (_viBag->position == _viThrow->position)
+				{
+					setItemToField(_viBag->name,_viThrow->destX,_viThrow->destY,
+						_viBag->contentsHide, _viBag->isCursed, _viBag->upgrade,
+						_viBag->numOfItem);
+
+					_viBag = _vBag.erase(_viBag);
+
+					break;
+
+				}
+				else ++_viBag;
+			}
 			_viThrow = _vBullet.erase(_viThrow);
 			break;
 		}
