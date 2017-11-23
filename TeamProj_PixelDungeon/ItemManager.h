@@ -39,17 +39,6 @@ public:
 	void swap();
 	void imgInit();
 
-
-
-	// 아이템 사용 함수 ( 주문서, 씨앗, 포션, 다트) 
-	void useToScroll(ITEMNAME name);
-	void useToSeed(ITEMNAME name);
-	void useToPotion(ITEMNAME name);
-	void useToDart(ITEMNAME name);
-	// 아이템 효과 함수
-	void itemEffect(ITEMNAME name, POINT point);
-
-
 	void setItemToBag(ITEMNAME name);
 	void setItemToField(ITEMNAME name);
 	void setItemToBag(ITEMNAME name, bool identify, bool isCursed, int upgrade);
