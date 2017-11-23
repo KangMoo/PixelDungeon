@@ -21,17 +21,17 @@ HRESULT Map::init()
 		for (int j = 0; j < 100; j++) {
 			_map[i][j].terrain = TERRAIN_NULL;
 		}
-	
+
 	}
 
 
 	start = true;
 	load();
 
-
-
-	
-		return S_OK;
+	IMAGEMANAGER->addImage("blackLineVertical", "Img//Map//blackdot.bmp", 1, 32, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("blackLineHorizontal", "Img//Map//blackdot.bmp", 32, 1, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("blackTile", "Img//Map//blackdot.bmp", 32, 32, true, RGB(255, 0, 255));
+	return S_OK;
 }
 void Map::release()
 {
@@ -54,6 +54,9 @@ void Map::render(POINT camera)
 }
 void Map::draw(POINT camera)
 {
+	int temp = 7;
+	if (KEYMANAGER->isStayKeyDown(VK_RIGHT)) temp++;
+	if (KEYMANAGER->isStayKeyDown(VK_LEFT)) temp--;
 	if (start) {
 		for (int i = 0; i < 100; i++) {
 			for (int j = 0; j < 100; j++) {
@@ -61,14 +64,40 @@ void Map::draw(POINT camera)
 				{
 					RectangleMake(getMemDC(), _map[i][j].destX * 10, _map[i][j].destY * 10, 10, 10);
 					_map[i][j].img->frameRender(getMemDC(), i * 32, j * 32, _map[i][j].sourX, _map[i][j].sourY);
+
+					if (i == temp)
+					{
+						for (int pix = 0; pix < 32; pix++)
+						{
+							IMAGEMANAGER->alphaRender("blackLineVertical", getMemDC(), i * 32 + pix, j * 32, pix * 150 / 32);
+							//IMAGEMANAGER->alphaRender("blackLineHorizontal", getMemDC(), i * 32, j * 32 + pix, pix * 255 / 32);
+						}
+					}
+					if (i == temp+1)
+					{
+						IMAGEMANAGER->alphaRender("blackTile", getMemDC(), i * 32, j * 32, 150);
+					}
+					if (i == temp+2)
+					{
+						IMAGEMANAGER->alphaRender("blackTile", getMemDC(), i * 32, j * 32, 150);
+						for (int pix = 0; pix < 32; pix++)
+						{
+							IMAGEMANAGER->alphaRender("blackLineVertical", getMemDC(), i * 32 + pix, j * 32, pix * 255 / 32);
+							//IMAGEMANAGER->alphaRender("blackLineHorizontal", getMemDC(), i * 32, j * 32 + pix, pix * 255 / 32);
+						}
+
+					}
+					else if (i > temp+2)
+					{
+						IMAGEMANAGER->render("blackTile", getMemDC(), i * 32, j * 32);
+					}
 				}
-					
 			}
 		}
 	}
-
-
 	
+
+
 }
 
 
@@ -160,7 +189,7 @@ void Map::load() {
 		if (i >= _vMapTile.size()) break;
 
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].img = IMAGEMANAGER->findImage("mapTiles");
-	
+
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].destX = _vMapTile[i].destX;
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].destY = _vMapTile[i].destY;
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].sourX = _vMapTile[i].sourX;
@@ -171,5 +200,5 @@ void Map::load() {
 	}
 
 
-	
+
 }
