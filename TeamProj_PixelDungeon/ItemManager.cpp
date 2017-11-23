@@ -30,8 +30,8 @@ HRESULT ItemManager::init()
 	setItemToBag(NAME_LEATHER);
 	setItemToBag(NAME_MAIL);
 
-	//setItemToBag(NAME_UNKNOWN_MEAT);
-	//setItemToBag(NAME_IDENTIFY);
+	setItemToBag(NAME_UNKNOWN_MEAT);
+	setItemToBag(NAME_BOTTLE);
 	//setItemToBag(NAME_FORZEN);
 	//setItemToBag(NAME_PURIFY);
 	//setItemToBag(NAME_UPGRADE);
