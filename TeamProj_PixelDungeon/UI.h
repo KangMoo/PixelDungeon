@@ -1,6 +1,8 @@
 #pragma once
 #include "gameNode.h"
 
+#define ARRSIZE 24
+
 class EnemyManager;
 class Player;
 class Map;
@@ -23,7 +25,8 @@ public:
 	void render(POINT camera);
 	void draw(POINT camera);
 	void fream_window_draw(size_t sizeX, size_t sizeY);
-	void button_interface(int itemName, int itemtype, int createNumber, int fream_window_sizeX, int fream_window_sizeY, int positionX = 0, int positionY = 0);
+	void button_interface(int itemName, int itemtype, int createNumber, int fream_window_sizeX, int fream_window_sizeY, int position = 0);
+	void item_sort();
 
 	void BackPack();
 	void TestFunctin();
@@ -53,13 +56,9 @@ private:
 	{
 		RECT inventoryRect = { 0,0,0,0 };
 		int itemNumber = NAME_END;
+		bool itemUse = false;
+		bool itemWear = false;
 	}Inventory;
-
-	//enum ITEMSELECT
-	//{
-	//	ITEMSELECT_SOWRD,
-	//	ITEMSELECT_END,
-	//};
 
 	enum INTERFACEMENU
 	{
@@ -69,13 +68,28 @@ private:
 		INTERFACEMENU_END,
 	};
 
-	Inventory _inventory[4][6];
+	typedef struct tagButtonOption
+	{
+		int number = 0;
+		bool use_weapon = false;
+		bool use_armor = false;
+		bool use_acc = false;
+	}ButtonOption;
+
+	Inventory _inventory[24];
 	int fream_valueX = 0;
 	int fream_valueY = 0;
-	int button_option_value[10];
+	ButtonOption button_option_value[10];
 	RECT button_option_intersectRect[10];
 
 	int savepositionX = 0;
 	int savepositionY = 0;
+
+	int _itemPosition = 0;
+	int _positionCheck = 0;
+	int _wearNumber = 0;
+
+	vector<tagItem>tempBag;
+	vector<tagItem>::iterator i_tempBag;
 };
 

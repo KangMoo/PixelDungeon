@@ -92,6 +92,7 @@ enum BUTTONOPTION
 	BUTTONOPTION_PLANT,
 	BUTTONOPTION_REMEMBER,
 	BUTTONOPTION_WEAR,
+	BUTTONOPTION_UNLOCK,
 	BUTTONOPTION_END,
 };
 
@@ -166,6 +167,7 @@ typedef struct tagItem {
 	int currentCharge;	//현재 사용 가능 횟수 ( 완드 )
 	int numOfItem;		// 아이템 개수
 	int position;
+	bool use; //테스트용입니다.
 }ITEM;
 
 

@@ -14,8 +14,28 @@ ItemManager::~ItemManager()
 {
 
 }
+
 HRESULT ItemManager::init()
 {
+	_item = new Item;
+	_item->init();
+	imgInit();
+	
+	setItemToBag(NAME_OLD_SHORT_SWORD);
+	setItemToBag(NAME_SHORT_SWORD);
+	setItemToBag(NAME_SWORD);
+	setItemToBag(NAME_SPEAR);
+	setItemToBag(NAME_BATTLE_AXE);
+	setItemToBag(NAME_CLOTH);
+	setItemToBag(NAME_LEATHER);
+	setItemToBag(NAME_MAIL);
+
+	//setItemToBag(NAME_UNKNOWN_MEAT);
+	//setItemToBag(NAME_IDENTIFY);
+	//setItemToBag(NAME_FORZEN);
+	//setItemToBag(NAME_PURIFY);
+	//setItemToBag(NAME_UPGRADE);
+
 	//================ F U N C T I O N =================
 	swap();
 	imgInit();
