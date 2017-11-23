@@ -204,6 +204,9 @@
     <ClInclude Include="ItemManager.h">
       <Filter>MainGame\Item</Filter>
     </ClInclude>
+    <ClInclude Include="Rat.h">
+      <Filter>MainGame\Enemy\Enemy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -307,6 +310,9 @@
     </ClCompile>
     <ClCompile Include="ItemManager.cpp">
       <Filter>MainGame\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="Rat.cpp">
+      <Filter>MainGame\Enemy\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

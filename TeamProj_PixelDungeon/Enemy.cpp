@@ -27,7 +27,6 @@ void Enemy::release()
 }
 void Enemy::update()
 {
-
 	//몬스터 행동조건(_action)이 true일 경우만 action()실행
 	if (_action) action();
 }

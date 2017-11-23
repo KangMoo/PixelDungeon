@@ -9,9 +9,6 @@ class Rat : public Enemy
 {
 private:
 
-	int _frameFPS;
-	int	_frameTime;
-	int _currentFrameY, _currentFrameX;
 	int _color;
 	int _myColor;
 
