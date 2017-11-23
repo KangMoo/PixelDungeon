@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Rat.h"
 #include "Player.h"
+#include "Map.h"
+#include "UI.h"
 
 Rat::Rat()
 {
@@ -25,7 +27,7 @@ HRESULT Rat::init(POINT point, int cog)
 	//												*BROWNRATIMAGE*	
 	//=======================================================================================================================================================
 
-	IMAGEMANAGER->addFrameImage("brownIdle", "Img\Enemy\rat\brownIdle.bmp", 64, 32, 2, 1, true, RGB(255, 0, 255));//아이들인줄 알았는데 슬립이였다
+	IMAGEMANAGER->addFrameImage("brownIdle", "Img\Enemy\rat\brownIdle.bmp", 64, 32, 2, 2, true, RGB(255, 0, 255));//아이들인줄 알았는데 슬립이였다
 	IMAGEMANAGER->addFrameImage("brownMove", "Img\Enemy\rat\brownMove.bmp", 192, 64, 6, 2, true, RGB(255, 0, 255));//무브인줄 알았는데 아이들이였다
 	IMAGEMANAGER->addFrameImage("brownAttack", "Img\Enemy\rat\brownAttack.bmp", 96, 64, 3, 2, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("brownDead", "Img\Enemy\rat\brownDead.bmp", 128, 64, 4, 2, true, RGB(255, 0, 255));
@@ -34,7 +36,7 @@ HRESULT Rat::init(POINT point, int cog)
 	//												*WHITERATIMAGE*	
 	//=======================================================================================================================================================
 
-	IMAGEMANAGER->addFrameImage("whiteIdle", "Img\Enemy\rat\whiteIdle.bmp", 64, 32, 2, 1, true, RGB(255, 0, 255));//아이들인줄 알았는데 슬립이였다
+	IMAGEMANAGER->addFrameImage("whiteIdle", "Img\Enemy\rat\whiteIdle.bmp", 64, 32, 2, 2, true, RGB(255, 0, 255));//아이들인줄 알았는데 슬립이였다
 	IMAGEMANAGER->addFrameImage("whiteMove", "Img\Enemy\rat\whiteMove.bmp", 192, 64, 6, 2, true, RGB(255, 0, 255));//무브인줄 알았는데 아이들이였다
 	IMAGEMANAGER->addFrameImage("whiteAttack", "Img\Enemy\rat\whiteAttack.bmp", 96, 64, 3, 2, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("whiteDead", "Img\Enemy\rat\whiteDead.bmp", 128, 64, 4, 2, true, RGB(255, 0, 255));
@@ -125,18 +127,32 @@ void Rat::release()
 void Rat::update()
 {
 	frameUpdate();
+	if (_isLive = true)
+	{
+		if (PtInRect(&_cog, _player->getPoint()))//플레이어를 찾아내고 말았다.
+		{
+			_findPlayer == true;
+		}
 
-	if (_action == false && _myColor == WHITE)//Sleep 상태가 아닐시
-	{
-		_image = IMAGEMANAGER->findImage("whiteMove");
+		if (_action == false && _myColor == WHITE)//Sleep 상태가 아닐시
+		{
+			_image = IMAGEMANAGER->findImage("whiteMove");//이름이 무브긴 하지만 무브가 아닙니다.ㅠㅠ
+		}
+		else if (_action == false && _myColor == BROWN)//Sleep 상태가 아닐시
+		{
+			_image = IMAGEMANAGER->findImage("brownMove");
+		}
+
+		if (_action == true && _findPlayer == true)//나의 턴일때
+		{
+			action();
+		}
 	}
-	else if (_action == false && _myColor == BROWN)
+
+	if (_currntHp <= 0)//현재 체력이 0에 수렴
 	{
-		_image = IMAGEMANAGER->findImage("brownMove");
-	}
-	if (_action == true)
-	{
-		action();
+		_deadAlpha--;
+		_isLive = false;
 	}
 
 }
@@ -149,7 +165,8 @@ void Rat::render(POINT camera)
 void Rat::draw(POINT camera)
 {
 	RectangleMake(getMemDC(), _point.x + camera.x, _point.y + camera.y, 32, 32);
-	_image->frameRender(getMemDC(), _point.x + camera.x, _point.y + camera.y);
+	//_image->frameRender(getMemDC(), _point.x + camera.x, _point.y + camera.y);
+	_image->alphaFrameRender(getMemDC(), _point.x + camera.x, _point.y + camera.y, _currentFrameX, _currentFrameY, _deadAlpha);
 }
 
 void Rat::action()
@@ -191,13 +208,18 @@ void Rat::attack()
 	if (_myColor == WHITE)
 	{
 		_image = IMAGEMANAGER->findImage("whiteAttack");
-		_statistics.str = RND->getFromIntTo(2 + _statistics.lv, 6 + _statistics.lv);
+		_statistics.str = RND->getFromIntTo(2 + _statistics.lv, 6 + _statistics.lv);//공격력이 랜덤입니다.
 
-		
+		int bleed = RND->getInt(2);
 
+		if (bleed == 2)//디버프를 걸어줍니다.
+		{
+			//_player->
+		}
+
+		_attBox = RectMake(0, 0, 0, 0);//초기화
 		if (_currentFrameX > _image->getMaxFrameX())
 		{
-
 			_image = IMAGEMANAGER->findImage("whiteIdle");
 			_myState = ENEMYSTATE_IDLE;
 			_action = false; //턴을 넘김다
@@ -209,11 +231,9 @@ void Rat::attack()
 		_image = IMAGEMANAGER->findImage("brownAttack");
 		_statistics.str = RND->getFromIntTo(3 + _statistics.lv, 5 + _statistics.lv);
 
-		
-
+		_attBox = RectMake(0, 0, 0, 0);//초기화
 		if (_currentFrameX > _image->getMaxFrameX())
 		{
-			
 			_image = IMAGEMANAGER->findImage("brownIdle");
 			_myState = ENEMYSTATE_IDLE;
 			_action = false;
@@ -221,8 +241,6 @@ void Rat::attack()
 		}
 	}
 
-
-	//_attBox = RectMake
 }
 
 void Rat::move()
