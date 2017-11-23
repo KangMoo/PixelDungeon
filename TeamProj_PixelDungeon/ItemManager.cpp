@@ -4,7 +4,7 @@
 #include "EnemyManager.h"
 #include "Map.h"
 #include "UI.h"
-
+#include<assert.h>
 ItemManager::ItemManager()
 {
 }
@@ -17,8 +17,13 @@ ItemManager::~ItemManager()
 
 HRESULT ItemManager::init()
 {
-	
-	//setItemToBag(NAME_OLD_SHORT_SWORD);
+	//================ F U N C T I O N =================
+	swap();
+	imgInit();
+
+
+
+	setItemToBag(NAME_OLD_SHORT_SWORD);
 	//setItemToBag(NAME_SHORT_SWORD);
 	//setItemToBag(NAME_SWORD);
 	//setItemToBag(NAME_SPEAR);
@@ -33,14 +38,8 @@ HRESULT ItemManager::init()
 	//setItemToBag(NAME_PURIFY);
 	//setItemToBag(NAME_UPGRADE);
 
-	//================ F U N C T I O N =================
-	swap();
-	imgInit();
 
 
-	//==================================================
-	_item = new Item;
-	_item->init();
 
 	return S_OK;
 }
@@ -50,7 +49,6 @@ void ItemManager::release()
 }
 void ItemManager::update()
 {
-	_item->update();
 
 	for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
 	{
@@ -113,6 +111,7 @@ void ItemManager::update()
 		}
 
 	}
+
 }
 void ItemManager::render(POINT camera)
 {
@@ -120,7 +119,6 @@ void ItemManager::render(POINT camera)
 }
 void ItemManager::draw(POINT camera)
 {
-	_item->render(_ui->getCamera());
 }
 
 void ItemManager::setItemToBag(ITEMNAME name)
