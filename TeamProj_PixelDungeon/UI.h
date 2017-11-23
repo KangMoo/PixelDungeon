@@ -85,6 +85,7 @@ private:
 	int _itemPosition = 0;
 	int _positionCheck = 0;
 	int _wearNumber = 0;
+	int inventory_null = 0;
 
 	vector<tagItem>tempBag;
 	vector<tagItem>::iterator i_tempBag;

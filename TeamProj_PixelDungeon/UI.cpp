@@ -707,7 +707,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			//¬¯øÎ«—¥Ÿ
 			if (button_option_value[buttonNumber].number == BUTTONOPTION_WEAR)
 			{
-				//¬¯øÎ¡ﬂ
+				////¬¯øÎ¡ﬂ
 
 				if (_im->getvBag()[itemCheck].equip == true)
 				{
@@ -734,18 +734,15 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 
 				}
 
-				//πÃ¬¯øÎ¡ﬂ
+				////πÃ¬¯øÎ¡ﬂ
 
 				if (_im->getvBag()[itemCheck].equip == false)
 				{
 					if (itemType == TYPE_WEAPON && _im->getvBag()[itemCheck].type == TYPE_WEAPON)
 					{
-						for (int i = 0; i < _im->getvBag().size(); i++)
+						if (_im->getvBag()[itemCheck].name == _inventory[_itemPosition].itemNumber)
 						{
-							if (_im->getvBag()[i].name == _inventory[_itemPosition].itemNumber)
-							{
-								_im->equipItem(_inventory[_itemPosition].itemNumber);
-							}
+							_im->equipItem(itemCheck);
 						}
 
 						_inventory[TYPE_WEAPON].itemNumber = _inventory[_itemPosition].itemNumber;
@@ -754,12 +751,9 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 
 					if (itemType == TYPE_ARMOR && _im->getvBag()[itemCheck].type == TYPE_ARMOR)
 					{
-						for (int i = 0; i < _im->getvBag().size(); i++)
+						if (_im->getvBag()[itemCheck].name == _inventory[_itemPosition].itemNumber)
 						{
-							if (_im->getvBag()[i].name == _inventory[_itemPosition].itemNumber)
-							{
-								_im->equipItem(_inventory[_itemPosition].itemNumber);
-							}
+							_im->equipItem(itemCheck);
 						}
 
 						_inventory[TYPE_ARMOR].itemNumber = _inventory[_itemPosition].itemNumber;
@@ -768,12 +762,9 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 
 					if (itemType == TYPE_ACC && _im->getvBag()[itemCheck].type == TYPE_ACC)
 					{
-						for (int i = 0; i < _im->getvBag().size(); i++)
+						if (_im->getvBag()[itemCheck].name == _inventory[_itemPosition].itemNumber)
 						{
-							if (_im->getvBag()[i].name == _inventory[_itemPosition].itemNumber)
-							{
-								_im->equipItem(_inventory[_itemPosition].itemNumber);
-							}
+							_im->equipItem(itemCheck);
 						}
 
 						_inventory[TYPE_ACC].itemNumber = _inventory[_itemPosition].itemNumber;
@@ -788,23 +779,32 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			//«ÿ¡¶«—¥Ÿ
 			if (button_option_value[buttonNumber].number == BUTTONOPTION_UNLOCK)
 			{
+				for (int i = 4; i < ARRSIZE; i++)
+				{
+					if (_inventory[i].itemNumber == NAME_END)
+					{
+						inventory_null = i;
+						break;
+					}
+				}
+
 				if (itemType == TYPE_WEAPON)
 				{
-					_inventory[_positionCheck].itemNumber = _inventory[TYPE_WEAPON].itemNumber;
+					_inventory[inventory_null].itemNumber = _inventory[TYPE_WEAPON].itemNumber;
 					_inventory[TYPE_WEAPON].itemNumber = NAME_END;
 					_im->unequipItem(itemCheck);
 				}
 
 				if (itemType == TYPE_ARMOR)
 				{
-					_inventory[_positionCheck].itemNumber = _inventory[TYPE_ARMOR].itemNumber;
+					_inventory[inventory_null].itemNumber = _inventory[TYPE_ARMOR].itemNumber;
 					_inventory[TYPE_ARMOR].itemNumber = NAME_END;
 					_im->unequipItem(itemCheck);
 				}
 
 				if (itemType == TYPE_ACC)
 				{
-					_inventory[_positionCheck].itemNumber = _inventory[TYPE_ACC].itemNumber;
+					_inventory[inventory_null].itemNumber = _inventory[TYPE_ACC].itemNumber;
 					_inventory[TYPE_ACC].itemNumber = NAME_END;
 					_im->unequipItem(itemCheck);
 				}
