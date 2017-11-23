@@ -219,7 +219,7 @@ void ItemManager::setItemToBag(ITEMNAME name)
 		item.tier = 2;
 		item.Power = 12;
 		item.upgrade = 0;
-		item.numOfItem = 8;
+		item.numOfItem = 4;
 
 		break;
 	case NAME_POISON_DART:
@@ -231,7 +231,7 @@ void ItemManager::setItemToBag(ITEMNAME name)
 		item.tier = 2;
 		item.Power = 12;
 		item.upgrade = 0;
-		item.numOfItem = 8;
+		item.numOfItem = 4;
 		break;
 	case NAME_LIGHTNING:
 		item.type = TYPE_WAND;
@@ -314,7 +314,7 @@ void ItemManager::setItemToBag(ITEMNAME name)
 		}
 		item.equip = false;
 		item.contentsHide = true;
-		item.numOfItem = 0;
+		item.numOfItem = 1;
 		break;
 	case NAME_UPGRADE:
 		item.type = TYPE_SCROLL;
@@ -333,7 +333,7 @@ void ItemManager::setItemToBag(ITEMNAME name)
 		}
 		item.equip = false;
 		item.contentsHide = true;
-		item.numOfItem = 0;
+		item.numOfItem = 1;
 		break;
 	case NAME_PURIFY:
 		item.type = TYPE_SCROLL;
@@ -352,7 +352,7 @@ void ItemManager::setItemToBag(ITEMNAME name)
 		}
 		item.equip = false;
 		item.contentsHide = true;
-		item.numOfItem = 0;
+		item.numOfItem = 1;
 		break;
 	case NAME_MAP:
 		item.type = TYPE_SCROLL;
@@ -371,7 +371,7 @@ void ItemManager::setItemToBag(ITEMNAME name)
 		}
 		item.equip = false;
 		item.contentsHide = true;
-		item.numOfItem = 0;
+		item.numOfItem = 1;
 		break;
 	case NAME_RECHARGE:
 		item.type = TYPE_SCROLL;
@@ -390,14 +390,16 @@ void ItemManager::setItemToBag(ITEMNAME name)
 		}
 		item.equip = false;
 		item.contentsHide = true;
-		item.numOfItem = 0;
+		item.numOfItem = 1;
 		break;
 	case NAME_BOTTLE:		// ===============포션 ===================
 		item.type = TYPE_POTION;
 		item.img = IMAGEMANAGER->findImage("potion_bottle");
 		item.equip = false;
 		item.contentsHide = true;
-		item.numOfItem = 0;
+		item.maxCharge = 20;
+		item.currentCharge = 0;
+		item.numOfItem = 1;
 		break;
 	case NAME_HEAL:
 		item.type = TYPE_POTION;
@@ -420,7 +422,7 @@ void ItemManager::setItemToBag(ITEMNAME name)
 		}
 		item.equip = false;
 		item.contentsHide = true;
-		item.numOfItem = 0;
+		item.numOfItem = 1;
 		break;
 	case NAME_STR:
 		item.type = TYPE_POTION;
@@ -443,7 +445,7 @@ void ItemManager::setItemToBag(ITEMNAME name)
 		}
 		item.equip = false;
 		item.contentsHide = true;
-		item.numOfItem = 0;
+		item.numOfItem = 1;
 		break;
 	case NAME_EX:
 		item.type = TYPE_POTION;
@@ -466,7 +468,7 @@ void ItemManager::setItemToBag(ITEMNAME name)
 		}
 		item.equip = false;
 		item.contentsHide = true;
-		item.numOfItem = 0;
+		item.numOfItem = 1;
 		break;
 	case NAME_INVISIBLE:
 		item.type = TYPE_POTION;
@@ -489,7 +491,7 @@ void ItemManager::setItemToBag(ITEMNAME name)
 		}
 		item.equip = false;
 		item.contentsHide = true;
-		item.numOfItem = 0;
+		item.numOfItem = 1;
 		break;
 	case NAME_LEVITATION:
 		item.type = TYPE_POTION;
@@ -512,7 +514,7 @@ void ItemManager::setItemToBag(ITEMNAME name)
 		}
 		item.equip = false;
 		item.contentsHide = true;
-		item.numOfItem = 0;
+		item.numOfItem = 1;
 		break;
 	case NAME_FORZEN:
 		item.type = TYPE_POTION;
@@ -535,7 +537,7 @@ void ItemManager::setItemToBag(ITEMNAME name)
 		}
 		item.equip = false;
 		item.contentsHide = true;
-		item.numOfItem = 0;
+		item.numOfItem = 1;
 		break;
 	case NAME_LIQUID_FIRE:
 		item.type = TYPE_POTION;
@@ -558,33 +560,33 @@ void ItemManager::setItemToBag(ITEMNAME name)
 		}
 		item.equip = false;
 		item.contentsHide = true;
-		item.numOfItem = 0;
+		item.numOfItem = 1;
 		break;
 	case NAME_SEED_HEAL:	//============ 씨 앗 ==========
 		item.type = TYPE_SEED;
 		item.equip = false;
-		item.numOfItem = 0;
+		item.numOfItem = 1;
 		break;
 	case NAME_SEED_FIRE:
 		item.type = TYPE_SEED;
 		item.equip = false;
-		item.numOfItem = 0;
+		item.numOfItem = 1;
 		break;
 	case NAME_SEED_SNAKE:
 		item.type = TYPE_SEED;
 		item.equip = false;
-		item.numOfItem = 0;
+		item.numOfItem = 1;
 		break;
 	case NAME_SEED_FROST:
 		item.type = TYPE_SEED;
 		item.equip = false;
-		item.numOfItem = 0;
+		item.numOfItem = 1;
 		break;
 	case NAME_DEW:
 		item.type = TYPE_SPECIAL;
 		item.equip = false;
 		item.img = IMAGEMANAGER->findImage("dew");
-		item.numOfItem = 0;
+		item.numOfItem = 1;
 		break;
 	case NAME_END:
 		break;
@@ -798,10 +800,27 @@ void ItemManager::imgInit()
 
 }
 
-
+// 다트를 사용하기 위한 함수 ( 씨앗 이름 / 다트 사용 방식)
+void ItemManager::useToDart(ITEMNAME name)
+{
+	/*
+		NAME_DART,				//다트		============ 투 척 ==========
+		NAME_PARALYSIS_DART,	//마비 다트
+		NAME_POISON_DART,		//독 다트
+	*/
+		switch (name)
+		{
+			case NAME_DART:
+			break;
+			case NAME_PARALYSIS_DART:
+			break;
+			case NAME_POISON_DART:
+			break;
+		}
+}
 
 //스크롤 사용하기 위한 함수 ( 스크롤 이름 / 스크롤 사용 방식 )
-void ItemManager::useToScroll(ITEMNAME name, ITEMUSEMETHOD method)
+void ItemManager::useToScroll(ITEMNAME name)
 {
 	/*
 		NAME_IDENTIFY,			//확인
@@ -810,45 +829,6 @@ void ItemManager::useToScroll(ITEMNAME name, ITEMUSEMETHOD method)
 		NAME_MAP,				//지도
 		NAME_RECHARGE,			//재충전
 	*/
-	if (method == ITEM_DROP)	
-	{
-		switch (name) 
-		{
-			case NAME_IDENTIFY:
-			break;
-			case NAME_UPGRADE:
-
-			break;
-			case NAME_PURIFY:
-
-			break;
-			case NAME_MAP:
-
-			break;
-			case NAME_RECHARGE:
-
-			break;
-		}
-	}
-	else if (method == ITEM_THROW)
-	{
-		// 처리순서 -> 던질 좌표받는다 -> 던질 좌표 앵글값을 구하고 그쪽으로 날라간다. -> 벽과 부딫히거나 목표지점에 도달하면 멈춘다
-		switch (name)
-		{
-			case NAME_IDENTIFY:
-			break;
-			case NAME_UPGRADE:
-			break;
-			case NAME_PURIFY:
-			break;
-			case NAME_MAP:
-			break;
-			case NAME_RECHARGE:
-			break;
-		}
-	}
-	else if (method == ITEM_READ)
-	{
 		switch (name)	
 		{
 			case NAME_IDENTIFY:
@@ -887,11 +867,10 @@ void ItemManager::useToScroll(ITEMNAME name, ITEMUSEMETHOD method)
 
 			break;
 		}
-	}
 }
 
 // 씨앗을 사용하기 위한 함수 ( 씨앗 이름 / 씨앗 사용 방식)
-void ItemManager::useToSeed(ITEMNAME name, ITEMUSEMETHOD method)   
+void ItemManager::useToSeed(ITEMNAME name)
 {
 	/*
 		NAME_SEED_HEAL,			//치유		
@@ -907,8 +886,6 @@ void ItemManager::useToSeed(ITEMNAME name, ITEMUSEMETHOD method)
 		DEBUFF_BLEEDING,	//출혈
 		DEBUFF_HUNGER		//배고픔
 	*/
-	if (method == ITEM_DROP)
-	{
 		switch (name)
 		{
 			case NAME_SEED_HEAL:
@@ -919,41 +896,11 @@ void ItemManager::useToSeed(ITEMNAME name, ITEMUSEMETHOD method)
 			break;
 			case NAME_SEED_FROST:
 			break;
-
 		}
-	}
-	else if (method == ITEM_THROW)
-	{
-		switch (name)
-		{
-		case NAME_SEED_HEAL:
-			break;
-		case NAME_SEED_FIRE:
-			break;
-		case NAME_SEED_SNAKE:
-			break;
-		case NAME_SEED_FROST:
-			break;
-		}
-	}
-	else if (method == ITEM_PLANT)
-	{
-		switch (name)
-		{
-		case NAME_SEED_HEAL:
-			break;
-		case NAME_SEED_FIRE:
-			break;
-		case NAME_SEED_SNAKE:
-			break;
-		case NAME_SEED_FROST:
-			break;
-		}
-	}
 }
 
 // 포션을 사용하기 위한 함수 ( 포션 이름 / 포션 사용 방식)
-void ItemManager::useToPotion(ITEMNAME name, ITEMUSEMETHOD method) 
+void ItemManager::useToPotion(ITEMNAME name)
 {
 	/*NAME_BOTTLE,			//이슬
 	NAME_HEAL,				//회복
@@ -964,34 +911,6 @@ void ItemManager::useToPotion(ITEMNAME name, ITEMUSEMETHOD method)
 	NAME_FORZEN,			//서리
 	NAME_LIQUID_FIRE,		//액체 화염
 	*/
-	if (method == ITEM_DROP)
-	{
-		switch (name)
-		{
-			case NAME_BOTTLE:
-			{
-				setItemToField(NAME_BOTTLE);
-			}
-			break;
-			case NAME_HEAL:
-			break;
-			case NAME_STR:
-			break;
-			case NAME_EX:
-			break;
-			case NAME_INVISIBLE:
-			break;
-			case NAME_LEVITATION:
-			break;
-			case NAME_FORZEN:
-			break;
-			case NAME_LIQUID_FIRE:
-			break;
-		}
-	}
-	else if (method == ITEM_THROW)
-	{
-		// 던진다 == 아무 효과도 일어나지 않는다
 		switch (name)
 		{
 		case NAME_BOTTLE:
@@ -1011,65 +930,54 @@ void ItemManager::useToPotion(ITEMNAME name, ITEMUSEMETHOD method)
 		case NAME_LIQUID_FIRE:
 			break;
 		}
-	}
-	else if (method == ITEM_DRINK)
-	{
-		switch (name)
-		{
-		case NAME_BOTTLE:
-			break;
-		case NAME_HEAL:
-			break;
-		case NAME_STR:
-			break;
-		case NAME_EX:
-			break;
-		case NAME_INVISIBLE:
-			break;
-		case NAME_LEVITATION:
-			break;
-		case NAME_FORZEN:
-			break;
-		case NAME_LIQUID_FIRE:
-			break;
-		}
-	}
 }
 
-// 다트를 사용하기 위한 함수 ( 씨앗 이름 / 다트 사용 방식)
-void ItemManager::useToDart(ITEMNAME name, ITEMUSEMETHOD method)   
+
+
+void itemEffect(ITEMNAME name, POINT point)
 {
-	/*
-		NAME_DART,				//다트		============ 투 척 ==========
-		NAME_PARALYSIS_DART,	//마비 다트
-		NAME_POISON_DART,		//독 다트
-	*/
-	if (method == ITEM_DROP)
+	switch (name)
 	{
-		switch (name)
-		{
-			case NAME_DART:
-			break;
-			case NAME_PARALYSIS_DART:
-			break;
-			case NAME_POISON_DART:
-			break;
-		}
-	}
-	else if (method == ITEM_THROW)
-	{
-		switch (name)
-		{
-			case NAME_DART:
-			break;
-			case NAME_PARALYSIS_DART:
-			break;
-			case NAME_POISON_DART:
-			break;
-		}
+	case NAME_DART:
+		break;
+	case NAME_PARALYSIS_DART:
+		break;
+	case NAME_POISON_DART:
+		break;
+	case NAME_IDENTIFY:
+		break;
+	case NAME_UPGRADE:
+		break;
+	case NAME_PURIFY:
+		break;
+	case NAME_MAP:
+		break;
+	case NAME_RECHARGE:
+		break;
+	case NAME_SEED_HEAL:
+		break;
+	case NAME_SEED_FIRE:
+		break;
+	case NAME_SEED_SNAKE:
+		break;
+	case NAME_SEED_FROST:
+		break;
+	case NAME_BOTTLE:
+		break;
+	case NAME_HEAL:
+		break;
+	case NAME_STR:
+		break;
+	case NAME_EX:
+		break;
+	case NAME_INVISIBLE:
+		break;
+	case NAME_LEVITATION:
+		break;
+	case NAME_FORZEN:
+		break;
+	case NAME_LIQUID_FIRE:
+		break;
 	}
 }
-
-
-
 
