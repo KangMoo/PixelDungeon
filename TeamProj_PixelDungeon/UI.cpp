@@ -89,6 +89,11 @@ void UI::draw(POINT camera)
 		if (PtInRect(&_backPack, _ptMouse) && _selectInterface == INTERFACEMENU_END)
 		{
 			_selectInterface = INTERFACEMENU_BACKPACK;
+
+			ResetInventory();
+
+			for (int i = 0; i < 10; i++)
+				SortInventory();
 		}
 
 		else if (PtInRect(&_backPack, _ptMouse) && _selectInterface == INTERFACEMENU_BACKPACK)
@@ -116,31 +121,50 @@ void UI::draw(POINT camera)
 	//IMAGEMANAGER->findImage("status_pane")->render(getMemDC(), _status_pane_pos.x, _status_pane_pos.y); //고인
 }
 
+void UI::ResetInventory()
+{
+	for (size_t i = 0; i < _im->getvBag().size(); i++)
+	{
+		if (_im->getvBag()[i].equip == false)
+			_inventory[i + 4].itemNumber = _im->getvBag()[i].name;
+
+		else
+		{
+			_inventory[i + 4].itemNumber = NAME_END;
+		}
+	}
+}
+
+void UI::SortInventory()
+{
+	for (size_t i = 0; i < _im->getvBag().size(); i++)
+	{
+		if (_inventory[i + 4].itemNumber == NAME_END)
+		{
+			for (size_t x = i; x < _im->getvBag().size(); x++)
+			{
+				int t1tmep = _inventory[x + 4].itemNumber;
+				_inventory[x + 4].itemNumber = _inventory[x + 4 + 1].itemNumber;
+				_inventory[x + 4 + 1].itemNumber = t1tmep;
+			}
+		}
+	}
+}
+
 void UI::BackPack()
 {
 	IMAGEMANAGER->render("backpack", getMemDC(), WINSIZEX / 2 - (IMAGEMANAGER->findImage("backpack")->getFrameWidth() / 2), WINSIZEY / 2 - (IMAGEMANAGER->findImage("backpack")->getFrameHeight() / 2));
 
 	for (size_t Line = 0; Line < ARRSIZE; Line++)
 	{
-		for (size_t i = 0; i < _im->getvBag().size(); i++)
+		if (KEYMANAGER->isOnceKeyDown(VK_NUMPAD1))
 		{
-			if (_inventory[i + 4].itemNumber == NAME_END)
-			{
-				if (_im->getvBag()[i].equip == false)
-					_inventory[i + 4].itemNumber = _im->getvBag()[i].name;
+			ResetInventory();
+		}
 
-				//if (_im->getvBag()[i].equip == true)
-				//{
-				//	for (int x = i; x < _im->getvBag().size(); x++)
-				//	{
-				//		int temptest = _inventory[x + 4].itemNumber;
-				//		_inventory[x + 4].itemNumber = _inventory[x + 4 + 1].itemNumber;
-				//		_inventory[x + 4 + 1].itemNumber = temptest;
-				//	}
-				//}
-			}
-
-			_positionCheck = _im->getvBag().size() + 4;
+		if (KEYMANAGER->isOnceKeyDown(VK_NUMPAD2))
+		{
+			SortInventory();
 		}
 
 		/*테스트 공간*/
@@ -779,32 +803,32 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			//해제한다
 			if (button_option_value[buttonNumber].number == BUTTONOPTION_UNLOCK)
 			{
-				for (int i = 4; i < ARRSIZE; i++)
-				{
-					if (_inventory[i].itemNumber == NAME_END)
-					{
-						inventory_null = i;
-						break;
-					}
-				}
+				//for (int i = 4; i < ARRSIZE; i++)
+				//{
+				//	if (_inventory[i].itemNumber == NAME_END)
+				//	{
+				//		inventory_null = i;
+				//		break;
+				//	}
+				//}
 
 				if (itemType == TYPE_WEAPON)
 				{
-					_inventory[inventory_null].itemNumber = _inventory[TYPE_WEAPON].itemNumber;
+					//_inventory[inventory_null].itemNumber = _inventory[TYPE_WEAPON].itemNumber;
 					_inventory[TYPE_WEAPON].itemNumber = NAME_END;
 					_im->unequipItem(itemCheck);
 				}
 
 				if (itemType == TYPE_ARMOR)
 				{
-					_inventory[inventory_null].itemNumber = _inventory[TYPE_ARMOR].itemNumber;
+					//_inventory[inventory_null].itemNumber = _inventory[TYPE_ARMOR].itemNumber;
 					_inventory[TYPE_ARMOR].itemNumber = NAME_END;
 					_im->unequipItem(itemCheck);
 				}
 
 				if (itemType == TYPE_ACC)
 				{
-					_inventory[inventory_null].itemNumber = _inventory[TYPE_ACC].itemNumber;
+					//_inventory[inventory_null].itemNumber = _inventory[TYPE_ACC].itemNumber;
 					_inventory[TYPE_ACC].itemNumber = NAME_END;
 					_im->unequipItem(itemCheck);
 				}

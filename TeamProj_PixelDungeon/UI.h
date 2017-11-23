@@ -31,6 +31,9 @@ public:
 	void BackPack();
 	void TestFunctin();
 
+	void ResetInventory();
+	void SortInventory();
+
 	POINT getCamera() { return _camera; }
 	void setCamera(POINT camera) { _camera = camera; }
 
@@ -89,5 +92,8 @@ private:
 
 	vector<tagItem>tempBag;
 	vector<tagItem>::iterator i_tempBag;
+
+	int testnumber = 0;
+	int total = 0;
 };
 
