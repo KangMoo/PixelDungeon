@@ -77,6 +77,7 @@ enum ITEMNAME {
 	NAME_SEED_SNAKE,		//뱀뿌리
 	NAME_SEED_FROST,		//얼음
 	NAME_DEW,				//이슬		============ 특 수 ==========
+	NAME_MONEY,				//돈!
 	NAME_END				//포문 돌리기 위함
 };
 
