@@ -23,6 +23,14 @@
 
 
 
+enum INPUTMODE {
+	FLOOR,
+	WALL,
+
+	VIEWING,
+	DELET
+};
+
 class MapToolScene : public gameNode
 {
 	typedef vector<GRID> vGrid;
@@ -60,10 +68,6 @@ private:
 	
 	
 	int _check;
-
-
-	SAVETILE saveMap[10000];
-	SAVETILE loadMap[10000];
 
 
 	vTile _copyTile;

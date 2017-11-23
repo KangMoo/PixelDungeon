@@ -3,6 +3,9 @@
 #include "EnemyManager.h"
 #include "Player.h"
 #include "UI.h"
+#include "tinyxml2.h"
+
+using namespace tinyxml2;
 
 Map::Map()
 {
@@ -71,13 +74,7 @@ void Map::draw(POINT camera)
 
 void Map::load() {
 
-	//임시로 만듬. 나중에 바꿔야지...
-
-
-
-
-	
-	
+	//임시로 만듬. 나중에 바꿔야지...	
 
 
 	//TILE loadMap[10000];
@@ -97,34 +94,68 @@ void Map::load() {
 	////	
 	////}
 
-	/////**/
-	
-	HANDLE file;
-	DWORD read;
-	file = CreateFile("mapSave.map", GENERIC_READ, 0, NULL,
-		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	///////**/
+	//
+	//HANDLE file;
+	//DWORD read;
+	//file = CreateFile("mapSave.map", GENERIC_READ, 0, NULL,
+	//	OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
-	ReadFile(file, loadMap, sizeof(SAVETILE) * 10000, &read, NULL);
+	//ReadFile(file, loadMap, sizeof(SAVETILE) * 10000, &read, NULL);
+
+	//_vMapTile.clear();
+
+	//for (int i = 0; i < 10000; i++) {
+	//	TILE tile;
+
+	//	tile.img = IMAGEMANAGER->findImage("mapTiles");
+
+	//	tile.destX = loadMap[i].destX;
+	//	tile.destY = loadMap[i].destY;
+	//	tile.sourX = loadMap[i].sourX;
+	//	tile.sourY = loadMap[i].sourY;
+	//	tile.index = loadMap[i].index;
+	//	tile.obj = loadMap[i].obj;
+	//	tile.terrain = loadMap[i].terrain;
+
+	//	_vMapTile.push_back(tile);
+
+	//}
+
 
 	_vMapTile.clear();
 
-	for (int i = 0; i < 10000; i++) {
+
+	//xml 로드
+	XMLDocument xmlDoc;
+
+	XMLError eResult = xmlDoc.LoadFile("SavedData.xml");
+
+	XMLNode * pRoot = xmlDoc.FirstChild();
+
+	XMLElement * pElement = pRoot->FirstChildElement("List");
+	XMLElement * pListElement = pElement->FirstChildElement("tile");
+
+	while (pListElement != nullptr) {
 		TILE tile;
 
-		tile.img = IMAGEMANAGER->findImage("mapTiles");
+		tile.img = IMAGEMANAGER->findImage("mapTiles"); //임시, 나중에 주소값으로 바꿀거
 
-		tile.destX = loadMap[i].destX;
-		tile.destY = loadMap[i].destY;
-		tile.sourX = loadMap[i].sourX;
-		tile.sourY = loadMap[i].sourY;
-		tile.index = loadMap[i].index;
-		tile.obj = loadMap[i].obj;
-		tile.terrain = loadMap[i].terrain;
+		tile.destX = pListElement->FirstChildElement("destX")->IntText();
+		tile.destY = pListElement->FirstChildElement("destY")->IntText();
+		tile.sourX = pListElement->FirstChildElement("sourX")->IntText();
+		tile.sourY = pListElement->FirstChildElement("sourY")->IntText();
+		tile.index = pListElement->FirstChildElement("index")->IntText();
+		tile.obj = (OBJ)pListElement->FirstChildElement("obj")->IntText();
+		tile.terrain = (TERRAIN)pListElement->FirstChildElement("terrain")->IntText();
 
 		_vMapTile.push_back(tile);
 
+		pListElement = pListElement->NextSiblingElement("tile");
 	}
 
+
+	//지금은 타일 10000개로 고정. 나중에 맵 사이즈에 따라 변하게 바꿀 예정
 	for (int i = 0; i < 10000; i++) {
 		if (i >= _vMapTile.size()) break;
 
@@ -140,7 +171,5 @@ void Map::load() {
 	}
 
 
-
-	CloseHandle(file);
 	
 }

@@ -190,12 +190,6 @@ enum OBJ {
 	OBJ_TRAP_ACTIVATE
 };
 
-enum INPUTMODE {
-	FLOOR,
-	WALL,
-	VIEWING
-};
-
 
 typedef struct tagTile {
 	image* img; //받아올 이미지
@@ -215,8 +209,12 @@ typedef struct tagSaveTile {
 
 	TERRAIN terrain;
 	OBJ obj;
-
 }SAVETILE;
+
+typedef struct tagSaveMap {
+	int size;
+	SAVETILE* tiles;
+}SAVEMAP;
 
 typedef struct tagGrid {
 	image* img; //들어있는 이미지
