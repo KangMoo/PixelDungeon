@@ -1046,8 +1046,7 @@ void ItemManager::equipItem(int position)
 
 	}
 }
-
-void ItemManager::useItem(int position, float x, float y)
+void ItemManager::useItem(int position)
 {
 	for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
 	{
@@ -1059,6 +1058,22 @@ void ItemManager::useItem(int position, float x, float y)
 				_viBag->numOfItem--;
 				if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
 				break;
+
+			default:
+				break;
+			}
+		}
+
+	}
+}
+void ItemManager::useItem(int position, float x, float y)
+{
+	for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+	{
+		if (_viBag->position == position)
+		{
+			switch (_viBag->type)
+			{
 			case TYPE_WAND:
 				if (_viBag->currentCharge > 0)
 				{
@@ -1066,6 +1081,7 @@ void ItemManager::useItem(int position, float x, float y)
 					_viBag->currentCharge--;
 				}
 				break;
+
 			default:
 				break;
 			}
@@ -1074,276 +1090,120 @@ void ItemManager::useItem(int position, float x, float y)
 	}
 }
 
-
-
-//스크롤 사용하기 위한 함수 ( 스크롤 이름 / 스크롤 사용 방식 )
-void ItemManager::useToScroll(ITEMNAME name, ITEMUSEMETHOD method)
+void ItemManager::useItem(int position, int target)
 {
-	/*
-		NAME_IDENTIFY,			//확인
-		NAME_UPGRADE,			//강화
-		NAME_PURIFY,			//정화
-		NAME_MAP,				//지도
-		NAME_RECHARGE,			//재충전
-	*/
-	if (method == ITEM_DROP)	
+	for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
 	{
-		switch (name) 
+		if (_viBag->position == position)
 		{
-			case NAME_IDENTIFY:
-			break;
-			case NAME_UPGRADE:
-
-			break;
-			case NAME_PURIFY:
-
-			break;
-			case NAME_MAP:
-
-			break;
-			case NAME_RECHARGE:
-
-			break;
-		}
-	}
-	else if (method == ITEM_THROW)
-	{
-		// 처리순서 -> 던질 좌표받는다 -> 던질 좌표 앵글값을 구하고 그쪽으로 날라간다. -> 벽과 부딫히거나 목표지점에 도달하면 멈춘다
-		switch (name)
-		{
-			case NAME_IDENTIFY:
-			break;
-			case NAME_UPGRADE:
-			break;
-			case NAME_PURIFY:
-			break;
-			case NAME_MAP:
-			break;
-			case NAME_RECHARGE:
-			break;
-		}
-	}
-	else if (method == ITEM_READ)
-	{
-		switch (name)	
-		{
-			case NAME_IDENTIFY:
-				// 처리순서 -> UI창( 사용할 장소 혹은 사용할 아이템 )클릭  -> 클릭한 아이템 정보 받아오기 -> item->contentsHide = false 처리
-				//														   -> 아이템이 아닌 외부 클릭시 경고 메시지( 비사용시 소멸 ) ->1. 확인  2. 아니요 
-
-
-			break;
-
-
-			case NAME_UPGRADE:
-				// 처리순서 -> UI창( 사용할 장소 혹은 사용할 아이템 )클릭  -> 클릭한 아이템 정보 받아오기 -> 업그레이드 +1
-				//														   -> 아이템이 아닌 외부 클릭시 경고 메시지( 비사용시 소멸 ) ->1. 확인  2. 아니요 
-
-
-
-
-			break;
-
-
-			case NAME_PURIFY:
-				// 처리순서 -> UI창( 사용할 장소 혹은 사용할 아이템 )클릭  -> 클릭한 아이템 정보 받아오기 -> 아이템 저주 상태 해제 처리
-				//														   -> 아이템이 아닌 외부 클릭시 경고 메시지( 비사용시 소멸 ) ->1. 확인  2. 아니요 
-
-			break;
-			case NAME_MAP:
-				// 처리순서 -> 아이템 사용과 동시에 모든 맵 오픈 ( MAP  과의 연동 )
-			break;
-
-
-			case NAME_RECHARGE:
-				// 처리순서 -> 사용시 가방 확인 -> 완드가 존재할 경우 ( 완드의 현재 충전량 == 최대 충전량 ) -> 성공시 플레이어 머리위에 베터리 모양 띄우고
-				//								-> 완드가 없을시 아무 효과x
-
-
-
-			break;
-		}
-	}
-}
-
-// 씨앗을 사용하기 위한 함수 ( 씨앗 이름 / 씨앗 사용 방식)
-void ItemManager::useToSeed(ITEMNAME name, ITEMUSEMETHOD method)   
-{
-	/*
-		NAME_SEED_HEAL,			//치유		
-		NAME_SEED_FIRE,			//화염초
-		NAME_SEED_SNAKE,		//뱀뿌리
-		NAME_SEED_FROST,		//얼음
-		BUFF_INVISIBLE,		//투명화
-		BUFF_NATURAL_HEAL,	//자연의 회복
-		BUFF_LEVITATION,	//공중부양
-		BUFF_NATURAL_ARMOR	//자연의 갑옷
-		DEBUFF_FIRE,		//연소
-		DEBUFF_FROZEN,		//빙결
-		DEBUFF_BLEEDING,	//출혈
-		DEBUFF_HUNGER		//배고픔
-	*/
-	if (method == ITEM_DROP)
-	{
-		switch (name)
-		{
-			case NAME_SEED_HEAL:
-			break;
-			case NAME_SEED_FIRE:
-			break;
-			case NAME_SEED_SNAKE:
-			break;
-			case NAME_SEED_FROST:
-			break;
-
-		}
-	}
-	else if (method == ITEM_THROW)
-	{
-		switch (name)
-		{
-		case NAME_SEED_HEAL:
-			break;
-		case NAME_SEED_FIRE:
-			break;
-		case NAME_SEED_SNAKE:
-			break;
-		case NAME_SEED_FROST:
-			break;
-		}
-	}
-	else if (method == ITEM_PLANT)
-	{
-		switch (name)
-		{
-		case NAME_SEED_HEAL:
-			break;
-		case NAME_SEED_FIRE:
-			break;
-		case NAME_SEED_SNAKE:
-			break;
-		case NAME_SEED_FROST:
-			break;
-		}
-	}
-}
-
-// 포션을 사용하기 위한 함수 ( 포션 이름 / 포션 사용 방식)
-void ItemManager::useToPotion(ITEMNAME name, ITEMUSEMETHOD method) 
-{
-	/*NAME_BOTTLE,			//이슬
-	NAME_HEAL,				//회복
-	NAME_STR,				//힘
-	NAME_EX,				//숙련도
-	NAME_INVISIBLE,			//투명화
-	NAME_LEVITATION,		//공중부양
-	NAME_FORZEN,			//서리
-	NAME_LIQUID_FIRE,		//액체 화염
-	*/
-	if (method == ITEM_DROP)
-	{
-		switch (name)
-		{
-			case NAME_BOTTLE:
+			switch (_viBag->type)
 			{
-				//setItemToField(NAME_BOTTLE);
+			case TYPE_SCROLL:
+				switch (_viBag->name)
+				{
+				case NAME_UPGRADE:
+
+					break;
+
+				}
+				break;
+
+			default:
+				break;
 			}
-			break;
-			case NAME_HEAL:
-			break;
-			case NAME_STR:
-			break;
-			case NAME_EX:
-			break;
-			case NAME_INVISIBLE:
-			break;
-			case NAME_LEVITATION:
-			break;
-			case NAME_FORZEN:
-			break;
-			case NAME_LIQUID_FIRE:
-			break;
 		}
-	}
-	else if (method == ITEM_THROW)
-	{
-		// 던진다 == 아무 효과도 일어나지 않는다
-		switch (name)
-		{
-		case NAME_BOTTLE:
-			break;
-		case NAME_HEAL:
-			break;
-		case NAME_STR:
-			break;
-		case NAME_EX:
-			break;
-		case NAME_INVISIBLE:
-			break;
-		case NAME_LEVITATION:
-			break;
-		case NAME_FORZEN:
-			break;
-		case NAME_LIQUID_FIRE:
-			break;
-		}
-	}
-	else if (method == ITEM_DRINK)
-	{
-		switch (name)
-		{
-		case NAME_BOTTLE:
-			break;
-		case NAME_HEAL:
-			break;
-		case NAME_STR:
-			break;
-		case NAME_EX:
-			break;
-		case NAME_INVISIBLE:
-			break;
-		case NAME_LEVITATION:
-			break;
-		case NAME_FORZEN:
-			break;
-		case NAME_LIQUID_FIRE:
-			break;
-		}
+
 	}
 }
 
-// 다트를 사용하기 위한 함수 ( 씨앗 이름 / 다트 사용 방식)
-void ItemManager::useToDart(ITEMNAME name, ITEMUSEMETHOD method)   
+void ItemManager::fire(image* img, float x, float y, float destX, float destY)
 {
-	/*
-		NAME_DART,				//다트		============ 투 척 ==========
-		NAME_PARALYSIS_DART,	//마비 다트
-		NAME_POISON_DART,		//독 다트
-	*/
-	if (method == ITEM_DROP)
+	tagBullet bullet;
+	ZeroMemory(&bullet, sizeof(tagBullet));
+	bullet.x = bullet.initX = x;
+	bullet.y = bullet.initY = y;
+	bullet.destX = destX;
+	bullet.destY = destY;
+	bullet.angle = getAngle(x, y, destX, destY);
+	bullet.speed = 7;
+	bullet.img = img;
+	bullet.rc = RectMakeCenter(bullet.x, bullet.y,
+		bullet.img->getWidth(), bullet.img->getHeight());
+	bullet.fire = false;
+	bullet.count = 0;
+
+	_vBullet.push_back(bullet);
+}
+
+void ItemManager::throwItem(image* img, float x, float y, float destX, float destY)
+{
+	tagBullet bullet;
+	ZeroMemory(&bullet, sizeof(tagBullet));
+	bullet.x = bullet.initX = x;
+	bullet.y = bullet.initY = y;
+	bullet.destX = destX;
+	bullet.destY = destY;
+	bullet.angle = getAngle(x, y, destX, destY);
+	bullet.speed = 7;
+	bullet.img = img;
+	bullet.rc = RectMakeCenter(bullet.x, bullet.y,
+		bullet.img->getWidth(), bullet.img->getHeight());
+	bullet.fire = false;
+	bullet.count = 0;
+
+	_vThrow.push_back(bullet);
+}
+
+
+void ItemManager::bulletMove()
+{
+	for (_viBullet = _vBullet.begin(); _viBullet != _vBullet.end(); )
 	{
-		switch (name)
+		_viBullet->x += _viBullet->speed * cosf(_viBullet->angle);
+		_viBullet->y += _viBullet->speed * sinf(_viBullet->angle);
+
+		_viBullet->rc = RectMakeCenter(_viBullet->x, _viBullet->y,
+			_viBullet->img->getWidth(), _viBullet->img->getHeight());
+
+		if (getDistance(_viBullet->initX, _viBullet->initY, _viBullet->x, _viBullet->y) >
+			getDistance(_viBullet->initX, _viBullet->initY, _viBullet->destX, _viBullet->destY))
 		{
-			case NAME_DART:
-			break;
-			case NAME_PARALYSIS_DART:
-			break;
-			case NAME_POISON_DART:
+			_viBullet = _vBullet.erase(_viBullet);
 			break;
 		}
+		else ++_viBullet;
 	}
-	else if (method == ITEM_THROW)
+}
+
+void ItemManager::throwMove()
+{
+	for (_viThrow = _vThrow.begin(); _viThrow != _vThrow.end(); )
 	{
-		switch (name)
+		_viThrow->x += _viThrow->speed * cosf(_viThrow->angle);
+		_viThrow->y += _viThrow->speed * sinf(_viThrow->angle);
+
+		_viThrow->rc = RectMakeCenter(_viThrow->x, _viThrow->y,
+			_viThrow->img->getWidth(), _viThrow->img->getHeight());
+
+		if (getDistance(_viThrow->initX, _viThrow->initY, _viThrow->x, _viThrow->y) >
+			getDistance(_viThrow->initX, _viThrow->initY, _viThrow->destX, _viThrow->destY))
 		{
-			case NAME_DART:
-			break;
-			case NAME_PARALYSIS_DART:
-			break;
-			case NAME_POISON_DART:
+			_viThrow = _vBullet.erase(_viThrow);
 			break;
 		}
+		else ++_viThrow;
 	}
+}
+
+
+void ItemManager::removeBullet(int arrNum)
+{
+	_vBullet.erase(_vBullet.begin() + arrNum);
+}
+
+void ItemManager::removeThrow(int arrNum)
+{
+	_vThrow.erase(_vThrow.begin() + arrNum);
 }
 
 

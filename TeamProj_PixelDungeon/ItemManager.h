@@ -7,6 +7,20 @@ class Map;
 class UI;
 class Player;
 
+struct tagBullet
+{
+	image* img;
+	RECT rc;
+	float x, y;
+	float initX, initY;
+	float destX, destY;
+	float angle;
+	float speed;
+	bool fire;
+	int count;
+};
+
+
 class ItemManager :public gameNode
 {
 private:
@@ -15,6 +29,14 @@ private:
 
 	vector<tagItem> _vBag;
 	vector<tagItem>::iterator _viBag;
+
+	vector<tagBullet> _vBullet;
+	vector<tagBullet>::iterator _viBullet;
+
+	vector<tagBullet> _vThrow;
+	vector<tagBullet>::iterator _viThrow;
+
+
 
 private:
 	EnemyManager* _em;
@@ -43,14 +65,17 @@ public:
 
 	void equipItem(int position);
 	void unequipItem(int position);
+	void useItem(int position);
 	void useItem(int position, float x, float y);
+	void useItem(int position, int target);
 
-	// 아이템 사용 함수 ( 주문서, 씨앗, 포션, 다트) 
-	void useToScroll(ITEMNAME name, ITEMUSEMETHOD method);
-	void useToSeed(ITEMNAME name, ITEMUSEMETHOD method);
-	void useToPotion(ITEMNAME name, ITEMUSEMETHOD method);
-	void useToDart(ITEMNAME name, ITEMUSEMETHOD method);
-
+	//=========== T H R O W ===============
+	void fire(image* img, float x, float y, float dextX, float destY);
+	void throwItem(image* img, float x, float y, float destX, float destY);
+	void bulletMove();
+	void throwMove();
+	void removeBullet(int arrNum);
+	void removeThrow(int arrNum);
 
 	void setItemToBag(ITEMNAME name);
 	void setItemToField(ITEMNAME name, float x, float y);
@@ -71,6 +96,13 @@ public:
 
 	vector<tagItem> getvBag() { return _vBag; }
 	vector<tagItem>::iterator getvBagIter() { return _viBag; }
+
+	vector<tagBullet> getVBullet() { return _vBullet; }
+	vector<tagBullet>::iterator getVBulletIter() { return _viBullet; }
+
+	vector<tagBullet> getVBullet() { return _vThrow; }
+	vector<tagBullet>::iterator getVBulletIter() { return _viThrow; }
+
 
 	ItemManager();
 	~ItemManager();
