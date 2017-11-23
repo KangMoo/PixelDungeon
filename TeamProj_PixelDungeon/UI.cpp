@@ -84,7 +84,7 @@ void UI::draw(POINT camera)
 
 	//Rectangle(getMemDC(), 423, WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight(), 423 + 48, (WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight()) + 52);
 
-	if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON) && _selectItem == NAME_END)
+	if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON))
 	{
 		if (PtInRect(&_backPack, _ptMouse) && _selectInterface == INTERFACEMENU_END)
 		{
@@ -124,46 +124,23 @@ void UI::BackPack()
 	{
 		for (size_t i = 0; i < _im->getvBag().size(); i++)
 		{
-			if (_im->getvBag()[i].use == false)
-				_inventory[i + 4].itemNumber = _im->getvBag()[i].name;
-
 			if (_inventory[i + 4].itemNumber == NAME_END)
 			{
-				int temptest = _inventory[i + 4].itemNumber;
-				_inventory[i + 4].itemNumber = _inventory[i + 4 + 1].itemNumber;
-				_inventory[i + 4 + 1].itemNumber = temptest;
+				if (_im->getvBag()[i].equip == false)
+					_inventory[i + 4].itemNumber = _im->getvBag()[i].name;
+
+				//if (_im->getvBag()[i].equip == true)
+				//{
+				//	for (int x = i; x < _im->getvBag().size(); x++)
+				//	{
+				//		int temptest = _inventory[x + 4].itemNumber;
+				//		_inventory[x + 4].itemNumber = _inventory[x + 4 + 1].itemNumber;
+				//		_inventory[x + 4 + 1].itemNumber = temptest;
+				//	}
+				//}
 			}
 
 			_positionCheck = _im->getvBag().size() + 4;
-
-			//if (_inventory[i + 4].itemUse == false)
-			//{
-			//	_inventory[i + 4].itemNumber = _im->getvBag()[i].name;
-			//	_inventory[i + 4].itemUse = true;
-			//}
-
-			//if (_inventory[i + 4].itemUse == false && _inventory[i + 4].itemWear == false)
-			//{
-			//	_inventory[i + 4].itemNumber = _im->getvBag()[i].name;
-			//	_inventory[i + 4].itemUse = true;
-			//}
-
-			//if (_inventory[i + 4].itemWear == true && _inventory[i + 4 + 1].itemUse == true)
-			//{
-			//	for (int x = i; x < _im->getvBag().size(); x++)
-			//	{
-			//		int temptest;
-			//		temptest = _inventory[x + 4].itemNumber;
-			//		_inventory[x + 4].itemNumber = _inventory[x + 4 + 1].itemNumber;
-			//		_inventory[x + 4 + 1].itemNumber = _inventory[x + 4].itemNumber;
-
-			//		_inventory[x + 4 + 1].itemNumber = NAME_END;
-			//		_inventory[x + 4].itemWear = false;
-
-			//		_inventory[x + 4].itemUse = true;
-			//		_inventory[x + 4 + 1].itemUse = false;
-			//	}
-			//}
 		}
 
 		/*테스트 공간*/
@@ -196,28 +173,32 @@ void UI::BackPack()
 		FillRect(getMemDC(), &_inventory[Line].inventoryRect, brush);
 		DeleteObject(brush);
 
-		if (GetAsyncKeyState(VK_LBUTTON) && PtInRect(&_inventory[Line].inventoryRect, _ptMouse) && _selectItem == NAME_END)
+		if (GetAsyncKeyState(VK_LBUTTON) && PtInRect(&_inventory[Line].inventoryRect, _ptMouse))
 		{
-			for (int itemNumber = 0; itemNumber < NAME_END; itemNumber++)
+			for (int itemNumber = 0; itemNumber < _im->getvBag().size(); itemNumber++)
 			{
-				if (_inventory[Line].itemNumber == itemNumber)
+				if (_inventory[Line].itemNumber == _im->getvBag()[itemNumber].name)
 				{
-					_selectItem = itemNumber;
+					_selectItem = _im->getvBag()[itemNumber].name;
 					_itemPosition = Line;
 				}
 			}
-
-			IMAGEMANAGER->render("inventorytile", getMemDC(), _inventory[Line].inventoryRect.left, _inventory[Line].inventoryRect.top);
 		}
+
+		//	IMAGEMANAGER->render("inventorytile", getMemDC(), _inventory[Line].inventoryRect.left, _inventory[Line].inventoryRect.top);
+		//}
 
 		if (GetAsyncKeyState(VK_RBUTTON) && _selectItem != NAME_END)
 		{
 			_selectItem = NAME_END;
 		}
 
-		if (_inventory[Line].itemNumber != NAME_END)
+		for (size_t i = 0; i < _im->getvBag().size(); i++)
 		{
-			_im->getvBag()[_inventory[Line].itemNumber].img->render(getMemDC(), _ix + (90 / 2) - (_im->getvBag()[_inventory[Line].itemNumber].img->getFrameWidth() / 2), _iy + (90 / 2) - (_im->getvBag()[_inventory[Line].itemNumber].img->getFrameHeight() / 2));
+			if (_inventory[Line].itemNumber != NAME_END && _im->getvBag()[i].name == _inventory[Line].itemNumber)
+			{
+				_im->getvBag()[i].img->render(getMemDC(), _ix + (90 / 2) - (_im->getvBag()[i].img->getFrameWidth() / 2), _iy + (90 / 2) - (_im->getvBag()[i].img->getFrameHeight() / 2));
+			}
 		}
 	}
 
@@ -269,25 +250,25 @@ void UI::BackPack()
 		//낡은 소검
 		case NAME_OLD_SHORT_SWORD:
 			fream_window_draw(28, 12);
-			button_interface(NAME_OLD_SHORT_SWORD, TYPE_WEAPON, 3, 28, 12, _itemPosition);
+			button_interface(NAME_OLD_SHORT_SWORD, TYPE_WEAPON, 3, 28, 12);
 			break;
 		
 		//소검
 		case NAME_SHORT_SWORD:
 			fream_window_draw(28, 12);
-			button_interface(NAME_SHORT_SWORD, TYPE_WEAPON, 3, 28, 12, _itemPosition);
+			button_interface(NAME_SHORT_SWORD, TYPE_WEAPON, 3, 28, 12);
 			break;
 
 		//검
 		case NAME_SWORD:
 			fream_window_draw(28, 12);
-			button_interface(NAME_SWORD, TYPE_WEAPON, 3, 28, 12, _itemPosition);
+			button_interface(NAME_SWORD, TYPE_WEAPON, 3, 28, 12);
 			break;
 
 		//창
 		case NAME_SPEAR:
 			fream_window_draw(28, 12);
-			button_interface(NAME_SPEAR, TYPE_WEAPON, 3, 28, 12, _itemPosition);
+			button_interface(NAME_SPEAR, TYPE_WEAPON, 3, 28, 12);
 			break;
 
 		//전투 도끼
@@ -572,8 +553,18 @@ void UI::fream_window_draw(size_t sizeX, size_t sizeY)
 	}
 }
 
-void UI::button_interface(int itemName, int itemType, int createNumber, int fream_window_sizeX, int fream_window_sizeY, int position)
+void UI::button_interface(int itemName, int itemType, int createNumber, int fream_window_sizeX, int fream_window_sizeY)
 {
+	int itemCheck = 0;
+
+	for (int Check = 0; Check < _im->getvBag().size(); Check++)
+	{
+		if (_im->getvBag()[Check].name == itemName)
+		{
+			itemCheck = Check;
+		}
+	}
+
 	for (int buttonNumber = 0; buttonNumber < createNumber; buttonNumber++)
 	{
 		if (buttonNumber == 0)
@@ -586,19 +577,19 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 		{
 			if (buttonNumber == 2)
 			{
-				if (_inventory[_itemPosition].itemWear == false)
+				if (_im->getvBag()[itemCheck].equip == false)
 				{
 					button_option_value[buttonNumber].number = BUTTONOPTION_WEAR;
 				}
 
-				if (_inventory[_itemPosition].itemWear == true)
+				if (_im->getvBag()[itemCheck].equip == true)
 				{
 					button_option_value[buttonNumber].number = BUTTONOPTION_UNLOCK;
 				}
 			}
 		}
 
-		if (itemName == NAME_LIOYDS_BEACON && itemType == TYPE_ACC)
+		if (itemCheck == NAME_LIOYDS_BEACON && itemType == TYPE_ACC)
 		{
 			if (buttonNumber == 3)
 				button_option_value[buttonNumber].number = BUTTONOPTION_LAUNCH;
@@ -639,13 +630,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 
 		for (int optioCheck = 0; optioCheck < 10; optioCheck++)
 		{
-			for (int itemCheck = 0; itemCheck < NAME_END; itemCheck++)
-			{
-				if (itemName == itemCheck)
-				{
-					_im->getvBag()[itemName].img->render(getMemDC(), ((WINSIZEX / 2) - (fream_window_sizeX * IMAGEMANAGER->findImage("fream_window1")->getFrameHeight()) / 2) + 30, ((WINSIZEY / 2) - (fream_window_sizeY * IMAGEMANAGER->findImage("fream_window1")->getFrameHeight()) / 2) + 30);
-				}
-			}
+			_im->getvBag()[itemCheck].img->render(getMemDC(), ((WINSIZEX / 2) - (fream_window_sizeX * IMAGEMANAGER->findImage("fream_window1")->getFrameHeight()) / 2) + 30, ((WINSIZEY / 2) - (fream_window_sizeY * IMAGEMANAGER->findImage("fream_window1")->getFrameHeight()) / 2) + 30);
 
 			if (button_option_value[buttonNumber].number == optioCheck)
 			{
@@ -722,66 +707,69 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			//착용한다
 			if (button_option_value[buttonNumber].number == BUTTONOPTION_WEAR)
 			{
-				//착용중
-				if (itemType == TYPE_WEAPON && _inventory[TYPE_WEAPON].itemWear == true)
-				{
-					int tempweapon = _inventory[TYPE_WEAPON].itemNumber;
-					_inventory[TYPE_WEAPON].itemNumber = _inventory[_itemPosition].itemNumber;
-					_inventory[_itemPosition].itemNumber = tempweapon;
-				}
+				////착용중
 
-				if (itemType == TYPE_ARMOR && _inventory[TYPE_ARMOR].itemWear == true)
+				if (_im->getvBag()[itemCheck].equip == true)
 				{
-					int temparmor = _inventory[TYPE_ARMOR].itemNumber;
-					_inventory[TYPE_ARMOR].itemNumber = _inventory[_itemPosition].itemNumber;
-					_inventory[_itemPosition].itemNumber = temparmor;
-				}
-
-				if (itemType == TYPE_ACC && _inventory[TYPE_ACC].itemWear == true)
-				{
-					int tempacc = _inventory[TYPE_ACC].itemNumber;
-					_inventory[TYPE_ACC].itemNumber = _inventory[_itemPosition].itemNumber;
-					_inventory[_itemPosition].itemNumber = tempacc;
-				}
-
-				//미착용중
-				if (itemType == TYPE_WEAPON && _inventory[TYPE_WEAPON].itemWear == false)
-				{
-					int t = 0;
-
-					for (int i = 0; i < _im->getvBag().size(); i++)
+					if (itemType == TYPE_WEAPON && _im->getvBag()[itemCheck].type == TYPE_WEAPON)
 					{
-						if (_im->getvBag()[i].name == _inventory[_itemPosition].itemNumber)
-						{
-							t = i;
-							_im->getvBag()[i].use = true;
-							_im->getvBag()[i].name = NAME_BATTLE_AXE;
-						}
+						int tempweapon = _inventory[TYPE_WEAPON].itemNumber;
+						_inventory[TYPE_WEAPON].itemNumber = _inventory[_itemPosition].itemNumber;
+						_inventory[_itemPosition].itemNumber = tempweapon;
 					}
 
-					_inventory[TYPE_WEAPON].itemNumber = _inventory[_itemPosition].itemNumber;
-					_inventory[TYPE_WEAPON].itemWear = true;
-					_inventory[_itemPosition].itemNumber = NAME_END;
+					if (itemType == TYPE_ARMOR && _im->getvBag()[itemCheck].type == TYPE_ARMOR)
+					{
+						int temparmor = _inventory[TYPE_ARMOR].itemNumber;
+						_inventory[TYPE_ARMOR].itemNumber = _inventory[_itemPosition].itemNumber;
+						_inventory[_itemPosition].itemNumber = temparmor;
+					}
 
-					bool t1 = _im->getvBag()[t].use;
-					int t2 = _im->getvBag()[t].name;
-					int t3 = 0;
+					if (itemType == TYPE_ACC && _im->getvBag()[itemCheck].type == TYPE_ACC)
+					{
+						int tempacc = _inventory[TYPE_ACC].itemNumber;
+						_inventory[TYPE_ACC].itemNumber = _inventory[_itemPosition].itemNumber;
+						_inventory[_itemPosition].itemNumber = tempacc;
+					}
 
-					//테스트용 좌표
 				}
 
-				if (itemType == TYPE_ARMOR && _inventory[TYPE_ARMOR].itemWear == false)
-				{
-					_inventory[TYPE_ARMOR].itemNumber = _inventory[_itemPosition].itemNumber;
-					_inventory[TYPE_ARMOR].itemWear = true;
-					_inventory[_itemPosition].itemNumber = NAME_END;
-				}
+				////미착용중
 
-				if (itemType == TYPE_ACC && _inventory[TYPE_ACC].itemWear == false)
+				if (_im->getvBag()[itemCheck].equip == false)
 				{
-					_inventory[TYPE_ACC].itemNumber = _inventory[_itemPosition].itemNumber;
-					_inventory[TYPE_ACC].itemWear = true;
-					_inventory[_itemPosition].itemNumber = NAME_END;
+					if (itemType == TYPE_WEAPON && _im->getvBag()[itemCheck].type == TYPE_WEAPON)
+					{
+						if (_im->getvBag()[itemCheck].name == _inventory[_itemPosition].itemNumber)
+						{
+							_im->equipItem(itemCheck);
+						}
+
+						_inventory[TYPE_WEAPON].itemNumber = _inventory[_itemPosition].itemNumber;
+						_inventory[_itemPosition].itemNumber = NAME_END;
+					}
+
+					if (itemType == TYPE_ARMOR && _im->getvBag()[itemCheck].type == TYPE_ARMOR)
+					{
+						if (_im->getvBag()[itemCheck].name == _inventory[_itemPosition].itemNumber)
+						{
+							_im->equipItem(itemCheck);
+						}
+
+						_inventory[TYPE_ARMOR].itemNumber = _inventory[_itemPosition].itemNumber;
+						_inventory[_itemPosition].itemNumber = NAME_END;
+					}
+
+					if (itemType == TYPE_ACC && _im->getvBag()[itemCheck].type == TYPE_ACC)
+					{
+						if (_im->getvBag()[itemCheck].name == _inventory[_itemPosition].itemNumber)
+						{
+							_im->equipItem(itemCheck);
+						}
+
+						_inventory[TYPE_ACC].itemNumber = _inventory[_itemPosition].itemNumber;
+						_inventory[_itemPosition].itemNumber = NAME_END;
+					}
 				}
 
 				_selectItem = NAME_END;
@@ -791,31 +779,34 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			//해제한다
 			if (button_option_value[buttonNumber].number == BUTTONOPTION_UNLOCK)
 			{
+				for (int i = 4; i < ARRSIZE; i++)
+				{
+					if (_inventory[i].itemNumber == NAME_END)
+					{
+						inventory_null = i;
+						break;
+					}
+				}
+
 				if (itemType == TYPE_WEAPON)
 				{
-					_inventory[_positionCheck].itemNumber = _inventory[TYPE_WEAPON].itemNumber;
+					_inventory[inventory_null].itemNumber = _inventory[TYPE_WEAPON].itemNumber;
 					_inventory[TYPE_WEAPON].itemNumber = NAME_END;
-
-					_inventory[_positionCheck].itemUse = true;
-					_inventory[TYPE_WEAPON].itemWear = false;
+					_im->unequipItem(itemCheck);
 				}
 
 				if (itemType == TYPE_ARMOR)
 				{
-					_inventory[_positionCheck].itemNumber = _inventory[TYPE_ARMOR].itemNumber;
+					_inventory[inventory_null].itemNumber = _inventory[TYPE_ARMOR].itemNumber;
 					_inventory[TYPE_ARMOR].itemNumber = NAME_END;
-
-					_inventory[_positionCheck].itemUse = true;
-					_inventory[TYPE_ARMOR].itemWear = false;
+					_im->unequipItem(itemCheck);
 				}
 
 				if (itemType == TYPE_ACC)
 				{
-					_inventory[_positionCheck].itemNumber = _inventory[TYPE_ACC].itemNumber;
+					_inventory[inventory_null].itemNumber = _inventory[TYPE_ACC].itemNumber;
 					_inventory[TYPE_ACC].itemNumber = NAME_END;
-
-					_inventory[_positionCheck].itemUse = true;
-					_inventory[TYPE_ACC].itemWear = false;
+					_im->unequipItem(itemCheck);
 				}
 
 				_selectItem = NAME_END;
