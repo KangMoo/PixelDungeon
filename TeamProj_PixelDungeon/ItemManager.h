@@ -36,10 +36,14 @@ public:
 	void render(POINT camera);
 	void draw(POINT camera);
 
+	void setItem(tagItem* item, ITEMNAME name);
 	void swap();
 	void imgInit();
 
 
+	void equipItem(int position);
+	void unequipItem(int position);
+	void useItem(int position, float x, float y);
 
 	// 아이템 사용 함수 ( 주문서, 씨앗, 포션, 다트) 
 	void useToScroll(ITEMNAME name, ITEMUSEMETHOD method);
@@ -49,9 +53,9 @@ public:
 
 
 	void setItemToBag(ITEMNAME name);
-	void setItemToField(ITEMNAME name);
-	void setItemToBag(ITEMNAME name, bool identify, bool isCursed, int upgrade);
-	void setItemToField(ITEMNAME name, bool identify, bool isCursed, int upgrade);
+	void setItemToField(ITEMNAME name, float x, float y);
+	void setItemToBag(ITEMNAME name, bool identify, bool isCursed, int upgrade, int numOfItem);
+	void setItemToField(ITEMNAME name, float x, float y, bool identify, bool isCursed, int upgrade, int numOfItem);
 
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }
 	void setMapAddressLink(Map* map) { _map = map; }
