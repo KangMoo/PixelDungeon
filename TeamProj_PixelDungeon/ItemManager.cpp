@@ -17,18 +17,15 @@ ItemManager::~ItemManager()
 
 HRESULT ItemManager::init()
 {
-	_item = new Item;
-	_item->init();
-	imgInit();
 	
-	setItemToBag(NAME_OLD_SHORT_SWORD);
-	setItemToBag(NAME_SHORT_SWORD);
-	setItemToBag(NAME_SWORD);
-	setItemToBag(NAME_SPEAR);
-	setItemToBag(NAME_BATTLE_AXE);
-	setItemToBag(NAME_CLOTH);
-	setItemToBag(NAME_LEATHER);
-	setItemToBag(NAME_MAIL);
+	//setItemToBag(NAME_OLD_SHORT_SWORD);
+	//setItemToBag(NAME_SHORT_SWORD);
+	//setItemToBag(NAME_SWORD);
+	//setItemToBag(NAME_SPEAR);
+	//setItemToBag(NAME_BATTLE_AXE);
+	//setItemToBag(NAME_CLOTH);
+	//setItemToBag(NAME_LEATHER);
+	//setItemToBag(NAME_MAIL);
 
 	//setItemToBag(NAME_UNKNOWN_MEAT);
 	//setItemToBag(NAME_IDENTIFY);
@@ -57,6 +54,7 @@ void ItemManager::update()
 
 	for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
 	{
+
 		switch (_viBag->name)
 		{
 		case NAME_OLD_SHORT_SWORD:
@@ -617,6 +615,7 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 		}
 		item->equip = false;
 		item->contentsHide = true;
+
 		break;
 	case NAME_UPGRADE:
 		item->type = TYPE_SCROLL;
@@ -697,7 +696,6 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 		item->contentsHide = false;
 		item->maxCharge = 20;
 		item->currentCharge = 0;
-		item->numOfItem = 1;
 		break;
 	case NAME_HEAL:
 		item->type = TYPE_POTION;
@@ -1009,7 +1007,7 @@ void ItemManager::imgInit()
 	IMAGEMANAGER->addImage("dew", "Img/Item/dew.bmp", 32, 32, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("money", "Img/Item/money.bmp", 32, 32, true, RGB(255, 0, 255));
 	//=========================== T H R O W ===============================
-	IMAGEMANAGER->addImage("magic_missile", "Img/Item/magic_missile.bmp",16,16, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("magic_missile", "Img/Item/magic_missile.bmp", 16, 16, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("magic_missile_lightning", "Img/Item/magic_missile_lightning.bmp", 16, 16, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("magic_missile_poison", "Img/Item/magic_missile_poison.bmp", 16, 16, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("magic_missile_beacon", "Img/Item/magic_missile_beacon.bmp", 16, 16, true, RGB(255, 0, 255));
@@ -1021,6 +1019,7 @@ void ItemManager::imgInit()
 
 
 }
+
 
 void ItemManager::unequipItem(int position)
 {
@@ -1097,7 +1096,7 @@ void ItemManager::useItem(int position, float x, float y)
 			case TYPE_WAND:
 				if (_viBag->currentCharge > 0)
 				{
-					_item->fire(_viBag->img, _player->getPoint().x, _player->getPoint().y, x, y);
+					fire(_viBag->img, _player->getPoint().x, _player->getPoint().y, x, y);
 					_viBag->currentCharge--;
 				}
 				break;
@@ -1225,7 +1224,4 @@ void ItemManager::removeThrow(int arrNum)
 {
 	_vThrow.erase(_vThrow.begin() + arrNum);
 }
-
-
-
 

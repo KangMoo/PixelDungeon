@@ -100,8 +100,8 @@ public:
 	vector<tagBullet> getVBullet() { return _vBullet; }
 	vector<tagBullet>::iterator getVBulletIter() { return _viBullet; }
 
-	vector<tagBullet> getVBullet() { return _vThrow; }
-	vector<tagBullet>::iterator getVBulletIter() { return _viThrow; }
+	vector<tagBullet> getVThrow() { return _vThrow; }
+	vector<tagBullet>::iterator getVThrowIter() { return _viThrow; }
 
 
 	ItemManager();
