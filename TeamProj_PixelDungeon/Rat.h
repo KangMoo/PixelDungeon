@@ -13,7 +13,7 @@ private:
 	int _myColor;
 
 public:
-	HRESULT init(POINT _point); //포인트 추가
+	HRESULT init(POINT point, int cog); //포인트 추가
 	void release();
 	void update();
 	void render(POINT camera);

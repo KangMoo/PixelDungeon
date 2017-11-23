@@ -17,10 +17,15 @@ HRESULT Enemy::init()
 {
 	return S_OK;
 }
-HRESULT Enemy::init(POINT _point) //포인트 추가
+HRESULT Enemy::init(POINT _point)//포인트 추가
 {
 	return S_OK;
 }
+HRESULT Enemy::init(POINT _point, int cog)//인식범위 추기
+{
+	return S_OK;
+}
+
 void Enemy::release()
 {
 
@@ -59,6 +64,11 @@ void Enemy::move()
 }
 
 void Enemy::frameUpdate()
+{
+
+}
+
+void Enemy::getDamaged(int damage)
 {
 
 }

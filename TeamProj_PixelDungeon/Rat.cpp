@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Rat.h"
-
+#include "Player.h"
 
 Rat::Rat()
 {
@@ -19,7 +19,7 @@ Rat::~Rat()
 //	float avd_lck;	//회피율
 //}ENEMYSTAT;
 
-HRESULT Rat::init(POINT point)
+HRESULT Rat::init(POINT point, int cog)
 {
 	//=======================================================================================================================================================
 	//												*BROWNRATIMAGE*	
@@ -107,6 +107,10 @@ HRESULT Rat::init(POINT point)
 
 	_findPlayer = false;						//플레이어를 찾지 못했습니다.
 
+	_deadAlpha = 255;
+
+	_cog = RectMake(point.x, point.y, cog, cog);
+
 	_point.x = point.x;
 	_point.y = point.y;
 
@@ -122,7 +126,7 @@ void Rat::update()
 {
 	frameUpdate();
 
-	if (_action == false && _myColor == WHITE)//알고보니 턴을 넘긴 후에 점프 하더라고요;
+	if (_action == false && _myColor == WHITE)//Sleep 상태가 아닐시
 	{
 		_image = IMAGEMANAGER->findImage("whiteMove");
 	}
@@ -134,6 +138,7 @@ void Rat::update()
 	{
 		action();
 	}
+
 }
 
 void Rat::render(POINT camera)
@@ -143,8 +148,8 @@ void Rat::render(POINT camera)
 
 void Rat::draw(POINT camera)
 {
-	RectangleMake(getMemDC(), _point.x, _point.y, 32, 32);
-	_image->frameRender(getMemDC(), _point.x, _point.y);
+	RectangleMake(getMemDC(), _point.x + camera.x, _point.y + camera.y, 32, 32);
+	_image->frameRender(getMemDC(), _point.x + camera.x, _point.y + camera.y);
 }
 
 void Rat::action()
@@ -174,6 +179,7 @@ void Rat::frameUpdate()
 
 	if (_right)_currentFrameY = 0;
 	else _currentFrameY = 1;
+
 }
 
 void Rat::attack()
@@ -186,6 +192,8 @@ void Rat::attack()
 	{
 		_image = IMAGEMANAGER->findImage("whiteAttack");
 		_statistics.str = RND->getFromIntTo(2 + _statistics.lv, 6 + _statistics.lv);
+
+		
 
 		if (_currentFrameX > _image->getMaxFrameX())
 		{
@@ -201,6 +209,7 @@ void Rat::attack()
 		_image = IMAGEMANAGER->findImage("brownAttack");
 		_statistics.str = RND->getFromIntTo(3 + _statistics.lv, 5 + _statistics.lv);
 
+		
 
 		if (_currentFrameX > _image->getMaxFrameX())
 		{
@@ -249,7 +258,7 @@ void Rat::move()
 
 }
 
-void getDamaged(int damage)
+void Rat::getDamaged(int damage)
 {
-
+	_currntHp -= damage;
 }
