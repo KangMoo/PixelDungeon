@@ -204,14 +204,13 @@
     <ClInclude Include="ItemManager.h">
       <Filter>MainGame\Item</Filter>
     </ClInclude>
-    <ClInclude Include="Rat.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="tinyxml2.h">
       <Filter>2DGameFramework</Filter>
-      <Filter>MainGame\Enemy\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="Swarm.h">
+      <Filter>MainGame\Enemy\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Rat.h">
       <Filter>MainGame\Enemy\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="Gnoll.h">
@@ -323,6 +322,7 @@
     </ClCompile>
     <ClCompile Include="tinyxml2.cpp">
       <Filter>2DGameFramework</Filter>
+    </ClCompile>
     <ClCompile Include="Swarm.cpp">
       <Filter>MainGame\Enemy\Enemy</Filter>
     </ClCompile>
