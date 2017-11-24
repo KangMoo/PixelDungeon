@@ -15,8 +15,7 @@ HRESULT MapToolScene::init()
 	_showTile = false;
 	_showTileIndex = 0;
 
-
-	_paletteImg = IMAGEMANAGER->findImage("mapTiles");
+	imageSetup();
 
 	//카메라
 	_cameraX = _cameraY = 0;
@@ -47,7 +46,8 @@ HRESULT MapToolScene::init()
 
 
 	//인풋모드(임시)
-	_inputMode = FLOOR;
+	_inputMode = MODE_FLOOR;
+	_viewMode = VIEW_ONE;
 
 
 	//버튼
@@ -75,23 +75,38 @@ void MapToolScene::release()
 
 }
 
+void MapToolScene::imageSetup() {
+	
+	_imgNameList.push_back("mapTiles");
+
+	
+	for (int i = 0; i < _imgNameList.size(); i++) {
+		image* image1 = IMAGEMANAGER->findImage(_imgNameList[i]);
+		_imgList.push_back(image1);		
+	}
+}
+
 void MapToolScene::paletteSetup()
 {
-	for (int i = 0; i < _paletteImg->getMaxFrameY();  i++) {
-		for (int j = 0; j < _paletteImg->getMaxFrameX(); j++) {
-			TILE palTile;
-			ZeroMemory(&palTile, sizeof(TILE));
-			palTile.img = _paletteImg;
-			palTile.sourX = j;
-			palTile.sourY = i;
+	int index = 0;
 
-			palTile.index = (j + i * _paletteImg->getMaxFrameX());
-			
-			palTile.destX = palTile.index % PALETTEX;
-			palTile.destY = palTile.index / PALETTEX;
+	for (auto img : _imgList) {
+		for (int i = 0; i < img->getMaxFrameY(); i++) {
+			for (int j = 0; j < img->getMaxFrameX(); j++) {
+				TILE palTile;
+				ZeroMemory(&palTile, sizeof(TILE));
+				palTile.img = img;
+				palTile.sourX = j;
+				palTile.sourY = i;
 
-			_vPaletTile.push_back(palTile);
-		}		
+				palTile.destX = index % PALETTEX;
+				palTile.destY = index / PALETTEX;
+
+				_vPaletTile.push_back(palTile);
+
+				index++;
+			}
+		}
 	}
 }
 
@@ -107,19 +122,22 @@ void MapToolScene::update()
 void MapToolScene::buttonInput()
 {
 	
-	if (KEYMANAGER->isOnceKeyDown('1')) _inputMode = FLOOR;
-	if (KEYMANAGER->isOnceKeyDown('2')) _inputMode = WALL;
-	if (KEYMANAGER->isOnceKeyDown('3')) _inputMode = GRASS;
-	if (KEYMANAGER->isOnceKeyDown('4')) _inputMode = DOOR;
-	if (KEYMANAGER->isOnceKeyDown('5')) _inputMode = VIEWING;
-	if (KEYMANAGER->isOnceKeyDown('6')) _inputMode = DELET;
+	if (KEYMANAGER->isOnceKeyDown('1')) _inputMode = MODE_FLOOR;
+	if (KEYMANAGER->isOnceKeyDown('2')) _inputMode = MODE_WALL;
+	if (KEYMANAGER->isOnceKeyDown('3')) _inputMode = MODE_GRASS;
+	if (KEYMANAGER->isOnceKeyDown('4')) _inputMode = MODE_DOOR;
+	if (KEYMANAGER->isOnceKeyDown('5')) _inputMode = MODE_DECO;
+	if (KEYMANAGER->isOnceKeyDown('6')) _inputMode = MODE_VIEWING;
+	if (KEYMANAGER->isOnceKeyDown('7')) _inputMode = MODE_DELET;
 	
 
 	if (KEYMANAGER->isOnceKeyDown(VK_DELETE)) {
 		if (!_mapSelected.empty()) {
 			for (int i = 0; i < _mapSelected.size(); i++) {
+				int indexX = i % GRIDX + _cameraX;
+				int indexY = i / GRIDX + _cameraY;
 				for (_viMapTile = _vMapTile.begin(); _viMapTile != _vMapTile.end();) {
-					if (_viMapTile->index == _mapSelected[i].index + _cameraX + (_cameraY * GRIDX)) {
+					if (_viMapTile->destX == indexX && _viMapTile->destY == indexY) {
 						_viMapTile = _vMapTile.erase(_viMapTile);
 						break;
 					}
@@ -160,61 +178,97 @@ void MapToolScene::buttonInput()
 
 			if (!_paletSelected.empty()) {
 
-				if (_inputMode == VIEWING) return; //읽기 모드
+				if (_inputMode == MODE_VIEWING) return; //읽기 모드   : 아무것도 못한다
 				
-				_showTile = true;
+				if (_inputMode == MODE_DELET) {			//지우기 모드 : 이미 있는 경우를 확인, 지운다.
+					if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON)) {
+						int indexX = i % GRIDX + _cameraX;
+						int indexY = i / GRIDX + _cameraY;
+						for (_viMapTile = _vMapTile.begin(); _viMapTile != _vMapTile.end();) {
+							if (_viMapTile->destX == indexX && _viMapTile->destY == indexY) {
+								_viMapTile = _vMapTile.erase(_viMapTile);
+								return;
+							}
+							else
+								_viMapTile++;
+						}
+					}
+				}
+
+
+				_showTile = true;					// 현재 선택한 타일을 보여주기
 				_showTileIndex = i;
 
 					
 
 				if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON) || KEYMANAGER->isStayKeyDown(VK_LBUTTON)) {
-					int newMapIndex = i + _cameraX + (_cameraY * GRIDX);
+					int indexX = i % GRIDX + _cameraX;
+					int indexY = i / GRIDX + _cameraY;
 					int paletIndex = _paletSelected[0].index;
 
-					
+					//팔레트 사이즈보다 큰걸 선택했으면 입력 못한다
 					if (paletIndex > _vPaletTile.size()) return;
 
-					//이미 있는 경우를 확인, 지운다.
-					bool breakPoint = false;
-					for (_viMapTile = _vMapTile.begin(); _viMapTile != _vMapTile.end();) {
-						if (_viMapTile->index == newMapIndex) {
-							_viMapTile = _vMapTile.erase(_viMapTile);
-							if (_inputMode == DELET) breakPoint = true;
-							break;
+
+					// 이미지 추가 모드
+					if (_inputMode == MODE_DECO) {
+
+						//이미 타일이 있는 경우 지운다
+						for (_viDecoTile = _vDecoTile.begin(); _viDecoTile != _vDecoTile.end();) {
+							if (_viDecoTile->destX == indexX && _viDecoTile->destY == indexY) {
+								_viDecoTile = _vDecoTile.erase(_viDecoTile);
+							}
+							else
+								_viDecoTile++;
 						}
-						else
-							_viMapTile++;
+
+						TILE inputTile;
+						ZeroMemory(&inputTile, sizeof(TILE));
+						inputTile.img = _vPaletTile[paletIndex].img;
+						inputTile.sourX = _vPaletTile[paletIndex].sourX;
+						inputTile.sourY = _vPaletTile[paletIndex].sourY;
+						inputTile.destX = indexX;
+						inputTile.destY = indexY;
+
+						inputTile.terrain = TERRAIN_NULL;
+
+						_vDecoTile.push_back(inputTile);
 					}
-					if (breakPoint) break;
 
 
+					// 타일 추가 모드
+					else {
+						//이미 타일이 있는 경우 지운다
+						for (_viMapTile = _vMapTile.begin(); _viMapTile != _vMapTile.end();) {
+							if (_viMapTile->destX == indexX && _viMapTile->destY == indexY) {
+								_viMapTile = _vMapTile.erase(_viMapTile);
+							}
+							else
+								_viMapTile++;
+						}
 
-					TILE inputTile;
-					ZeroMemory(&inputTile, sizeof(TILE));
-					inputTile.img = _vPaletTile[paletIndex].img;
-					inputTile.sourX = _vPaletTile[paletIndex].sourX;
-					inputTile.sourY = _vPaletTile[paletIndex].sourY;
+						TILE inputTile;
+						ZeroMemory(&inputTile, sizeof(TILE));
+						inputTile.img = _vPaletTile[paletIndex].img;
+						inputTile.sourX = _vPaletTile[paletIndex].sourX;
+						inputTile.sourY = _vPaletTile[paletIndex].sourY;
+						inputTile.destX = indexX;
+						inputTile.destY = indexY;
 
-					if (_inputMode == FLOOR) inputTile.terrain = TERRAIN_FLOOR;
-					if (_inputMode == WALL) inputTile.terrain = TERRAIN_WALL;
-					if (_inputMode == GRASS) inputTile.terrain = TERRAIN_GRASS;
-					if (_inputMode == DOOR) inputTile.terrain = TERRAIN_DOOR_CLOSED;
+						if (_inputMode == MODE_FLOOR) inputTile.terrain = TERRAIN_FLOOR;		//모드에 따라 속성을 다르게 부여
+						if (_inputMode == MODE_WALL) inputTile.terrain = TERRAIN_WALL;
+						if (_inputMode == MODE_GRASS) inputTile.terrain = TERRAIN_GRASS;
+						if (_inputMode == MODE_DOOR) inputTile.terrain = TERRAIN_DOOR_CLOSED;
 
-
-					inputTile.destX = i % GRIDX + _cameraX;
-					inputTile.destY = i / GRIDX + _cameraY;
-
-					inputTile.index = newMapIndex;
-
-					
-					_vMapTile.push_back(inputTile);
+						_vMapTile.push_back(inputTile);
+					}
 				}
 				//_mapSelected.clear();
 				//_mapSelected.push_back(_mapRect[i]);
 				break;
 			}
 		}
-		else _showTile = false;		
+		else _showTile = false;		// 현재 선택한 타일을 보여주지 않음
 	}
 
 
@@ -226,7 +280,7 @@ void MapToolScene::buttonInput()
 
 				int paletIndex = _paletRect[i].index + _paletPage * PALETTENUM;
 
-				selectTile.img = _vPaletTile[paletIndex].img;
+				selectTile.img = _vPaletTile[paletIndex].img; // 팔레트는 이미지 하나만 갖고 있다
 				selectTile.index = paletIndex;
 				selectTile.rc = _paletRect[i].rc;
 
@@ -332,9 +386,9 @@ void MapToolScene::render()
 		_vPaletTile[i].img->frameRender(getMemDC(), destX, destY, _vPaletTile[tileIndex].sourX, _vPaletTile[tileIndex].sourY);
 	}
 
-	for (int i = 0; i < GRIDNUM; i++) {
-		if (i >= _vMapTile.size()) break;
-		if (_vMapTile[i].destX - _cameraX < 0 || _vMapTile[i].destY - _cameraY < 0) continue;
+	for (int i = 0; i < _vMapTile.size(); i++) {
+		if (_vMapTile[i].destX - _cameraX < 0 || _vMapTile[i].destY - _cameraY < 0 ||
+			_vMapTile[i].destX - _cameraX >= GRIDX || _vMapTile[i].destY - _cameraY >= GRIDY) continue;
 		
 		int index = _vMapTile[i].destX - _cameraX + (_vMapTile[i].destY - _cameraY) * GRIDX;
 
@@ -342,14 +396,34 @@ void MapToolScene::render()
 		int destY = _mapRect[index].rc.top;
 
 		int alpha;
-		if (_vMapTile[i].terrain == TERRAIN_FLOOR && _inputMode == FLOOR) alpha = 0;
-		else if (_vMapTile[i].terrain == TERRAIN_WALL && _inputMode == WALL)  alpha = 0;
-		else if (_vMapTile[i].terrain == TERRAIN_GRASS && _inputMode == GRASS)  alpha = 0;
-		else if (_vMapTile[i].terrain == TERRAIN_DOOR_CLOSED && _inputMode == DOOR)  alpha = 0;
-		else if (_inputMode == VIEWING)  alpha = 0;
+		if (_vMapTile[i].terrain == TERRAIN_FLOOR			 && _inputMode == MODE_FLOOR) alpha = 0;
+		else if (_vMapTile[i].terrain == TERRAIN_WALL		 && _inputMode == MODE_WALL)  alpha = 0;
+		else if (_vMapTile[i].terrain == TERRAIN_GRASS		 && _inputMode == MODE_GRASS)  alpha = 0;
+		else if (_vMapTile[i].terrain == TERRAIN_DOOR_CLOSED && _inputMode == MODE_DOOR)  alpha = 0;
+		else if (_inputMode == MODE_VIEWING)  alpha = 0;
 		else alpha = 100;
 
 		_vMapTile[i].img->alphaFrameRender(getMemDC(), destX, destY, _vMapTile[i].sourX, _vMapTile[i].sourY, alpha);
+		
+		//char str[128];
+		//sprintf(str, "%d %d", _vMapTile[i].destX, _vMapTile[i].destY);
+		//TextOut(getMemDC(), _mapRect[index].rc.left, _mapRect[index].rc.top, str, strlen(str));
+	}
+
+
+	for (int i = 0; i < _vDecoTile.size(); i++) {
+		if (_vDecoTile[i].destX - _cameraX < 0 || _vDecoTile[i].destY - _cameraY < 0 ||
+			_vDecoTile[i].destX - _cameraX >= GRIDX || _vDecoTile[i].destY - _cameraY >= GRIDY) continue;
+
+		int index = _vDecoTile[i].destX - _cameraX + (_vDecoTile[i].destY - _cameraY) * GRIDX;
+
+		int destX = _mapRect[index].rc.left;
+		int destY = _mapRect[index].rc.top;
+		
+		int alpha;
+		if (_inputMode == MODE_DECO || _inputMode == MODE_VIEWING) alpha = 0; else alpha = 255;
+
+		_vDecoTile[i].img->alphaFrameRender(getMemDC(), destX, destY, _vDecoTile[i].sourX, _vDecoTile[i].sourY, alpha);
 	}
 
 
@@ -414,22 +488,22 @@ void MapToolScene::render()
 	TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 2, page, strlen(page));
 	
 	switch (_inputMode) {
-	case FLOOR:
+	case MODE_FLOOR:
 		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "FLOOR", strlen("FLOOR"));
 		break;
-	case WALL:
+	case MODE_WALL:
 		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "WALL", strlen("WALL"));
 		break;
-	case GRASS:
+	case MODE_GRASS:
 		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "GRASS", strlen("GRASS"));
 		break;
-	case DOOR:
+	case MODE_DOOR:
 		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "DOOR", strlen("DOOR"));
 		break;
-	case VIEWING:
+	case MODE_VIEWING:
 		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "VIEWING", strlen("VIEWING"));
 		break;
-	case DELET:
+	case MODE_DELET:
 		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "DELET", strlen("DELET"));
 		break;
 	}
@@ -439,33 +513,6 @@ void MapToolScene::render()
 
 void MapToolScene::save()
 {
-	//임시로 만들었던거
-
-	const int size = _vMapTile.size();
-
-	//배열 동적할당을 해서 저장하려고 했으나... 세이브는 괜찮은데 로드가 문제라서 포기
-	//SAVETILE *saveMap = new SAVETILE[size];
-
-	//for (int i = 0; i < size; i++) {
-	//	//saveMap[i].imgName = "mapTiles";
-	//		saveMap[i].destX = _vMapTile[i].destX;
-	//		saveMap[i].destY = _vMapTile[i].destY;
-	//		saveMap[i].sourX = _vMapTile[i].sourX;
-	//		saveMap[i].sourY = _vMapTile[i].sourY;
-	//		saveMap[i].index = _vMapTile[i].index;
-	//		saveMap[i].obj = OBJ_NONE;
-	//		saveMap[i].terrain = _vMapTile[i].terrain;		
-	//}
-
-	//HANDLE file;
-	//DWORD write;
-	
-	//file = CreateFile("mapSave.map", GENERIC_WRITE, 0, NULL,
-	//	CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	//
-
-
-	
 	//xml 저장
 	XMLDocument xmlDoc;
 	XMLNode *pRoot;
@@ -473,14 +520,13 @@ void MapToolScene::save()
 	pRoot = xmlDoc.NewElement("map");
 	xmlDoc.InsertFirstChild(pRoot);
 
-	XMLElement * pElement = xmlDoc.NewElement("List");
+	XMLElement * pMapElement_Tile = xmlDoc.NewElement("TileList");
 
+	XMLElement * pTileElementSize = xmlDoc.NewElement("size");
+	pTileElementSize->SetText(_vMapTile.size());
+	pMapElement_Tile->InsertEndChild(pTileElementSize);
 
-	XMLElement * pListElementSize = xmlDoc.NewElement("size");
-	pListElementSize->SetText(size);
-	pElement->InsertEndChild(pListElementSize);
-
-	for (int i = 0; i < size; i++) {
+	for (int i = 0; i < _vMapTile.size(); i++) {
 		XMLElement * pListElementT = xmlDoc.NewElement("tile");
 
 		XMLElement * pListElement1 = xmlDoc.NewElement("destX");
@@ -491,12 +537,10 @@ void MapToolScene::save()
 		pListElement3->SetText(_vMapTile[i].sourX);
 		XMLElement * pListElement4 = xmlDoc.NewElement("sourY");
 		pListElement4->SetText(_vMapTile[i].sourY);
-		XMLElement * pListElement5 = xmlDoc.NewElement("index");
-		pListElement5->SetText(_vMapTile[i].index);
-		XMLElement * pListElement6 = xmlDoc.NewElement("obj");
-		pListElement6->SetText(OBJ_NONE);
-		XMLElement * pListElement7 = xmlDoc.NewElement("terrain");
-		pListElement7->SetText(_vMapTile[i].terrain);
+		XMLElement * pListElement5 = xmlDoc.NewElement("obj");
+		pListElement5->SetText(OBJ_NONE);
+		XMLElement * pListElement6 = xmlDoc.NewElement("terrain");
+		pListElement6->SetText(_vMapTile[i].terrain);
 
 		pListElementT->InsertEndChild(pListElement1);
 		pListElementT->InsertEndChild(pListElement2);
@@ -504,11 +548,46 @@ void MapToolScene::save()
 		pListElementT->InsertEndChild(pListElement4);
 		pListElementT->InsertEndChild(pListElement5);
 		pListElementT->InsertEndChild(pListElement6);
-		pListElementT->InsertEndChild(pListElement7);
 
-		pElement->InsertEndChild(pListElementT);
+		pMapElement_Tile->InsertEndChild(pListElementT);
 	}
-	pRoot->InsertEndChild(pElement);
+	pRoot->InsertEndChild(pMapElement_Tile);
+
+
+	XMLElement * pMapElement_Deco = xmlDoc.NewElement("DecoList");
+
+	XMLElement * pDecoElementSize = xmlDoc.NewElement("size");
+	pDecoElementSize->SetText(_vDecoTile.size());
+	pMapElement_Deco->InsertEndChild(pDecoElementSize);
+
+	for (int i = 0; i < _vDecoTile.size(); i++) {
+		XMLElement * pListElementT = xmlDoc.NewElement("tile");
+
+		XMLElement * pListElement1 = xmlDoc.NewElement("destX");
+		pListElement1->SetText(_vDecoTile[i].destX);
+		XMLElement * pListElement2 = xmlDoc.NewElement("destY");
+		pListElement2->SetText(_vDecoTile[i].destY);
+		XMLElement * pListElement3 = xmlDoc.NewElement("sourX");
+		pListElement3->SetText(_vDecoTile[i].sourX);
+		XMLElement * pListElement4 = xmlDoc.NewElement("sourY");
+		pListElement4->SetText(_vDecoTile[i].sourY);
+		XMLElement * pListElement5 = xmlDoc.NewElement("obj");
+		pListElement5->SetText(OBJ_NONE);
+		XMLElement * pListElement6 = xmlDoc.NewElement("terrain");
+		pListElement6->SetText(_vDecoTile[i].terrain);
+
+		pListElementT->InsertEndChild(pListElement1);
+		pListElementT->InsertEndChild(pListElement2);
+		pListElementT->InsertEndChild(pListElement3);
+		pListElementT->InsertEndChild(pListElement4);
+		pListElementT->InsertEndChild(pListElement5);
+		pListElementT->InsertEndChild(pListElement6);
+
+		pMapElement_Deco->InsertEndChild(pListElementT);
+	}
+	pRoot->InsertEndChild(pMapElement_Deco);
+
+
 
 	XMLError eResult = xmlDoc.SaveFile("SavedData.xml");
 
@@ -537,29 +616,48 @@ void MapToolScene::load()
 	
 	XMLNode * pRoot = xmlDoc.FirstChild();
 	
-	XMLElement * pElement = pRoot->FirstChildElement("List");
-	XMLElement * pListElement = pElement->FirstChildElement("tile");
+	XMLElement * pTileElement = pRoot->FirstChildElement("TileList");
+	XMLElement * pTileListElement = pTileElement->FirstChildElement("tile");
 
-	while (pListElement != nullptr) {
+	while (pTileListElement != nullptr) {
 		TILE tile;
 
 		tile.img = IMAGEMANAGER->findImage("mapTiles"); //임시, 나중에 주소값으로 바꿀거
 
-		tile.destX = pListElement->FirstChildElement("destX")->IntText();
-		tile.destY = pListElement->FirstChildElement("destY")->IntText();
-		tile.sourX = pListElement->FirstChildElement("sourX")->IntText();
-		tile.sourY = pListElement->FirstChildElement("sourY")->IntText();
-		tile.index = pListElement->FirstChildElement("index")->IntText();
-		tile.obj	= (OBJ) pListElement->FirstChildElement("obj")->IntText();
-		tile.terrain = (TERRAIN) pListElement->FirstChildElement("terrain")->IntText();
+
+		tile.destX = pTileListElement->FirstChildElement("destX")->IntText();
+		tile.destY = pTileListElement->FirstChildElement("destY")->IntText();
+		tile.sourX = pTileListElement->FirstChildElement("sourX")->IntText();
+		tile.sourY = pTileListElement->FirstChildElement("sourY")->IntText();
+		tile.obj	= (OBJ)pTileListElement->FirstChildElement("obj")->IntText();
+		tile.terrain = (TERRAIN)pTileListElement->FirstChildElement("terrain")->IntText();
 
 		_vMapTile.push_back(tile);
 
-		pListElement = pListElement->NextSiblingElement("tile");
+		pTileListElement = pTileListElement->NextSiblingElement("tile");
 	}
+	
 
 
+	XMLElement * pDecoElement = pRoot->FirstChildElement("DecoList");
+	XMLElement * pDecoListElement = pDecoElement->FirstChildElement("tile");
 
+	while (pDecoListElement != nullptr) {
+		TILE tile;
+
+		tile.img = IMAGEMANAGER->findImage("mapTiles"); //임시, 나중에 주소값으로 바꿀거
+		
+		tile.destX = pDecoListElement->FirstChildElement("destX")->IntText();
+		tile.destY = pDecoListElement->FirstChildElement("destY")->IntText();
+		tile.sourX = pDecoListElement->FirstChildElement("sourX")->IntText();
+		tile.sourY = pDecoListElement->FirstChildElement("sourY")->IntText();
+		tile.obj = (OBJ)pDecoListElement->FirstChildElement("obj")->IntText();
+		tile.terrain = (TERRAIN)pDecoListElement->FirstChildElement("terrain")->IntText();
+
+		_vDecoTile.push_back(tile);
+
+		pDecoListElement = pDecoListElement->NextSiblingElement("tile");
+	}
 
 	//임시로 만들었던거
 

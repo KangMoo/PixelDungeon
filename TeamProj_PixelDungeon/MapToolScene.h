@@ -22,16 +22,23 @@
 #define ATTRIBUTE_INVISIBLE			//
 
 
+enum VIEWMODE {
+	VIEW_ONE,
+	VIEW_TWO
+};
 
 enum INPUTMODE {
-	FLOOR,
-	WALL,
-	GRASS,
-	DOOR,
-
-	VIEWING,
-	DELET
+	MODE_FLOOR,
+	MODE_WALL,
+	MODE_GRASS,
+	MODE_DOOR,
+	
+	MODE_DECO,
+	
+	MODE_VIEWING,
+	MODE_DELET
 };
+
 
 class MapToolScene : public gameNode
 {
@@ -45,13 +52,15 @@ class MapToolScene : public gameNode
 private:
 	bool _leftClicking;
 
-
-	image* _paletteImg;
+	vector<string> _imgNameList;
+	vector<image*> _imgList;
 
 	
 
 	vTile _vMapTile; // 맵에 깔아놓은 타일
 	viTile _viMapTile;
+	vTile _vDecoTile; // 이미지 겹치기 위한 장식용 타일
+	viTile _viDecoTile;
 
 	vGrid _mapSelected; //선택한 맵 그리드
 	GRID _mapRect[GRIDNUM]; //맵 전체 그리드 rect
@@ -75,7 +84,9 @@ private:
 	vTile _copyTile;
 		
 	INPUTMODE _inputMode;
-	
+	VIEWMODE _viewMode;
+
+
 	vector<RECT> _tileButton;
 	
 	BUTTON _buttonRect[BUTTONNUM];
@@ -90,7 +101,8 @@ public:
 	void release();
 	void update();
 	void render();
-	
+
+	void imageSetup();
 	void paletteSetup();
 
 

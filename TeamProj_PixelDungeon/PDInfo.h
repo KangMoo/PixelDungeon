@@ -162,22 +162,23 @@ typedef struct tagItem {
 
 
 
-#define ATTRIBUTE_UNSIGHT 0x0001
-#define ATTRIBUTE_UNGO 0x0002
+#define ATTRIBUTE_FLOOR 0x0001	 //기본 idle
+#define ATTRIBUTE_UNSIGHT 0x0002 // 시야를 가리는 속성
+#define ATTRIBUTE_UNGO 0x0004	// 지나갈 수 없는 속성
+#define ATTRIBUTE_DOOR 0x0008	// 열리고 닫히는 속성
 
 // 맵
 enum TERRAIN {
-	TERRAIN_NULL = 0,
+	TERRAIN_NULL,
 
-	TERRAIN_FLOOR,
-	TERRAIN_WALL = TERRAIN_FLOOR + ATTRIBUTE_UNGO,
+	TERRAIN_FLOOR = ATTRIBUTE_FLOOR,
+	TERRAIN_GRASS = ATTRIBUTE_FLOOR + ATTRIBUTE_UNSIGHT,
+	TERRAIN_WALL = ATTRIBUTE_FLOOR + ATTRIBUTE_UNSIGHT + ATTRIBUTE_UNGO,
 
-	TERRAIN_DOOR_OPEN,
-	TERRAIN_DOOR_CLOSED = TERRAIN_DOOR_OPEN + ATTRIBUTE_UNSIGHT,
-	TERRAIN_DOOR_LOCKED = TERRAIN_DOOR_OPEN + ATTRIBUTE_UNGO,
-
-	TERRAIN_GRASS_CUT,
-	TERRAIN_GRASS = TERRAIN_GRASS_CUT + ATTRIBUTE_UNSIGHT
+	TERRAIN_DOOR = ATTRIBUTE_FLOOR + ATTRIBUTE_DOOR,
+	TERRAIN_DOOR_CLOSED = ATTRIBUTE_FLOOR + ATTRIBUTE_DOOR + ATTRIBUTE_UNSIGHT,
+	TERRAIN_DOOR_LOCKED = ATTRIBUTE_FLOOR + ATTRIBUTE_DOOR + ATTRIBUTE_UNSIGHT + ATTRIBUTE_UNGO,
+	
 };
 
 
@@ -201,26 +202,10 @@ typedef struct tagTile {
 	image* img; //받아올 이미지
 	int sourX, sourY; //받아올 타일 좌표값
 	int destX, destY; //뿌릴 타일 좌표값
-	int index;
 	TILEVIEW tileview;
 	TERRAIN terrain;
 	OBJ obj;
 }TILE;
-
-typedef struct tagSaveTile {
-	//string imgName; //받아올 이미지
-	int sourX, sourY; //받아올 타일 좌표값
-	int destX, destY; //뿌릴 타일 좌표값
-	int index;
-	TILEVIEW tileview;
-	TERRAIN terrain;
-	OBJ obj;
-}SAVETILE;
-
-typedef struct tagSaveMap {
-	int size;
-	SAVETILE* tiles;
-}SAVEMAP;
 
 typedef struct tagGrid {
 	image* img; //들어있는 이미지

@@ -152,35 +152,57 @@ void Map::load() {
 	_vMapTile.clear();
 
 
-	//xml 로드
 	XMLDocument xmlDoc;
 
 	XMLError eResult = xmlDoc.LoadFile("SavedData.xml");
 
 	XMLNode * pRoot = xmlDoc.FirstChild();
 
-	XMLElement * pElement = pRoot->FirstChildElement("List");
-	_tileNum = pElement->FirstChildElement("size")->IntText();
-	XMLElement * pListElement = pElement->FirstChildElement("tile");
+	XMLElement * pTileElement = pRoot->FirstChildElement("TileList");
+	XMLElement * pTileListElement = pTileElement->FirstChildElement("tile");
 
-	while (pListElement != nullptr) {
+	while (pTileListElement != nullptr) {
 		TILE tile;
 
 		tile.img = IMAGEMANAGER->findImage("mapTiles"); //임시, 나중에 주소값으로 바꿀거
 
-		tile.destX = pListElement->FirstChildElement("destX")->IntText();
-		tile.destY = pListElement->FirstChildElement("destY")->IntText();
-		tile.sourX = pListElement->FirstChildElement("sourX")->IntText();
-		tile.sourY = pListElement->FirstChildElement("sourY")->IntText();
-		tile.index = pListElement->FirstChildElement("index")->IntText();
-		tile.obj = (OBJ)pListElement->FirstChildElement("obj")->IntText();
-		tile.terrain = (TERRAIN)pListElement->FirstChildElement("terrain")->IntText();
+
+		tile.destX = pTileListElement->FirstChildElement("destX")->IntText();
+		tile.destY = pTileListElement->FirstChildElement("destY")->IntText();
+		tile.sourX = pTileListElement->FirstChildElement("sourX")->IntText();
+		tile.sourY = pTileListElement->FirstChildElement("sourY")->IntText();
+		tile.obj = (OBJ)pTileListElement->FirstChildElement("obj")->IntText();
+		tile.terrain = (TERRAIN)pTileListElement->FirstChildElement("terrain")->IntText();
 
 		_vMapTile.push_back(tile);
 
-		pListElement = pListElement->NextSiblingElement("tile");
+		pTileListElement = pTileListElement->NextSiblingElement("tile");
 	}
 
+
+
+	//XMLElement * pDecoElement = pRoot->FirstChildElement("DecoList");
+	//XMLElement * pDecoListElement = pDecoElement->FirstChildElement("tile");
+	//
+	//while (pDecoListElement != nullptr) {
+	//	TILE tile;
+	//
+	//	tile.img = IMAGEMANAGER->findImage("mapTiles"); //임시, 나중에 주소값으로 바꿀거
+	//
+	//	tile.destX = pDecoListElement->FirstChildElement("destX")->IntText();
+	//	tile.destY = pDecoListElement->FirstChildElement("destY")->IntText();
+	//	tile.sourX = pDecoListElement->FirstChildElement("sourX")->IntText();
+	//	tile.sourY = pDecoListElement->FirstChildElement("sourY")->IntText();
+	//	tile.obj = (OBJ)pDecoListElement->FirstChildElement("obj")->IntText();
+	//	tile.terrain = (TERRAIN)pDecoListElement->FirstChildElement("terrain")->IntText();
+	//
+	//	_vDecoTile.push_back(tile);
+	//
+	//	pDecoListElement = pDecoListElement->NextSiblingElement("tile");
+	//}
+
+
+	
 	for (int i = 0; i < 10000; i++) {
 		if (i >= _vMapTile.size()) break;
 
@@ -190,12 +212,16 @@ void Map::load() {
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].destY = _vMapTile[i].destY;
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].sourX = _vMapTile[i].sourX;
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].sourY = _vMapTile[i].sourY;
-		_map[_vMapTile[i].destX][_vMapTile[i].destY].index = _vMapTile[i].index;
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].obj = _vMapTile[i].obj;
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].terrain = _vMapTile[i].terrain;
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].tileview = TILEVIEW_NO;
 	}
 
+
+	//for (int i = 0; i < _vMapTile.size(); i++) {
+	//	_vMapTile.clear();
+	//	vector<TILE>().swap(_vMapTile);		//메모리 해제
+	//}
 }
 
 vector<TILE> Map::aStar(POINT currentPoint, POINT goalPoint)
@@ -394,8 +420,10 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 		//조건식에 따라 8방향 openlist에 추가
 		bool aU, aD, aR, aL;
 		aU = aD = aR = aL = false;
+
+		bool test = (ATTRIBUTE_UNGO & _map[v.x - 1][v.y].terrain) == ATTRIBUTE_UNGO;
 		//상하좌우
-		if (_map[v.x - 1][v.y].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x - 1, v.y))
+		if ((ATTRIBUTE_UNGO & _map[v.x - 1][v.y].terrain) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x - 1, v.y))
 		{
 			temp.x = v.x - 1;
 			temp.y = v.y;
@@ -403,7 +431,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			add_openlist(temp);
 			aL = true;
 		}
-		if (_map[v.x + 1][v.y].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x + 1, v.y))
+		if ((_map[v.x + 1][v.y].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x + 1, v.y))
 		{
 			temp.x = v.x + 1;
 			temp.y = v.y;
@@ -411,7 +439,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			add_openlist(temp);
 			aR = true;
 		}
-		if (_map[v.x][v.y - 1].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x, v.y - 1))
+		if ((_map[v.x][v.y - 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x, v.y - 1))
 		{
 			temp.x = v.x;
 			temp.y = v.y - 1;
@@ -419,7 +447,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			add_openlist(temp);
 			aU = true;
 		}
-		if (_map[v.x][v.y + 1].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x, v.y + 1))
+		if ((_map[v.x][v.y + 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x, v.y + 1))
 		{
 			temp.x = v.x;
 			temp.y = v.y + 1;
@@ -429,28 +457,28 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 		}
 
 		//대각선
-		if (_map[v.x - 1][v.y - 1].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x - 1, v.y - 1) && aL && aU)
+		if ((_map[v.x - 1][v.y - 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x - 1, v.y - 1) && aL && aU)
 		{
 			temp.x = v.x - 1;
 			temp.y = v.y - 1;
 			temp = calc_vertex(temp, v, goalPoint);
 			add_openlist(temp);
 		}
-		if (_map[v.x + 1][v.y - 1].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x - 1, v.y - 1) && aR && aU)
+		if ((_map[v.x + 1][v.y - 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x - 1, v.y - 1) && aR && aU)
 		{
 			temp.x = v.x + 1;
 			temp.y = v.y - 1;
 			temp = calc_vertex(temp, v, goalPoint);
 			add_openlist(temp);
 		}
-		if (_map[v.x - 1][v.y + 1].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x - 1, v.y - 1) && aL && aD)
+		if ((_map[v.x - 1][v.y + 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x - 1, v.y - 1) && aL && aD)
 		{
 			temp.x = v.x - 1;
 			temp.y = v.y + 1;
 			temp = calc_vertex(temp, v, goalPoint);
 			add_openlist(temp);
 		}
-		if (_map[v.x + 1][v.y + 1].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x - 1, v.y - 1) && aR && aD)
+		if ((_map[v.x + 1][v.y + 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x - 1, v.y - 1) && aR && aD)
 		{
 			temp.x = v.x + 1;
 			temp.y = v.y + 1;
@@ -464,7 +492,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 		bool aU, aD, aR, aL;
 		aU = aD = aR = aL = false;
 		//상하좌우
-		if (_map[v.x - 1][v.y].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x - 1, v.y))
+		if ((_map[v.x - 1][v.y].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x - 1, v.y))
 		{
 			vertex temp;
 			temp = v;
@@ -489,7 +517,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 
 			aL = true;
 		}
-		if (_map[v.x + 1][v.y].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x + 1, v.y))
+		if ((_map[v.x + 1][v.y].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x + 1, v.y))
 		{
 			vertex temp;
 			temp = v;
@@ -512,7 +540,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			};
 			aR = true;
 		}
-		if (_map[v.x][v.y - 1].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x, v.y - 1))
+		if ((_map[v.x][v.y - 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x, v.y - 1))
 		{
 			vertex temp;
 			temp = v;
@@ -536,7 +564,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			add_openlist(temp);
 			aU = true;
 		}
-		if (_map[v.x][v.y + 1].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x, v.y + 1))
+		if ((_map[v.x][v.y + 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x, v.y + 1))
 		{
 			vertex temp;
 			temp = v;
@@ -562,7 +590,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 		}
 
 		//대각선
-		if (_map[v.x - 1][v.y - 1].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x - 1, v.y - 1) && aL && aU)
+		if ((_map[v.x - 1][v.y - 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x - 1, v.y - 1) && aL && aU)
 		{
 			vertex temp;
 			temp = v;
@@ -585,7 +613,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			}
 			add_openlist(temp);
 		}
-		if (_map[v.x + 1][v.y - 1].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x + 1, v.y - 1) && aR && aU)
+		if ((_map[v.x + 1][v.y - 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x + 1, v.y - 1) && aR && aU)
 		{
 			vertex temp;
 			temp = v;
@@ -608,7 +636,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			}
 			add_openlist(temp);
 		}
-		if (_map[v.x - 1][v.y + 1].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x - 1, v.y + 1) && aL && aD)
+		if ((_map[v.x - 1][v.y + 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x - 1, v.y + 1) && aL && aD)
 		{
 			vertex temp;
 			temp = v;
@@ -631,7 +659,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			}
 			add_openlist(temp);
 		}
-		if (_map[v.x + 1][v.y + 1].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x + 1, v.y + 1) && aR && aD)
+		if ((_map[v.x + 1][v.y + 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x + 1, v.y + 1) && aR && aD)
 		{
 			vertex temp;
 			temp = v;
