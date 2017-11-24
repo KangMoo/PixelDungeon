@@ -33,11 +33,8 @@ private:
 
 	//test~
 	vector<TILE> tileCanSee;
-
-	
-
 	vector<sightAngle> angleCanTSee;
-
+	vector<TILE> astarTest;
 	//~test
 
 public:

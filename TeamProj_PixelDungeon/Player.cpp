@@ -42,6 +42,14 @@ void Player::update()
 	frameUpdate();
 	fovCheck();
 	if (_action) action();
+
+	//test~
+	if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON))
+	{
+		astarTest = _map->aStar(_playerPoint, _ptMouse);
+		int a = 0;
+	}
+	//~test
 }
 
 
@@ -94,56 +102,6 @@ void Player::render(POINT camera)
 void Player::draw(POINT camera)
 {
 	//test~
-	//for (auto i : tileCanSee)
-	//{
-	//	switch (i.type)
-	//	{
-	//
-	//	case 0:
-	//		Rectangle(getMemDC(), i.rc.left, i.rc.top, i.rc.right, i.rc.bottom);
-	//		break;
-	//	case 1:
-	//	{
-	//		HBRUSH brush = CreateSolidBrush(RGB(255, 0, 0));
-	//		FillRect(getMemDC(), &i.rc, brush);
-	//		DeleteObject(brush);
-	//	}
-	//	break;
-	//	case 2:
-	//		break;
-	//	case 3:
-	//
-	//		break;
-	//	}
-	//}
-	//
-	//if (KEYMANAGER->isStayKeyDown(VK_SPACE))
-	//{
-	//	for (int i = 0; i < 20; i++)
-	//	{
-	//		for (int j = 0; j < 20; j++)
-	//		{
-	//			switch (tile[i][j].type)
-	//			{
-	//			case 0:
-	//				Rectangle(getMemDC(), tile[i][j].rc.left, tile[i][j].rc.top, tile[i][j].rc.right, tile[i][j].rc.bottom);
-	//				break;
-	//			case 1:
-	//			{
-	//				HBRUSH brush = CreateSolidBrush(RGB(255, 0, 0));
-	//				FillRect(getMemDC(), &tile[i][j].rc, brush);
-	//				DeleteObject(brush);
-	//			}
-	//			break;
-	//			case 2:
-	//				break;
-	//			case 3:
-	//
-	//				break;
-	//			}
-	//		}
-	//	}
-	//}
 	//for (auto i : angleCanTSee)
 	//{
 	//	MoveToEx(getMemDC(), _playerPoint.x, _playerPoint.y, NULL);
@@ -152,9 +110,16 @@ void Player::draw(POINT camera)
 	//	LineTo(getMemDC(), _playerPoint.x, _playerPoint.y);
 	//}
 	//RectangleMakeCenter(getMemDC(), _playerPoint.x, _playerPoint.y, 7, 7);
+
+
 	//~test
 
 	_image->alphaFrameRender(getMemDC(), _playerPoint.x - _image->getFrameWidth() / 2, _playerPoint.y - _image->getFrameHeight() / 2, _currentFrameX, _currentFrameY, 0);
+
+	for (auto i : astarTest)
+	{
+		RectangleMakeCenter(getMemDC(), i.destX*TILESIZE + TILESIZE/2, i.destY*TILESIZE + TILESIZE / 2, 5, 5);
+	}
 }
 
 void Player::addCanTSeeAngle(float sangle, float eangle)
