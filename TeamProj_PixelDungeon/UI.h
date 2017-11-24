@@ -46,9 +46,13 @@ public:
 
 private:
 
-	POINT _status_pane_pos;
+	RECT _backPackRect;
+	RECT _SearchOptionRect;
+	RECT _TurnSkipRect;
 
-	RECT _backPack;
+	RECT _Target_ButtonRect;
+	RECT _Special_ButtonRect;
+	RECT _Monster_DisplyRect;
 
 	//RECT _inventory[4][6];
 
