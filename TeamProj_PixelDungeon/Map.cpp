@@ -3,9 +3,6 @@
 #include "EnemyManager.h"
 #include "Player.h"
 #include "UI.h"
-#include "tinyxml2.h"
-
-using namespace tinyxml2;
 
 Map::Map()
 {
@@ -17,12 +14,12 @@ Map::~Map()
 }
 HRESULT Map::init()
 {
-	for (int i = 0; i < 100; i++) {
-		for (int j = 0; j < 100; j++) {
-			_map[i][j].terrain = TERRAIN_NULL;
-		}
-
-	}
+	//for (int i = 0; i < 100; i++) {
+	//	for (int j = 0; j < 100; j++) {
+	//		_map[i][j].terrain = TERRAIN_NULL;
+	//	}
+	//
+	//}
 
 
 	start = true;
@@ -35,7 +32,6 @@ HRESULT Map::init()
 }
 void Map::release()
 {
-
 }
 void Map::update()
 {
@@ -58,44 +54,42 @@ void Map::draw(POINT camera)
 	if (KEYMANAGER->isStayKeyDown(VK_RIGHT)) temp++;
 	if (KEYMANAGER->isStayKeyDown(VK_LEFT)) temp--;
 	if (start) {
-		for (int i = 0; i < 100; i++) {
-			for (int j = 0; j < 100; j++) {
-				if (_map[i][j].terrain != TERRAIN_NULL)
+		for (int i = 0; i < _vMapTile.size(); i++) {
+				if (_vMapTile[i].terrain != TERRAIN_NULL)
 				{
-					RectangleMake(getMemDC(), _map[i][j].destX * 10, _map[i][j].destY * 10, 10, 10);
-					_map[i][j].img->frameRender(getMemDC(), i * 32, j * 32, _map[i][j].sourX, _map[i][j].sourY);
 
-					if (i == temp)
-					{
-						for (int pix = 0; pix < 32; pix++)
-						{
-							IMAGEMANAGER->alphaRender("blackLineVertical", getMemDC(), i * 32 + pix, j * 32, pix * 150 / 32);
-							//IMAGEMANAGER->alphaRender("blackLineHorizontal", getMemDC(), i * 32, j * 32 + pix, pix * 255 / 32);
-						}
-					}
-					if (i == temp+1)
-					{
-						IMAGEMANAGER->alphaRender("blackTile", getMemDC(), i * 32, j * 32, 150);
-					}
-					if (i == temp+2)
-					{
-						IMAGEMANAGER->alphaRender("blackTile", getMemDC(), i * 32, j * 32, 150);
-						for (int pix = 0; pix < 32; pix++)
-						{
-							IMAGEMANAGER->alphaRender("blackLineVertical", getMemDC(), i * 32 + pix, j * 32, pix * 255 / 32);
-							//IMAGEMANAGER->alphaRender("blackLineHorizontal", getMemDC(), i * 32, j * 32 + pix, pix * 255 / 32);
-						}
+					RectangleMake(getMemDC(), _vMapTile[i].destX * 10, _vMapTile[i].destY * 10, 10, 10);
+					_vMapTile[i].img->frameRender(getMemDC(), _vMapTile[i].destX * TILESIZE, _vMapTile[i].destY * TILESIZE, _vMapTile[i].sourX, _vMapTile[i].sourY);
 
-					}
-					else if (i > temp+2)
-					{
-						IMAGEMANAGER->render("blackTile", getMemDC(), i * 32, j * 32);
-					}
+					//if (i == temp)
+					//{
+					//	for (int pix = 0; pix < 32; pix++)
+					//	{
+					//		IMAGEMANAGER->alphaRender("blackLineVertical", getMemDC(), i * 32 + pix, i * 32, pix * 150 / 32);
+					//		//IMAGEMANAGER->alphaRender("blackLineHorizontal", getMemDC(), i * 32, j * 32 + pix, pix * 255 / 32);
+					//	}
+					//}
+					//if (i == temp+1)
+					//{
+					//	IMAGEMANAGER->alphaRender("blackTile", getMemDC(), i * 32, i * 32, 150);
+					//}
+					//if (i == temp+2)
+					//{
+					//	IMAGEMANAGER->alphaRender("blackTile", getMemDC(), i * 32, i * 32, 150);
+					//	for (int pix = 0; pix < 32; pix++)
+					//	{
+					//		IMAGEMANAGER->alphaRender("blackLineVertical", getMemDC(), i * 32 + pix, i * 32, pix * 255 / 32);
+					//		//IMAGEMANAGER->alphaRender("blackLineHorizontal", getMemDC(), i * 32, j * 32 + pix, pix * 255 / 32);
+					//	}
+
+					//}
+					//else if (i > temp+2)
+					//{
+					//	IMAGEMANAGER->render("blackTile", getMemDC(), i * 32, i * 32);
+					//}
 				}
 			}
-		}
 	}
-	
 
 
 }
@@ -163,6 +157,7 @@ void Map::load() {
 	XMLNode * pRoot = xmlDoc.FirstChild();
 
 	XMLElement * pElement = pRoot->FirstChildElement("List");
+	_tileNum = pElement->FirstChildElement("size")->IntText();
 	XMLElement * pListElement = pElement->FirstChildElement("tile");
 
 	while (pListElement != nullptr) {
@@ -183,21 +178,23 @@ void Map::load() {
 		pListElement = pListElement->NextSiblingElement("tile");
 	}
 
+	//////지금은 타일 10000개로 고정. 나중에 맵 사이즈에 따라 변하게 바꿀 예정
 
-	//지금은 타일 10000개로 고정. 나중에 맵 사이즈에 따라 변하게 바꿀 예정
-	for (int i = 0; i < 10000; i++) {
-		if (i >= _vMapTile.size()) break;
+	//_map = new TILE[_tileNum];
 
-		_map[_vMapTile[i].destX][_vMapTile[i].destY].img = IMAGEMANAGER->findImage("mapTiles");
+	//for (int i = 0; i < _tileNum; i++) {
+	//	if (i >= _vMapTile.size()) break;
 
-		_map[_vMapTile[i].destX][_vMapTile[i].destY].destX = _vMapTile[i].destX;
-		_map[_vMapTile[i].destX][_vMapTile[i].destY].destY = _vMapTile[i].destY;
-		_map[_vMapTile[i].destX][_vMapTile[i].destY].sourX = _vMapTile[i].sourX;
-		_map[_vMapTile[i].destX][_vMapTile[i].destY].sourY = _vMapTile[i].sourY;
-		_map[_vMapTile[i].destX][_vMapTile[i].destY].index = _vMapTile[i].index;
-		_map[_vMapTile[i].destX][_vMapTile[i].destY].obj = _vMapTile[i].obj;
-		_map[_vMapTile[i].destX][_vMapTile[i].destY].terrain = _vMapTile[i].terrain;
-	}
+	//	_map[_vMapTile[i].index].img = IMAGEMANAGER->findImage("mapTiles");
+
+	//	_map[_vMapTile[i].index].destX = _vMapTile[i].destX;
+	//	_map[_vMapTile[i].index].destY = _vMapTile[i].destY;
+	//	_map[_vMapTile[i].index].sourX = _vMapTile[i].sourX;
+	//	_map[_vMapTile[i].index].sourY = _vMapTile[i].sourY;
+	//	_map[_vMapTile[i].index].index = _vMapTile[i].index;
+	//	_map[_vMapTile[i].index].obj = _vMapTile[i].obj;
+	//	_map[_vMapTile[i].index].terrain = _vMapTile[i].terrain;
+	//}
 
 
 

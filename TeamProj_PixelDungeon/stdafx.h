@@ -12,6 +12,7 @@
 #include <tchar.h>
 #include <commdlg.h>	//OPENFILENAME
 
+
 #include "commonMacroFunction.h"
 #include "randomFunction.h"
 #include "keyManager.h"
@@ -28,9 +29,12 @@
 #include "database.h"
 
 #include "PDInfo.h"
+#include "tinyxml2.h"
 
 using namespace std;
 using namespace IOTA_UTIL;
+
+using namespace tinyxml2;
 
 //===============================================
 // ## 윈도우 설정 디파인 ## 2017.07. 28 ##

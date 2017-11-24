@@ -1,8 +1,5 @@
 #include "stdafx.h"
 #include "MapToolScene.h"
-#include "tinyxml2.h"
-
-using namespace tinyxml2;
 
 MapToolScene::MapToolScene()
 {
@@ -112,8 +109,10 @@ void MapToolScene::buttonInput()
 	
 	if (KEYMANAGER->isOnceKeyDown('1')) _inputMode = FLOOR;
 	if (KEYMANAGER->isOnceKeyDown('2')) _inputMode = WALL;
-	if (KEYMANAGER->isOnceKeyDown('3')) _inputMode = VIEWING;
-	if (KEYMANAGER->isOnceKeyDown('4')) _inputMode = DELET;
+	if (KEYMANAGER->isOnceKeyDown('3')) _inputMode = GRASS;
+	if (KEYMANAGER->isOnceKeyDown('4')) _inputMode = DOOR;
+	if (KEYMANAGER->isOnceKeyDown('5')) _inputMode = VIEWING;
+	if (KEYMANAGER->isOnceKeyDown('6')) _inputMode = DELET;
 	
 
 	if (KEYMANAGER->isOnceKeyDown(VK_DELETE)) {
@@ -198,6 +197,8 @@ void MapToolScene::buttonInput()
 
 					if (_inputMode == FLOOR) inputTile.terrain = TERRAIN_FLOOR;
 					if (_inputMode == WALL) inputTile.terrain = TERRAIN_WALL;
+					if (_inputMode == GRASS) inputTile.terrain = TERRAIN_GRASS;
+					if (_inputMode == DOOR) inputTile.terrain = TERRAIN_DOOR_CLOSED;
 
 
 					inputTile.destX = i % GRIDX + _cameraX;
@@ -343,6 +344,8 @@ void MapToolScene::render()
 		int alpha;
 		if (_vMapTile[i].terrain == TERRAIN_FLOOR && _inputMode == FLOOR) alpha = 0;
 		else if (_vMapTile[i].terrain == TERRAIN_WALL && _inputMode == WALL)  alpha = 0;
+		else if (_vMapTile[i].terrain == TERRAIN_GRASS && _inputMode == GRASS)  alpha = 0;
+		else if (_vMapTile[i].terrain == TERRAIN_DOOR_CLOSED && _inputMode == DOOR)  alpha = 0;
 		else if (_inputMode == VIEWING)  alpha = 0;
 		else alpha = 100;
 
@@ -410,19 +413,26 @@ void MapToolScene::render()
 	sprintf(page, "page : %d", _paletPage);
 	TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 2, page, strlen(page));
 	
-	if (_inputMode == FLOOR) {
+	switch (_inputMode) {
+	case FLOOR:
 		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "FLOOR", strlen("FLOOR"));
-	}
-	else if (_inputMode == WALL) {
+		break;
+	case WALL:
 		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "WALL", strlen("WALL"));
-	}
-	else if (_inputMode == VIEWING) {
+		break;
+	case GRASS:
+		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "GRASS", strlen("GRASS"));
+		break;
+	case DOOR:
+		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "DOOR", strlen("DOOR"));
+		break;
+	case VIEWING:
 		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "VIEWING", strlen("VIEWING"));
-	}
-	else if (_inputMode == DELET) {
+		break;
+	case DELET:
 		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "DELET", strlen("DELET"));
+		break;
 	}
-
 	
 	//~test
 }

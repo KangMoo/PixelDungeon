@@ -94,6 +94,7 @@ void Player::action()
 	{
 		_em->setTurn(true);
 	}
+	
 }
 
 

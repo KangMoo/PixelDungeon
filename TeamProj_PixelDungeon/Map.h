@@ -17,12 +17,10 @@ private:
 
 	vector<TILE> _vMapTile;
 
-	TILE _map[100][100];
 
 	TILE _mapTest[10000];
-
-	SAVETILE loadMap[10000];
-
+	
+	int _tileNum;
 
 public:
 	HRESULT init();
@@ -34,7 +32,7 @@ public:
 
 	void load();
 
-	TILE getMap(int i, int j) { return _map[i][j]; }
+	TILE getMap(int i, int j) { return _vMapTile[i]; }
 
 	void setPlayerAddressLink(Player* player) { _player = player; }
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }
@@ -42,5 +40,7 @@ public:
 	void setItemManagerAddressLink(ItemManager* im) { _im = im; }
 	Map();
 	~Map();
-};
 
+
+
+};

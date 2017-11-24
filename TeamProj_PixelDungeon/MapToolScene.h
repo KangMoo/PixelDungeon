@@ -26,6 +26,8 @@
 enum INPUTMODE {
 	FLOOR,
 	WALL,
+	GRASS,
+	DOOR,
 
 	VIEWING,
 	DELET
