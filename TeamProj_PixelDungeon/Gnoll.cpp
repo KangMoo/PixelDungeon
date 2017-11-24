@@ -1,65 +1,84 @@
 #include "stdafx.h"
-#include "Swarm.h"
+#include "Gnoll.h"
 #include "Player.h"
-#include "UI.h"
 #include "Map.h"
+#include "UI.h"
 
-Swarm::Swarm()
+Gnoll::Gnoll()
 {
 }
 
 
-Swarm::~Swarm()
+Gnoll::~Gnoll()
 {
 }
 
-HRESULT Swarm::init(POINT point)
+HRESULT Gnoll::init(POINT point)
 {
+	//입력받은 좌표를 초기 위치로
 	_point = point;
 
+	//각 이미지 개별할당(MANAGER는 다 똑같아져버림)
+	_stay = new image;
+	_stay->init("Img\\Enemy\\gnoll_stay.bmp", 44, 60, 2, 2, true, RGB(255, 0, 255));
 	_move = new image;
-	_move->init("Img\\Enemy\\swarm_stay.bmp", 264, 56, 11, 2, true, RGB(255, 0, 255));
+	_move->init("Img\\Enemy\\gnoll_move.bmp", 88, 60, 4, 2, true, RGB(255, 0, 255));
+	_attack->init("Img\\Enemy\\gnoll_attack.bmp", 48, 60, 2, 2, true, RGB(255, 0, 255));
 	_dead = new image;
-	_dead->init("Img\\Enemy\\swarm_dead.bmp", 96, 60, 4, 2, true, RGB(255, 0, 255));
+	_dead->init("Img\\Enemy\\gnoll_dead.bmp", 84, 52, 3, 2, true, RGB(255, 0, 255));
 
-	_image = _move;
+	//초기 설정은 stay
+	_image = _stay;
 
+	//실제 그려줄 위치는 해당 타일 중심을 기준
 	_pointX = _point.x * TILESIZE + TILESIZE / 2;
 	_pointY = _point.y * TILESIZE + TILESIZE / 2;
 
+	//타일 중심으로 이미지 크기만큼 렉트, 이걸로 그림그림
 	_hitBox = RectMakeCenter(_pointX, _pointY, _image->getFrameWidth(), _image->getFrameHeight());
 	_attBox = RectMakeCenter(_pointX, _pointY, 0, 0);
+
+	//살아있음
 	_isLive = true;
+	//플레이어 발견 못함
 	_findPlayer = false;
+
+	//초기 방향은 랜덤으로
 	int a = RND->getInt(2);
 	if (a == 0) _right = true;
 	else _right = false;
 
+	//최초 프레임은 0, 오른쪽 보면 y=0, 왼쪽이면 y=1
 	_currntFrameX = 0;
 	if (_right) _currntFrameY = 0;
 	else _currntFrameY = 1;
 
+	//프레임 적용
 	_image->setFrameX(_currntFrameX);
 	_image->setFrameY(_currntFrameY);
 
+	//내 턴 아님, 안움직임
 	_action = false;
 	_isMove = false;
 
+	//스탯 설정
 	_statistics.lv = 1;
-	_statistics.maxLv = 10;
-	_statistics.exp = 1;
-	_statistics.hp = 80;
-	_currntHp = 80;
-	_statistics.avd_lck = 5;
-	_statistics.def = 0;
-	a = RND->getFromIntTo(1, 4);
+	_statistics.maxLv = 8;
+	_statistics.exp = 2;
+	_statistics.hp = 12;
+	_currntHp = 12;
+	_statistics.avd_lck = 4;
+	_statistics.def = 2;
+	a = RND->getFromIntTo(2, 5);
 	_statistics.str = a;
-	_statistics.atk_lck = 12;
-	
+	_statistics.atk_lck = 11;
+
+	//깨어있을지 자고있을지 랜덤 설정
 	a = RND->getInt(2);
 	if (a == 0) _myState = ENEMYSTATE_SLEEP;
 	else _myState = ENEMYSTATE_IDLE;
 
+	//초기값 설정
 	_movePoint = PointMake(0, 0);
 	_frameCount = 0;
 
@@ -71,68 +90,93 @@ HRESULT Swarm::init(POINT point)
 
 	return S_OK;
 }
-HRESULT Swarm::init(POINT point, int currntHp)
+
+void Gnoll::release()
 {
-	//분열했다!
-	_point = point;
+	SAFE_RELEASE(_image);
+	SAFE_DELETE(_image);
 
-	_move = new image;
-	_move->init("Img\\Enemy\\swarm_stay.bmp", 264, 56, 11, 2, true, RGB(255, 0, 255));
-	_dead = new image;
-	_dead->init("Img\\Enemy\\swarm_dead.bmp", 96, 60, 4, 2, true, RGB(255, 0, 255));
+	SAFE_RELEASE(_stay);
+	SAFE_DELETE(_stay);
 
-	_image = _move;
+	SAFE_RELEASE(_move);
+	SAFE_DELETE(_move);
 
-	_pointX = _point.x * TILESIZE + TILESIZE / 2;
-	_pointY = _point.y * TILESIZE + TILESIZE / 2;
+	SAFE_RELEASE(_attack);
+	SAFE_DELETE(_attack);
 
-	_hitBox = RectMakeCenter(_pointX, _pointY, _image->getFrameWidth(), _image->getFrameHeight());
-	_attBox = RectMakeCenter(_pointX, _pointY, 0, 0);
-	_isLive = true;
-	//공격당해 분열당한거니 이미 발견한 상태
-	_findPlayer = true;
-	int a = RND->getInt(2);
-	if (a == 0) _right = true;
-	else _right = false;
+	SAFE_RELEASE(_dead);
+	SAFE_DELETE(_dead);
+}
 
-	_currntFrameX = 0;
+
+void Gnoll::getDamaged(int damage)
+{
+	_currntHp -= damage;
+}
+
+void Gnoll::draw(POINT camera)
+{
+	_image->frameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y);
+}
+
+
+void Gnoll::frameUpdate()
+{
+	_frameCount++;
+
+	if (_findPlayer)
+	{
+		if (_player->getPoint().x >= _point.x) _right = true;
+		else _right = false;
+	}
 	if (_right) _currntFrameY = 0;
 	else _currntFrameY = 1;
 
-	_image->setFrameX(_currntFrameX);
-	_image->setFrameY(_currntFrameY);
+	if (_frameCount >= 10)
+	{
+		_frameCount = 0;
+		switch (_myState)
+		{
+		case ENEMYSTATE_SLEEP:
+			_image = _stay;
+			_currntFrameX = 0;
+			_image->setFrameX(_currntFrameX);
+			_image->setFrameY(_currntFrameY);
+			break;
+		case ENEMYSTATE_IDLE:
+			_image = _stay;
+			_currntFrameX++;
+			if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = 0;
+			_image->setFrameX(_currntFrameX);
+			_image->setFrameY(_currntFrameY);
+			break;
+		case ENEMYSTATE_MOVE:
+			_image = _move;
+			_currntFrameX++;
+			if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = 0;
+			_image->setFrameX(_currntFrameX);
+			_image->setFrameY(_currntFrameY);
+			break;
+		case ENEMYSTATE_ATTACK:
+			_image = _attack;
+			_currntFrameX++;
+			if (_currntFrameX > _image->getMaxFrameX())
+			{
+				_currntFrameX = 0;
+				_myState = ENEMYSTATE_IDLE;
+				_image = _stay;
+			}
+			_image->setFrameX(_currntFrameX);
+			_image->setFrameY(_currntFrameY);
+			break;
+		}
+	}
 
-	_action = false;
-	_isMove = false;
-
-	_statistics.lv = 1;
-	_statistics.maxLv = 10;
-	_statistics.exp = 1;
-	_statistics.hp = 80;
-	_currntHp = currntHp;
-	_statistics.avd_lck = 5;
-	_statistics.def = 0;
-	a = RND->getFromIntTo(1, 4);
-	_statistics.str = a;
-	_statistics.atk_lck = 12;
-	
-	//이미 공격당했으니 상태는 무조건 발각한 상태
-	_myState = ENEMYSTATE_IDLE;
-
-
-	_movePoint = PointMake(0, 0);
-	_frameCount = 0;
-
-	/*ENEMYSTATE_SLEEP,	//플레이어를 찾지 못한상태/수면상태
-	ENEMYSTATE_IDLE,	//플레이어를 찾은 상태에서의 기본
-	ENEMYSTATE_MOVE,
-	ENEMYSTATE_ATTACK,
-	ENEMYSTATE_END*/
-
-	return S_OK;
+	_hitBox = RectMakeCenter(_pointX, _pointY, _image->getFrameWidth(), _image->getFrameHeight());
 }
 
-void Swarm::action()
+void Gnoll::action()
 {
 	if (_myState == ENEMYSTATE_SLEEP)
 	{
@@ -278,7 +322,6 @@ void Swarm::action()
 	}
 	else if (_myState == ENEMYSTATE_MOVE)
 	{
-
 		//좌표가 주어졌으면 해당 좌표로 가야한다
 		//중심좌표를 구한다
 		float x = _movePoint.x * TILESIZE + TILESIZE / 2;
@@ -320,87 +363,4 @@ void Swarm::action()
 
 
 	frameUpdate();
-}
-
-void Swarm::frameUpdate()
-{
-	_frameCount++;
-
-	if (_findPlayer)
-	{
-		if (_player->getPoint().x >= _point.x) _right = true;
-		else _right = false;
-	}
-	if (_right) _currntFrameY = 0;
-	else _currntFrameY = 1;
-
-	if (_frameCount >= 10)
-	{
-		_frameCount = 0;
-		switch (_myState)
-		{
-		case ENEMYSTATE_SLEEP:	case ENEMYSTATE_IDLE:
-			_image = _move;
-			_currntFrameX = 0;
-			_image->setFrameX(_currntFrameX);
-			_image->setFrameY(_currntFrameY);
-
-			break;
-		case ENEMYSTATE_MOVE:
-			_image = _move;
-			_currntFrameX++;
-			if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = 0;
-			_image->setFrameX(_currntFrameX);
-			_image->setFrameY(_currntFrameY);
-			break;
-		}
-	}
-
-	_hitBox = RectMakeCenter(_pointX, _pointY, _image->getFrameWidth(), _image->getFrameHeight());
-}
-
-void Swarm::getDamaged(int damage)
-{
-	int a = RND->getInt(100);
-
-	//0~99 중에 나온 숫자가 회피율보다 낮다면 회피
-	if (a < _statistics.avd_lck)
-	{
-		return;
-	}
-	else
-	{
-		//높다면 뎀지받음
-		_currntHp -= damage;
-		if (_currntHp > 0)
-		{
-			//죽지 않았다면 분열을 해야한다
-			//이걸 어떻게 하지?->ENEMYMANAGER에서 처리하자
-			//ENEMY에 swarm을 구별할 수 있는 무언가를 추가해주고 나머진 false, 얘만 true로 해줘서
-			//그게 true면 분열, 아님 냅두게
-			
-		}
-		else
-		{
-			_isLive = false;
-		}
-	}
-}
-
-
-void Swarm::draw(POINT camera)
-{
-	_image->frameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y);
-}
-
-void Swarm::release()
-{
-	SAFE_RELEASE(_image);
-	SAFE_DELETE(_image);
-
-	SAFE_RELEASE(_move);
-	SAFE_DELETE(_move);
-	
-	SAFE_RELEASE(_dead);
-	SAFE_DELETE(_dead);
 }

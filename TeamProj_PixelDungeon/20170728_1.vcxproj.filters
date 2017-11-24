@@ -210,6 +210,9 @@
     <ClInclude Include="Swarm.h">
       <Filter>MainGame\Enemy\Enemy</Filter>
     </ClInclude>
+    <ClInclude Include="Gnoll.h">
+      <Filter>MainGame\Enemy\Enemy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -318,6 +321,9 @@
       <Filter>MainGame\Enemy\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="Rat.cpp">
+      <Filter>MainGame\Enemy\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Gnoll.cpp">
       <Filter>MainGame\Enemy\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
