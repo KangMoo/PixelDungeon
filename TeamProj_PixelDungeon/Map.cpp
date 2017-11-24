@@ -26,13 +26,13 @@ HRESULT Map::init()
 	load();
 
 
-
-
+	IMAGEMANAGER->addImage("blackLineVertical", "Img//Map//blackdot.bmp", 1, 32, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("blackLineHorizontal", "Img//Map//blackdot.bmp", 32, 1, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("blackTile", "Img//Map//blackdot.bmp", 32, 32, true, RGB(255, 0, 255));
 	return S_OK;
 }
 void Map::release()
 {
-
 }
 void Map::update()
 {
@@ -51,32 +51,47 @@ void Map::render(POINT camera)
 }
 void Map::draw(POINT camera)
 {
+	int temp = 7;
+	if (KEYMANAGER->isStayKeyDown(VK_RIGHT)) temp++;
+	if (KEYMANAGER->isStayKeyDown(VK_LEFT)) temp--;
 	if (start) {
-		for (int i = 0; i < 100; i++) {
-			for (int j = 0; j < 100; j++) {
-				if (_map[i][j].terrain != TERRAIN_NULL)
+		for (int i = 0; i < _vMapTile.size(); i++) {
+				if (_vMapTile[i].terrain != TERRAIN_NULL)
 				{
-					switch (_map[i][j].tileview)
-					{
-					case TILEVIEW_NO:
-						_map[i][j].img->frameRender(getMemDC(), i * TILESIZE, j * TILESIZE, _map[i][j].sourX, _map[i][j].sourY);
-						IMAGEMANAGER->render("blackTile", getMemDC(), i*TILESIZE, j*TILESIZE);
-						break;
-					case TILEVIEW_HALF:
-						_map[i][j].img->frameRender(getMemDC(), i * TILESIZE, j * TILESIZE, _map[i][j].sourX, _map[i][j].sourY);
-						IMAGEMANAGER->alphaRender("blackTile", getMemDC(), i*TILESIZE, j*TILESIZE, 150);
-						break;
-					case TILEVIEW_ALL:
-						_map[i][j].img->frameRender(getMemDC(), i * TILESIZE, j * TILESIZE, _map[i][j].sourX, _map[i][j].sourY);
-						break;
-					case TILEVIEW_END:
-						break;
-					}
 
+
+					RectangleMake(getMemDC(), _vMapTile[i].destX * 10, _vMapTile[i].destY * 10, 10, 10);
+					_vMapTile[i].img->frameRender(getMemDC(), _vMapTile[i].destX * TILESIZE, _vMapTile[i].destY * TILESIZE, _vMapTile[i].sourX, _vMapTile[i].sourY);
+
+					//if (i == temp)
+					//{
+					//	for (int pix = 0; pix < 32; pix++)
+					//	{
+					//		IMAGEMANAGER->alphaRender("blackLineVertical", getMemDC(), i * 32 + pix, i * 32, pix * 150 / 32);
+					//		//IMAGEMANAGER->alphaRender("blackLineHorizontal", getMemDC(), i * 32, j * 32 + pix, pix * 255 / 32);
+					//	}
+					//}
+					//if (i == temp+1)
+					//{
+					//	IMAGEMANAGER->alphaRender("blackTile", getMemDC(), i * 32, i * 32, 150);
+					//}
+					//if (i == temp+2)
+					//{
+					//	IMAGEMANAGER->alphaRender("blackTile", getMemDC(), i * 32, i * 32, 150);
+					//	for (int pix = 0; pix < 32; pix++)
+					//	{
+					//		IMAGEMANAGER->alphaRender("blackLineVertical", getMemDC(), i * 32 + pix, i * 32, pix * 255 / 32);
+					//		//IMAGEMANAGER->alphaRender("blackLineHorizontal", getMemDC(), i * 32, j * 32 + pix, pix * 255 / 32);
+					//	}
+
+					//}
+					//else if (i > temp+2)
+					//{
+					//	IMAGEMANAGER->render("blackTile", getMemDC(), i * 32, i * 32);
+					//}
 				}
 
 			}
-		}
 	}
 
 
@@ -85,14 +100,6 @@ void Map::draw(POINT camera)
 
 
 void Map::load() {
-
-	//임시로 만듬. 나중에 바꿔야지...
-
-
-
-
-
-
 
 
 	//TILE loadMap[10000];
@@ -112,32 +119,66 @@ void Map::load() {
 	////	
 	////}
 
-	/////**/
 
-	HANDLE file;
-	DWORD read;
-	file = CreateFile("mapSave.map", GENERIC_READ, 0, NULL,
-		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	///////**/
+	//
+	//HANDLE file;
+	//DWORD read;
+	//file = CreateFile("mapSave.map", GENERIC_READ, 0, NULL,
+	//	OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
-	ReadFile(file, loadMap, sizeof(SAVETILE) * 10000, &read, NULL);
+	//ReadFile(file, loadMap, sizeof(SAVETILE) * 10000, &read, NULL);
+
+	//_vMapTile.clear();
+
+	//for (int i = 0; i < 10000; i++) {
+	//	TILE tile;
+
+	//	tile.img = IMAGEMANAGER->findImage("mapTiles");
+
+	//	tile.destX = loadMap[i].destX;
+	//	tile.destY = loadMap[i].destY;
+	//	tile.sourX = loadMap[i].sourX;
+	//	tile.sourY = loadMap[i].sourY;
+	//	tile.index = loadMap[i].index;
+	//	tile.obj = loadMap[i].obj;
+	//	tile.terrain = loadMap[i].terrain;
+
+	//	_vMapTile.push_back(tile);
+
+	//}
+
 
 	_vMapTile.clear();
 
-	for (int i = 0; i < 10000; i++) {
+
+	//xml 로드
+	XMLDocument xmlDoc;
+
+	XMLError eResult = xmlDoc.LoadFile("SavedData.xml");
+
+	XMLNode * pRoot = xmlDoc.FirstChild();
+
+	XMLElement * pElement = pRoot->FirstChildElement("List");
+	_tileNum = pElement->FirstChildElement("size")->IntText();
+	XMLElement * pListElement = pElement->FirstChildElement("tile");
+
+	while (pListElement != nullptr) {
 		TILE tile;
 
-		tile.img = IMAGEMANAGER->findImage("mapTiles");
+		tile.img = IMAGEMANAGER->findImage("mapTiles"); //임시, 나중에 주소값으로 바꿀거
 
-		tile.destX = loadMap[i].destX;
-		tile.destY = loadMap[i].destY;
-		tile.sourX = loadMap[i].sourX;
-		tile.sourY = loadMap[i].sourY;
-		tile.index = loadMap[i].index;
-		tile.obj = loadMap[i].obj;
-		tile.terrain = loadMap[i].terrain;
+		tile.destX = pListElement->FirstChildElement("destX")->IntText();
+		tile.destY = pListElement->FirstChildElement("destY")->IntText();
+		tile.sourX = pListElement->FirstChildElement("sourX")->IntText();
+		tile.sourY = pListElement->FirstChildElement("sourY")->IntText();
+		tile.index = pListElement->FirstChildElement("index")->IntText();
+		tile.obj = (OBJ)pListElement->FirstChildElement("obj")->IntText();
+		tile.terrain = (TERRAIN)pListElement->FirstChildElement("terrain")->IntText();
 
 		_vMapTile.push_back(tile);
 
+		pListElement = pListElement->NextSiblingElement("tile");
 	}
 
 	for (int i = 0; i < 10000; i++) {
@@ -154,10 +195,6 @@ void Map::load() {
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].terrain = _vMapTile[i].terrain;
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].tileview = TILEVIEW_NO;
 	}
-
-
-
-	CloseHandle(file);
 
 }
 

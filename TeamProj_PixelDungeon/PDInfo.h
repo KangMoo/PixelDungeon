@@ -170,18 +170,24 @@ typedef struct tagItem {
 
 
 
+#define ATTRIBUTE_UNSIGHT 0x0001
+#define ATTRIBUTE_UNGO 0x0002
 
 // 맵
 enum TERRAIN {
 	TERRAIN_NULL = 0,
+
 	TERRAIN_FLOOR,
+	TERRAIN_WALL = TERRAIN_FLOOR + ATTRIBUTE_UNGO,
 
-	TERRAIN_WALL,
+	TERRAIN_DOOR_OPEN,
+	TERRAIN_DOOR_CLOSED = TERRAIN_DOOR_OPEN + ATTRIBUTE_UNSIGHT,
+	TERRAIN_DOOR_LOCKED = TERRAIN_DOOR_OPEN + ATTRIBUTE_UNGO,
 
-	TERRAIN_TRAP,
-
-	TERRAIN_GRASS
+	TERRAIN_GRASS_CUT,
+	TERRAIN_GRASS = TERRAIN_GRASS_CUT + ATTRIBUTE_UNSIGHT
 };
+
 
 enum OBJ {
 	OBJ_NONE,
@@ -190,11 +196,7 @@ enum OBJ {
 	OBJ_TRAP_ACTIVATE
 };
 
-enum INPUTMODE {
-	FLOOR,
-	WALL,
-	VIEWING
-};
+
 
 enum TILEVIEW {
 	TILEVIEW_NO,
@@ -221,8 +223,12 @@ typedef struct tagSaveTile {
 	TILEVIEW tileview;
 	TERRAIN terrain;
 	OBJ obj;
-
 }SAVETILE;
+
+typedef struct tagSaveMap {
+	int size;
+	SAVETILE* tiles;
+}SAVEMAP;
 
 typedef struct tagGrid {
 	image* img; //들어있는 이미지

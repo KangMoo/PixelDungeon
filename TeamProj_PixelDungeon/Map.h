@@ -26,19 +26,18 @@ private:
 	ItemManager* _im;
 
 	bool start;
-
+	TILE _map[100][100];
 	vector<TILE> _vMapTile;
 
-	TILE _map[100][100];
 
 	TILE _mapTest[10000];
-
-	SAVETILE loadMap[10000];
 
 	//A*~
 	vector<vertex> _openlist;
 	vector<vertex> _closelist;
 	//~A*
+	
+	int _tileNum;
 public:
 	HRESULT init();
 	void release();
@@ -49,7 +48,6 @@ public:
 
 	void load();
 
-	TILE* getMap() { return *_map; }
 	TILE getTile(int i, int j) { return _map[i][j]; }
 	void setTile(TILE tile, int i, int j) { _map[i][j] = tile; }
 
@@ -76,5 +74,7 @@ public:
 	void setItemManagerAddressLink(ItemManager* im) { _im = im; }
 	Map();
 	~Map();
-};
 
+
+
+};

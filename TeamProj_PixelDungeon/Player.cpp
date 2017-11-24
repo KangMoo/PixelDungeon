@@ -19,13 +19,12 @@ HRESULT Player::init(POINT point)
 
 	addImg();
 	//test~
-	_playerPoint = PointMake(_map->getTile(3, 3).destX*TILESIZE + TILESIZE / 2, _map->getTile(3, 3).destY*TILESIZE + TILESIZE / 2);
+	_playerPoint = PointMake(_map->getTile(7, 7).destX*TILESIZE + TILESIZE / 2, _map->getTile(7, 7).destY*TILESIZE + TILESIZE / 2);
 
 
 
 
 	//~test
-	_maptile = _map->getMap();
 	_playerState = PLAYERSTATE_IDLE;
 	_frameUpdateTimer = TIMEMANAGER->getWorldTime();
 	_currentFrameX = _currentFrameY = 0;
@@ -88,6 +87,7 @@ void Player::action()
 	{
 		_em->setTurn(true);
 	}
+	
 }
 
 
