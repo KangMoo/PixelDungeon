@@ -17,10 +17,21 @@ ItemManager::~ItemManager()
 
 HRESULT ItemManager::init()
 {
-	_item = new Item;
-	_item->init();
-	imgInit();
-	
+	//================ F U N C T I O N =================
+	imgInit();	
+	swap();
+
+	//================ I D E N T I F I E D ==================
+	for (int i = 0; i < 7; i++)
+	{
+		_potionIdentified[i] = false;
+	}
+
+	for (int i = 0; i < 5; i++)
+	{
+		_scrollIdentified[i] = false;
+	}
+	//==================================================
 	setItemToBag(NAME_CLOTH);
 	setItemToBag(NAME_SHORT_SWORD);
 	setItemToBag(NAME_BATTLE_AXE);
@@ -32,13 +43,9 @@ HRESULT ItemManager::init()
 
 	setItemToBag(NAME_UNKNOWN_MEAT);
 	setItemToBag(NAME_BOTTLE);
-	//setItemToBag(NAME_FORZEN);
-	//setItemToBag(NAME_PURIFY);
-	//setItemToBag(NAME_UPGRADE);
+	setItemToBag(NAME_PURIFY);
+	setItemToBag(NAME_UPGRADE);
 
-	//================ F U N C T I O N =================
-	swap();
-	imgInit();
 	
 
 	return S_OK;
@@ -58,34 +65,42 @@ void ItemManager::update()
 		case NAME_OLD_SHORT_SWORD:
 			_viBag->minPoint = 1 + _viBag->upgrade;
 			_viBag->maxPoint = 10 + _viBag->upgrade * 2;
+			_viBag->Power = 10 - (_viBag->upgrade / 3) + 1;
 			break;
 		case NAME_SHORT_SWORD:
 			_viBag->minPoint = 2 + _viBag->upgrade;
 			_viBag->maxPoint = 15 + _viBag->upgrade * 3;
+			_viBag->Power = 12 - (_viBag->upgrade / 3) + 1;
 			break;
 		case NAME_SWORD:
 			_viBag->minPoint = 3 + _viBag->upgrade;
 			_viBag->maxPoint = 20 + _viBag->upgrade * 4;
+			_viBag->Power = 14 - (_viBag->upgrade / 3) + 1;
 			break;
 		case NAME_SPEAR:
 			_viBag->minPoint = 2 + _viBag->upgrade;
 			_viBag->maxPoint = 20 + _viBag->upgrade * 3;
+			_viBag->Power = 12 - (_viBag->upgrade / 3) + 1;
 			break;
 		case NAME_BATTLE_AXE:
 			_viBag->minPoint = 4 + _viBag->upgrade;
 			_viBag->maxPoint = 20 + _viBag->upgrade * 9;
+			_viBag->Power = 16 - (_viBag->upgrade / 3) + 1;
 			break;
 		case NAME_CLOTH:
 			_viBag->minPoint = 0 + _viBag->upgrade;
 			_viBag->maxPoint = 2 + _viBag->upgrade;
+			_viBag->Power = 10 - (_viBag->upgrade / 3) + 1;
 			break;
 		case NAME_LEATHER:
 			_viBag->minPoint = 0 + _viBag->upgrade;
 			_viBag->maxPoint = 4 + _viBag->upgrade * 2;
+			_viBag->Power = 12 - (_viBag->upgrade / 3) + 1;
 			break;
 		case NAME_MAIL:
 			_viBag->minPoint = 0 + _viBag->upgrade;
 			_viBag->maxPoint = 6 + _viBag->upgrade * 3;
+			_viBag->Power = 14 - (_viBag->upgrade / 3) + 1;
 			break;
 		case NAME_RING_POWER:
 			_viBag->stat.str = 1 + _viBag->upgrade;
@@ -115,7 +130,11 @@ void ItemManager::update()
 	{
 		_vBag[i].position = i;
 	}
-
+	for ( _viItem = _vItem.begin(); _viItem != _vItem.end(); ++_viItem)
+	{
+		_viItem->rc = RectMakeCenter(_viItem->point.x, _viItem->point.y,
+			_viItem->img->getWidth(), _viItem->img->getHeight());
+	}
 	bulletMove();
 	throwMove();
 }
@@ -132,6 +151,10 @@ void ItemManager::draw(POINT camera)
 	for ( _viThrow = _vThrow.begin(); _viThrow != _vThrow.end(); ++_viThrow)
 	{
 		_viThrow->img->render(getMemDC(), _viThrow->x + camera.x, _viThrow->y + camera.y);
+	}
+	for ( _viItem = _vItem.begin(); _viItem != _vItem.end(); ++_viItem)
+	{
+		_viItem->img->render(getMemDC(), _viItem->rc.left + camera.x, _viItem->rc.top + camera.y);
 	}
 }
 
@@ -626,7 +649,8 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 			break;
 		}
 		item->equip = false;
-		item->contentsHide = true;
+		if(!_scrollIdentified[0]) item->contentsHide = true;
+		else item->contentsHide = false;
 
 		break;
 	case NAME_UPGRADE:
@@ -645,7 +669,8 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 			break;
 		}
 		item->equip = false;
-		item->contentsHide = true;
+		if(!_scrollIdentified[1]) item->contentsHide = true;
+		else item->contentsHide = false;
 		break;
 	case NAME_PURIFY:
 		item->type = TYPE_SCROLL;
@@ -663,7 +688,8 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 			break;
 		}
 		item->equip = false;
-		item->contentsHide = true;
+		if (!_scrollIdentified[2]) item->contentsHide = true;
+		else item->contentsHide = false;
 		break;
 	case NAME_MAP:
 		item->type = TYPE_SCROLL;
@@ -681,7 +707,8 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 			break;
 		}
 		item->equip = false;
-		item->contentsHide = true;
+		if (!_scrollIdentified[3]) item->contentsHide = true;
+		else item->contentsHide = false;
 		break;
 	case NAME_RECHARGE:
 		item->type = TYPE_SCROLL;
@@ -699,7 +726,8 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 			break;
 		}
 		item->equip = false;
-		item->contentsHide = true;
+		if (!_scrollIdentified[4]) item->contentsHide = true;
+		else item->contentsHide = false;
 		break;
 	case NAME_BOTTLE:		// ===============Æ÷¼Ç ===================
 		item->type = TYPE_POTION;
@@ -1135,7 +1163,6 @@ void ItemManager::useItem(int position, int target)
 				case NAME_UPGRADE:
 
 					break;
-
 				}
 				break;
 

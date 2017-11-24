@@ -52,6 +52,9 @@ private:
 	int _scroll[5];
 	int _acc[2];
 
+	bool _potionIdentified[7];
+	bool _scrollIdentified[5];
+
 public:
 	HRESULT init();
 	void release();
