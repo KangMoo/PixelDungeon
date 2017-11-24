@@ -36,7 +36,7 @@ private:
 	vector<vertex> _openlist;
 	vector<vertex> _closelist;
 	//~A*
-	
+
 	int _tileNum;
 public:
 	HRESULT init();
@@ -48,6 +48,7 @@ public:
 
 	void load();
 
+	TILE getMap(int i, int j) { return _map[i][j]; }
 	TILE getTile(int i, int j) { return _map[i][j]; }
 	void setTile(TILE tile, int i, int j) { _map[i][j] = tile; }
 
