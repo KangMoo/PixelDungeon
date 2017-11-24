@@ -17,8 +17,7 @@ ItemManager::~ItemManager()
 
 HRESULT ItemManager::init()
 {
-	_item = new Item;
-	_item->init();
+	swap();
 	imgInit();
 	
 	setItemToBag(NAME_CLOTH);
@@ -32,14 +31,16 @@ HRESULT ItemManager::init()
 
 	setItemToBag(NAME_UNKNOWN_MEAT);
 	setItemToBag(NAME_BOTTLE);
-	//setItemToBag(NAME_FORZEN);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_COOKED_MEAT);
+	setItemToBag(NAME_MAP);
+	setItemToBag(NAME_IDENTIFY);
 	//setItemToBag(NAME_PURIFY);
+	//setItemToBag(NAME_DEW);
 	//setItemToBag(NAME_UPGRADE);
 
 	//================ F U N C T I O N =================
-	swap();
-	imgInit();
-	
+
 
 	return S_OK;
 }
