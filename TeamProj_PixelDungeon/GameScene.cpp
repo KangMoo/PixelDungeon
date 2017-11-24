@@ -80,10 +80,7 @@ void GameScene::render()
 	_em->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
 	_player->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
 	_ui->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
-	
-	//test~
-	TextOut(getMemDC(), 100, 100, "∞‘¿”æ¿", strlen("∞‘¿”æ¿"));
-	//~test
+
 }
 
 void GameScene::addImg()
