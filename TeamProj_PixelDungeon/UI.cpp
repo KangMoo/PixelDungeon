@@ -69,7 +69,7 @@ HRESULT UI::init()
 	_Target_ButtonRect = RectMake(WINSIZEX - IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), 460, IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), IMAGEMANAGER->findImage("Target_button")->getFrameHeight());
 
 
-
+	
 	return S_OK;
 }
 
@@ -181,6 +181,7 @@ void UI::draw(POINT camera)
 	}
 
 	//IMAGEMANAGER->findImage("status_pane")->render(getMemDC(), _status_pane_pos.x, _status_pane_pos.y); //°íÀÎ
+	TIMEMANAGER->render(getMemDC());
 }
 
 void UI::ResetInventory()
