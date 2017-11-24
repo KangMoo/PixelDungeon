@@ -7,6 +7,21 @@ class Map;
 class UI;
 class Player;
 
+struct tagBullet
+{
+	image* img;
+	RECT rc;
+	float x, y;
+	float initX, initY;
+	float destX, destY;
+	float angle;
+	float speed;
+	bool fire;
+	int count;
+	int position;
+};
+
+
 class ItemManager :public gameNode
 {
 private:
@@ -15,6 +30,14 @@ private:
 
 	vector<tagItem> _vBag;
 	vector<tagItem>::iterator _viBag;
+
+	vector<tagBullet> _vBullet;
+	vector<tagBullet>::iterator _viBullet;
+
+	vector<tagBullet> _vThrow;
+	vector<tagBullet>::iterator _viThrow;
+
+
 
 private:
 	EnemyManager* _em;
@@ -29,6 +52,9 @@ private:
 	int _scroll[5];
 	int _acc[2];
 
+	bool _potionIdentified[7];
+	bool _scrollIdentified[5];
+
 public:
 	HRESULT init();
 	void release();
@@ -36,22 +62,29 @@ public:
 	void render(POINT camera);
 	void draw(POINT camera);
 
+	void setItem(tagItem* item, ITEMNAME name);
 	void swap();
 	void imgInit();
 
 
+	void equipItem(int position);
+	void unequipItem(int position);
+	void useItem(int position);
+	void useItem(int position, float x, float y);
+	void useItem(int position, int target);
 
-	// 아이템 사용 함수 ( 주문서, 씨앗, 포션, 다트) 
-	void useToScroll(ITEMNAME name, ITEMUSEMETHOD method);
-	void useToSeed(ITEMNAME name, ITEMUSEMETHOD method);
-	void useToPotion(ITEMNAME name, ITEMUSEMETHOD method);
-	void useToDart(ITEMNAME name, ITEMUSEMETHOD method);
-
+	//=========== T H R O W ===============
+	void fire(image* img, float x, float y, float dextX, float destY);
+	void throwItem(int position, float x, float y, float destX, float destY);
+	void bulletMove();
+	void throwMove();
+	void removeBullet(int arrNum);
+	void removeThrow(int arrNum);
 
 	void setItemToBag(ITEMNAME name);
-	void setItemToField(ITEMNAME name);
-	void setItemToBag(ITEMNAME name, bool identify, bool isCursed, int upgrade);
-	void setItemToField(ITEMNAME name, bool identify, bool isCursed, int upgrade);
+	void setItemToField(ITEMNAME name, float x, float y);
+	void setItemToBag(ITEMNAME name, bool identify, bool isCursed, int upgrade, int numOfItem);
+	void setItemToField(ITEMNAME name, float x, float y, bool identify, bool isCursed, int upgrade, int numOfItem);
 
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }
 	void setMapAddressLink(Map* map) { _map = map; }
@@ -67,6 +100,13 @@ public:
 
 	vector<tagItem> getvBag() { return _vBag; }
 	vector<tagItem>::iterator getvBagIter() { return _viBag; }
+
+	vector<tagBullet> getVBullet() { return _vBullet; }
+	vector<tagBullet>::iterator getVBulletIter() { return _viBullet; }
+
+	vector<tagBullet> getVThrow() { return _vThrow; }
+	vector<tagBullet>::iterator getVThrowIter() { return _viThrow; }
+
 
 	ItemManager();
 	~ItemManager();
