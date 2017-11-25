@@ -57,6 +57,8 @@ HRESULT Mimic::init(POINT point, int cog)
 	_attBox = RectMake(0, 0, 0, 0);				//일단 초기화를 해줍시다.
 
 	_findPlayer = false;						//플레이어를 찾지 못했습니다.
+	_playerChack = false;						//플레이어가 건드리지 않았습니다.
+	_mimicAct = false;							//아직 활동중이 아닙니다.
 
 	_deadAlpha = 255;
 
@@ -71,6 +73,8 @@ HRESULT Mimic::init(POINT point, int cog)
 
 void Mimic::release()
 {
+	SAFE_RELEASE(_image);
+	SAFE_DELETE(_image);
 
 }
 

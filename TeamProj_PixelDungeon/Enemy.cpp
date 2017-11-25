@@ -68,3 +68,8 @@ void Enemy::frameUpdate()
 {
 
 }
+
+void Enemy::getDamaged(int damage)
+{
+
+}
