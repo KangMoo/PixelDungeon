@@ -162,10 +162,6 @@ void MapToolScene::buttonInput()
 			//		if (_sele 
 			//	}
 
-
-
-
-
 			if (KEYMANAGER->isOnceKeyDown(VK_RBUTTON)) {
 				_mapSelected.clear();
 				_mapSelected.push_back(_mapRect[i]);
@@ -193,6 +189,7 @@ void MapToolScene::buttonInput()
 								_viMapTile++;
 						}
 					}
+					return;
 				}
 
 
