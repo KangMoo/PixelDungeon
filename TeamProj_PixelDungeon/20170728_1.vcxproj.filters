@@ -216,6 +216,9 @@
     <ClInclude Include="Gnoll.h">
       <Filter>MainGame\Enemy\Enemy</Filter>
     </ClInclude>
+    <ClInclude Include="mimic.h">
+      <Filter>MainGame\Enemy\Enemy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -330,6 +333,9 @@
       <Filter>MainGame\Enemy\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="Gnoll.cpp">
+      <Filter>MainGame\Enemy\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="mimic.cpp">
       <Filter>MainGame\Enemy\Enemy</Filter>
     </ClCompile>
   </ItemGroup>

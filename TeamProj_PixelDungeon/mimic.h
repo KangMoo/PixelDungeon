@@ -1,20 +1,14 @@
 #pragma once
 #include "Enemy.h"
-
-enum MYCOLOR
-{
-	BROWN,
-	WHITE
-};
-class Rat : public Enemy
+class Mimic : public Enemy
 {
 private:
 
-	int _color;
-	int _myColor;
+	bool _playerChack; //플레이어가 건드렸는지 여부
+	bool _mimicAct;		//미믹 활동 여부
 
 public:
-	virtual HRESULT init(POINT point, int cog);//인식범위 추기
+	HRESULT init(POINT point, int cog);//인식범위 추기
 	void release();
 	void update();
 	void render(POINT camera);
@@ -27,7 +21,7 @@ public:
 	//데미지 받았을 때, 회피율 계산하여 함수 만들기
 	void getDamaged(int damage);
 
-	Rat();
-	~Rat();
+	Mimic();
+	~Mimic();
 };
 
