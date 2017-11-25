@@ -45,6 +45,13 @@ public:
 	~UI();
 
 private:
+	float _interface_button_timer1;
+	float _interface_button_timer2;
+	float _interface_button_timer3;
+
+	float timer = 0;
+
+	bool testbool = false;
 
 	RECT _backPackRect;
 	RECT _SearchOptionRect;
