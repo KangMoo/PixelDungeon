@@ -12,6 +12,7 @@ private:
 
 	int _color;
 	int _myColor;
+	POINT _movePt;
 
 public:
 	virtual HRESULT init(POINT point, int cog);//인식범위 추기

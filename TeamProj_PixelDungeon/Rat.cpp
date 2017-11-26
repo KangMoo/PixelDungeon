@@ -27,19 +27,19 @@ HRESULT Rat::init(POINT point, int cog)
 	//												*BROWNRATIMAGE*	
 	//=======================================================================================================================================================
 
-	IMAGEMANAGER->addFrameImage("brownIdle", "Img\Enemy\rat\brownIdle.bmp", 64, 32, 2, 2, true, RGB(255, 0, 255));//아이들인줄 알았는데 슬립이였다
-	IMAGEMANAGER->addFrameImage("brownMove", "Img\Enemy\rat\brownMove.bmp", 192, 64, 6, 2, true, RGB(255, 0, 255));//무브인줄 알았는데 아이들이였다
-	IMAGEMANAGER->addFrameImage("brownAttack", "Img\Enemy\rat\brownAttack.bmp", 96, 64, 3, 2, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addFrameImage("brownDead", "Img\Enemy\rat\brownDead.bmp", 128, 64, 4, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("brownIdle",	"Img\Enemy\rat\brownIdle.bmp",	64, 32, 2, 2,	true, RGB(255, 0, 255));//아이들인줄 알았는데 슬립이였다
+	IMAGEMANAGER->addFrameImage("brownMove",	"Img\Enemy\rat\brownMove.bmp",	192, 64, 6, 2,	true, RGB(255, 0, 255));//무브인줄 알았는데 아이들이였다
+	IMAGEMANAGER->addFrameImage("brownAttack",	"Img\Enemy\rat\brownAttack.bmp",96, 64, 3, 2,	true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("brownDead",	"Img\Enemy\rat\brownDead.bmp",	128, 64, 4, 2,	true, RGB(255, 0, 255));
 
 	//=======================================================================================================================================================
 	//												*WHITERATIMAGE*	
 	//=======================================================================================================================================================
 
-	IMAGEMANAGER->addFrameImage("whiteIdle", "Img\Enemy\rat\whiteIdle.bmp", 64, 32, 2, 2, true, RGB(255, 0, 255));//아이들인줄 알았는데 슬립이였다
-	IMAGEMANAGER->addFrameImage("whiteMove", "Img\Enemy\rat\whiteMove.bmp", 192, 64, 6, 2, true, RGB(255, 0, 255));//무브인줄 알았는데 아이들이였다
-	IMAGEMANAGER->addFrameImage("whiteAttack", "Img\Enemy\rat\whiteAttack.bmp", 96, 64, 3, 2, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addFrameImage("whiteDead", "Img\Enemy\rat\whiteDead.bmp", 128, 64, 4, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("whiteIdle",	"Img\Enemy\rat\whiteIdle.bmp",	64, 32, 2, 2,	true, RGB(255, 0, 255));//아이들인줄 알았는데 슬립이였다
+	IMAGEMANAGER->addFrameImage("whiteMove",	"Img\Enemy\rat\whiteMove.bmp",	192, 64, 6, 2,	true, RGB(255, 0, 255));//무브인줄 알았는데 아이들이였다
+	IMAGEMANAGER->addFrameImage("whiteAttack",	"Img\Enemy\rat\whiteAttack.bmp",96, 64, 3, 2,	true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("whiteDead",	"Img\Enemy\rat\whiteDead.bmp",	128, 64, 4, 2,	true, RGB(255, 0, 255));
 
 	////=======================================================================================================================================================
 	////												*BLACKIMAGE*	쥐 보스 입니다.
@@ -53,23 +53,21 @@ HRESULT Rat::init(POINT point, int cog)
 	//==============================================*LV/STAT SETTING*=============================================================================================================
 
 	//레벨 관련 설정
-	_statistics.exp = 1;						
-	_statistics.lv = _player->getStat().lv; //플레이어 레벨에 비례하여 오릅니다
-	_statistics.maxLv = 5;
+	_statistics.exp		= 1;						
+	_statistics.lv		= _player->getStat().lv; //플레이어 레벨에 비례하여 오릅니다
+	_statistics.maxLv	= 5;
 
-	if (_statistics.lv <= _statistics.maxLv)//레벨 최대치 고정
-	{
-		_statistics.lv = _statistics.maxLv;
-	}
+	//최대레벨 고정
+	if (_statistics.lv >= _statistics.maxLv) _statistics.lv = _statistics.maxLv;
 
 	//알비노 쥐 확률
-	_color = RND->getFromIntTo(0, 30);		//랜덤으로 수를 불러옴
-	_myColor = _color == 0 ? WHITE : BROWN;	//삼항연산자로 판별, 30분의 1
+	_color		= RND->getFromIntTo(0, 30);		//랜덤으로 수를 불러옴
+	_myColor	= _color == 0 ? WHITE : BROWN;	//삼항연산자로 판별, 30분의 1
 
 	if (_myColor == WHITE)//흰 쥐의 경우 30분의 1 확률로 등장합니다.
 	{
 		//레벨에 비례하여 상승합니다.
-		_statistics.hp = 14 + _statistics.lv;
+		_statistics.hp	= 14 + _statistics.lv;
 		_statistics.def = 3 + _statistics.lv;
 
 		_image = IMAGEMANAGER->findImage("whiteIdle");//이미지 초기화
@@ -77,7 +75,7 @@ HRESULT Rat::init(POINT point, int cog)
 	else //기본 쥐
 	{
 		//레벨이 비례하여 상승합니다.
-		_statistics.hp = 7 + _statistics.lv;
+		_statistics.hp	= 7 + _statistics.lv;
 		_statistics.def = 3 + _statistics.lv;
 
 		_image = IMAGEMANAGER->findImage("brownIdle");//이미지 초기화
@@ -89,13 +87,13 @@ HRESULT Rat::init(POINT point, int cog)
 	//==============================================*CHARACTER INIT*=============================================================================================================
 	
 	//공격박스, 데미지 박스 설정
-	_hitBox = RectMake(point.x, point.y, 32, 32);	//32로 고정을 해줍니다. 혹시 모르니까요.
-	_attBox = RectMake(0, 0, 0, 0);					//일단 초기화를 해줍시다.
+	_hitBox = RectMake(point.x, point.y, TILESIZE, TILESIZE);	//32로 고정을 해줍니다. 혹시 모르니까요.
+	_attBox = RectMake(0, 0, 0, 0);								//일단 초기화를 해줍시다.
 	
-	_currntHp = _statistics.hp;						//초기 hp를 세팅해 줍니다.
+	_currntHp = _statistics.hp;									//초기 hp를 세팅해 줍니다.
 
-	_hpBar->init(point.x, point.y, 32, 4);			//hp바의 위치 및 크기를 지정해 줍니다.
-	_hpBar->setGauge(_currntHp, _statistics.hp);	//hp바를 세팅해줍니다.
+	_hpBar->init(point.x, point.y, TILESIZE, 4);				//hp바의 위치 및 크기를 지정해 줍니다.
+	_hpBar->setGauge(_currntHp, _statistics.hp);				//hp바를 세팅해줍니다.
 
 	//==============================================*BOOL SETTING*=============================================================================================================
 	
@@ -140,12 +138,27 @@ void Rat::release()
 
 void Rat::update()
 {
-	_statistics.lv = _player->getStat().lv; //플레이어 레벨에 비례하여 오릅니다
-	_statistics.maxLv = 5;
-
-	if (_statistics.lv <= _statistics.maxLv)//레벨 최대치 고정
+	//슬립 상태에서 플레이어의 레벨에 비례하여 레벨이 상승합니다.
+	//레벨에 비례하여 능력치가 오릅니다.
+	if (_myState == ENEMYSTATE_SLEEP)
 	{
-		_statistics.lv = _statistics.maxLv;
+		_statistics.lv = _player->getStat().lv; //플레이어 레벨에 비례하여 오릅니다
+		_statistics.maxLv = 5;
+
+		if (_statistics.lv >= _statistics.maxLv)_statistics.lv = _statistics.maxLv;
+
+		if (_myColor == WHITE)
+		{
+			//레벨에 비례하여 상승합니다.
+			_statistics.hp = 14 + _statistics.lv;
+			_statistics.def = 3 + _statistics.lv;
+		}
+		else //기본 쥐
+		{
+			//레벨이 비례하여 상승합니다.
+			_statistics.hp = 7 + _statistics.lv;
+			_statistics.def = 3 + _statistics.lv;
+		}
 	}
 
 	//프레임을 업데이트 해줍니다.
@@ -194,17 +207,21 @@ void Rat::update()
 		_myState	= ENEMYSTATE_DEAD;
 		_isLive		= false; //움직임을 멈춘다.
 		_deadAlpha--;
+
+		//UI에게 사망소식을 알린다.
+		//플레이어에게 EXP를 넘긴다.
 	}
 }
 
 void Rat::render(POINT camera)
 {
 	draw(camera);
+
 }
 
 void Rat::draw(POINT camera)
 {
-	RectangleMake(getMemDC(), _point.x + camera.x, _point.y + camera.y, 32, 32);
+	RectangleMake(getMemDC(), _point.x + camera.x, _point.y + camera.y, TILESIZE, TILESIZE);
 	//_image->frameRender(getMemDC(), _point.x + camera.x, _point.y + camera.y);
 	_image->alphaFrameRender(getMemDC(), _point.x + camera.x, _point.y + camera.y, _currentFrameX, _currentFrameY, _deadAlpha);
 	_hpBar->render();
@@ -212,59 +229,34 @@ void Rat::draw(POINT camera)
 
 void Rat::action()
 {
-	if (false)
-	{
-		//플레이어가 멀리 있을때
-		move();
-	}
-	else if (false)
-	{
-		//플레이어가 가까이 있을때
-		attack();
-	}
+	int distanceToPlayer = getDistance(_point.x, _point.y, _player->getPoint().x, _player->getPoint().y) / TILESIZE;
+
+	//두칸 이상 떨어져 있으면 플레이어 위치로 움직입니다.
+	if (distanceToPlayer < 2) move();
+	//아닐시 플레이어 위치로 공격을 시도합니다.
+	else attack();
 }
 
 void Rat::frameUpdate()
 {
-	//==*방향 설정*==
+	//============================================*DIRECTION SETTING*===========================================
 	if (_findPlayer == true)
 	{
 		if (_player->getPoint().x > _point.x)	_right = true;
 		else									_right = false;
 	}
 
-	//방향에 따른 프레임 변경
+	//==========================================*DIRECTION IMAGE CHANGE*========================================
 	if (_right)	_currentFrameY = 0;
 	else		_currentFrameY = 1;
 
+	//==============================================*STATE IMAGE CHANGE*========================================
 	//이동상태
 	if (_myState == ENEMYSTATE_MOVE)
 	{
 		//흰 쥐
-		if (_myColor == WHITE)
-		{
-
-			_image = IMAGEMANAGER->findImage("whiteMove");//이미지 변경
-			if (_currentFrameX > _image->getMaxFrameX())
-			{
-				_image		= IMAGEMANAGER->findImage("whiteIdle");
-				_myState	= ENEMYSTATE_IDLE;
-				_action		= false;
-
-			}
-
-		}
-		else if (_myColor == BROWN)
-		{
-
-			_image = IMAGEMANAGER->findImage("brownMove");
-			if (_currentFrameX > _image->getMaxFrameX())
-			{
-				_image		= IMAGEMANAGER->findImage("brownIdle");
-				_myState	= ENEMYSTATE_IDLE;
-				_action		= false;
-			}
-		}
+		if (_myColor == WHITE)		_image = IMAGEMANAGER->findImage("whiteMove");//이미지 변경
+		else if (_myColor == BROWN)	_image = IMAGEMANAGER->findImage("brownMove");
 	}
 	//이동상태
 
@@ -276,9 +268,9 @@ void Rat::frameUpdate()
 			_image = IMAGEMANAGER->findImage("whiteAttack");
 			if (_currentFrameX > _image->getMaxFrameX())
 			{
-				_image = IMAGEMANAGER->findImage("whiteIdle");
-				_myState = ENEMYSTATE_IDLE;
-				_action = false; //턴을 넘김다
+				_image		= IMAGEMANAGER->findImage("whiteIdle");
+				_myState	= ENEMYSTATE_IDLE;
+				_action		= false; //턴을 넘김다
 
 			}
 		}
@@ -287,16 +279,24 @@ void Rat::frameUpdate()
 			_image = IMAGEMANAGER->findImage("brownAttack");
 			if (_currentFrameX > _image->getMaxFrameX())
 			{
-				_image = IMAGEMANAGER->findImage("brownIdle");
-				_myState = ENEMYSTATE_IDLE;
-				_action = false;
-
+				_image		= IMAGEMANAGER->findImage("brownIdle");
+				_myState	= ENEMYSTATE_IDLE;
+				_action		= false;
 			}
 		}
 	}
 	//공격상태
 
-	//==*프레임 넘기기*==
+	//죽은상태
+	if (_myState == ENEMYSTATE_DEAD)
+	{
+		if (_myColor == WHITE)		_image = IMAGEMANAGER->findImage("whiteDead");
+		else if (_myColor == BROWN)	_image = IMAGEMANAGER->findImage("brownDead");
+	}
+	//죽은상태
+
+	//==============================================*FRAME UPDATE*========================================
+	
 	_frameFPS = 10;//프레임 속도 조절용
 	_frameTime++;
 
@@ -305,11 +305,12 @@ void Rat::frameUpdate()
 		_currentFrameX++;
 		_frameTime = 0;
 	}
-	if (_currentFrameX >= _image->getMaxFrameX())//프레임 초기화용
-	{
-		_currentFrameX = 0;
-	}
-	//==*프레임 넘기기*==
+
+	//프레임 초기화
+	if (_currentFrameX >= _image->getMaxFrameX() &&
+		_myState	   != ENEMYSTATE_DEAD) _currentFrameX = 0;	//죽은상태가 아니면 프레임을 초기화 한다.
+
+	//==============================================*FRAME UPDATE*========================================
 }
 
 void Rat::attack()
@@ -320,7 +321,7 @@ void Rat::attack()
 	_myState = ENEMYSTATE_ATTACK;
 
 	//공격렉트르 설정합니다.
-	_attBox = RectMake(_player->getPoint().x, _player->getPoint().y, 32, 32);
+	_attBox = RectMake(_player->getPoint().x, _player->getPoint().y, TILESIZE, TILESIZE);
 
 	//흰 쥐는 일정 확률로 출혈을 일으키고 공격력도 다릅니다.
 	if (_myColor == WHITE)
@@ -339,12 +340,12 @@ void Rat::attack()
 	else if (_myColor == BROWN)
 	{
 		_statistics.str = RND->getFromIntTo(2 + (_statistics.lv * 1), 5 + (_statistics.lv * 2));
-
 	}
 
 	//_player->getDamaged(_statistics.str);
 	_attBox = RectMake(0, 0, 0, 0);//초기화
 
+	_action = false; //턴을 넘김다
 }
 
 void Rat::move()
@@ -353,16 +354,49 @@ void Rat::move()
 
 	_myState = ENEMYSTATE_MOVE;
 
-	//A*를 적용하여 '플레이어' 의 '주변 1칸'애 있어야함
-	//플레이어보다 위에 있을때
-	if (true)
-	{
+	//7 8 9
+	//4 5 6
+	//1 2 3
+	//5는 idle
 
+
+
+	//A*를 적용하여 '플레이어' 의 '주변 1칸'애 있어야함
+
+	//_map->aStar(_point, _player->getPoint());
+	//
+	//if (_player->getPoint().y > _point.y)
+	//{
+	//	_point.y = _point.y + TILESIZE;
+	//}
+
+	//좌표값 구하기
+	int x = _movePt.x;
+	int y = _movePt.y;
+
+	//해당 좌표값에 도착했는지 체크
+	if (_point.x == x && _point.y == y)
+	{
+		if (_myColor == WHITE)	_image = IMAGEMANAGER->findImage("whiteIdle"); //흰색
+		else					_image = IMAGEMANAGER->findImage("brownIdle"); //갈색
+
+		_myState = ENEMYSTATE_IDLE;
+		_action = false;
 	}
-	//플레이어보다 오른쪽에 있을때
+	//좌표값에 도착하지 못함
+	else
+	{
+		//좌우
+		if (_point.x > x)	_point.x -= TILESIZE / 8;
+		else				_point.x += TILESIZE / 8;
+
+		//상하
+		if (_point.y > y)	_point.y -= TILESIZE / 8;
+		else				_point.y += TILESIZE / 8;
+	}
 }
 
 void Rat::getDamaged(int damage)
 {
-	_currntHp -= damage;
+	_currntHp -= (damage - _statistics.def);
 }

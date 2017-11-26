@@ -5,7 +5,7 @@ class Mimic : public Enemy
 private:
 
 	bool _playerChack; //플레이어가 건드렸는지 여부
-	bool _mimicAct;		//미믹 활동 여부
+	POINT _movePt;
 
 public:
 	HRESULT init(POINT point, int cog);//인식범위 추기
