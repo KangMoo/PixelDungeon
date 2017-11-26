@@ -255,6 +255,7 @@ typedef struct tagGrid {
 	int x, y;
 	int index;
 	RECT rc;
+	bool empty;
 }GRID;
 
 typedef struct tagSelectTile {

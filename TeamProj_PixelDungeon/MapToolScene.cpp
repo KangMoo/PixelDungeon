@@ -27,6 +27,7 @@ HRESULT MapToolScene::init()
 		_mapRect[i].x = x;
 		_mapRect[i].y = y;
 		_mapRect[i].index = i;
+		_mapRect[i].empty = true;
 		_mapRect[i].rc = RectMake(x, y, TILESIZE, TILESIZE);		
 	}
 	
@@ -47,8 +48,7 @@ HRESULT MapToolScene::init()
 
 	//인풋모드(임시)
 	_inputMode = MODE_FLOOR;
-	_viewMode = VIEW_ONE;
-
+	_inputLayer = LAYER_TILE;
 
 	//버튼
 	_buttonRect[0].rc = RectMake(WINSIZEX - 85, WINSIZEY - 40, WINSIZEX - 20, WINSIZEY - 20);//돌아가기
@@ -66,6 +66,10 @@ HRESULT MapToolScene::init()
 		_buttonRect[i].isClicked = false;
 	}
 
+	_selectRangeRect = RectMake(0, 0, 0, 0);
+	_selectRangePoint = { 0,0 };
+
+	_inputCountdown = 0;
 
 	paletteSetup();
 	return S_OK;
@@ -112,34 +116,28 @@ void MapToolScene::paletteSetup()
 
 
 void MapToolScene::update()	
-{
-	
-	buttonInput();
+{	
+	input();
 }
 
 
-
-void MapToolScene::buttonInput()
+void MapToolScene::input()
 {
-	
-	if (KEYMANAGER->isOnceKeyDown('1')) _inputMode = MODE_FLOOR;
-	if (KEYMANAGER->isOnceKeyDown('2')) _inputMode = MODE_WALL;
-	if (KEYMANAGER->isOnceKeyDown('3')) _inputMode = MODE_GRASS;
-	if (KEYMANAGER->isOnceKeyDown('4')) _inputMode = MODE_DOOR;
-	if (KEYMANAGER->isOnceKeyDown('5')) _inputMode = MODE_DECO;
-	if (KEYMANAGER->isOnceKeyDown('6')) _inputMode = MODE_VIEWING;
-	if (KEYMANAGER->isOnceKeyDown('7')) _inputMode = MODE_DELET;
-	
+	input_ModeChange();
+	input_SelectMapGrid();
+	input_AddTile();
+	input_ClickPalet();
+	input_ClickButton();
+
 
 	if (KEYMANAGER->isOnceKeyDown(VK_DELETE)) {
-		if (!_mapSelected.empty()) {
-			for (int i = 0; i < _mapSelected.size(); i++) {
-				int indexX = i % GRIDX + _cameraX;
-				int indexY = i / GRIDX + _cameraY;
+		if (!_vMapSelected.empty()) {
+			for (int i = 0; i < _vMapSelected.size(); i++) {
+				int indexX = _vMapSelected[i].index % GRIDX + _cameraX;
+				int indexY = _vMapSelected[i].index / GRIDX + _cameraY;
 				for (_viMapTile = _vMapTile.begin(); _viMapTile != _vMapTile.end();) {
 					if (_viMapTile->destX == indexX && _viMapTile->destY == indexY) {
 						_viMapTile = _vMapTile.erase(_viMapTile);
-						break;
 					}
 					else _viMapTile++;
 				}
@@ -155,197 +153,61 @@ void MapToolScene::buttonInput()
 	}
 
 
-	for (int i = 0; i < GRIDNUM; i++) {
-		if (PtInRect(&_mapRect[i].rc, _ptMouse)) {
-
-			//	if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && _mapSelected.size != 0) {
-			//		if (_sele 
-			//	}
-
-			if (KEYMANAGER->isOnceKeyDown(VK_RBUTTON)) {
-				_mapSelected.clear();
-				_mapSelected.push_back(_mapRect[i]);
-				break;
-			}
-			else if (KEYMANAGER->isStayKeyDown(VK_RBUTTON)) {
-				_mapSelected.push_back(_mapRect[i]);
-				break;
-			}
-
-			if (!_paletSelected.empty()) {
-
-				if (_inputMode == MODE_VIEWING) return; //읽기 모드   : 아무것도 못한다
-				
-				if (_inputMode == MODE_DELET) {			//지우기 모드 : 이미 있는 경우를 확인, 지운다.
-					if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON)) {
-						int indexX = i % GRIDX + _cameraX;
-						int indexY = i / GRIDX + _cameraY;
-						for (_viMapTile = _vMapTile.begin(); _viMapTile != _vMapTile.end();) {
-							if (_viMapTile->destX == indexX && _viMapTile->destY == indexY) {
-								_viMapTile = _vMapTile.erase(_viMapTile);
-								return;
-							}
-							else
-								_viMapTile++;
-						}
-					}
-					return;
-				}
-
-
-				_showTile = true;					// 현재 선택한 타일을 보여주기
-				_showTileIndex = i;
-
-					
-
-				if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON) || KEYMANAGER->isStayKeyDown(VK_LBUTTON)) {
-					int indexX = i % GRIDX + _cameraX;
-					int indexY = i / GRIDX + _cameraY;
-					int paletIndex = _paletSelected[0].index;
-
-					//팔레트 사이즈보다 큰걸 선택했으면 입력 못한다
-					if (paletIndex > _vPaletTile.size()) return;
-
-
-					// 이미지 추가 모드
-					if (_inputMode == MODE_DECO) {
-
-						//이미 타일이 있는 경우 지운다
-						for (_viDecoTile = _vDecoTile.begin(); _viDecoTile != _vDecoTile.end();) {
-							if (_viDecoTile->destX == indexX && _viDecoTile->destY == indexY) {
-								_viDecoTile = _vDecoTile.erase(_viDecoTile);
-							}
-							else
-								_viDecoTile++;
-						}
-
-						TILE inputTile;
-						ZeroMemory(&inputTile, sizeof(TILE));
-						inputTile.img = _vPaletTile[paletIndex].img;
-						inputTile.sourX = _vPaletTile[paletIndex].sourX;
-						inputTile.sourY = _vPaletTile[paletIndex].sourY;
-						inputTile.destX = indexX;
-						inputTile.destY = indexY;
-
-						inputTile.terrain = TERRAIN_NULL;
-
-						_vDecoTile.push_back(inputTile);
-					}
-
-
-					// 타일 추가 모드
-					else {
-						//이미 타일이 있는 경우 지운다
-						for (_viMapTile = _vMapTile.begin(); _viMapTile != _vMapTile.end();) {
-							if (_viMapTile->destX == indexX && _viMapTile->destY == indexY) {
-								_viMapTile = _vMapTile.erase(_viMapTile);
-							}
-							else
-								_viMapTile++;
-						}
-
-						TILE inputTile;
-						ZeroMemory(&inputTile, sizeof(TILE));
-						inputTile.img = _vPaletTile[paletIndex].img;
-						inputTile.sourX = _vPaletTile[paletIndex].sourX;
-						inputTile.sourY = _vPaletTile[paletIndex].sourY;
-						inputTile.destX = indexX;
-						inputTile.destY = indexY;
-
-						if (_inputMode == MODE_FLOOR) inputTile.terrain = TERRAIN_FLOOR;		//모드에 따라 속성을 다르게 부여
-						if (_inputMode == MODE_WALL) inputTile.terrain = TERRAIN_WALL;
-						if (_inputMode == MODE_GRASS) inputTile.terrain = TERRAIN_GRASS;
-						if (_inputMode == MODE_DOOR) inputTile.terrain = TERRAIN_DOOR_CLOSED;
-
-						_vMapTile.push_back(inputTile);
-					}
-				}
-				//_mapSelected.clear();
-				//_mapSelected.push_back(_mapRect[i]);
-				break;
-			}
-		}
-		else _showTile = false;		// 현재 선택한 타일을 보여주지 않음
+	if (KEYMANAGER->isOnceKeyDown(VK_UP)) {
+		_buttonRect[1].isClicked = true;
+		if (_cameraY > 0) cameraMove(0, -1);
+		_inputCountdown = 0.5;
 	}
-
-
-
-	for (int i = 0; i < PALETTENUM; i++) {
-		if (PtInRect(&_paletRect[i].rc, _ptMouse)) {
-			if (KEYMANAGER->isStayKeyDown(VK_LCONTROL) && KEYMANAGER->isOnceKeyDown(VK_LBUTTON)) {
-				S_TILE selectTile;
-
-				int paletIndex = _paletRect[i].index + _paletPage * PALETTENUM;
-
-				selectTile.img = _vPaletTile[paletIndex].img; // 팔레트는 이미지 하나만 갖고 있다
-				selectTile.index = paletIndex;
-				selectTile.rc = _paletRect[i].rc;
-
-				_paletSelected.clear();
-				_paletSelected.push_back(selectTile);
-				break;
-			}
-
-			else if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON)) {
-				S_TILE selectTile;
-
-				int paletIndex = _paletRect[i].index + _paletPage * PALETTENUM;
-
-				selectTile.img = _vPaletTile[paletIndex].img;
-				selectTile.index = paletIndex;
-				selectTile.rc = _paletRect[i].rc;
-
-				_paletSelected.clear();
-				_paletSelected.push_back(selectTile);
-				break;
-			}
-
+	if (KEYMANAGER->isOnceKeyDown(VK_DOWN)) {
+		_buttonRect[2].isClicked = true;
+		cameraMove(0, 1);
+		_inputCountdown = 0.5;
+	}
+	if (KEYMANAGER->isOnceKeyDown(VK_LEFT)) {
+		_buttonRect[3].isClicked = true;
+		if (_cameraX > 0) cameraMove(-1, 0);
+		_inputCountdown = 0.5;
+	}
+	if (KEYMANAGER->isOnceKeyDown(VK_RIGHT)) {
+		_buttonRect[4].isClicked = true;
+		cameraMove(1, 0);
+		_inputCountdown = 0.5;
+	}
+	
+	if (KEYMANAGER->isStayKeyDown(VK_UP) || KEYMANAGER->isStayKeyDown(VK_DOWN) || KEYMANAGER->isStayKeyDown(VK_LEFT) || KEYMANAGER->isStayKeyDown(VK_RIGHT))
+	{
+		_inputCountdown -= TIMEMANAGER->getElapsedTime();
+	}
+	
+	if (_inputCountdown < 0) {
+		_inputCountdown = 0.1;
+		if (KEYMANAGER->isStayKeyDown(VK_UP)) {
+			_buttonRect[1].isClicked = true;
+			if (_cameraY > 0) cameraMove(0, -1);
+		}
+		if (KEYMANAGER->isStayKeyDown(VK_DOWN)) {
+			_buttonRect[2].isClicked = true;
+			cameraMove(0, 1);
+		}
+		if (KEYMANAGER->isStayKeyDown(VK_LEFT)) {
+			_buttonRect[3].isClicked = true;
+			if (_cameraX > 0) cameraMove(-1, 0);
+		}
+		if (KEYMANAGER->isStayKeyDown(VK_RIGHT)) {
+			_buttonRect[4].isClicked = true;
+			cameraMove(1, 0);
 		}
 	}
 
-	for (int i = 0; i < BUTTONNUM; i++) {
-		if (PtInRect(&_buttonRect[i].rc, _ptMouse))
-		{
-			if (KEYMANAGER->isStayKeyDown(VK_LBUTTON))  _buttonRect[i].isClicked = true;
+	if ((KEYMANAGER->isOnceKeyUp(VK_UP)))
+		_buttonRect[1].isClicked = false;
+	if ((KEYMANAGER->isOnceKeyUp(VK_DOWN)))
+		_buttonRect[2].isClicked = false;
+	if ((KEYMANAGER->isOnceKeyUp(VK_LEFT)))
+		_buttonRect[3].isClicked = false;
+	if ((KEYMANAGER->isOnceKeyUp(VK_RIGHT)))
+		_buttonRect[4].isClicked = false;
 
-			if (KEYMANAGER->isOnceKeyUp(VK_LBUTTON) && _buttonRect[i].isClicked) {
-				switch (i) {
-				case 0:
-					SCENEMANAGER->changeScene("메인메뉴씬");
-				break;
-				case 1:
-
-					if (_cameraY > 0) _cameraY--;
-				break;
-
-				case 2:
-					_cameraY++;
-				break;
-				case 3:
-					if (_cameraX > 0) _cameraX--;
-				break;
-				case 4:
-					_cameraX++;
-				break;
-
-				case 5:
-					if (_paletPage > 0) {
-						_paletPage--;
-						_paletSelected.clear();
-						_showTile = false;
-					}
-					break;
-				case 6:
-					_paletPage++;
-					_paletSelected.clear();
-					_showTile = false;
-					break;
-				}
-				_buttonRect[i].isClicked = false;
-			}
-		}
-		else if (_buttonRect[i].isClicked) _buttonRect[i].isClicked = false;	
-	}
 }
 
 
@@ -366,7 +228,9 @@ void MapToolScene::render()
 
 	//test
 	char str[128];
-	sprintf(str, "CAMERA x : %d y : %d    %d", _cameraX, _cameraY, _vMapTile.size());
+	sprintf(str, "CAMERA x : %d y : %d    %d %d", _cameraX, _cameraY, _vMapTile.size(), _vMapSelected.size());
+	//sprintf(str, "%d %d %d %d %d %d", _selectRangeRect.left, _selectRangeRect.top, _selectRangeRect.right, _selectRangeRect.bottom, _ptMouse.x, _ptMouse.y);
+
 	TextOut(getMemDC(), 10, 10, str, strlen(str));
 	//test
 
@@ -393,19 +257,40 @@ void MapToolScene::render()
 		int destY = _mapRect[index].rc.top;
 
 		int alpha;
-		if (_vMapTile[i].terrain == TERRAIN_FLOOR			 && _inputMode == MODE_FLOOR) alpha = 0;
-		else if (_vMapTile[i].terrain == TERRAIN_WALL		 && _inputMode == MODE_WALL)  alpha = 0;
-		else if (_vMapTile[i].terrain == TERRAIN_GRASS		 && _inputMode == MODE_GRASS)  alpha = 0;
-		else if (_vMapTile[i].terrain == TERRAIN_DOOR_CLOSED && _inputMode == MODE_DOOR)  alpha = 0;
-		else if (_inputMode == MODE_VIEWING)  alpha = 0;
+		if		(_vMapTile[i].terrain == TERRAIN_FLOOR				&& _inputMode == MODE_FLOOR)				alpha = 0;
+		else if (_vMapTile[i].terrain == TERRAIN_WATER				&& _inputMode == MODE_WATER)				alpha = 0;
+		else if (_vMapTile[i].terrain == TERRAIN_CHASM				&& _inputMode == MODE_CHASM)				alpha = 0;
+		else if (_vMapTile[i].terrain == TERRAIN_GRASS				&& _inputMode == MODE_GRASS)				alpha = 0;
+		else if (_vMapTile[i].terrain == TERRAIN_GRASS_UNTOUCHED	&& _inputMode == MODE_GRASS_UN)				alpha = 0;
+		else if (_vMapTile[i].terrain == TERRAIN_WALL				&& _inputMode == MODE_WALL)					alpha = 0;
+		else if (_vMapTile[i].terrain == TERRAIN_BARRICADE			&& _inputMode == MODE_BARRICADE)			alpha = 0;
+		else if (_vMapTile[i].terrain == TERRAIN_STATUE				&& _inputMode == MODE_STATUE)				alpha = 0;
+		else if (_vMapTile[i].terrain == TERRAIN_DOOR_CLOSED		&& _inputMode == MODE_DOOR)					alpha = 0;
+		else if (_vMapTile[i].terrain == TERRAIN_DOOR_LOCKED		&& _inputMode == MODE_DOOR_LOCKED)			alpha = 0;
+		else if (_vMapTile[i].terrain == TERRAIN_TRAP				&& _inputMode == MODE_TRAP)					alpha = 0;
+		else if (_inputMode == MODE_VIEWING || _inputMode == MODE_DELET)										alpha = 0;
+		else if (_inputMode == MODE_VIEWING_TILE)																alpha = 255;
 		else alpha = 100;
 
 		_vMapTile[i].img->alphaFrameRender(getMemDC(), destX, destY, _vMapTile[i].sourX, _vMapTile[i].sourY, alpha);
-		
+
+		if ((_inputMode == MODE_VIEWING_TILE)) {
+			HBRUSH brush;
+			if ((_vMapTile[i].terrain & ATTRIBUTE_UNGO) == ATTRIBUTE_UNGO)
+				brush = CreateSolidBrush(RGB(255, 0, 0));
+			else if ((_vMapTile[i].terrain & ATTRIBUTE_UNSIGHT) == ATTRIBUTE_UNSIGHT)
+				brush = CreateSolidBrush(RGB(0, 255, 0));
+			else 
+				brush = CreateSolidBrush(RGB(100, 100, 100));
+
+			FillRect(getMemDC(), &_mapRect[index].rc, brush);
+			DeleteObject(brush);
+		}
 		//char str[128];
 		//sprintf(str, "%d %d", _vMapTile[i].destX, _vMapTile[i].destY);
 		//TextOut(getMemDC(), _mapRect[index].rc.left, _mapRect[index].rc.top, str, strlen(str));
 	}
+
 
 
 	for (int i = 0; i < _vDecoTile.size(); i++) {
@@ -418,60 +303,73 @@ void MapToolScene::render()
 		int destY = _mapRect[index].rc.top;
 		
 		int alpha;
-		if (_inputMode == MODE_DECO || _inputMode == MODE_VIEWING) alpha = 0; else alpha = 255;
+		if (_inputLayer == LAYER_DECO || _inputMode == MODE_VIEWING) alpha = 0; else alpha = 255;
 
 		_vDecoTile[i].img->alphaFrameRender(getMemDC(), destX, destY, _vDecoTile[i].sourX, _vDecoTile[i].sourY, alpha);
 	}
 
 
-	if (_showTile) {
+	if (_showTile && !(KEYMANAGER->isStayKeyDown(VK_RBUTTON))) {
 		_paletSelected[0].img->alphaFrameRender(getMemDC(), _mapRect[_showTileIndex].rc.left, _mapRect[_showTileIndex].rc.top, _vPaletTile[_paletSelected[0].index].sourX, _vPaletTile[_paletSelected[0].index].sourY, 150);
 	}
 
 
 	//선택 내용 색칠 등
-	HBRUSH myBrush, oldBrush;
-	myBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
 
-	HPEN hPen, oPen;
-	hPen = CreatePen(PS_SOLID, 4, RGB(255, 0, 255));
-	for (auto select : _mapSelected) {
-		oPen = (HPEN)SelectObject(getMemDC(), hPen);
+	for (auto select : _vMapSelected) {
+		HBRUSH myBrush, oldBrush;
+		HPEN myPen, oldPen;
+		myBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
+		myPen = CreatePen(PS_SOLID, 4, RGB(255, 0, 255));
+
+		oldPen = (HPEN)SelectObject(getMemDC(), myPen);
 		oldBrush = (HBRUSH)SelectObject(getMemDC(), myBrush);
 		Rectangle(getMemDC(), select.rc.left, select.rc.top, select.rc.right + 1, select.rc.bottom + 1);
-		SelectObject(getMemDC(), oPen);
-		HBRUSH oldBrush = (HBRUSH)SelectObject(getMemDC(), myBrush);
+		
+		SelectObject(getMemDC(), oldPen);
 		SelectObject(getMemDC(), oldBrush);
+		DeleteObject(myBrush);
+		DeleteObject(myPen);
+		//DeleteObject(oldBrush);
+		//DeleteObject(oldPen);
 	}
-	DeleteObject(hPen);
 
 
 	for (auto select : _paletSelected) {
-		HPEN hPen2, oPen2;
-		hPen2 = CreatePen(PS_SOLID, 4, RGB(255, 0, 255));
-		oPen2 = (HPEN)SelectObject(getMemDC(), hPen2);
+		HBRUSH myBrush, oldBrush;
+		HPEN myPen, oldPen;
+		myBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
+		myPen = CreatePen(PS_SOLID, 4, RGB(255, 0, 255));
+
+		oldPen = (HPEN)SelectObject(getMemDC(), myPen);
 		oldBrush = (HBRUSH)SelectObject(getMemDC(), myBrush);
 		Rectangle(getMemDC(), select.rc.left, select.rc.top, select.rc.right + 1, select.rc.bottom + 1);
-		SelectObject(getMemDC(), oPen2);
+		SelectObject(getMemDC(), oldPen);
 		SelectObject(getMemDC(), oldBrush);
-		DeleteObject(hPen2);
-	}
-	DeleteObject(myBrush);
 
-	HBRUSH btBrush, obtBrush;
+		DeleteObject(myPen);
+		DeleteObject(myBrush);
+		//DeleteObject(oldPen);
+		//DeleteObject(oldBrush);
+	}
+
+
+	// 클릭하면 회색빛으로
 	for (int i = 0; i < BUTTONNUM; i++) {
 		if (_buttonRect[i].isClicked) {
+			HBRUSH btBrush, obtBrush;
 			btBrush = (HBRUSH)CreateSolidBrush(RGB(100, 100, 100));
 			obtBrush = (HBRUSH)SelectObject(getMemDC(), btBrush);
 			Rectangle(getMemDC(), _buttonRect[i].rc.left, _buttonRect[i].rc.top, _buttonRect[i].rc.right, _buttonRect[i].rc.bottom);
+
+			SelectObject(getMemDC(), obtBrush);
+			//DeleteObject(obtBrush);
+			DeleteObject(btBrush);
 		}
 		else {
-			btBrush = (HBRUSH)CreateSolidBrush(RGB(255, 255, 255));
-			obtBrush = (HBRUSH)SelectObject(getMemDC(), btBrush);
 			Rectangle(getMemDC(), _buttonRect[i].rc.left, _buttonRect[i].rc.top, _buttonRect[i].rc.right, _buttonRect[i].rc.bottom);
 		}
 	}
-	DeleteObject(btBrush);
 
 	//test~
 	TextOut(getMemDC(), WINSIZEX - 50, 5, "맵툴씬", strlen("맵툴씬"));
@@ -484,32 +382,72 @@ void MapToolScene::render()
 	sprintf(page, "page : %d", _paletPage);
 	TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 2, page, strlen(page));
 	
-	switch (_inputMode) {
-	case MODE_FLOOR:
-		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "FLOOR", strlen("FLOOR"));
-		break;
-	case MODE_WALL:
-		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "WALL", strlen("WALL"));
-		break;
-	case MODE_GRASS:
-		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "GRASS", strlen("GRASS"));
-		break;
-	case MODE_DOOR:
-		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "DOOR", strlen("DOOR"));
-		break;
-	case MODE_VIEWING:
-		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "VIEWING", strlen("VIEWING"));
-		break;
-	case MODE_DELET:
-		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "DELET", strlen("DELET"));
-		break;
+	switch (_inputMode)
+	{
+	case MODE_FLOOR:		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "FLOOR",			strlen("FLOOR"));			break;
+	case MODE_WATER:		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "WATER",			strlen("WATER"));			break;
+	case MODE_CHASM:		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "CHASM",			strlen("CHASM"));			break;
+	case MODE_GRASS:		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "GRASS",			strlen("GRASS"));			break;
+	case MODE_GRASS_UN:		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "GRASS_UN",		strlen("GRASS_UN"));		break;
+	case MODE_WALL:			TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "WALL",			strlen("WALL"));			break;
+	case MODE_BARRICADE:	TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "BARICADE",		strlen("BARICADE"));		break;
+	case MODE_STATUE:		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "STATUE",			strlen("STATUE"));			break;
+	case MODE_DOOR:			TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "DOOR",			strlen("DOOR"));			break;
+	case MODE_DOOR_LOCKED:	TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "DOOR_LOCKED",		strlen("DOOR_LOCKED"));		break;
+	case MODE_TRAP:			TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "TRAP",			strlen("TRAP"));			break;
+	case MODE_VIEWING:		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "VIEWING_IMAGE",	strlen("VIEWING_IMAGE"));	break;
+	case MODE_VIEWING_TILE:	TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "VIEWING_TILE",	strlen("VIEWING_TILE"));	break;
+	case MODE_DELET:		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "ERASER",			strlen("ERASER"));			break;
 	}
-	
+
+	switch (_inputLayer) {
+	case LAYER_TILE:		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 40, "TILE",			strlen("TILE"));			break;
+	case LAYER_DECO:		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 40, "DECO",			strlen("DECO"));			break;
+	case LAYER_ITEM:		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 40, "ITEM",			strlen("ITEM"));			break;
+	case LAYER_MONSTER:		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 40, "MONSTER",			strlen("MONSTER"));			break;
+	}
+
+
+	HBRUSH myBrush2, oldBrush2;
+	if (KEYMANAGER->isStayKeyDown(VK_RBUTTON)) {
+		myBrush2 = (HBRUSH)GetStockObject(NULL_BRUSH);
+		oldBrush2 = (HBRUSH)SelectObject(getMemDC(), myBrush2);
+		Rectangle(getMemDC(), _selectRangeRect.left, _selectRangeRect.top, _selectRangeRect.right, _selectRangeRect.bottom);
+		DeleteObject(myBrush2);
+	}
+
 	//~test
 }
 
 void MapToolScene::save()
 {
+	OPENFILENAME ofn;
+	char filePathSize[1028] = "";
+	ZeroMemory(&ofn, sizeof(OPENFILENAME));
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = NULL;
+	ofn.lpstrFile = filePathSize;
+	ofn.nMaxFile = sizeof(filePathSize);
+	ofn.nFilterIndex = true;
+	ofn.lpstrFileTitle = NULL;
+	ofn.nMaxFileTitle = NULL;
+	ofn.lpstrInitialDir = NULL;
+	ofn.lpstrFilter = ("XML Files(*.xml)\0*.xml\0");
+	ofn.Flags = OFN_OVERWRITEPROMPT;
+	if (GetSaveFileName(&ofn) == FALSE) return;
+
+	char temp[1028];
+	strncpy_s(temp, strlen(ofn.lpstrFile) + 1, ofn.lpstrFile, strlen(ofn.lpstrFile));
+
+	char* context = NULL;
+	char* token = strtok_s(temp, "\\", &context);
+	while (strlen(context))
+	{
+		token = strtok_s(NULL, "\\", &context);
+	}
+
+
+
 	//xml 저장
 	XMLDocument xmlDoc;
 	XMLNode *pRoot;
@@ -586,8 +524,8 @@ void MapToolScene::save()
 
 
 
-	XMLError eResult = xmlDoc.SaveFile("SavedData.xml");
-
+	//XMLError eResult = xmlDoc.SaveFile("SavedData.xml");
+	XMLError eResult = xmlDoc.SaveFile(token);
 
 
 /*
@@ -601,16 +539,42 @@ void MapToolScene::save()
 
 void MapToolScene::load()
 {
+	OPENFILENAME ofn;
+	char filePathSize[1028] = "";
+	ZeroMemory(&ofn, sizeof(OPENFILENAME));
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = NULL;
+	ofn.lpstrFile = filePathSize;
+	ofn.nMaxFile = sizeof(filePathSize);
+	ofn.nFilterIndex = true;
+	ofn.lpstrFileTitle = NULL;
+	ofn.nMaxFileTitle = NULL;
+	ofn.lpstrInitialDir = NULL;
+	ofn.lpstrFilter = ("XML Files(*.xml)\0*.xml\0");
+	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+	if (GetOpenFileName(&ofn) == FALSE) return;
+	
+	char temp[1028];
+	strncpy_s(temp, strlen(ofn.lpstrFile) + 1, ofn.lpstrFile, strlen(ofn.lpstrFile));
+	
+	char* context = NULL;
+	char* token = strtok_s(temp, "\\", &context);
+	while (strlen(context))
+	{
+		token = strtok_s(NULL, "\\", &context);
+	}
+
 
 	//기존 타일 삭제
 	_vMapTile.clear();
-
+	_vDecoTile.clear();
 
 	//xml 로드
 	XMLDocument xmlDoc;
 
-	XMLError eResult = xmlDoc.LoadFile("SavedData.xml");
-	
+	XMLError eResult = xmlDoc.LoadFile(token);
+//	XMLError eResult = xmlDoc.LoadFile("SavedData.xml");
+
 	XMLNode * pRoot = xmlDoc.FirstChild();
 	
 	XMLElement * pTileElement = pRoot->FirstChildElement("TileList");
@@ -688,4 +652,12 @@ void MapToolScene::load()
 
 	
 	//CloseHandle(file);
+}
+
+
+void MapToolScene::cameraMove(int x, int y) {
+
+	_cameraX += x;
+	_cameraY += y;
+	
 }

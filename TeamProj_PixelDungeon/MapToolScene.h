@@ -14,28 +14,36 @@
 
 #define BUTTONNUM 10
 
-#define ATTRIBUTE_UNMOVE 0x0001		// 갈 수 없는 속성
-#define ATTRIBUTE_ACTIVATE 0x0002	//활성화 되어있는 속성
-#define ATTRIBUTE_UNSIGHT 
 
-
-#define ATTRIBUTE_INVISIBLE			//
-
-
-enum VIEWMODE {
-	VIEW_ONE,
-	VIEW_TWO
+enum LAYER {
+	LAYER_TILE, 
+	LAYER_DECO,
+	LAYER_ITEM,
+	LAYER_MONSTER
 };
 
 enum INPUTMODE {
 	MODE_FLOOR,
-	MODE_WALL,
+	MODE_WATER,
+	MODE_CHASM,
+
 	MODE_GRASS,
+	MODE_GRASS_UN,
+
+	MODE_WALL,
+	MODE_BARRICADE,
+	MODE_STATUE,
+	
 	MODE_DOOR,
+	MODE_DOOR_LOCKED,
+
+	MODE_TRAP,
 	
 	MODE_DECO,
 	
 	MODE_VIEWING,
+	MODE_VIEWING_TILE,
+
 	MODE_DELET
 };
 
@@ -43,6 +51,7 @@ enum INPUTMODE {
 class MapToolScene : public gameNode
 {
 	typedef vector<GRID> vGrid;
+	typedef vector<GRID>::iterator viGrid;
 	typedef vector<TILE> vTile;
 	typedef vector<TILE>::iterator viTile;
 	typedef vector<tagSelectTile> vSelectTile;
@@ -55,14 +64,16 @@ private:
 	vector<string> _imgNameList;
 	vector<image*> _imgList;
 
-	
+	RECT _selectRangeRect;
+	POINT _selectRangePoint;
 
 	vTile _vMapTile; // 맵에 깔아놓은 타일
 	viTile _viMapTile;
 	vTile _vDecoTile; // 이미지 겹치기 위한 장식용 타일
 	viTile _viDecoTile;
 
-	vGrid _mapSelected; //선택한 맵 그리드
+	vGrid _vMapSelected; //선택한 맵 그리드
+	viGrid _viMapSelected; 
 	GRID _mapRect[GRIDNUM]; //맵 전체 그리드 rect
 	
 	
@@ -84,7 +95,7 @@ private:
 	vTile _copyTile;
 		
 	INPUTMODE _inputMode;
-	VIEWMODE _viewMode;
+	LAYER _inputLayer;
 
 
 	vector<RECT> _tileButton;
@@ -92,7 +103,7 @@ private:
 	BUTTON _buttonRect[BUTTONNUM];
 	
 		
-
+	float _inputCountdown;
 
 	int _cameraX, _cameraY;
 
@@ -106,7 +117,15 @@ public:
 	void paletteSetup();
 
 
-	void buttonInput();
+	void input();
+
+	void input_ModeChange();
+	void input_SelectMapGrid();
+	void input_AddTile();
+	void input_ClickPalet();
+	void input_ClickButton();
+
+	void cameraMove(int x, int y);
 
 	void save();
 	void load();
