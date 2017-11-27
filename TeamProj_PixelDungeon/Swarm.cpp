@@ -68,6 +68,8 @@ HRESULT Swarm::init(POINT point)
 	ENEMYSTATE_MOVE,
 	ENEMYSTATE_ATTACK,
 	ENEMYSTATE_END*/
+	_hpBar = new progressBar;
+	_hpBar->init(_pointX - 25, _pointY + _image->getFrameHeight() / 2 + 10, 30, 10);
 
 	return S_OK;
 }
@@ -128,12 +130,15 @@ HRESULT Swarm::init(POINT point, int currntHp)
 	ENEMYSTATE_MOVE,
 	ENEMYSTATE_ATTACK,
 	ENEMYSTATE_END*/
+	_hpBar = new progressBar;
+	_hpBar->init(_pointX - 25, _pointY + _image->getFrameHeight() / 2 + 10, 30, 10);
 
 	return S_OK;
 }
 
 void Swarm::action()
 {
+
 	if (_myState == ENEMYSTATE_SLEEP)
 	{
 		float dis = getDistance(_player->getPoint().x, _player->getPoint().y, _point.x, _point.y);
@@ -273,22 +278,39 @@ void Swarm::action()
 		else
 		{
 			//적을 발견했으면 A*를 이용해 최적루트로 이동한다
-			//A* 아직 안됐으니 미룸
+			//바로 옆칸이면 공격 가능하다
+			int x = abs(_point.x - _player->getPoint().x);
+			int y = abs(_point.y - _player->getPoint().y);
+			//둘의 x, y값 차이의 절대값이 각각 1 이하인 경우 공격 가능
+			if (x <= 1 && y <= 1)
+			{
+				_myState = ENEMYSTATE_ATTACK;
+				//_player->getDamaged(_statistics.str);
+			}
+			else
+			{
+				//아니라면 astar로 이동한다
+				astarTest = _map->aStar(_point, _player->getPoint());
+				//움직일때 해당 좌표를 4,5 같은 식으로 주면 자동으로 4*TILESIZE + TILESIZE/2, 5*... 해줌
+				_movePoint = PointMake(astarTest[0].destX, astarTest[0].destY);
+				_myState = ENEMYSTATE_MOVE;
+			}
 		}
 	}
 	else if (_myState == ENEMYSTATE_MOVE)
 	{
-
 		//좌표가 주어졌으면 해당 좌표로 가야한다
 		//중심좌표를 구한다
 		float x = _movePoint.x * TILESIZE + TILESIZE / 2;
 		float y = _movePoint.y * TILESIZE + TILESIZE / 2;
 
 		//중심좌표에 도달했는지 확인한다
-		if (static_cast<float>(_pointX) == x &&
-			static_cast<float>(_pointY) == y)
+		if ((static_cast<float>(_pointX) >= x - 4 && static_cast<float>(_pointX) <= x + 4) &&
+			(static_cast<float>(_pointY) >= y - 4 && static_cast<float>(_pointY) <= y + 4))
 		{
 			//턴을 종료하고 넘겨준다
+			_pointX = x;
+			_pointY = y;
 			_isMove = false;
 			_myState = ENEMYSTATE_IDLE;
 			_action = false;
@@ -390,7 +412,14 @@ void Swarm::getDamaged(int damage)
 
 void Swarm::draw(POINT camera)
 {
+	_hpBar->setGauge(_currntHp, _statistics.hp);
+
 	_image->frameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y);
+
+	_hpBar->setX(_point.x - 25 + camera.x);
+	_hpBar->setY(_pointY + _image->getFrameHeight() / 2 + 10 + camera.y);
+	if (_currntHp < _statistics.hp)
+		_hpBar->render();
 }
 
 void Swarm::release()
