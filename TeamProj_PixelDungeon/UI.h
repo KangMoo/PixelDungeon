@@ -17,6 +17,7 @@ private:
 	ItemManager* _im;
 
 	POINT _camera;		//camera가 화면의 중심이 됨
+	bool _isPlayerMoving;
 
 public:
 	HRESULT init();

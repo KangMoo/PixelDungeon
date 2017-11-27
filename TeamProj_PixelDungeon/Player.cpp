@@ -31,6 +31,7 @@ HRESULT Player::init(POINT point)
 	_image = IMAGEMANAGER->findImage("warrior_Idle");
 	_frameTimer = TIMEMANAGER->getWorldTime();
 	_keepMove = false;
+	_isUsingUI = false;
 	return S_OK;
 }
 void Player::release()
@@ -42,23 +43,42 @@ void Player::update()
 
 	frameUpdate();
 	fovCheck();
-	if (_keepMove == true && astar.size() > 0)
+
+	if (_keepMove == true  && !_isUsingUI)
 	{
 		move();
 	}
 	//if (_action) action();
-	if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON))
+	if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON) && !_isUsingUI)
+	{
+		if (!_map->getTile(_ptMouse.x / TILESIZE,_ptMouse.y / TILESIZE).terrain == TERRAIN_NULL )
+		{
+			//플레이어 바로 옆을 눌렀을 경우 처리!!
+			_keepMove = true;
+			astar = _map->aStar(_playerPoint, _ptMouse);
+			//길이 있으면?
+			if (astar.size() > 0)
+			{
+				//현재 위치는 뺌
+				astar.erase(astar.begin() + astar.size() - 1);
+				//마지막 위치 추가
+				astar.insert(astar.begin(), _map->getTile(_ptMouse.x / TILESIZE, _ptMouse.y / TILESIZE));
+			}
+			else
+			{
+				//만약 바로 옆을 눌렀다면?
+
+			}
+		}
+	}
+
+	if (astar.size() > 0)
 	{
 		_keepMove = true;
-		astar = _map->aStar(_playerPoint, _ptMouse);
-		//길이 있으면?
-		if (astar.size() > 0)
-		{
-			//현재 위치는 뺌
-			astar.erase(astar.begin() + astar.size() - 1);
-			//마지막 위치 추가
-			astar.insert(astar.begin(), _map->getTile(_ptMouse.x / TILESIZE, _ptMouse.y / TILESIZE));
-		}
+	}
+	else
+	{
+		_keepMove = false;
 	}
 
 }
@@ -134,9 +154,8 @@ void Player::draw(POINT camera)
 	DeleteObject(hFont);
 
 	//~test
-
 	_image->alphaFrameRender(getMemDC(), _playerPoint.x - _image->getFrameWidth() / 2, _playerPoint.y - _image->getFrameHeight() / 2, _currentFrameX, _currentFrameY, 0);
-
+	//IMAGEMANAGER->render("blactkTile", getMemDC(), 50, 50, 0, 0, 100, 100);
 	for (auto i : astar)
 	{
 		RectangleMakeCenter(getMemDC(), i.destX*TILESIZE + TILESIZE / 2, i.destY*TILESIZE + TILESIZE / 2, 5, 5);

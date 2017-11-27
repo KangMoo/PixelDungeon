@@ -34,7 +34,7 @@ private:
 	TILE _goalTile;
 	bool _action;
 	bool _keepMove;
-	
+	bool _isUsingUI;
 
 	//test~
 	vector<TILE> tileCanSee;
@@ -92,8 +92,10 @@ public:
 	void setTurn(bool turn) { _action = turn; }
 	vector<tagDebuff> getPlayerDebuffList() { return _vdebuff; }
 	void setPlayerDebuffList(vector<tagDebuff> vDbuff) { _vdebuff = _vdebuff; }
-
-	
+	bool getUsingUI() { return _isUsingUI; }
+	void setUsingUI(bool usingUI) { _isUsingUI = usingUI; }
+	vector<TILE> getPlayerRoute() { return astar; }
+	bool getIsPlayerMoving() { return _keepMove; }
 
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }
 	void setMapAddressLink(Map* map) { _map = map; }

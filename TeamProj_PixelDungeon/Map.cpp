@@ -205,6 +205,9 @@ vector<TILE> Map::aStar(POINT currentPoint, POINT goalPoint)
 	_openlist.clear();
 	_closelist.clear();
 
+	//목적지까지 가는 길 저장할 벡터
+	vector<TILE> way;
+
 	//시작지점 설정
 	vertex startPoint;
 	startPoint.g = 0;
@@ -219,6 +222,11 @@ vector<TILE> Map::aStar(POINT currentPoint, POINT goalPoint)
 	//8방향 탐색 후 열린 목록에 추가
 	add_eightway(startPoint, goalPoint);
 
+	//openlist에 목적지가 있는 경우?
+	if (search_openlist_exsist(goalPoint.x / TILESIZE, goalPoint.y / TILESIZE))
+	{
+		return way;
+	}
 
 	vertex curV;
 	bool findWay;
@@ -243,8 +251,7 @@ vector<TILE> Map::aStar(POINT currentPoint, POINT goalPoint)
 	}
 
 
-	//목적지까지 가는 길 만들기
-	vector<TILE> way;
+	
 	//길이 있을 경우
 	if (findWay)
 	{

@@ -127,12 +127,13 @@ void UI::draw(POINT camera)
 		IMAGEMANAGER->render("Target_button", getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), 460);
 		//Rectangle(getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), 460, (WINSIZEX - IMAGEMANAGER->findImage("Target_button")->getFrameWidth()) + IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), 460 + IMAGEMANAGER->findImage("Target_button")->getFrameHeight());
 	
-	if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && (TIMEMANAGER->getWorldTime() - _interface_button_timer1) > 0.3 && _selectInterface == INTERFACEMENU_END)
+	if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && (TIMEMANAGER->getWorldTime() - _interface_button_timer1) > 0.3 && _selectInterface == INTERFACEMENU_END && !_player->getIsPlayerMoving())
 	{
 		//배낭
 		if (PtInRect(&_backPackRect, _ptMouse) && _selectInterface == INTERFACEMENU_END)
 		{
 			_selectInterface = INTERFACEMENU_BACKPACK;
+			_player->setUsingUI(true);
 
 			ResetInventory();
 
@@ -141,25 +142,31 @@ void UI::draw(POINT camera)
 		}
 
 		//탐색
-		if (PtInRect(&_SearchOptionRect, _ptMouse) && _selectInterface == INTERFACEMENU_END)
+		else if (PtInRect(&_SearchOptionRect, _ptMouse) && _selectInterface == INTERFACEMENU_END)
 		{
-			_selectInterface = INTERFACEMENU_SEARCH;
+			if (_player->getAction() == true)
+			{
+				_player->setAction(false);
+			}
+
+			//_selectInterface = INTERFACEMENU_TURNSKIP;
 		}
 
 		//턴스킵
-		if (PtInRect(&_TurnSkipRect, _ptMouse) && _selectInterface == INTERFACEMENU_END)
+		else if (PtInRect(&_TurnSkipRect, _ptMouse) && _selectInterface == INTERFACEMENU_END)
 		{
-			_selectInterface = INTERFACEMENU_TURNSKIP;
+			_selectInterface = INTERFACEMENU_SEARCH;
 		}
 
 		_interface_button_timer1 = TIMEMANAGER->getWorldTime();
 	}
 
-	if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && (TIMEMANAGER->getWorldTime() - _interface_button_timer1) > 0.3&& _selectInterface != INTERFACEMENU_END)
+	else if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && (TIMEMANAGER->getWorldTime() - _interface_button_timer1) > 0.3 && _selectInterface != INTERFACEMENU_END && !_player->getIsPlayerMoving())
 	{
 		if (PtInRect(&_backPackRect, _ptMouse) || PtInRect(&_SearchOptionRect, _ptMouse) || PtInRect(&_TurnSkipRect, _ptMouse))
 		{
 			_selectInterface = INTERFACEMENU_END;
+			_player->setUsingUI(false);
 		}
 
 		_interface_button_timer1 = TIMEMANAGER->getWorldTime();
@@ -740,6 +747,11 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			//떨어뜨린다
 			if (button_option_value[buttonNumber].number == BUTTONOPTION_DROP)
 			{
+				if (_player->getAction() == true)
+				{
+					_player->setAction(false);
+				}
+
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -747,6 +759,11 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			//마신다
 			if (button_option_value[buttonNumber].number == BUTTONOPTION_DRINK)
 			{
+				if (_player->getAction() == true)
+				{
+					_player->setAction(false);
+				}
+
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -754,6 +771,11 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			//던진다
 			if (button_option_value[buttonNumber].number == BUTTONOPTION_THROW)
 			{
+				if (_player->getAction() == true)
+				{
+					_player->setAction(false);
+				}
+
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -761,6 +783,11 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			//읽는다
 			if (button_option_value[buttonNumber].number == BUTTONOPTION_READ)
 			{
+				if (_player->getAction() == true)
+				{
+					_player->setAction(false);
+				}
+
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -768,6 +795,11 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			//발사한다
 			if (button_option_value[buttonNumber].number == BUTTONOPTION_LAUNCH)
 			{
+				if (_player->getAction() == true)
+				{
+					_player->setAction(false);
+				}
+
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -775,6 +807,16 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			//먹는다
 			if (button_option_value[buttonNumber].number == BUTTONOPTION_EAT)
 			{
+				if (_player->getAction() == true)
+				{
+					_player->action_Eat();
+					_player->setAction(false);
+
+					//PLAYERSTAT temp = _player->getStat();
+					//temp.exp += 3;
+					//_player->setStat(temp);
+				}
+
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -782,6 +824,11 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			//심는다
 			if (button_option_value[buttonNumber].number == BUTTONOPTION_PLANT)
 			{
+				if (_player->getAction() == true)
+				{
+					_player->setAction(false);
+				}
+
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -789,6 +836,11 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			//기억한다
 			if (button_option_value[buttonNumber].number == BUTTONOPTION_REMEMBER)
 			{
+				if (_player->getAction() == true)
+				{
+					_player->setAction(false);
+				}
+
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -861,6 +913,11 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					}
 				}
 
+				if (_player->getAction() == true)
+				{
+					_player->setAction(false);
+				}
+
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -898,6 +955,11 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_im->unequipItem(itemCheck);
 				}
 
+				if (_player->getAction() == true)
+				{
+					_player->setAction(false);
+				}
+
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -917,6 +979,11 @@ void UI::item_sort()
 /*test
 void UI::TestFunctin()
 {
-	
+	char str[] = "폰트테스트";
+	HFONT hFont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("궁서"));
+	HFONT oldFont = (HFONT)SelectObject(getMemDC(), hFont);
+	//TextOut(getMemDC(), 300, 300, str, strlen(str));
+	SelectObject(getMemDC(), oldFont);
+	DeleteObject(hFont);
 }
 */
