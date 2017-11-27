@@ -18,9 +18,9 @@ HRESULT Swarm::init(POINT point)
 	_point = point;
 
 	_move = new image;
-	_move->init("Img\\Enemy\\swarm_stay.bmp", 264, 56, 11, 2, true, RGB(255, 0, 255));
+	_move->init("Img//Enemy//swarm_stay.bmp", 264, 56, 11, 2, true, RGB(255, 0, 255));
 	_dead = new image;
-	_dead->init("Img\\Enemy\\swarm_dead.bmp", 96, 60, 4, 2, true, RGB(255, 0, 255));
+	_dead->init("Img//Enemy//swarm_dead.bmp", 96, 60, 4, 2, true, RGB(255, 0, 255));
 
 	_image = _move;
 
@@ -68,8 +68,8 @@ HRESULT Swarm::init(POINT point)
 	ENEMYSTATE_MOVE,
 	ENEMYSTATE_ATTACK,
 	ENEMYSTATE_END*/
-	_hpBar = new progressBar;
-	_hpBar->init(_pointX - 25, _pointY + _image->getFrameHeight() / 2 + 10, 30, 10);
+	//_hpBar = new progressBar;
+	//_hpBar->init(_pointX - 25, _pointY + _image->getFrameHeight() / 2 + 10, 30, 10);
 
 	return S_OK;
 }
@@ -130,8 +130,8 @@ HRESULT Swarm::init(POINT point, int currntHp)
 	ENEMYSTATE_MOVE,
 	ENEMYSTATE_ATTACK,
 	ENEMYSTATE_END*/
-	_hpBar = new progressBar;
-	_hpBar->init(_pointX - 25, _pointY + _image->getFrameHeight() / 2 + 10, 30, 10);
+	//_hpBar = new progressBar;
+	//_hpBar->init(_pointX - 25, _pointY + _image->getFrameHeight() / 2 + 10, 30, 10);
 
 	return S_OK;
 }
@@ -412,14 +412,14 @@ void Swarm::getDamaged(int damage)
 
 void Swarm::draw(POINT camera)
 {
-	_hpBar->setGauge(_currntHp, _statistics.hp);
+	//_hpBar->setGauge(_currntHp, _statistics.hp);
 
 	_image->frameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y);
 
-	_hpBar->setX(_point.x - 25 + camera.x);
-	_hpBar->setY(_pointY + _image->getFrameHeight() / 2 + 10 + camera.y);
-	if (_currntHp < _statistics.hp)
-		_hpBar->render();
+	//_hpBar->setX(_point.x - 25 + camera.x);
+	//_hpBar->setY(_pointY + _image->getFrameHeight() / 2 + 10 + camera.y);
+	//if (_currntHp < _statistics.hp)
+	//	_hpBar->render();
 }
 
 void Swarm::release()

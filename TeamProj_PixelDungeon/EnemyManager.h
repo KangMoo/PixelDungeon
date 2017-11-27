@@ -41,6 +41,8 @@ public:
 	void setUiAddressLink(UI* ui) { _ui = ui; }
 	void setItemManagerAddressLink(ItemManager* im) { _im = im; }
 
+	void setEnemy(POINT point, int type);
+
 	EnemyManager();
 	~EnemyManager();
 };

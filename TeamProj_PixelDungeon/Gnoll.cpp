@@ -20,12 +20,13 @@ HRESULT Gnoll::init(POINT point)
 
 	//각 이미지 개별할당(MANAGER는 다 똑같아져버림)
 	_stay = new image;
-	_stay->init("Img\\Enemy\\gnoll_stay.bmp", 44, 60, 2, 2, true, RGB(255, 0, 255));
+	_stay->init("Img//Enemy//gnoll_stay.bmp", 44, 60, 2, 2, true, RGB(255, 0, 255));
 	_move = new image;
-	_move->init("Img\\Enemy\\gnoll_move.bmp", 88, 60, 4, 2, true, RGB(255, 0, 255));
-	_attack->init("Img\\Enemy\\gnoll_attack.bmp", 48, 60, 2, 2, true, RGB(255, 0, 255));
+	_move->init("Img//Enemy//gnoll_move.bmp", 88, 60, 4, 2, true, RGB(255, 0, 255));
+	_attack = new image;
+	_attack->init("Img//Enemy//gnoll_attack.bmp", 48, 60, 2, 2, true, RGB(255, 0, 255));
 	_dead = new image;
-	_dead->init("Img\\Enemy\\gnoll_dead.bmp", 84, 52, 3, 2, true, RGB(255, 0, 255));
+	_dead->init("Img//Enemy//gnoll_dead.bmp", 84, 52, 3, 2, true, RGB(255, 0, 255));
 
 	//초기 설정은 stay
 	_image = _stay;
@@ -88,8 +89,8 @@ HRESULT Gnoll::init(POINT point)
 	ENEMYSTATE_ATTACK,
 	ENEMYSTATE_END*/
 
-	_hpBar = new progressBar;
-	_hpBar->init(_pointX - 25, _pointY + _image->getFrameHeight() / 2 + 10, 30, 10);
+	//_hpBar = new progressBar;
+	//_hpBar->init(_pointX - 25, _pointY + _image->getFrameHeight() / 2 + 10, 30, 10);
 
 	return S_OK;
 }
@@ -133,14 +134,14 @@ void Gnoll::getDamaged(int damage)
 
 void Gnoll::draw(POINT camera)
 {
-	_hpBar->setGauge(_currntHp, _statistics.hp);
+	//_hpBar->setGauge(_currntHp, _statistics.hp);
 
 	_image->frameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y);
 
-	_hpBar->setX(_point.x - 25 + camera.x);
-	_hpBar->setY(_pointY + _image->getFrameHeight() / 2 + 10 + camera.y);
-	if (_currntHp < _statistics.hp)
-		_hpBar->render();
+	//_hpBar->setX(_point.x - 25 + camera.x);
+	//_hpBar->setY(_pointY + _image->getFrameHeight() / 2 + 10 + camera.y);
+	//if (_currntHp < _statistics.hp)
+	//	_hpBar->render();
 }
 
 

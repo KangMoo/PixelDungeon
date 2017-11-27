@@ -92,3 +92,32 @@ void EnemyManager::draw(POINT camera)
 {
 
 }
+
+void EnemyManager::setEnemy(POINT point, int type)
+{
+	switch (type)
+	{
+	case 0:
+		//Áã, Rat
+
+		break;
+	case 1:
+		//¹Ì¹Í, Mimic
+		break;
+	case 2:
+		//ÆÄ¸®, Swarm
+		break;
+	case 3:
+		//³î, Gnoll
+		break;
+	case 4:
+		//
+		break;
+	case 5:
+		//
+		break;
+	default:
+		//
+		break;
+	}
+}
