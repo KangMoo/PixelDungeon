@@ -354,14 +354,6 @@
             <terrain>1</terrain>
         </tile>
         <tile>
-            <destX>7</destX>
-            <destY>6</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-        </tile>
-        <tile>
             <destX>12</destX>
             <destY>6</destY>
             <sourX>0</sourX>
@@ -562,30 +554,6 @@
             <terrain>1</terrain>
         </tile>
         <tile>
-            <destX>12</destX>
-            <destY>10</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-        </tile>
-        <tile>
-            <destX>13</destX>
-            <destY>10</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-        </tile>
-        <tile>
-            <destX>14</destX>
-            <destY>10</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-        </tile>
-        <tile>
             <destX>1</destX>
             <destY>11</destY>
             <sourX>0</sourX>
@@ -636,54 +604,6 @@
         <tile>
             <destX>10</destX>
             <destY>11</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-        </tile>
-        <tile>
-            <destX>12</destX>
-            <destY>11</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-        </tile>
-        <tile>
-            <destX>13</destX>
-            <destY>11</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-        </tile>
-        <tile>
-            <destX>14</destX>
-            <destY>11</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-        </tile>
-        <tile>
-            <destX>12</destX>
-            <destY>12</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-        </tile>
-        <tile>
-            <destX>13</destX>
-            <destY>12</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-        </tile>
-        <tile>
-            <destX>14</destX>
-            <destY>12</destY>
             <sourX>0</sourX>
             <sourY>0</sourY>
             <obj>0</obj>
@@ -714,14 +634,6 @@
             <terrain>1</terrain>
         </tile>
         <tile>
-            <destX>4</destX>
-            <destY>13</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-        </tile>
-        <tile>
             <destX>5</destX>
             <destY>13</destY>
             <sourX>0</sourX>
@@ -739,38 +651,6 @@
         </tile>
         <tile>
             <destX>7</destX>
-            <destY>13</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-        </tile>
-        <tile>
-            <destX>8</destX>
-            <destY>13</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-        </tile>
-        <tile>
-            <destX>9</destX>
-            <destY>13</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-        </tile>
-        <tile>
-            <destX>10</destX>
-            <destY>13</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-        </tile>
-        <tile>
-            <destX>11</destX>
             <destY>13</destY>
             <sourX>0</sourX>
             <sourY>0</sourY>
@@ -851,38 +731,6 @@
         </tile>
         <tile>
             <destX>7</destX>
-            <destY>14</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-        </tile>
-        <tile>
-            <destX>8</destX>
-            <destY>14</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-        </tile>
-        <tile>
-            <destX>9</destX>
-            <destY>14</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-        </tile>
-        <tile>
-            <destX>10</destX>
-            <destY>14</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-        </tile>
-        <tile>
-            <destX>11</destX>
             <destY>14</destY>
             <sourX>0</sourX>
             <sourY>0</sourY>
@@ -1403,14 +1251,6 @@
         </tile>
         <tile>
             <destX>9</destX>
-            <destY>4</destY>
-            <sourX>6</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-        </tile>
-        <tile>
-            <destX>9</destX>
             <destY>5</destY>
             <sourX>6</sourX>
             <sourY>0</sourY>
@@ -1419,30 +1259,6 @@
         </tile>
         <tile>
             <destX>2</destX>
-            <destY>8</destY>
-            <sourX>6</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-        </tile>
-        <tile>
-            <destX>4</destX>
-            <destY>8</destY>
-            <sourX>6</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-        </tile>
-        <tile>
-            <destX>5</destX>
-            <destY>8</destY>
-            <sourX>6</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-        </tile>
-        <tile>
-            <destX>6</destX>
             <destY>8</destY>
             <sourX>6</sourX>
             <sourY>0</sourY>
@@ -2840,6 +2656,190 @@
             <sourY>0</sourY>
             <obj>0</obj>
             <terrain>1</terrain>
+        </tile>
+        <tile>
+            <destX>13</destX>
+            <destY>12</destY>
+            <sourX>6</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+        </tile>
+        <tile>
+            <destX>10</destX>
+            <destY>14</destY>
+            <sourX>6</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+        </tile>
+        <tile>
+            <destX>4</destX>
+            <destY>13</destY>
+            <sourX>6</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+        </tile>
+        <tile>
+            <destX>9</destX>
+            <destY>4</destY>
+            <sourX>6</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+        </tile>
+        <tile>
+            <destX>7</destX>
+            <destY>6</destY>
+            <sourX>6</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+        </tile>
+        <tile>
+            <destX>4</destX>
+            <destY>8</destY>
+            <sourX>6</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+        </tile>
+        <tile>
+            <destX>5</destX>
+            <destY>8</destY>
+            <sourX>6</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+        </tile>
+        <tile>
+            <destX>6</destX>
+            <destY>8</destY>
+            <sourX>6</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+        </tile>
+        <tile>
+            <destX>10</destX>
+            <destY>13</destY>
+            <sourX>6</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+        </tile>
+        <tile>
+            <destX>11</destX>
+            <destY>13</destY>
+            <sourX>6</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+        </tile>
+        <tile>
+            <destX>11</destX>
+            <destY>14</destY>
+            <sourX>6</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+        </tile>
+        <tile>
+            <destX>9</destX>
+            <destY>14</destY>
+            <sourX>6</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+        </tile>
+        <tile>
+            <destX>9</destX>
+            <destY>13</destY>
+            <sourX>6</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+        </tile>
+        <tile>
+            <destX>8</destX>
+            <destY>13</destY>
+            <sourX>6</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+        </tile>
+        <tile>
+            <destX>8</destX>
+            <destY>14</destY>
+            <sourX>6</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+        </tile>
+        <tile>
+            <destX>12</destX>
+            <destY>12</destY>
+            <sourX>6</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+        </tile>
+        <tile>
+            <destX>14</destX>
+            <destY>12</destY>
+            <sourX>6</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+        </tile>
+        <tile>
+            <destX>14</destX>
+            <destY>11</destY>
+            <sourX>6</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+        </tile>
+        <tile>
+            <destX>13</destX>
+            <destY>11</destY>
+            <sourX>6</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+        </tile>
+        <tile>
+            <destX>12</destX>
+            <destY>11</destY>
+            <sourX>6</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+        </tile>
+        <tile>
+            <destX>12</destX>
+            <destY>10</destY>
+            <sourX>6</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+        </tile>
+        <tile>
+            <destX>13</destX>
+            <destY>10</destY>
+            <sourX>6</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+        </tile>
+        <tile>
+            <destX>14</destX>
+            <destY>10</destY>
+            <sourX>6</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
         </tile>
     </TileList>
     <DecoList>

@@ -25,6 +25,8 @@ HRESULT Map::init()
 	start = true;
 	load();
 
+	spareTileSetup();
+
 
 	IMAGEMANAGER->addImage("blackLineVertical", "Img//Map//blackdot.bmp", 1, 32, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("blackLineHorizontal", "Img//Map//blackdot.bmp", 32, 1, true, RGB(255, 0, 255));
@@ -37,7 +39,32 @@ void Map::release()
 void Map::update()
 {
 
+	// 타일 상태변화 test
+	if (KEYMANAGER->isOnceKeyDown('A')) {
+		for (int i = 0; i < TILEXMAX; i++) {
+			for (int j = 0; j < TILEYMAX; j++)
+			{
+				if ((_map[i][j].terrain & ATTRIBUTE_FLAMMABLE) == ATTRIBUTE_FLAMMABLE)
+				{
+					setTile_Flame(i, j);
+				}
+			}
+		}
+	}
 
+	if (KEYMANAGER->isOnceKeyDown('S')) {
+		for (int i = 0; i < TILEXMAX; i++) {
+			for (int j = 0; j < TILEYMAX; j++)
+			{
+				if ((_map[i][j].terrain & ATTRIBUTE_GRASS) == ATTRIBUTE_GRASS &&
+					(_map[i][j].terrain & ATTRIBUTE_UNSIGHT) == ATTRIBUTE_UNSIGHT)
+				{
+					setTile_GrassCut(i, j);
+				}
+			}
+		}
+	}
+	// test
 }
 void Map::render()
 {
@@ -54,14 +81,26 @@ void Map::draw(POINT camera)
 	int temp = 7;
 	if (KEYMANAGER->isStayKeyDown(VK_RIGHT)) temp++;
 	if (KEYMANAGER->isStayKeyDown(VK_LEFT)) temp--;
-	if (start) {
-		for (int i = 0; i < _vMapTile.size(); i++) {
-				if (_vMapTile[i].terrain != TERRAIN_NULL)
-				{
+	for (int i = 0; i < TILEXMAX; i++) {
+	
+		for (int j = 0; j < TILEYMAX; j++) {
+			if (_map[i][j].terrain != TERRAIN_NULL)
+			{
+				RectangleMake(getMemDC(), i * 10, j * 10, 10, 10);
+				_map[i][j].img->frameRender(getMemDC(), i * TILESIZE, j * TILESIZE, _map[i][j].sourX, _map[i][j].sourY);
+			}
+		}
+	}
 
-
-					RectangleMake(getMemDC(), _vMapTile[i].destX * 10, _vMapTile[i].destY * 10, 10, 10);
-					_vMapTile[i].img->frameRender(getMemDC(), _vMapTile[i].destX * TILESIZE, _vMapTile[i].destY * TILESIZE, _vMapTile[i].sourX, _vMapTile[i].sourY);
+	
+	//if (start) {
+	//	for (int i = 0; i < _vMapTile.size(); i++) {
+	//			if (_vMapTile[i].terrain != TERRAIN_NULL)
+	//			{
+	//
+	//
+	//				RectangleMake(getMemDC(), _vMapTile[i].destX * 10, _vMapTile[i].destY * 10, 10, 10);
+	//				_vMapTile[i].img->frameRender(getMemDC(), _vMapTile[i].destX * TILESIZE, _vMapTile[i].destY * TILESIZE, _vMapTile[i].sourX, _vMapTile[i].sourY);
 
 					//if (i == temp)
 					//{
@@ -89,10 +128,10 @@ void Map::draw(POINT camera)
 					//{
 					//	IMAGEMANAGER->render("blackTile", getMemDC(), i * 32, i * 32);
 					//}
-				}
-
-			}
-	}
+	//			}
+	//
+	//		}
+	//}
 
 
 
@@ -690,4 +729,73 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 bool Map::check_goal()
 {
 	return false;
+}
+
+
+void Map::spareTileSetup() {
+	TILE* flameTile1 = new TILE;
+	flameTile1->img = IMAGEMANAGER->findImage("mapTiles");
+	flameTile1->destX = 0;
+	flameTile1->destY = 0;
+	flameTile1->sourX = 3;
+	flameTile1->sourY = 0;
+	flameTile1->terrain = TERRAIN_FLOOR;
+	flameTile1->obj = OBJ_NONE;
+	flameTile1->trap = TRAP_NONE;
+	
+	_spareTile.insert(make_pair("AfterFlame1", flameTile1));
+
+	TILE* flameTile2 = new TILE;
+	flameTile2->img = IMAGEMANAGER->findImage("mapTiles");
+	flameTile2->destX = 0;
+	flameTile2->destY = 0;
+	flameTile2->sourX = 9;
+	flameTile2->sourY = 0;
+	flameTile2->terrain = TERRAIN_FLOOR;
+	flameTile2->obj = OBJ_NONE;
+	flameTile2->trap = TRAP_NONE;
+
+	_spareTile.insert(make_pair("AfterFlame2", flameTile2));
+	
+	TILE* grassCutTile1 = new TILE;
+	grassCutTile1->img = IMAGEMANAGER->findImage("mapTiles");
+	grassCutTile1->destX = 0;
+	grassCutTile1->destY = 0;
+	grassCutTile1->sourX = 2;
+	grassCutTile1->sourY = 0;
+	grassCutTile1->terrain = TERRAIN_GRASS;
+	grassCutTile1->obj = OBJ_NONE;
+	grassCutTile1->trap = TRAP_NONE;
+
+	_spareTile.insert(make_pair("AfterGrass1", grassCutTile1));
+
+	TILE* grassCutTile2 = new TILE;
+	grassCutTile2->img = IMAGEMANAGER->findImage("mapTiles");
+	grassCutTile2->destX = 0;
+	grassCutTile2->destY = 0;
+	grassCutTile2->sourX = 8;
+	grassCutTile2->sourY = 0;
+	grassCutTile2->terrain = TERRAIN_GRASS;
+	grassCutTile2->obj = OBJ_NONE;
+	grassCutTile2->trap = TRAP_NONE;
+
+	_spareTile.insert(make_pair("AfterGrass2", grassCutTile2));
+}
+
+void Map::setTile_Flame(int i, int j) {
+	int random = RND->getFromIntTo(1, 2);
+	TILE* newTile = (random == 1) ? _spareTile.find("AfterFlame1")->second : _spareTile.find("AfterFlame2")->second;
+
+	_map[i][j].sourX = newTile->sourX;
+	_map[i][j].sourY = newTile->sourY;
+	_map[i][j].terrain = newTile->terrain;
+}
+
+void Map::setTile_GrassCut(int i, int j) {
+	int random = RND->getFromIntTo(1, 2);
+	TILE* newTile = (random == 1) ? _spareTile.find("AfterGrass1")->second : _spareTile.find("AfterGrass2")->second;
+
+	_map[i][j].sourX = newTile->sourX;
+	_map[i][j].sourY = newTile->sourY;
+	_map[i][j].terrain = (TERRAIN)((long)_map[i][j].terrain ^ ATTRIBUTE_UNSIGHT);
 }
