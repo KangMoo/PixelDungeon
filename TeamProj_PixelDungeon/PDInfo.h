@@ -79,7 +79,11 @@ enum ITEMNAME {
 	NAME_SEED_FROST,		//¾óÀ½
 	NAME_DEW,				//ÀÌ½½		============ Æ¯ ¼ö ==========
 	NAME_MONEY,				//µ·!
+	NAME_KEY_IRON,			//¼è ¿­¼è	============ ¿­ ¼è ==========
+	NAME_KEY_SILVER,		//Àº ¿­¼è
+	NAME_KEY_GOLD,			//±Ý ¿­¼è
 	NAME_END				//Æ÷¹® µ¹¸®±â À§ÇÔ
+
 };
 
 enum BUTTONOPTION

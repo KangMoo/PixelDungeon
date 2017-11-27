@@ -919,6 +919,18 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 		item->type = TYPE_SPECIAL;
 		item->img = IMAGEMANAGER->findImage("money");
 		break;
+	case NAME_KEY_IRON:
+		item->type = TYPE_SPECIAL;
+		item->img = IMAGEMANAGER->findImage("key_iron");
+		break;
+	case NAME_KEY_SILVER:
+		item->type = TYPE_SPECIAL;
+		item->img = IMAGEMANAGER->findImage("key_silver");
+		break;
+	case NAME_KEY_GOLD:
+		item->type = TYPE_SPECIAL;
+		item->img = IMAGEMANAGER->findImage("key_gold");
+		break;
 	case NAME_END:
 		break;
 	}
@@ -1056,7 +1068,10 @@ void ItemManager::imgInit()
 	IMAGEMANAGER->addImage("flower_frost", "Img/Item/flower_frost.bmp", 32, 32, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("flower_heal", "Img/Item/flower_heal.bmp", 32, 32, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("flower_snake", "Img/Item/flower_snake.bmp", 32, 32, true, RGB(255, 0, 255));
-
+	//=========================== K E Y ===================================
+	IMAGEMANAGER->addImage("key_iron", "Img/Item/key_iron.bmp", 32, 32, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("key_silver", "Img/Item/key_silver.bmp", 32, 32, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("key_gold", "Img/Item/key_gold.bmp", 32, 32, true, RGB(255, 0, 255));
 
 }
 
