@@ -5,13 +5,15 @@
 
 class Player;
 class UI;
+class ItemManager;
 class Enemy : public gameNode
 {
 protected:
 	Player* _player;		//플레이어 정보
 	UI* _ui;				//ui
 	Map* _map;				//적 인식용 맵정보
-	progressBar* _hpBar;	//체력바
+	ItemManager* _im;
+	//progressBar* _hpBar;	//체력바
 
 	ENEMYSTAT _statistics;	//몬스터 스텟
 	POINT _point;				//좌표
@@ -65,8 +67,9 @@ public:
 	void setHP(int hp) { _statistics.hp = hp; }
 
 	//플레이어, ui랑 연결
-	void setPlayerAddressLink(Player* player) { _player = player; }
-	void setUiAddressLink(UI* ui) { _ui = ui; }
+	void setPlayerAddressLink(Player* player)				{ _player = player; }
+	void setUiAddressLink(UI* ui)							{ _ui = ui; }
+	void setItemManagerAddressLink(ItemManager* itemManager) { _im = itemManager; }
 
 	Enemy();
 	~Enemy();

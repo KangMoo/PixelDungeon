@@ -1,18 +1,20 @@
 #pragma once
 #include "Enemy.h"
 
+//쥐는 색이 두가지입니다
 enum MYCOLOR
 {
 	BROWN,
 	WHITE
 };
+
 class Rat : public Enemy
 {
 private:
 
-	int _color;
-	int _myColor;
-	POINT _movePt;
+	int _color;		//랜덤으로 나오기 위한 그의 색
+	int _myColor;	//그 색의 결과값
+	POINT _movePt;	//움직이기 위한 포인트
 
 public:
 	virtual HRESULT init(POINT point, int cog);//인식범위 추기

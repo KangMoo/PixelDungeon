@@ -3,7 +3,8 @@
 #include "Player.h"
 #include "Map.h"
 #include "UI.h"
-
+//#include "Item.h"
+#include "itemManager.h"
 Mimic::Mimic()
 {
 }
@@ -38,12 +39,12 @@ HRESULT Mimic::init(POINT point, int cog)
 	if (_statistics.lv >= _statistics.maxLv) _statistics.lv = _statistics.maxLv;
 
 	_statistics.hp	= 12 + (_statistics.lv * 4);//레벨에 비례하여 상승합니다.
-	_statistics.def = 3 + _statistics.lv;
+	_statistics.def = 0;
 
 	_image = IMAGEMANAGER->findImage("mimicDisable");
 
-	_statistics.avd_lck = 4;
-	_statistics.atk_lck = 11;
+	_statistics.avd_lck = 0;
+	_statistics.atk_lck = 9 + _statistics.lv;
 
 	//==============================================*CHARACTER INIT*=============================================================================================================
 
@@ -52,8 +53,8 @@ HRESULT Mimic::init(POINT point, int cog)
 
 	_currntHp = _statistics.hp;
 
-	_hpBar->init(point.x, point.y, TILESIZE, 4);
-	_hpBar->setGauge(_currntHp, _statistics.hp);//hp바를 세팅해줍니다.
+	//_hpBar->init(point.x, point.y, TILESIZE, 4);
+	//_hpBar->setGauge(_currntHp, _statistics.hp);//hp바를 세팅해줍니다.
 
 	//==============================================*BOOL SETTING*=============================================================================================================
 
@@ -95,6 +96,8 @@ void Mimic::release()
 
 void Mimic::update()
 {
+	money = RND->getFromIntTo(1, 99999);
+
 	if (_myState == ENEMYSTATE_SLEEP)
 	{
 		_statistics.lv		= _player->getStat().lv; //플레이어 레벨에 비례하여 오릅니다
@@ -132,10 +135,10 @@ void Mimic::update()
 			action();
 		}
 
-		_hpBar->setX(_point.x);
-		_hpBar->setY(_point.y);
-		_hpBar->setGauge(_currntHp, _statistics.hp);
-		_hpBar->update();
+		//_hpBar->setX(_point.x);
+		//_hpBar->setY(_point.y);
+		//_hpBar->setGauge(_currntHp, _statistics.hp);
+		//_hpBar->update();
 	}
 
 	if (_currntHp <= 0)
@@ -147,6 +150,8 @@ void Mimic::update()
 		//UI에게 사망소식을 알린다.
 		//플레이어에게 EXP를 넘긴다.
 		//미믹은 랜덤하게 아이템을 뱉는다.
+
+		itemDrop();
 	}
 }
 
@@ -160,10 +165,10 @@ void Mimic::draw(POINT camera)
 	RectangleMake(getMemDC(), _point.x + camera.x, _point.y + camera.y, 32, 32);
 	//_image->frameRender(getMemDC(), _point.x + camera.x, _point.y + camera.y);
 	_image->alphaFrameRender(getMemDC(), _point.x + camera.x, _point.y + camera.y, _currentFrameX, _currentFrameY, _deadAlpha);
-	if (_findPlayer == true)
-	{
-		_hpBar->render();
-	}
+	//if (_findPlayer == true)
+	//{
+	//	_hpBar->render();
+	//}
 }
 
 void Mimic::action()
@@ -236,7 +241,7 @@ void Mimic::attack()
 	_attBox = RectMake(_player->getPoint().x, _player->getPoint().y, TILESIZE, TILESIZE);
 
 	//흰 쥐는 일정 확률로 출혈을 일으키고 공격력도 다릅니다.
-	_statistics.str = RND->getFromIntTo(3 + (_statistics.lv * 1), 5 + (_statistics.lv * 2));
+	_statistics.str = RND->getFromIntTo((9 + _statistics.lv) * 2, (9 + _statistics.lv) * 3);
 
 	//_player->getDamaged(_statistics.str);
 	_attBox = RectMake(0, 0, 0, 0);//초기화
@@ -292,7 +297,215 @@ void Mimic::move()
 
 }
 
+void Mimic::itemDrop()
+{
+	//										0						40
+	int item			= RND->getFromIntTo(NAME_OLD_SHORT_SWORD, NAME_MONEY);//랜덤하게 아이템을 뱉는다
+	
+	int identifyPercent = RND->getInt(1);//50% 확률로 확인된 아이템
+	bool identify;
+	
+	if (identifyPercent == 0)identify = false;
+	else identify = true;
+
+	int isCursedPercent = RND->getInt(1);//50% 확률로 저주받음
+	bool isCursed;
+	if (isCursedPercent == 0)isCursed = false;
+	else isCursed = true;
+
+	int upgrade = RND->getInt(2);//업그레이드 수치
+
+	switch (item)
+	{
+		//무기
+	case NAME_OLD_SHORT_SWORD:
+							//아이템 이름			위치X		위치Y	확인여부 저주여부 업그레이드 개수
+		_im->setItemToField(NAME_OLD_SHORT_SWORD,	_point.x, _point.y, identify, isCursed, upgrade, 1);
+		
+		break;
+	case NAME_SHORT_SWORD:
+		_im->setItemToField(NAME_SHORT_SWORD,		_point.x, _point.y, identify, isCursed, upgrade, 1);
+
+		break;
+	case NAME_SWORD:
+		_im->setItemToField(NAME_SWORD,				_point.x, _point.y, identify, isCursed, upgrade, 1);
+
+		break;
+	case NAME_SPEAR:
+		_im->setItemToField(NAME_SPEAR,				_point.x, _point.y, identify, isCursed, upgrade, 1);
+
+		break;
+	case NAME_BATTLE_AXE:
+		_im->setItemToField(NAME_BATTLE_AXE,		_point.x, _point.y, identify, isCursed, upgrade, 1);
+
+		break;
+
+		//방어구
+	case NAME_CLOTH:
+		_im->setItemToField(NAME_CLOTH,				_point.x, _point.y, identify, isCursed, upgrade, 1);
+
+		break;
+	case NAME_LEATHER:
+		_im->setItemToField(NAME_LEATHER,			_point.x, _point.y, identify, isCursed, upgrade, 1);
+
+		break;
+	case NAME_MAIL:
+		_im->setItemToField(NAME_MAIL,				_point.x, _point.y, identify, isCursed, upgrade, 1);
+
+		break;
+
+		//악세사리
+	case NAME_RING_POWER:
+		_im->setItemToField(NAME_RING_POWER,		_point.x, _point.y, identify, isCursed, upgrade, 1);
+
+		break;
+	case NAME_RING_RECHARGE:
+		_im->setItemToField(NAME_RING_RECHARGE,		_point.x, _point.y, identify, isCursed, upgrade, 1);
+
+		break;
+	case NAME_LIOYDS_BEACON:
+		_im->setItemToField(NAME_LIOYDS_BEACON,		_point.x, _point.y, identify, isCursed, upgrade, 1);
+
+		break;
+
+		//투척
+	case NAME_DART:
+		_im->setItemToField(NAME_DART,				_point.x, _point.y, identify, isCursed, upgrade, 1);
+
+		break;
+	case NAME_PARALYSIS_DART:
+		_im->setItemToField(NAME_PARALYSIS_DART,	_point.x, _point.y, identify, isCursed, upgrade, 1);
+
+		break;
+	case NAME_POISON_DART:
+		_im->setItemToField(NAME_POISON_DART,		_point.x, _point.y, identify, isCursed, upgrade, 1);
+
+		break;
+		//완드
+	case NAME_LIGHTNING:
+		_im->setItemToField(NAME_LIGHTNING,			_point.x, _point.y, identify, isCursed, upgrade, 1);
+
+		break;
+	case NAME_NORMAL:
+		_im->setItemToField(NAME_NORMAL,			_point.x, _point.y, identify, isCursed, upgrade, 1);
+
+		break;
+	case NAME_POISON:
+		_im->setItemToField(NAME_POISON,			_point.x, _point.y, identify, isCursed, upgrade, 1);
+
+		break;
+
+		//음식
+		//음식등의 아이템류는 위치만 지정해 줍니다. 저주받은 파스타 따위가 나올리가 없죠 물론 주문서와 물약도 동일합니다.
+	case NAME_EMERGENCY:
+		_im->setItemToField(NAME_EMERGENCY,			_point.x, _point.y);
+
+		break;
+	case NAME_PASTY:
+		_im->setItemToField(NAME_PASTY,				_point.x, _point.y);
+
+		break;
+	case NAME_UNKNOWN_MEAT:
+		_im->setItemToField(NAME_UNKNOWN_MEAT,		_point.x, _point.y);
+
+		break;
+	case NAME_COOKED_MEAT:
+		_im->setItemToField(NAME_COOKED_MEAT,		_point.x, _point.y);
+
+		break;
+	case NAME_FROZEN_MEAT:
+		_im->setItemToField(NAME_FROZEN_MEAT,		_point.x, _point.y);
+
+		break;
+
+		//주문서
+	case NAME_IDENTIFY:
+		_im->setItemToField(NAME_IDENTIFY,			_point.x, _point.y);
+
+		break;
+	case NAME_UPGRADE:
+		_im->setItemToField(NAME_UPGRADE,			_point.x, _point.y);
+
+		break;
+	case NAME_PURIFY:
+		_im->setItemToField(NAME_PURIFY,			_point.x, _point.y);
+
+		break;
+	case NAME_MAP:
+		_im->setItemToField(NAME_MAP,				_point.x, _point.y);
+
+		break;
+
+		//물약
+	case NAME_RECHARGE:
+		_im->setItemToField(NAME_RECHARGE,			_point.x, _point.y);
+
+		break;
+	case NAME_BOTTLE:
+		_im->setItemToField(NAME_BOTTLE,			_point.x, _point.y);
+
+		break;
+	case NAME_HEAL:
+		_im->setItemToField(NAME_HEAL,				_point.x, _point.y);
+
+		break;
+	case NAME_STR:
+		_im->setItemToField(NAME_STR,				 _point.x, _point.y);
+
+		break;
+	case NAME_EX:
+		_im->setItemToField(NAME_EX,				_point.x, _point.y);
+
+		break;
+	case NAME_INVISIBLE:
+		_im->setItemToField(NAME_INVISIBLE,			_point.x, _point.y);
+
+		break;
+	case NAME_LEVITATION:
+		_im->setItemToField(NAME_LEVITATION,		_point.x, _point.y);
+
+		break;
+	case NAME_FROZEN:
+		_im->setItemToField(NAME_FROZEN,			_point.x, _point.y);
+
+		break;
+	case NAME_LIQUID_FIRE:
+		_im->setItemToField(NAME_LIQUID_FIRE,		_point.x, _point.y);
+
+		break;
+	case NAME_SEED_HEAL:
+		_im->setItemToField(NAME_SEED_HEAL,			_point.x, _point.y);
+
+		break;
+	case NAME_SEED_FIRE:
+		_im->setItemToField(NAME_SEED_FIRE,			_point.x, _point.y);
+
+		break;
+	case NAME_SEED_SNAKE:
+		_im->setItemToField(NAME_SEED_SNAKE,		_point.x, _point.y);
+
+		break;
+	case NAME_SEED_FROST:
+		_im->setItemToField(NAME_SEED_FROST,		_point.x, _point.y);
+
+		break;
+	case NAME_DEW:
+		_im->setItemToField(NAME_DEW,				_point.x, _point.y);
+
+		break;
+
+		//돈은 머니 랜덤변수를 이용합니다
+	case NAME_MONEY:
+		_im->setItemToField(NAME_POISON,			_point.x, _point.y, false, false, 0, money);
+
+		break;
+	}
+}
+
 void Mimic::getDamaged(int damage)
 {
 	_currntHp -= (damage - _statistics.def);
+
+	int hitGift = RND->getInt(2);
+	if (hitGift == 2) _im->setItemToField(NAME_POISON, _point.x, _point.y, false, false, 0, money);
 }

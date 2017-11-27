@@ -92,8 +92,8 @@ HRESULT Rat::init(POINT point, int cog)
 	
 	_currntHp = _statistics.hp;									//초기 hp를 세팅해 줍니다.
 
-	_hpBar->init(point.x, point.y, TILESIZE, 4);				//hp바의 위치 및 크기를 지정해 줍니다.
-	_hpBar->setGauge(_currntHp, _statistics.hp);				//hp바를 세팅해줍니다.
+	//_hpBar->init(point.x, point.y, TILESIZE, 4);				//hp바의 위치 및 크기를 지정해 줍니다.
+	//_hpBar->setGauge(_currntHp, _statistics.hp);				//hp바를 세팅해줍니다.
 
 	//==============================================*BOOL SETTING*=============================================================================================================
 	
@@ -196,10 +196,10 @@ void Rat::update()
 	}
 
 	//hp바 업데이트
-	_hpBar->setX(_point.x);
-	_hpBar->setY(_point.y);
-	_hpBar->setGauge(_currntHp, _statistics.hp);
-	_hpBar->update();
+	//_hpBar->setX(_point.x);
+	//_hpBar->setY(_point.y);
+	//_hpBar->setGauge(_currntHp, _statistics.hp);
+	//_hpBar->update();
 	
 	//죽었다.
 	if (_currntHp <= 0)
@@ -224,7 +224,7 @@ void Rat::draw(POINT camera)
 	RectangleMake(getMemDC(), _point.x + camera.x, _point.y + camera.y, TILESIZE, TILESIZE);
 	//_image->frameRender(getMemDC(), _point.x + camera.x, _point.y + camera.y);
 	_image->alphaFrameRender(getMemDC(), _point.x + camera.x, _point.y + camera.y, _currentFrameX, _currentFrameY, _deadAlpha);
-	_hpBar->render();
+	//_hpBar->render();
 }
 
 void Rat::action()
@@ -263,34 +263,15 @@ void Rat::frameUpdate()
 	//공격상태
 	if (_myState == ENEMYSTATE_ATTACK)
 	{
-		if (_myColor == WHITE)
-		{
-			_image = IMAGEMANAGER->findImage("whiteAttack");
-			if (_currentFrameX > _image->getMaxFrameX())
-			{
-				_image		= IMAGEMANAGER->findImage("whiteIdle");
-				_myState	= ENEMYSTATE_IDLE;
-				_action		= false; //턴을 넘김다
-
-			}
-		}
-		else if (_myColor == BROWN)
-		{
-			_image = IMAGEMANAGER->findImage("brownAttack");
-			if (_currentFrameX > _image->getMaxFrameX())
-			{
-				_image		= IMAGEMANAGER->findImage("brownIdle");
-				_myState	= ENEMYSTATE_IDLE;
-				_action		= false;
-			}
-		}
+		if		(_myColor == WHITE)	_image = IMAGEMANAGER->findImage("whiteAttack");
+		else if (_myColor == BROWN)	_image = IMAGEMANAGER->findImage("brownAttack");
 	}
 	//공격상태
 
 	//죽은상태
 	if (_myState == ENEMYSTATE_DEAD)
 	{
-		if (_myColor == WHITE)		_image = IMAGEMANAGER->findImage("whiteDead");
+		if		(_myColor == WHITE)	_image = IMAGEMANAGER->findImage("whiteDead");
 		else if (_myColor == BROWN)	_image = IMAGEMANAGER->findImage("brownDead");
 	}
 	//죽은상태
@@ -320,7 +301,7 @@ void Rat::attack()
 	//상태를 변경합니다.
 	_myState = ENEMYSTATE_ATTACK;
 
-	//공격렉트르 설정합니다.
+	//공격렉트 설정		플레이어 위치 X			플레이어 위치 y			타일 사이즈만큼
 	_attBox = RectMake(_player->getPoint().x, _player->getPoint().y, TILESIZE, TILESIZE);
 
 	//흰 쥐는 일정 확률로 출혈을 일으키고 공격력도 다릅니다.
@@ -329,19 +310,23 @@ void Rat::attack()
 		//공격력 랜덤으로 나옵니다.
 		_statistics.str = RND->getFromIntTo(3 + (_statistics.lv * 1), 5 + (_statistics.lv * 2));
 
+		//출혈 디버프를 걸기위한 랜덤값
 		int bleed = RND->getInt(2);
 
 		if (bleed == 2)//출혈 디버프
 		{
+			
 			//_player.
 		}
 	}
+
 	//갈색쥐는 출혈을 일으키지 않습니다.
 	else if (_myColor == BROWN)
 	{
 		_statistics.str = RND->getFromIntTo(2 + (_statistics.lv * 1), 5 + (_statistics.lv * 2));
 	}
 
+	//플레이어에게 공격 전달
 	//_player->getDamaged(_statistics.str);
 	_attBox = RectMake(0, 0, 0, 0);//초기화
 
