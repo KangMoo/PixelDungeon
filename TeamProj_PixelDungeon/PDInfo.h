@@ -97,7 +97,6 @@ enum BUTTONOPTION
 	BUTTONOPTION_END
 };
 
-
 typedef struct tagPlayerStat {
 	int lv;			//레벨
 	int hp;			//체력
@@ -241,3 +240,9 @@ typedef struct tagButton {
 	char text[128];
 	bool isClicked;
 }BUTTON;
+
+struct tagDebuff {
+	int lefttime;		//잔여시간
+	int damage;			//데미지
+	DEBUFF type;		//디버프 타입
+};

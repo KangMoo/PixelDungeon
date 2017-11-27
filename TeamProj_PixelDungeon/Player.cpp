@@ -29,6 +29,8 @@ HRESULT Player::init(POINT point)
 	_frameUpdateTimer = TIMEMANAGER->getWorldTime();
 	_currentFrameX = _currentFrameY = 0;
 	_image = IMAGEMANAGER->findImage("warrior_Idle");
+	_frameTimer = TIMEMANAGER->getWorldTime();
+	_keepMove = false;
 	return S_OK;
 }
 void Player::release()
@@ -40,15 +42,25 @@ void Player::update()
 
 	frameUpdate();
 	fovCheck();
-	if (_action) action();
-
-	//test~
+	if (_keepMove == true && astar.size() > 0)
+	{
+		move();
+	}
+	//if (_action) action();
 	if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON))
 	{
-		astarTest = _map->aStar(_playerPoint, _ptMouse);
-		int a = 0;
+		_keepMove = true;
+		astar = _map->aStar(_playerPoint, _ptMouse);
+		//길이 있으면?
+		if (astar.size() > 0)
+		{
+			//현재 위치는 뺌
+			astar.erase(astar.begin() + astar.size() - 1);
+			//마지막 위치 추가
+			astar.insert(astar.begin(), _map->getTile(_ptMouse.x / TILESIZE, _ptMouse.y / TILESIZE));
+		}
 	}
-	//~test
+
 }
 
 
@@ -82,12 +94,15 @@ void Player::action()
 	}
 	//행동 종료 후 action값 false로 바꿔주기
 
-	//행동이 종료됐다면 적에게 턴 넘기기
+
+
+	//행동 종료 후
 	if (!_action)
 	{
+		//적에게 턴 넘기기
 		_em->setTurn(true);
 	}
-	
+
 }
 
 
@@ -111,14 +126,20 @@ void Player::draw(POINT camera)
 	//}
 	//RectangleMakeCenter(getMemDC(), _playerPoint.x, _playerPoint.y, 7, 7);
 
+	char str[] = "폰트테스트";
+	HFONT hFont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("궁서"));
+	HFONT oldFont = (HFONT)SelectObject(getMemDC(), hFont);
+	//TextOut(getMemDC(), 300, 300, str, strlen(str));
+	SelectObject(getMemDC(), oldFont);
+	DeleteObject(hFont);
 
 	//~test
 
 	_image->alphaFrameRender(getMemDC(), _playerPoint.x - _image->getFrameWidth() / 2, _playerPoint.y - _image->getFrameHeight() / 2, _currentFrameX, _currentFrameY, 0);
 
-	for (auto i : astarTest)
+	for (auto i : astar)
 	{
-		RectangleMakeCenter(getMemDC(), i.destX*TILESIZE + TILESIZE/2, i.destY*TILESIZE + TILESIZE / 2, 5, 5);
+		RectangleMakeCenter(getMemDC(), i.destX*TILESIZE + TILESIZE / 2, i.destY*TILESIZE + TILESIZE / 2, 5, 5);
 	}
 }
 
@@ -164,7 +185,7 @@ void Player::addCanTSeeAngle(float sangle, float eangle)
 
 void Player::addCanTSeeAngleByRect(RECT rc)
 {
-	POINT rcpoint = PointMake(rc.left + TILESIZE/2, rc.top + TILESIZE/2);
+	POINT rcpoint = PointMake(rc.left + TILESIZE / 2, rc.top + TILESIZE / 2);
 	//동일 y축 위
 	if (_playerPoint.x == rcpoint.x)
 	{
@@ -223,18 +244,42 @@ void Player::addCanTSeeAngleByRect(RECT rc)
 
 void Player::frameUpdate()
 {
-	if (_currentFrameX < _image->getMaxFrameX())
+	if (_playerState == PLAYERSTATE_IDLE && TIMEMANAGER->getWorldTime() - _frameTimer > 1.5)
 	{
-		_currentFrameX++;
-	}
-	else
-	{
-		_currentFrameX = 0;
-		if (_playerState != PLAYERSTATE_IDLE)
+		_frameTimer = TIMEMANAGER->getWorldTime();
+		if (_currentFrameX < _image->getMaxFrameX())
 		{
-			_playerState = PLAYERSTATE_IDLE;
+			_currentFrameX++;
+		}
+		else
+		{
+			_currentFrameX = 0;
+			if (_playerState != PLAYERSTATE_IDLE)
+			{
+				_playerState = PLAYERSTATE_IDLE;
+				_image = IMAGEMANAGER->findImage("warrior_Idle");
+			}
 		}
 	}
+
+	else if(_playerState != PLAYERSTATE_IDLE && TIMEMANAGER->getWorldTime() - _frameTimer > 0.1)
+	{
+		_frameTimer = TIMEMANAGER->getWorldTime();
+		if (_currentFrameX < _image->getMaxFrameX())
+		{
+			_currentFrameX++;
+		}
+		else
+		{
+			_currentFrameX = 0;
+			if (_playerState != PLAYERSTATE_IDLE)
+			{
+				_playerState = PLAYERSTATE_IDLE;
+				_image = IMAGEMANAGER->findImage("warrior_Idle");
+			}
+		}
+	}
+	
 }
 
 void Player::imageChange(const char* str)
@@ -257,7 +302,7 @@ void Player::fovCheck()
 			if (temp.tileview == TILEVIEW_ALL)
 			{
 				temp.tileview = TILEVIEW_HALF;
-				_map->setTile(temp, i, j);
+				//_map->setTile(temp, i, j);
 			}
 		}
 
@@ -291,8 +336,8 @@ void Player::fovCheck()
 						//허용 각도 수치
 						int limit = 10;
 						//살짝 보이는정도면 보인다고 쳐주자
-						if (k.sangle - PI/180 * limit <= getAngle(_playerPoint.x, _playerPoint.y, i*TILESIZE + TILESIZE / 2, j*TILESIZE + TILESIZE / 2) &&
-							getAngle(_playerPoint.x, _playerPoint.y, i*TILESIZE + TILESIZE / 2, j*TILESIZE + TILESIZE / 2) <= k.sangle + PI / 180 * limit && 
+						if (k.sangle - PI / 180 * limit <= getAngle(_playerPoint.x, _playerPoint.y, i*TILESIZE + TILESIZE / 2, j*TILESIZE + TILESIZE / 2) &&
+							getAngle(_playerPoint.x, _playerPoint.y, i*TILESIZE + TILESIZE / 2, j*TILESIZE + TILESIZE / 2) <= k.sangle + PI / 180 * limit &&
 							j != _playerPoint.y / TILESIZE)
 						{
 
@@ -307,10 +352,10 @@ void Player::fovCheck()
 						{
 							tileCanSeeChk = false;
 						}
-						
+
 					}
 				}
-				
+
 				//볼 수 있는 타일일 경우
 				if (tileCanSeeChk && i >= 0 && j >= 0)
 				{
@@ -334,7 +379,7 @@ void Player::fovCheck()
 	{
 		TILE temp = i;
 		temp.tileview = TILEVIEW_ALL;
-		_map->setTile(temp, i.destX, i.destY);
+		//_map->setTile(temp, i.destX, i.destY);
 	}
 
 	if (KEYMANAGER->isOnceKeyDown(VK_LEFT))
@@ -365,4 +410,69 @@ void Player::addImg()
 	IMAGEMANAGER->addFrameImage("warrior_Scroll", "Img//Player//warrior_scroll.bmp", 72, 210, 3, 7, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("warrior_Move", "Img//Player//warrior_move.bmp", 144, 210, 6, 7, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("blackTile", "Img//Player//blacktile.bmp", TILESIZE, TILESIZE, true, RGB(255, 0, 255));
+}
+
+void Player::addDebuff(DEBUFF debuffType, int lefttime, int damage)
+{
+	tagDebuff temp;
+	temp.type = debuffType;
+	temp.lefttime = lefttime;
+	temp.damage = damage;
+	_vdebuff.push_back(temp);
+}
+
+void Player::action_Move(POINT point)
+{
+	_playerState = PLAYERSTATE_MOVE;
+	_image = IMAGEMANAGER->findImage("warrior_Move");
+
+	astar = _map->aStar(_playerPoint, point);
+	_goalTile = _map->getTile(_ptMouse.x / TILESIZE, _ptMouse.y / TILESIZE);
+}
+void Player::action_Attack(POINT point)
+{
+	_playerState = PLAYERSTATE_ATTACK;
+	_image = IMAGEMANAGER->findImage("warrior_Attack");
+
+	//클릭한 몬스터 선택
+	for (auto i : _em->getEnemyVector())
+	{
+		if (i->getPoint().x / TILESIZE == point.x / TILESIZE && i->getPoint().x / TILESIZE == point.y / TILESIZE)
+		{
+			//몬스터 공격
+			i->setHP(i->getHP() - _playerStat.str);
+		}
+	}
+}
+void Player::action_Scroll()
+{
+	_playerState = PLAYERSTATE_SCROLL;
+	_image = IMAGEMANAGER->findImage("warrior_Scroll");
+}
+void Player::action_Eat()
+{
+	_playerState = PLAYERSTATE_EAT;
+	_image = IMAGEMANAGER->findImage("warrior_Eat");
+}
+
+void Player::move()
+{
+	_playerState = PLAYERSTATE_MOVE;
+	_image = IMAGEMANAGER->findImage("warrior_Move");
+
+	_playerPoint.x += cosf(getAngle(_playerPoint.x, _playerPoint.y, astar[astar.size()-1].destX * TILESIZE + TILESIZE / 2, astar[astar.size() - 1].destY*TILESIZE + TILESIZE / 2)) * 3;
+	_playerPoint.y -= sinf(getAngle(_playerPoint.x, _playerPoint.y, astar[astar.size()-1].destX * TILESIZE + TILESIZE / 2, astar[astar.size() - 1].destY*TILESIZE + TILESIZE / 2)) * 3;
+
+	//목표에 도달하면
+	if (getDistance(_playerPoint.x, _playerPoint.y, astar[astar.size()-1].destX * TILESIZE + TILESIZE / 2, astar[astar.size() - 1].destY*TILESIZE + TILESIZE / 2) <= 5)
+	{
+		//플레이어 위치 조정
+		_playerPoint.x = astar[astar.size()-1].destX*TILESIZE + TILESIZE / 2;
+		_playerPoint.y = astar[astar.size()-1].destY*TILESIZE + TILESIZE / 2;
+		//목표지점 수정
+		astar.erase(astar.begin() + astar.size()-1);
+		//턴 넘기기
+		_action = false;
+		_em->setTurn(true);
+	}
 }
