@@ -28,6 +28,13 @@ inline RECT RectMakeCenter(int x, int y, int width, int height)
 	return rc;
 }
 
+inline RECT RectMakeLeft(int x, int y, int width, int height)
+{
+	RECT rc = { x - (width / 2), y - (height / 2), x + (width / 2), y + (height / 2) };
+
+	return rc;
+}
+
 //좌표로 부터 가로, 세로가 만들어지는 사각형
 inline void RectangleMake(HDC hdc, int x, int y, int width, int height)
 {

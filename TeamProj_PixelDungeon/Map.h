@@ -32,6 +32,8 @@ private:
 
 	TILE _mapTest[10000];
 
+	map<string, TILE*> _spareTile; // 바꿔치기용 타일 저장 (flame, grass 등)
+
 	//A*~
 	vector<vertex> _openlist;
 	vector<vertex> _closelist;
@@ -52,6 +54,11 @@ public:
 	TILE getTile(int i, int j) { return _map[i][j]; }
 	void setTile(TILE tile, int i, int j) { _map[i][j] = tile; }
 
+
+	//타일 상태 변화 일으키는 set 모음
+	void setTile_Flame(int i, int j);
+	void setTile_GrassCut(int i, int j);
+
 	//A*~
 	vector<TILE> aStar(POINT currentPoint, POINT goalPoint);	//Astar실행함수
 	void add_openlist(vertex v);					//openlist에 추가
@@ -68,6 +75,8 @@ public:
 	bool check_goal();												//목적지 탐색
 
 	//~A*
+
+	void spareTileSetup();
 
 	void setPlayerAddressLink(Player* player) { _player = player; }
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }

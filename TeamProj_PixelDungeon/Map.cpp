@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Map.h"
 #include "EnemyManager.h"
+#include "ItemManager.h"
 #include "Player.h"
 #include "UI.h"
 
@@ -21,9 +22,11 @@ HRESULT Map::init()
 
 	}
 
-
+	
 	start = true;
 	load();
+
+	spareTileSetup();
 
 
 	IMAGEMANAGER->addImage("blackLineVertical", "Img//Map//blackdot.bmp", 1, 32, true, RGB(255, 0, 255));
@@ -37,7 +40,32 @@ void Map::release()
 void Map::update()
 {
 
+	// 타일 상태변화 test
+	if (KEYMANAGER->isOnceKeyDown('A')) {
+		for (int i = 0; i < TILEXMAX; i++) {
+			for (int j = 0; j < TILEYMAX; j++)
+			{
+				if ((_map[i][j].terrain & ATTRIBUTE_FLAMMABLE) == ATTRIBUTE_FLAMMABLE)
+				{
+					setTile_Flame(i, j);
+				}
+			}
+		}
+	}
 
+	if (KEYMANAGER->isOnceKeyDown('S')) {
+		for (int i = 0; i < TILEXMAX; i++) {
+			for (int j = 0; j < TILEYMAX; j++)
+			{
+				if ((_map[i][j].terrain & ATTRIBUTE_GRASS) == ATTRIBUTE_GRASS &&
+					(_map[i][j].terrain & ATTRIBUTE_UNSIGHT) == ATTRIBUTE_UNSIGHT)
+				{
+					setTile_GrassCut(i, j);
+				}
+			}
+		}
+	}
+	// test
 }
 void Map::render()
 {
@@ -54,14 +82,41 @@ void Map::draw(POINT camera)
 	int temp = 7;
 	if (KEYMANAGER->isStayKeyDown(VK_RIGHT)) temp++;
 	if (KEYMANAGER->isStayKeyDown(VK_LEFT)) temp--;
-	if (start) {
-		for (int i = 0; i < _vMapTile.size(); i++) {
-				if (_vMapTile[i].terrain != TERRAIN_NULL)
+	for (int i = 0; i < TILEXMAX; i++) {
+	
+		for (int j = 0; j < TILEYMAX; j++) {
+			if (_map[i][j].terrain != TERRAIN_NULL)
+			{
+				switch (_map[i][j].tileview)
 				{
+				case TILEVIEW_ALL:
+					_map[i][j].img->frameRender(getMemDC(), i * TILESIZE, j * TILESIZE, _map[i][j].sourX, _map[i][j].sourY);
+					break;
+				case TILEVIEW_HALF:
+					_map[i][j].img->frameRender(getMemDC(), i * TILESIZE, j * TILESIZE, _map[i][j].sourX, _map[i][j].sourY);
+					IMAGEMANAGER->alphaRender("blackTile", getMemDC(), i*TILESIZE, j*TILESIZE, 150);
+					break;
+				case TILEVIEW_NO:
+					_map[i][j].img->frameRender(getMemDC(), i * TILESIZE, j * TILESIZE, _map[i][j].sourX, _map[i][j].sourY);
 
+					IMAGEMANAGER->render("blackTile", getMemDC(), i*TILESIZE, j*TILESIZE);
+					break;
+				}
+				//RectangleMake(getMemDC(), i * 10, j * 10, 10, 10);
+				
+			}
+		}
+	}
 
-					RectangleMake(getMemDC(), _vMapTile[i].destX * 10, _vMapTile[i].destY * 10, 10, 10);
-					_vMapTile[i].img->frameRender(getMemDC(), _vMapTile[i].destX * TILESIZE, _vMapTile[i].destY * TILESIZE, _vMapTile[i].sourX, _vMapTile[i].sourY);
+	
+	//if (start) {
+	//	for (int i = 0; i < _vMapTile.size(); i++) {
+	//			if (_vMapTile[i].terrain != TERRAIN_NULL)
+	//			{
+	//
+	//
+	//				RectangleMake(getMemDC(), _vMapTile[i].destX * 10, _vMapTile[i].destY * 10, 10, 10);
+	//				_vMapTile[i].img->frameRender(getMemDC(), _vMapTile[i].destX * TILESIZE, _vMapTile[i].destY * TILESIZE, _vMapTile[i].sourX, _vMapTile[i].sourY);
 
 					//if (i == temp)
 					//{
@@ -89,10 +144,10 @@ void Map::draw(POINT camera)
 					//{
 					//	IMAGEMANAGER->render("blackTile", getMemDC(), i * 32, i * 32);
 					//}
-				}
-
-			}
-	}
+	//			}
+	//
+	//		}
+	//}
 
 
 
@@ -152,35 +207,57 @@ void Map::load() {
 	_vMapTile.clear();
 
 
-	//xml 로드
 	XMLDocument xmlDoc;
 
 	XMLError eResult = xmlDoc.LoadFile("SavedData.xml");
 
 	XMLNode * pRoot = xmlDoc.FirstChild();
 
-	XMLElement * pElement = pRoot->FirstChildElement("List");
-	_tileNum = pElement->FirstChildElement("size")->IntText();
-	XMLElement * pListElement = pElement->FirstChildElement("tile");
+	XMLElement * pTileElement = pRoot->FirstChildElement("TileList");
+	XMLElement * pTileListElement = pTileElement->FirstChildElement("tile");
 
-	while (pListElement != nullptr) {
+	while (pTileListElement != nullptr) {
 		TILE tile;
 
 		tile.img = IMAGEMANAGER->findImage("mapTiles"); //임시, 나중에 주소값으로 바꿀거
 
-		tile.destX = pListElement->FirstChildElement("destX")->IntText();
-		tile.destY = pListElement->FirstChildElement("destY")->IntText();
-		tile.sourX = pListElement->FirstChildElement("sourX")->IntText();
-		tile.sourY = pListElement->FirstChildElement("sourY")->IntText();
-		tile.index = pListElement->FirstChildElement("index")->IntText();
-		tile.obj = (OBJ)pListElement->FirstChildElement("obj")->IntText();
-		tile.terrain = (TERRAIN)pListElement->FirstChildElement("terrain")->IntText();
+
+		tile.destX = pTileListElement->FirstChildElement("destX")->IntText();
+		tile.destY = pTileListElement->FirstChildElement("destY")->IntText();
+		tile.sourX = pTileListElement->FirstChildElement("sourX")->IntText();
+		tile.sourY = pTileListElement->FirstChildElement("sourY")->IntText();
+		tile.obj = (OBJ)pTileListElement->FirstChildElement("obj")->IntText();
+		tile.terrain = (TERRAIN)pTileListElement->FirstChildElement("terrain")->IntText();
 
 		_vMapTile.push_back(tile);
 
-		pListElement = pListElement->NextSiblingElement("tile");
+		pTileListElement = pTileListElement->NextSiblingElement("tile");
 	}
 
+
+
+	//XMLElement * pDecoElement = pRoot->FirstChildElement("DecoList");
+	//XMLElement * pDecoListElement = pDecoElement->FirstChildElement("tile");
+	//
+	//while (pDecoListElement != nullptr) {
+	//	TILE tile;
+	//
+	//	tile.img = IMAGEMANAGER->findImage("mapTiles"); //임시, 나중에 주소값으로 바꿀거
+	//
+	//	tile.destX = pDecoListElement->FirstChildElement("destX")->IntText();
+	//	tile.destY = pDecoListElement->FirstChildElement("destY")->IntText();
+	//	tile.sourX = pDecoListElement->FirstChildElement("sourX")->IntText();
+	//	tile.sourY = pDecoListElement->FirstChildElement("sourY")->IntText();
+	//	tile.obj = (OBJ)pDecoListElement->FirstChildElement("obj")->IntText();
+	//	tile.terrain = (TERRAIN)pDecoListElement->FirstChildElement("terrain")->IntText();
+	//
+	//	_vDecoTile.push_back(tile);
+	//
+	//	pDecoListElement = pDecoListElement->NextSiblingElement("tile");
+	//}
+
+
+	
 	for (int i = 0; i < 10000; i++) {
 		if (i >= _vMapTile.size()) break;
 
@@ -190,12 +267,16 @@ void Map::load() {
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].destY = _vMapTile[i].destY;
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].sourX = _vMapTile[i].sourX;
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].sourY = _vMapTile[i].sourY;
-		_map[_vMapTile[i].destX][_vMapTile[i].destY].index = _vMapTile[i].index;
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].obj = _vMapTile[i].obj;
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].terrain = _vMapTile[i].terrain;
 		_map[_vMapTile[i].destX][_vMapTile[i].destY].tileview = TILEVIEW_NO;
 	}
 
+
+	//for (int i = 0; i < _vMapTile.size(); i++) {
+	//	_vMapTile.clear();
+	//	vector<TILE>().swap(_vMapTile);		//메모리 해제
+	//}
 }
 
 vector<TILE> Map::aStar(POINT currentPoint, POINT goalPoint)
@@ -225,6 +306,9 @@ vector<TILE> Map::aStar(POINT currentPoint, POINT goalPoint)
 	//openlist에 목적지가 있는 경우?
 	if (search_openlist_exsist(goalPoint.x / TILESIZE, goalPoint.y / TILESIZE))
 	{
+		way.push_back(_map[goalPoint.x / TILESIZE][goalPoint.y / TILESIZE]);
+		way.push_back(_map[currentPoint.x / TILESIZE][currentPoint.y / TILESIZE]);
+		
 		return way;
 	}
 
@@ -269,13 +353,15 @@ vector<TILE> Map::aStar(POINT currentPoint, POINT goalPoint)
 				way.push_back(_map[curV.x][curV.y]);
 			}
 		}
+		way.insert(way.begin(),_map[goalPoint.x / TILESIZE][goalPoint.y / TILESIZE]);
+		return way;
 	}
 	//길이 없을 경우
 	else
 	{
 		return way;
 	}
-	return way;
+	
 }
 
 void Map::add_openlist(vertex v)
@@ -401,68 +487,212 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 		//조건식에 따라 8방향 openlist에 추가
 		bool aU, aD, aR, aL;
 		aU = aD = aR = aL = false;
+
+		bool test = (ATTRIBUTE_UNGO & _map[v.x - 1][v.y].terrain) == ATTRIBUTE_UNGO;
 		//상하좌우
-		if (_map[v.x - 1][v.y].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x - 1, v.y))
+		if ((ATTRIBUTE_UNGO & _map[v.x - 1][v.y].terrain) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x - 1, v.y))
 		{
-			temp.x = v.x - 1;
-			temp.y = v.y;
-			temp = calc_vertex(temp, v, goalPoint);
-			add_openlist(temp);
-			aL = true;
+			bool addlist = true;
+			//몬스터가 있는타일 제외
+			for (auto i : _em->getEnemyVector())
+			{
+				if (v.x - 1 == i->getPoint().x / TILESIZE && v.y == i->getPoint().y / TILESIZE)
+				{
+					addlist = false;
+				}
+			}
+			//플레이어가 있는 타일 제외
+			if (v.x - 1 == _player->getPoint().x / TILESIZE && v.y == _player->getPoint().y / TILESIZE)
+			{
+				addlist = false;
+			}
+			if (addlist)
+			{
+				temp.x = v.x - 1;
+				temp.y = v.y;
+				temp = calc_vertex(temp, v, goalPoint);
+				add_openlist(temp);
+				aL = true;
+			}
 		}
-		if (_map[v.x + 1][v.y].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x + 1, v.y))
+		if ((_map[v.x + 1][v.y].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x + 1, v.y))
 		{
-			temp.x = v.x + 1;
-			temp.y = v.y;
-			temp = calc_vertex(temp, v, goalPoint);
-			add_openlist(temp);
-			aR = true;
+			bool addlist = true;
+			//몬스터가 있는타일 제외
+			for (auto i : _em->getEnemyVector())
+			{
+				if (v.x + 1 == i->getPoint().x / TILESIZE && v.y == i->getPoint().y / TILESIZE)
+				{
+					addlist = false;
+				}
+			}
+			//플레이어가 있는 타일 제외
+			if (v.x + 1 == _player->getPoint().x / TILESIZE && v.y == _player->getPoint().y / TILESIZE)
+			{
+				addlist = false;
+			}
+			if (addlist)
+			{
+				temp.x = v.x + 1;
+				temp.y = v.y;
+				temp = calc_vertex(temp, v, goalPoint);
+				add_openlist(temp);
+				aR = true;
+			}
+
 		}
-		if (_map[v.x][v.y - 1].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x, v.y - 1))
+		if ((_map[v.x][v.y - 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x, v.y - 1))
 		{
-			temp.x = v.x;
-			temp.y = v.y - 1;
-			temp = calc_vertex(temp, v, goalPoint);
-			add_openlist(temp);
-			aU = true;
+			bool addlist = true;
+			//몬스터가 있는타일 제외
+			for (auto i : _em->getEnemyVector())
+			{
+				if (v.x == i->getPoint().x / TILESIZE && v.y-1 == i->getPoint().y / TILESIZE)
+				{
+					addlist = false;
+				}
+			}
+			//플레이어가 있는 타일 제외
+			if (v.x == _player->getPoint().x / TILESIZE && v.y-1 == _player->getPoint().y / TILESIZE)
+			{
+				addlist = false;
+			}
+			if (addlist)
+			{
+				temp.x = v.x;
+				temp.y = v.y - 1;
+				temp = calc_vertex(temp, v, goalPoint);
+				add_openlist(temp);
+				aU = true;
+			}
+
 		}
-		if (_map[v.x][v.y + 1].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x, v.y + 1))
+		if ((_map[v.x][v.y + 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x, v.y + 1))
 		{
-			temp.x = v.x;
-			temp.y = v.y + 1;
-			temp = calc_vertex(temp, v, goalPoint);
-			add_openlist(temp);
-			aD = true;
+			bool addlist = true;
+			//몬스터가 있는타일 제외
+			for (auto i : _em->getEnemyVector())
+			{
+				if (v.x == i->getPoint().x / TILESIZE && v.y +1 == i->getPoint().y / TILESIZE)
+				{
+					addlist = false;
+				}
+			}
+			//플레이어가 있는 타일 제외
+			if (v.x == _player->getPoint().x / TILESIZE && v.y + 1 == _player->getPoint().y / TILESIZE)
+			{
+				addlist = false;
+			}
+			if (addlist)
+			{
+				temp.x = v.x;
+				temp.y = v.y + 1;
+				temp = calc_vertex(temp, v, goalPoint);
+				add_openlist(temp);
+				aD = true;
+			}
+
 		}
 
 		//대각선
-		if (_map[v.x - 1][v.y - 1].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x - 1, v.y - 1) && aL && aU)
+		if ((_map[v.x - 1][v.y - 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x - 1, v.y - 1) && aL && aU)
 		{
-			temp.x = v.x - 1;
-			temp.y = v.y - 1;
-			temp = calc_vertex(temp, v, goalPoint);
-			add_openlist(temp);
+			bool addlist = true;
+			//몬스터가 있는타일 제외
+			for (auto i : _em->getEnemyVector())
+			{
+				if (v.x -1 == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE)
+				{
+					addlist = false;
+				}
+			}
+			//플레이어가 있는 타일 제외
+			if (v.x-1 == _player->getPoint().x / TILESIZE && v.y - 1 == _player->getPoint().y / TILESIZE)
+			{
+				addlist = false;
+			}
+			if (addlist)
+			{
+				temp.x = v.x - 1;
+				temp.y = v.y - 1;
+				temp = calc_vertex(temp, v, goalPoint);
+				add_openlist(temp);
+			}
+
 		}
-		if (_map[v.x + 1][v.y - 1].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x - 1, v.y - 1) && aR && aU)
+		if ((_map[v.x + 1][v.y - 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x - 1, v.y - 1) && aR && aU)
 		{
-			temp.x = v.x + 1;
-			temp.y = v.y - 1;
-			temp = calc_vertex(temp, v, goalPoint);
-			add_openlist(temp);
+			bool addlist = true;
+			//몬스터가 있는타일 제외
+			for (auto i : _em->getEnemyVector())
+			{
+				if (v.x + 1 == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE)
+				{
+					addlist = false;
+				}
+			}
+			//플레이어가 있는 타일 제외
+			if (v.x + 1 == _player->getPoint().x / TILESIZE && v.y - 1 == _player->getPoint().y / TILESIZE)
+			{
+				addlist = false;
+			}
+			if (addlist)
+			{
+				temp.x = v.x + 1;
+				temp.y = v.y - 1;
+				temp = calc_vertex(temp, v, goalPoint);
+				add_openlist(temp);
+			}
+
 		}
-		if (_map[v.x - 1][v.y + 1].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x - 1, v.y - 1) && aL && aD)
+		if ((_map[v.x - 1][v.y + 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x - 1, v.y - 1) && aL && aD)
 		{
-			temp.x = v.x - 1;
-			temp.y = v.y + 1;
-			temp = calc_vertex(temp, v, goalPoint);
-			add_openlist(temp);
+			bool addlist = true;
+			//몬스터가 있는타일 제외
+			for (auto i : _em->getEnemyVector())
+			{
+				if (v.x - 1 == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE)
+				{
+					addlist = false;
+				}
+			}
+			//플레이어가 있는 타일 제외
+			if (v.x - 1 == _player->getPoint().x / TILESIZE && v.y + 1 == _player->getPoint().y / TILESIZE)
+			{
+				addlist = false;
+			}
+			if (addlist)
+			{
+				temp.x = v.x - 1;
+				temp.y = v.y + 1;
+				temp = calc_vertex(temp, v, goalPoint);
+				add_openlist(temp);
+			}
 		}
-		if (_map[v.x + 1][v.y + 1].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x - 1, v.y - 1) && aR && aD)
+		if ((_map[v.x + 1][v.y + 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x - 1, v.y - 1) && aR && aD)
 		{
-			temp.x = v.x + 1;
-			temp.y = v.y + 1;
-			temp = calc_vertex(temp, v, goalPoint);
-			add_openlist(temp);
+			bool addlist = true;
+			//몬스터가 있는타일 제외
+			for (auto i : _em->getEnemyVector())
+			{
+				if (v.x + 1 == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE)
+				{
+					addlist = false;
+				}
+			}
+			//플레이어가 있는 타일 제외
+			if (v.x + 1 == _player->getPoint().x / TILESIZE && v.y + 1 == _player->getPoint().y / TILESIZE)
+			{
+				addlist = false;
+			}
+			if (addlist)
+			{
+				temp.x = v.x + 1;
+				temp.y = v.y + 1;
+				temp = calc_vertex(temp, v, goalPoint);
+				add_openlist(temp);
+			}
+
 		}
 	}
 	else
@@ -471,196 +701,343 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 		bool aU, aD, aR, aL;
 		aU = aD = aR = aL = false;
 		//상하좌우
-		if (_map[v.x - 1][v.y].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x - 1, v.y))
+		if ((_map[v.x - 1][v.y].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x - 1, v.y))
 		{
-			vertex temp;
-			temp = v;
-			temp.px = v.x;
-			temp.py = v.y;
-			temp.x = v.x - 1;
-			temp.y = v.y;
-			temp = calc_vertex(temp, v, goalPoint);
-			//이미 오픈리스트에 존재한다면?
-			if (search_openlist_exsist(v.x - 1, v.y))
+			
+			bool addlist = true;
+			//몬스터가 있는타일 제외
+			for (auto i : _em->getEnemyVector())
 			{
-				//값이 더 작은거로 바꿈
-				if (temp.f < search_openlist(v.x - 1, v.y).f)
+				if (v.x - 1 == i->getPoint().x / TILESIZE && v.y == i->getPoint().y / TILESIZE)
+				{
+					addlist = false;
+				}
+			}
+			//플레이어가 있는 타일 제외
+			if (v.x - 1 == _player->getPoint().x / TILESIZE && v.y == _player->getPoint().y / TILESIZE)
+			{
+				addlist = false;
+			}
+			if (addlist)
+			{
+				vertex temp;
+				temp = v;
+				temp.px = v.x;
+				temp.py = v.y;
+				temp.x = v.x - 1;
+				temp.y = v.y;
+				temp = calc_vertex(temp, v, goalPoint);
+				//이미 오픈리스트에 존재한다면?
+				if (search_openlist_exsist(v.x - 1, v.y))
+				{
+					//값이 더 작은거로 바꿈
+					if (temp.f < search_openlist(v.x - 1, v.y).f)
+					{
+
+					}
+				}
+				else
+				{
+					add_openlist(temp);
+				}
+
+				aL = true;
+			}
+			
+		}
+		if ((_map[v.x + 1][v.y].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x + 1, v.y))
+		{
+			bool addlist = true;
+			//몬스터가 있는타일 제외
+			for (auto i : _em->getEnemyVector())
+			{
+				if (v.x + 1 == i->getPoint().x / TILESIZE && v.y == i->getPoint().y / TILESIZE)
+				{
+					addlist = false;
+				}
+			}
+			//플레이어가 있는 타일 제외
+			if (v.x + 1 == _player->getPoint().x / TILESIZE && v.y == _player->getPoint().y / TILESIZE)
+			{
+				addlist = false;
+			}
+			if (addlist)
+			{
+				vertex temp;
+				temp = v;
+				temp.px = v.x;
+				temp.py = v.y;
+				temp.x = v.x + 1;
+				temp.y = v.y;
+				temp = calc_vertex(temp, v, goalPoint);
+				//이미 오픈리스트에 존재한다면?
+				if (search_openlist_exsist(v.x + 1, v.y))
+				{
+					if (temp.f < search_openlist(v.x + 1, v.y).f)
+					{
+
+					}
+				}
+				else
+				{
+					add_openlist(temp);
+				};
+				aR = true;
+			}
+
+		}
+		if ((_map[v.x][v.y - 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x, v.y - 1))
+		{
+			bool addlist = true;
+			//몬스터가 있는타일 제외
+			for (auto i : _em->getEnemyVector())
+			{
+				if (v.x == i->getPoint().x / TILESIZE && v.y-1 == i->getPoint().y / TILESIZE)
+				{
+					addlist = false;
+				}
+			}
+			//플레이어가 있는 타일 제외
+			if (v.x == _player->getPoint().x / TILESIZE && v.y-1 == _player->getPoint().y / TILESIZE)
+			{
+				addlist = false;
+			}
+			if (addlist)
+			{
+				vertex temp;
+				temp = v;
+				temp.px = v.x;
+				temp.py = v.y;
+				temp.x = v.x;
+				temp.y = v.y - 1;
+				temp = calc_vertex(temp, v, goalPoint);
+				//이미 오픈리스트에 존재한다면?
+				if (search_openlist_exsist(v.x, v.y - 1))
+				{
+					if (temp.f < search_openlist(v.x, v.y - 1).f)
+					{
+
+					}
+				}
+				else
 				{
 
 				}
-			}
-			else
-			{
 				add_openlist(temp);
+				aU = true;
 			}
 
-			aL = true;
+
 		}
-		if (_map[v.x + 1][v.y].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x + 1, v.y))
+		if ((_map[v.x][v.y + 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x, v.y + 1))
 		{
-			vertex temp;
-			temp = v;
-			temp.px = v.x;
-			temp.py = v.y;
-			temp.x = v.x + 1;
-			temp.y = v.y;
-			temp = calc_vertex(temp, v, goalPoint);
-			//이미 오픈리스트에 존재한다면?
-			if (search_openlist_exsist(v.x + 1, v.y))
+			bool addlist = true;
+			//몬스터가 있는타일 제외
+			for (auto i : _em->getEnemyVector())
 			{
-				if (temp.f < search_openlist(v.x + 1, v.y).f)
+				if (v.x  == i->getPoint().x / TILESIZE && v.y +1== i->getPoint().y / TILESIZE)
+				{
+					addlist = false;
+				}
+			}
+			//플레이어가 있는 타일 제외
+			if (v.x  == _player->getPoint().x / TILESIZE && v.y+1 == _player->getPoint().y / TILESIZE)
+			{
+				addlist = false;
+			}
+			if (addlist)
+			{
+				vertex temp;
+				temp = v;
+				temp.px = v.x;
+				temp.py = v.y;
+				temp.x = v.x;
+				temp.y = v.y + 1;
+				temp = calc_vertex(temp, v, goalPoint);
+				//이미 오픈리스트에 존재한다면?
+				if (search_openlist_exsist(v.x, v.y + 1))
+				{
+					if (temp.f < search_openlist(v.x, v.y + 1).f)
+					{
+
+					}
+				}
+				else
 				{
 
 				}
-			}
-			else
-			{
 				add_openlist(temp);
-			};
-			aR = true;
-		}
-		if (_map[v.x][v.y - 1].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x, v.y - 1))
-		{
-			vertex temp;
-			temp = v;
-			temp.px = v.x;
-			temp.py = v.y;
-			temp.x = v.x;
-			temp.y = v.y - 1;
-			temp = calc_vertex(temp, v, goalPoint);
-			//이미 오픈리스트에 존재한다면?
-			if (search_openlist_exsist(v.x, v.y - 1))
-			{
-				if (temp.f < search_openlist(v.x, v.y - 1).f)
-				{
+				aD = true;
+			}
 
-				}
-			}
-			else
-			{
-				
-			}
-			add_openlist(temp);
-			aU = true;
-		}
-		if (_map[v.x][v.y + 1].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x, v.y + 1))
-		{
-			vertex temp;
-			temp = v;
-			temp.px = v.x;
-			temp.py = v.y;
-			temp.x = v.x;
-			temp.y = v.y + 1;
-			temp = calc_vertex(temp, v, goalPoint);
-			//이미 오픈리스트에 존재한다면?
-			if (search_openlist_exsist(v.x, v.y + 1))
-			{
-				if (temp.f < search_openlist(v.x, v.y + 1).f)
-				{
-
-				}
-			}
-			else
-			{
-				
-			}
-			add_openlist(temp);
-			aD = true;
 		}
 
 		//대각선
-		if (_map[v.x - 1][v.y - 1].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x - 1, v.y - 1) && aL && aU)
+		if ((_map[v.x - 1][v.y - 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x - 1, v.y - 1) && aL && aU)
 		{
-			vertex temp;
-			temp = v;
-			temp.px = v.x;
-			temp.py = v.y;
-			temp.x = v.x - 1;
-			temp.y = v.y - 1;
-			temp = calc_vertex(temp, v, goalPoint);
-			//이미 오픈리스트에 존재한다면?
-			if (search_openlist_exsist(v.x - 1, v.y - 1))
+			bool addlist = true;
+			//몬스터가 있는타일 제외
+			for (auto i : _em->getEnemyVector())
 			{
-				if (temp.f < search_openlist(v.x - 1, v.y - 1).f)
+				if (v.x - 1 == i->getPoint().x / TILESIZE && v.y-1 == i->getPoint().y / TILESIZE)
+				{
+					addlist = false;
+				}
+			}
+			//플레이어가 있는 타일 제외
+			if (v.x - 1 == _player->getPoint().x / TILESIZE && v.y-1 == _player->getPoint().y / TILESIZE)
+			{
+				addlist = false;
+			}
+			if (addlist)
+			{
+				vertex temp;
+				temp = v;
+				temp.px = v.x;
+				temp.py = v.y;
+				temp.x = v.x - 1;
+				temp.y = v.y - 1;
+				temp = calc_vertex(temp, v, goalPoint);
+				//이미 오픈리스트에 존재한다면?
+				if (search_openlist_exsist(v.x - 1, v.y - 1))
+				{
+					if (temp.f < search_openlist(v.x - 1, v.y - 1).f)
+					{
+
+					}
+				}
+				else
 				{
 
 				}
+				add_openlist(temp);
 			}
-			else
-			{
-				
-			}
-			add_openlist(temp);
+		
 		}
-		if (_map[v.x + 1][v.y - 1].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x + 1, v.y - 1) && aR && aU)
+		if ((_map[v.x + 1][v.y - 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x + 1, v.y - 1) && aR && aU)
 		{
-			vertex temp;
-			temp = v;
-			temp.px = v.x;
-			temp.py = v.y;
-			temp.x = v.x + 1;
-			temp.y = v.y - 1;
-			temp = calc_vertex(temp, v, goalPoint);
-			//이미 오픈리스트에 존재한다면?
-			if (search_openlist_exsist(v.x + 1, v.y - 1))
+			bool addlist = true;
+			//몬스터가 있는타일 제외
+			for (auto i : _em->getEnemyVector())
 			{
-				if (temp.f < search_openlist(v.x + 1, v.y - 1).f)
+				if (v.x + 1 == i->getPoint().x / TILESIZE && v.y-1 == i->getPoint().y / TILESIZE)
+				{
+					addlist = false;
+				}
+			}
+			//플레이어가 있는 타일 제외
+			if (v.x + 1 == _player->getPoint().x / TILESIZE && v.y-1 == _player->getPoint().y / TILESIZE)
+			{
+				addlist = false;
+			}
+			if (addlist)
+			{
+				vertex temp;
+				temp = v;
+				temp.px = v.x;
+				temp.py = v.y;
+				temp.x = v.x + 1;
+				temp.y = v.y - 1;
+				temp = calc_vertex(temp, v, goalPoint);
+				//이미 오픈리스트에 존재한다면?
+				if (search_openlist_exsist(v.x + 1, v.y - 1))
+				{
+					if (temp.f < search_openlist(v.x + 1, v.y - 1).f)
+					{
+
+					}
+				}
+				else
 				{
 
 				}
+				add_openlist(temp);
 			}
-			else
-			{
-				
-			}
-			add_openlist(temp);
+			
 		}
-		if (_map[v.x - 1][v.y + 1].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x - 1, v.y + 1) && aL && aD)
+		if ((_map[v.x - 1][v.y + 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x - 1, v.y + 1) && aL && aD)
 		{
-			vertex temp;
-			temp = v;
-			temp.px = v.x;
-			temp.py = v.y;
-			temp.x = v.x - 1;
-			temp.y = v.y + 1;
-			temp = calc_vertex(temp, v, goalPoint);
-			//이미 오픈리스트에 존재한다면?
-			if (search_openlist_exsist(v.x - 1, v.y + 1))
+			bool addlist = true;
+			//몬스터가 있는타일 제외
+			for (auto i : _em->getEnemyVector())
 			{
-				if (temp.f < search_openlist(v.x - 1, v.y + 1).f)
+				if (v.x - 1 == i->getPoint().x / TILESIZE && v.y +1== i->getPoint().y / TILESIZE)
+				{
+					addlist = false;
+				}
+			}
+			//플레이어가 있는 타일 제외
+			if (v.x - 1 == _player->getPoint().x / TILESIZE && v.y+1 == _player->getPoint().y / TILESIZE)
+			{
+				addlist = false;
+			}
+			if (addlist)
+			{
+				vertex temp;
+				temp = v;
+				temp.px = v.x;
+				temp.py = v.y;
+				temp.x = v.x - 1;
+				temp.y = v.y + 1;
+				temp = calc_vertex(temp, v, goalPoint);
+				//이미 오픈리스트에 존재한다면?
+				if (search_openlist_exsist(v.x - 1, v.y + 1))
+				{
+					if (temp.f < search_openlist(v.x - 1, v.y + 1).f)
+					{
+
+					}
+				}
+				else
 				{
 
 				}
+				add_openlist(temp);
+
 			}
-			else
-			{
-				
-			}
-			add_openlist(temp);
+			
 		}
-		if (_map[v.x + 1][v.y + 1].terrain != TERRAIN_WALL && !search_closelist_exsist(v.x + 1, v.y + 1) && aR && aD)
+		if ((_map[v.x + 1][v.y + 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x + 1, v.y + 1) && aR && aD)
 		{
-			vertex temp;
-			temp = v;
-			temp.px = v.x;
-			temp.py = v.y;
-			temp.x = v.x + 1;
-			temp.y = v.y + 1;
-			temp = calc_vertex(temp, v, goalPoint);
-			//이미 오픈리스트에 존재한다면?
-			if (search_openlist_exsist(v.x + 1, v.y + 1))
+			bool addlist = true;
+			//몬스터가 있는타일 제외
+			for (auto i : _em->getEnemyVector())
 			{
-				
-				if (temp.f < search_openlist(v.x + 1, v.y + 1).f)
+				if (v.x + 1 == i->getPoint().x / TILESIZE && v.y+1 == i->getPoint().y / TILESIZE)
+				{
+					addlist = false;
+				}
+			}
+			//플레이어가 있는 타일 제외
+			if (v.x + 1 == _player->getPoint().x / TILESIZE && v.y+1 == _player->getPoint().y / TILESIZE)
+			{
+				addlist = false;
+			}
+			if (addlist)
+			{
+				vertex temp;
+				temp = v;
+				temp.px = v.x;
+				temp.py = v.y;
+				temp.x = v.x + 1;
+				temp.y = v.y + 1;
+				temp = calc_vertex(temp, v, goalPoint);
+				//이미 오픈리스트에 존재한다면?
+				if (search_openlist_exsist(v.x + 1, v.y + 1))
+				{
+
+					if (temp.f < search_openlist(v.x + 1, v.y + 1).f)
+					{
+
+					}
+				}
+				else
 				{
 
 				}
+				add_openlist(temp);
 			}
-			else
-			{
-				
-			}
-			add_openlist(temp);
+			
 		}
 	}
 
@@ -669,4 +1046,75 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 bool Map::check_goal()
 {
 	return false;
+}
+
+
+void Map::spareTileSetup() {
+	TILE* flameTile1 = new TILE;
+	flameTile1->img = IMAGEMANAGER->findImage("mapTiles");
+	flameTile1->destX = 0;
+	flameTile1->destY = 0;
+	flameTile1->sourX = 3;
+	flameTile1->sourY = 0;
+	flameTile1->terrain = TERRAIN_FLOOR;
+	flameTile1->obj = OBJ_NONE;
+	flameTile1->trap = TRAP_NONE;
+	
+	_spareTile.insert(make_pair("AfterFlame1", flameTile1));
+
+	TILE* flameTile2 = new TILE;
+	flameTile2->img = IMAGEMANAGER->findImage("mapTiles");
+	flameTile2->destX = 0;
+	flameTile2->destY = 0;
+	flameTile2->sourX = 9;
+	flameTile2->sourY = 0;
+	flameTile2->terrain = TERRAIN_FLOOR;
+	flameTile2->obj = OBJ_NONE;
+	flameTile2->trap = TRAP_NONE;
+
+	_spareTile.insert(make_pair("AfterFlame2", flameTile2));
+	
+	TILE* grassCutTile1 = new TILE;
+	grassCutTile1->img = IMAGEMANAGER->findImage("mapTiles");
+	grassCutTile1->destX = 0;
+	grassCutTile1->destY = 0;
+	grassCutTile1->sourX = 2;
+	grassCutTile1->sourY = 0;
+	grassCutTile1->terrain = TERRAIN_GRASS;
+	grassCutTile1->obj = OBJ_NONE;
+	grassCutTile1->trap = TRAP_NONE;
+
+	_spareTile.insert(make_pair("AfterGrass1", grassCutTile1));
+
+	TILE* grassCutTile2 = new TILE;
+	grassCutTile2->img = IMAGEMANAGER->findImage("mapTiles");
+	grassCutTile2->destX = 0;
+	grassCutTile2->destY = 0;
+	grassCutTile2->sourX = 8;
+	grassCutTile2->sourY = 0;
+	grassCutTile2->terrain = TERRAIN_GRASS;
+	grassCutTile2->obj = OBJ_NONE;
+	grassCutTile2->trap = TRAP_NONE;
+
+	_spareTile.insert(make_pair("AfterGrass2", grassCutTile2));
+}
+
+void Map::setTile_Flame(int i, int j) {
+	int random = RND->getFromIntTo(1, 2);
+	TILE* newTile = (random == 1) ? _spareTile.find("AfterFlame1")->second : _spareTile.find("AfterFlame2")->second;
+
+	_map[i][j].sourX = newTile->sourX;
+	_map[i][j].sourY = newTile->sourY;
+	_map[i][j].terrain = newTile->terrain;
+}
+
+void Map::setTile_GrassCut(int i, int j) {
+	int random = RND->getFromIntTo(1, 2);
+	TILE* newTile = (random == 1) ? _spareTile.find("AfterGrass1")->second : _spareTile.find("AfterGrass2")->second;
+
+	_map[i][j].sourX = newTile->sourX;
+	_map[i][j].sourY = newTile->sourY;
+	_map[i][j].terrain = (TERRAIN)((long)_map[i][j].terrain ^ ATTRIBUTE_UNSIGHT);
+
+	_im->setItemToField(NAME_DEW, i * TILESIZE + TILESIZE * 0.5, j * TILESIZE + TILESIZE * 0.5);
 }

@@ -1,7 +1,7 @@
 #pragma once
 #include "gameNode.h"
 #include "UI.h"
-
+#include "Enemy.h"
 struct sightAngle {
 	float sangle;
 	float eangle;
@@ -13,13 +13,13 @@ class UI;
 class Enemy;
 class ItemManager;
 
-
 class Player : public gameNode
 {
 private:
 	EnemyManager* _em;
 	Map* _map;
 	UI* _ui;
+	Enemy* _TargetEnemy;
 	ItemManager* _im;
 	PLAYERSTAT _playerStat;
 	POINT _playerPoint;
@@ -29,12 +29,14 @@ private:
 	int _currentFrameX, _currentFrameY;
 	PLAYERSTATE _playerState;
 	vector<tagDebuff> _vdebuff;
+	vector<tagDebuff> _vbuff;
 	int _frameUpdateTimer;
 	float _frameTimer;
 	TILE _goalTile;
 	bool _action;
 	bool _keepMove;
 	bool _isUsingUI;
+	bool _isEnemyTargeted;
 
 	//test~
 	vector<TILE> tileCanSee;
@@ -53,10 +55,8 @@ public:
 	void addImg();
 	void frameUpdate();
 
-
 	void actionCheck();
-	void action();
-
+	void mouseClickEvent();
 	//이미지 변환
 	void imageChange(const char* str);
 	
@@ -70,14 +70,21 @@ public:
 	void fovCheck();
 
 
-	//디버프 추가
+	//버프, 디버프 추가
 	void addDebuff(DEBUFF debuffType, int lefttime, int damage);
+	void addBuff(BUFF buffType);
+
+	//버프, 디버프 효과 적용
+	void effectDebuff();
+	void effectBuff();
 
 	//행동 명령
 	void action_Move(POINT point);
-	void action_Attack(POINT point);
+	void action_Attack();
 	void action_Scroll();
 	void action_Eat();
+	void endTurn();
+
 
 	//게터세터
 	bool getAction() { return _action; }
