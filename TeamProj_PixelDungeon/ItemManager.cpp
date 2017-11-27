@@ -160,7 +160,7 @@ void ItemManager::draw(POINT camera)
 
 void ItemManager::setItemToBag(ITEMNAME name)
 {
-	if (_vBag.size() > 24) return;
+	if (_vBag.size() >= 20) return;
 
 	int count = 0;
 	bool end = false;
@@ -275,7 +275,7 @@ void ItemManager::setItemToField(ITEMNAME name, float x, float y)
 
 void ItemManager::setItemToBag(ITEMNAME name, bool identify, bool isCursed, int upgrade, int numOfItem)
 {
-	if (_vBag.size() > 24) return;
+	if (_vBag.size() >= 20) return;
 
 	int count = 0;
 	bool end = false;
