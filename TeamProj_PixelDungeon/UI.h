@@ -45,7 +45,6 @@ public:
 	~UI();
 
 private:
-
 	RECT _backPackRect;
 	RECT _SearchOptionRect;
 	RECT _TurnSkipRect;

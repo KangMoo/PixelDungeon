@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Map.h"
 #include "EnemyManager.h"
+#include "ItemManager.h"
 #include "Player.h"
 #include "UI.h"
 
@@ -21,7 +22,7 @@ HRESULT Map::init()
 
 	}
 
-
+	
 	start = true;
 	load();
 
@@ -86,8 +87,23 @@ void Map::draw(POINT camera)
 		for (int j = 0; j < TILEYMAX; j++) {
 			if (_map[i][j].terrain != TERRAIN_NULL)
 			{
-				RectangleMake(getMemDC(), i * 10, j * 10, 10, 10);
-				_map[i][j].img->frameRender(getMemDC(), i * TILESIZE, j * TILESIZE, _map[i][j].sourX, _map[i][j].sourY);
+				switch (_map[i][j].tileview)
+				{
+				case TILEVIEW_ALL:
+					_map[i][j].img->frameRender(getMemDC(), i * TILESIZE, j * TILESIZE, _map[i][j].sourX, _map[i][j].sourY);
+					break;
+				case TILEVIEW_HALF:
+					_map[i][j].img->frameRender(getMemDC(), i * TILESIZE, j * TILESIZE, _map[i][j].sourX, _map[i][j].sourY);
+					IMAGEMANAGER->alphaRender("blackTile", getMemDC(), i*TILESIZE, j*TILESIZE, 150);
+					break;
+				case TILEVIEW_NO:
+					_map[i][j].img->frameRender(getMemDC(), i * TILESIZE, j * TILESIZE, _map[i][j].sourX, _map[i][j].sourY);
+
+					IMAGEMANAGER->render("blackTile", getMemDC(), i*TILESIZE, j*TILESIZE);
+					break;
+				}
+				//RectangleMake(getMemDC(), i * 10, j * 10, 10, 10);
+				
 			}
 		}
 	}
@@ -798,4 +814,6 @@ void Map::setTile_GrassCut(int i, int j) {
 	_map[i][j].sourX = newTile->sourX;
 	_map[i][j].sourY = newTile->sourY;
 	_map[i][j].terrain = (TERRAIN)((long)_map[i][j].terrain ^ ATTRIBUTE_UNSIGHT);
+
+	_im->setItemToField(NAME_DEW, i * TILESIZE + TILESIZE * 0.5, j * TILESIZE + TILESIZE * 0.5);
 }

@@ -317,7 +317,7 @@ void Player::fovCheck()
 					//볼 수 있는 타일벡터에 push
 					tileCanSee.push_back(_map->getTile(i, j));
 					//장애물이 있을 경우
-					if (_map->getTile(i, j).terrain == TERRAIN_WALL)
+					if ((_map->getTile(i, j).terrain & ATTRIBUTE_UNSIGHT) == ATTRIBUTE_UNSIGHT)
 					{
 						//보지 못하는 각도 추가
 						addCanTSeeAngleByRect(RectMake(i * TILESIZE, j * TILESIZE, TILESIZE, TILESIZE));

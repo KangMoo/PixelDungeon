@@ -116,6 +116,7 @@ enum PLAYERSTATE {
 	PLAYERSTATE_DEAD,
 	PLAYERSTATE_END
 };
+
 typedef struct tagEnemyStat {
 	int hp;			//Ã¼·Â
 	int str;		//Èû
