@@ -169,21 +169,20 @@ typedef struct tagItem {
 
 
 #define ATTRIBUTE_FLOOR		0x000001		// 기본 idle
+
 #define ATTRIBUTE_UNSIGHT	0x000002		// 시야를 가리는 속성
 #define ATTRIBUTE_UNGO		0x000004		// 지나갈 수 없는 속성
+
 #define ATTRIBUTE_DOOR		0x000008		// 열리고 닫히는 속성
-
-#define ATTRIBUTE_WATER		0x000010		// 물 : 그냥 물 밟는 소리가 난다고 한다...
-#define ATTRIBUTE_GRASS		0x000020		// 풀 : 밟거나 자르면 unsight 속성을 사라지게 만든다
-#define ATTRIBUTE_FLAMMABLE 0x000040		// 태우면 잿더미 타일이 되고 TERRAIN_FLOOR로 바꾼다
-
-#define ATTRIBUTE_CHEST		0x000100		// 보물상자 : 밟거나 조사하면 열린다
-#define ATTRIBUTE_CRYSTAL	0x000200		// 크리스탈 상자 : 밟거나 조사하면 내부의 물건을 확인할 수 있다
-#define ATTRIBUTE_TRAP		0x000400		// 트랩 : 밟거나 아이템 던지면 반응 (트랩 종류는 따로 정의)
-
-#define ATTRIBUTE_CHASM		0x000400		// 구멍 : 빠지면 플레이어는 데미지를 입고, 에너미는 죽는다
+#define ATTRIBUTE_WATER		0x000010		// 불을 끈다든가 이것저것 다양한 역할
+#define ATTRIBUTE_GRASS		0x000020		// 밟거나 자르면 setTile_GrassCut() 실행
+#define ATTRIBUTE_FLAMMABLE 0x000040		// 태우면 setTile_Flame() 실행
+#define ATTRIBUTE_CHASM		0x000080		// 빠지면 플레이어는 데미지를 입고, 에너미는 죽는다
 
 #define ATTRIBUTE_HIDDEN	0x010000		// 히든 : 보이지 않는다. 특정 조건을 만족해야 드러남
+
+#define ATTRIBUTE_TRAP		0x000010		// 트랩 : 밟거나 아이템 던지면 반응 (트랩 종류는 따로 정의)
+
 
 // 맵
 enum TERRAIN {
@@ -205,16 +204,8 @@ enum TERRAIN {
 	TERRAIN_DOOR_HIDDEN =		ATTRIBUTE_FLOOR + ATTRIBUTE_DOOR + ATTRIBUTE_UNSIGHT + ATTRIBUTE_UNGO + ATTRIBUTE_HIDDEN,
 
 	TERRAIN_WATER =				ATTRIBUTE_FLOOR + ATTRIBUTE_WATER,
-
-	TERRAIN_TRAP =				ATTRIBUTE_FLOOR + ATTRIBUTE_TRAP,
-	TERRAIN_TRAP_HIDDEN =		ATTRIBUTE_FLOOR + ATTRIBUTE_TRAP + ATTRIBUTE_HIDDEN,
-
-	TERRAIN_CHASM =				ATTRIBUTE_FLOOR + ATTRIBUTE_CHASM,
 	
-	TERRAIN_CHEST =				ATTRIBUTE_FLOOR + ATTRIBUTE_CHEST,
-	TERRAIN_CHEST_LOCKED =		ATTRIBUTE_FLOOR + ATTRIBUTE_CHEST + ATTRIBUTE_UNGO,
-	TERRAIN_CRY_CHEST =			ATTRIBUTE_FLOOR + ATTRIBUTE_CHEST + ATTRIBUTE_CRYSTAL,
-	TERRAIN_CRY_CHEST_LOCKED =	ATTRIBUTE_FLOOR + ATTRIBUTE_CHEST + ATTRIBUTE_CRYSTAL + ATTRIBUTE_UNGO
+	TERRAIN_CHASM =				ATTRIBUTE_FLOOR + ATTRIBUTE_CHASM,	
 };
 
 enum TRAP {
@@ -232,12 +223,28 @@ enum TRAP {
 	TRAP_SUMMONING,
 };
 
+
+#define ATTRIBUTE_CHEST		0x000001		// 보물상자 : 밟거나 조사하면 열린다
+#define ATTRIBUTE_LOCKED	0x000002		// 잠겨있는 상태
+#define ATTRIBUTE_CRYSTAL	0x000004		// 크리스탈 상자 : 밟거나 조사하면 내부의 물건을 확인할 수 있다
+
+
+
 enum OBJ {
 	OBJ_NONE,
+
+	OBJ_CHEST				= ATTRIBUTE_CHEST,
+	OBJ_CHEST_LOCKED		= ATTRIBUTE_CHEST + ATTRIBUTE_LOCKED,
+	OBJ_CRY_CHEST			= ATTRIBUTE_CHEST + ATTRIBUTE_CRYSTAL,
+	OBJ_CRY_CHEST_LOCKED	= ATTRIBUTE_CHEST + ATTRIBUTE_CRYSTAL + ATTRIBUTE_LOCKED,
+
+
 	OBJ_TRAP,
 	OBJ_TRAP_UNSIGHT,
 	OBJ_TRAP_ACTIVATE
 };
+
+
 
 enum TILEVIEW {
 	TILEVIEW_NO,
@@ -253,8 +260,18 @@ typedef struct tagTile {
 	TILEVIEW tileview;
 	TERRAIN terrain;
 	TRAP trap;
-	OBJ obj;
+	OBJ obj; // 안씀
 }TILE;
+
+
+typedef struct tagGameObject {
+	image* img;
+	int sourX, sourY; //받아올 타일 좌표값
+	int destX, destY; //뿌릴 타일 좌표값
+	OBJ obj;
+
+}GAMEOBJECT;
+
 
 typedef struct tagGrid {
 	image* img; //들어있는 이미지

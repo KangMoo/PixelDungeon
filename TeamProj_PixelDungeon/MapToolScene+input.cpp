@@ -268,7 +268,6 @@ void MapToolScene::input_AddTile() {
 								case MODE_STATUE:		inputTile.terrain = TERRAIN_STATUE;				break;
 								case MODE_DOOR:			inputTile.terrain = TERRAIN_DOOR_CLOSED;		break;
 								case MODE_DOOR_LOCKED:	inputTile.terrain = TERRAIN_DOOR_LOCKED;		break;
-								case MODE_TRAP:			inputTile.terrain = TERRAIN_TRAP;				break;
 								}
 								_vMapTile.push_back(inputTile);
 							}
@@ -333,8 +332,7 @@ void MapToolScene::input_AddTile() {
 							case MODE_BARRICADE:	inputTile.terrain = TERRAIN_BARRICADE;			break;
 							case MODE_STATUE:		inputTile.terrain = TERRAIN_STATUE;				break;
 							case MODE_DOOR:			inputTile.terrain = TERRAIN_DOOR_CLOSED;		break;
-							case MODE_DOOR_LOCKED:	inputTile.terrain = TERRAIN_DOOR_LOCKED;			break;
-							case MODE_TRAP:			inputTile.terrain = TERRAIN_TRAP;				break;
+							case MODE_DOOR_LOCKED:	inputTile.terrain = TERRAIN_DOOR_LOCKED;		break;
 							}
 							
 							_vMapTile.push_back(inputTile);

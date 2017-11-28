@@ -146,6 +146,7 @@
     <ClCompile Include="keyManager.cpp" />
     <ClCompile Include="mainGame.cpp" />
     <ClCompile Include="MainMenuScene.cpp" />
+    <ClCompile Include="Map+AStar.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="MapToolScene.cpp" />
     <ClCompile Include="mimic.cpp" />

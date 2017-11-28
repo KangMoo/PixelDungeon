@@ -267,7 +267,6 @@ void MapToolScene::render()
 		else if (_vMapTile[i].terrain == TERRAIN_STATUE				&& _inputMode == MODE_STATUE)				alpha = 0;
 		else if (_vMapTile[i].terrain == TERRAIN_DOOR_CLOSED		&& _inputMode == MODE_DOOR)					alpha = 0;
 		else if (_vMapTile[i].terrain == TERRAIN_DOOR_LOCKED		&& _inputMode == MODE_DOOR_LOCKED)			alpha = 0;
-		else if (_vMapTile[i].terrain == TERRAIN_TRAP				&& _inputMode == MODE_TRAP)					alpha = 0;
 		else if (_inputMode == MODE_VIEWING || _inputMode == MODE_DELET)										alpha = 0;
 		else if (_inputMode == MODE_VIEWING_TILE)																alpha = 255;
 		else alpha = 100;
