@@ -70,6 +70,7 @@ public:
 	void setPlayerAddressLink(Player* player)				{ _player = player; }
 	void setUiAddressLink(UI* ui)							{ _ui = ui; }
 	void setItemManagerAddressLink(ItemManager* itemManager) { _im = itemManager; }
+	void setMaAddressLink(Map* map)							{ _map = map; }
 
 	Enemy();
 	~Enemy();

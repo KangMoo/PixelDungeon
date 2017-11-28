@@ -18,7 +18,6 @@ HRESULT EnemyManager::init()
 	_enemyTurn = false;
 	_actionCount = 0;
 
-
 	return S_OK;
 }
 
@@ -127,6 +126,7 @@ void EnemyManager::setEnemy(POINT point, int type)
 			temp->setPlayerAddressLink(_player);
 			temp->setItemManagerAddressLink(_im);
 			temp->setUiAddressLink(_ui);
+			temp->setMaAddressLink(_map);
 			_vEnemy.push_back(temp);
 			break;
 		}
@@ -138,6 +138,7 @@ void EnemyManager::setEnemy(POINT point, int type)
 			temp->setPlayerAddressLink(_player);
 			temp->setItemManagerAddressLink(_im);
 			temp->setUiAddressLink(_ui);
+			temp->setMaAddressLink(_map);
 			_vEnemy.push_back(temp);
 			break;
 		}
@@ -168,5 +169,6 @@ void EnemyManager::setSwarm(POINT point, int hp)
 	temp->setPlayerAddressLink(_player);
 	temp->setItemManagerAddressLink(_im);
 	temp->setUiAddressLink(_ui);
+	temp->setMaAddressLink(_map);
 	_vEnemy.push_back(temp);
 }
