@@ -82,7 +82,9 @@ void UI::release()
 
 void UI::update()
 {
-
+	_camera = _player->getPoint();
+	_camera.x = WINSIZEX / 2 - _camera.x;
+	_camera.y = WINSIZEY / 2 - _camera.y;
 }
 
 void UI::render(POINT camera)

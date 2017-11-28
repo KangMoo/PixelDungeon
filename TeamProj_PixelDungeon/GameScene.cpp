@@ -75,11 +75,11 @@ void GameScene::update()
 }
 void GameScene::render()
 {
-	_map->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
-	_im->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
-	_em->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
-	_player->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
-	_ui->render(PointMake(WINSIZEX / 2 - _camera.x, WINSIZEY / 2 - _camera.y));
+	_map->render(_camera);
+	_im->render(_camera);
+	_em->render(_camera);
+	_player->render(_camera);
+	_ui->render(_camera);
 
 }
 

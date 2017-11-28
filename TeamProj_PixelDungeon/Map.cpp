@@ -90,16 +90,16 @@ void Map::draw(POINT camera)
 				switch (_map[i][j].tileview)
 				{
 				case TILEVIEW_ALL:
-					_map[i][j].img->frameRender(getMemDC(), i * TILESIZE, j * TILESIZE, _map[i][j].sourX, _map[i][j].sourY);
+					_map[i][j].img->frameRender(getMemDC(), i * TILESIZE + camera.x, j * TILESIZE + camera.y, _map[i][j].sourX, _map[i][j].sourY);
 					break;
 				case TILEVIEW_HALF:
-					_map[i][j].img->frameRender(getMemDC(), i * TILESIZE, j * TILESIZE, _map[i][j].sourX, _map[i][j].sourY);
-					IMAGEMANAGER->alphaRender("blackTile", getMemDC(), i*TILESIZE, j*TILESIZE, 150);
+					_map[i][j].img->frameRender(getMemDC(), i * TILESIZE + camera.x, j * TILESIZE + camera.y, _map[i][j].sourX, _map[i][j].sourY);
+					IMAGEMANAGER->alphaRender("blackTile", getMemDC(), i*TILESIZE + camera.x, j*TILESIZE + camera.y, 150);
 					break;
 				case TILEVIEW_NO:
-					_map[i][j].img->frameRender(getMemDC(), i * TILESIZE, j * TILESIZE, _map[i][j].sourX, _map[i][j].sourY);
+					_map[i][j].img->frameRender(getMemDC(), i * TILESIZE + camera.x, j * TILESIZE + camera.y, _map[i][j].sourX, _map[i][j].sourY);
 
-					IMAGEMANAGER->render("blackTile", getMemDC(), i*TILESIZE, j*TILESIZE);
+					IMAGEMANAGER->render("blackTile", getMemDC(), i*TILESIZE + camera.x, j*TILESIZE + camera.y);
 					break;
 				}
 				//RectangleMake(getMemDC(), i * 10, j * 10, 10, 10);
