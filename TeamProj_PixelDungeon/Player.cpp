@@ -159,55 +159,55 @@ void Player::addCanTSeeAngleByRect(RECT rc)
 {
 	POINT rcpoint = PointMake(rc.left + TILESIZE / 2, rc.top + TILESIZE / 2);
 	//동일 y축 위
-	if (_playerPoint.x == rcpoint.x)
+	if (_playerPoint.x / TILESIZE == rcpoint.x / TILESIZE)
 	{
 		//플레이어의 위
-		if (_playerPoint.y > rcpoint.y)
+		if (_playerPoint.y / TILESIZE > rcpoint.y / TILESIZE)
 		{
 			addCanTSeeAngle(getAngle(_playerPoint.x, _playerPoint.y, rc.right, rc.bottom), getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.bottom));
 		}
 		//플레이어의 아래
-		else if (_playerPoint.y < rcpoint.y)
+		else if (_playerPoint.y / TILESIZE < rcpoint.y / TILESIZE)
 		{
 			addCanTSeeAngle(getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.top), getAngle(_playerPoint.x, _playerPoint.y, rc.right, rc.top));
 		}
 
 	}
 	//1,4사분면
-	else if (_playerPoint.x < rcpoint.x)
+	else if (_playerPoint.x / TILESIZE< rcpoint.x / TILESIZE)
 	{
 		//동일 x축 위
-		if (_playerPoint.y == rcpoint.y)
+		if (_playerPoint.y / TILESIZE == rcpoint.y / TILESIZE)
 		{
 			addCanTSeeAngle(0, getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.top));
 			addCanTSeeAngle(getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.bottom), PI2);
 		}
 		//1사분면
-		else if (_playerPoint.y > rcpoint.y)
+		else if (_playerPoint.y / TILESIZE> rcpoint.y / TILESIZE)
 		{
 			addCanTSeeAngle(getAngle(_playerPoint.x, _playerPoint.y, rc.right, rc.bottom), getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.top));
 		}
 		//4사분면
-		else if (_playerPoint.y < rcpoint.y)
+		else if (_playerPoint.y / TILESIZE < rcpoint.y / TILESIZE)
 		{
 			addCanTSeeAngle(getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.bottom), getAngle(_playerPoint.x, _playerPoint.y, rc.right, rc.top));
 		}
 	}
 	//2,3사분면
-	else if (_playerPoint.x > rcpoint.x)
+	else if (_playerPoint.x / TILESIZE> rcpoint.x / TILESIZE)
 	{
 		//동일 x축 위
-		if (_playerPoint.y == rcpoint.y)
+		if (_playerPoint.y / TILESIZE == rcpoint.y / TILESIZE)
 		{
 			addCanTSeeAngle(getAngle(_playerPoint.x, _playerPoint.y, rc.right, rc.top), getAngle(_playerPoint.x, _playerPoint.y, rc.right, rc.bottom));
 		}
 		//2사분면
-		else if (_playerPoint.y > rcpoint.y)
+		else if (_playerPoint.y / TILESIZE > rcpoint.y / TILESIZE)
 		{
 			addCanTSeeAngle(getAngle(_playerPoint.x, _playerPoint.y, rc.right, rc.top), getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.bottom));
 		}
 		//3사분면
-		else if (_playerPoint.y < rcpoint.y)
+		else if (_playerPoint.y / TILESIZE< rcpoint.y / TILESIZE)
 		{
 			addCanTSeeAngle(getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.top), getAngle(_playerPoint.x, _playerPoint.y, rc.right, rc.bottom));
 		}
