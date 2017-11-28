@@ -116,6 +116,10 @@ void Gnoll::release()
 
 void Gnoll::getDamaged(int damage)
 {
+	if (_myState == ENEMYSTATE_SLEEP)
+		_myState = ENEMYSTATE_IDLE;
+	_findPlayer = true;
+
 	int a = RND->getInt(100);
 
 	if (a < _statistics.avd_lck)
@@ -136,7 +140,7 @@ void Gnoll::draw(POINT camera)
 {
 	//_hpBar->setGauge(_currntHp, _statistics.hp);
 
-	_image->frameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y);
+	_image->frameRender(getMemDC(), _hitBox.left, _hitBox.top);
 
 	//_hpBar->setX(_point.x - 25 + camera.x);
 	//_hpBar->setY(_pointY + _image->getFrameHeight() / 2 + 10 + camera.y);
@@ -204,7 +208,7 @@ void Gnoll::action()
 {
 	if (_myState == ENEMYSTATE_SLEEP)
 	{
-		float dis = getDistance(_player->getPoint().x, _player->getPoint().y, _point.x, _point.y);
+		float dis = getDistance(_player->getPoint().x / TILESIZE, _player->getPoint().y / TILESIZE, _point.x, _point.y);
 
 		if (dis < 2)
 		{
@@ -221,7 +225,7 @@ void Gnoll::action()
 		{
 			//적을 발견하지 않았으면 랜덤행동
 
-			float dis = getDistance(_player->getPoint().x, _player->getPoint().y, _point.x, _point.y);
+			float dis = getDistance(_player->getPoint().x / TILESIZE, _player->getPoint().y / TILESIZE, _point.x, _point.y);
 
 			if (dis < 2)
 			{

@@ -17,6 +17,8 @@ HRESULT EnemyManager::init()
 {
 	_enemyTurn = false;
 	_actionCount = 0;
+
+
 	return S_OK;
 }
 
@@ -51,7 +53,7 @@ void EnemyManager::update()
 void EnemyManager::action()
 {
 
-	if (_actionCount = 0)
+	if (_actionCount == 0)
 	{
 		//Ã¹¹øÂ° ¸ó½ºÅÍ¿¡°Ô ÅÏ ³Ñ±è
 		_vEnemy[_actionCount]->setAction(true);
@@ -105,27 +107,66 @@ void EnemyManager::setEnemy(POINT point, int type)
 {
 	switch (type)
 	{
-	case 0:
+		case 0:
+		{
 		//Áã, Rat
 
 		break;
-	case 1:
-		//¹Ì¹Í, Mimic
-		break;
-	case 2:
-		//ÆÄ¸®, Swarm
-		break;
-	case 3:
-		//³î, Gnoll
-		break;
-	case 4:
-		//
-		break;
-	case 5:
-		//
-		break;
-	default:
-		//
-		break;
+		}
+		case 1:
+		{
+			//¹Ì¹Í, Mimic
+			break;
+		}
+		case 2:
+		{
+			//ÆÄ¸®, Swarm
+			Swarm* temp = new Swarm;
+			temp->init(point);
+			temp->setEm(this);
+			temp->setPlayerAddressLink(_player);
+			temp->setItemManagerAddressLink(_im);
+			temp->setUiAddressLink(_ui);
+			_vEnemy.push_back(temp);
+			break;
+		}
+		case 3:
+		{
+			//³î, Gnoll
+			Gnoll* temp = new Gnoll;
+			temp->init(point);
+			temp->setPlayerAddressLink(_player);
+			temp->setItemManagerAddressLink(_im);
+			temp->setUiAddressLink(_ui);
+			_vEnemy.push_back(temp);
+			break;
+		}
+		case 4:
+		{
+			//
+			break;
+		}
+		case 5:
+		{
+			//
+			break;
+		}
+		default:
+		{
+			//
+			break;
+		}
 	}
+}
+
+void EnemyManager::setSwarm(POINT point, int hp)
+{
+	//ÆÄ¸®, Swarm
+	Swarm* temp = new Swarm;
+	temp->init(point, hp);
+	temp->setEm(this);
+	temp->setPlayerAddressLink(_player);
+	temp->setItemManagerAddressLink(_im);
+	temp->setUiAddressLink(_ui);
+	_vEnemy.push_back(temp);
 }

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Swarm.h"
 #include "Player.h"
+#include "EnemyManager.h"
 #include "UI.h"
 #include "Map.h"
 
@@ -141,7 +142,7 @@ void Swarm::action()
 
 	if (_myState == ENEMYSTATE_SLEEP)
 	{
-		float dis = getDistance(_player->getPoint().x, _player->getPoint().y, _point.x, _point.y);
+		float dis = getDistance(_player->getPoint().x / TILESIZE, _player->getPoint().y / TILESIZE, _point.x, _point.y);
 
 		if (dis < 2)
 		{
@@ -158,7 +159,7 @@ void Swarm::action()
 		{
 			//적을 발견하지 않았으면 랜덤행동
 
-			float dis = getDistance(_player->getPoint().x, _player->getPoint().y, _point.x, _point.y);
+			float dis = getDistance(_player->getPoint().x / TILESIZE, _player->getPoint().y / TILESIZE, _point.x, _point.y);
 
 			if (dis < 2)
 			{
@@ -383,6 +384,10 @@ void Swarm::frameUpdate()
 
 void Swarm::getDamaged(int damage)
 {
+	if (_myState == ENEMYSTATE_SLEEP)
+		_myState = ENEMYSTATE_IDLE;
+	_findPlayer = true;
+
 	int a = RND->getInt(100);
 
 	//0~99 중에 나온 숫자가 회피율보다 낮다면 회피
@@ -400,7 +405,24 @@ void Swarm::getDamaged(int damage)
 			//이걸 어떻게 하지?->ENEMYMANAGER에서 처리하자
 			//ENEMY에 swarm을 구별할 수 있는 무언가를 추가해주고 나머진 false, 얘만 true로 해줘서
 			//그게 true면 분열, 아님 냅두게
-			
+
+			int x = 0;
+			int y = 0;
+			if (_player->getPoint().x / TILESIZE > _point.x)
+				x = 1;
+			else if (_player->getPoint().x / TILESIZE == _point.x)
+				x = 0;
+			else
+				x = -1;
+
+			if (_player->getPoint().y / TILESIZE > _point.y)
+				y = 1;
+			else if (_player->getPoint().y / TILESIZE == _point.y)
+				y = 0;
+			else
+				y = -1;
+
+			_em->setSwarm(PointMake(_point.x + x, _point.y + y), _currntHp);
 		}
 		else
 		{
@@ -414,7 +436,7 @@ void Swarm::draw(POINT camera)
 {
 	//_hpBar->setGauge(_currntHp, _statistics.hp);
 
-	_image->frameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y);
+	_image->frameRender(getMemDC(), _hitBox.left, _hitBox.top);
 
 	//_hpBar->setX(_point.x - 25 + camera.x);
 	//_hpBar->setY(_pointY + _image->getFrameHeight() / 2 + 10 + camera.y);
