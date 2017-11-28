@@ -18,6 +18,9 @@ HRESULT EnemyManager::init()
 	_enemyTurn = false;
 	_actionCount = 0;
 
+	setEnemy(PointMake(12, 12), 2);
+	setEnemy(PointMake(13, 13), 2);
+
 	return S_OK;
 }
 
@@ -59,7 +62,7 @@ void EnemyManager::action()
 		//다음차례 몬스터 번호 저장
 		_actionCount++;
 	}
-	else if (_vEnemy[_actionCount - 1]->getAction() == false)	//전 차례의 몬스터 행동이 끝났으면
+	else if (_vEnemy[_actionCount - 1]->getAction() == false && _actionCount < _vEnemy.size())	//전 차례의 몬스터 행동이 끝났으면
 	{
 		//다음차례 몬스터에게 턴 넘김
 		_vEnemy[_actionCount]->setAction(true);
@@ -79,6 +82,7 @@ void EnemyManager::action()
 	{
 		//몬스터 차례 false 대입
 		_enemyTurn = false;
+		_actionCount = 0;
 		//플레이어 차례 true 대입
 		_player->setTurn(true);
 	}

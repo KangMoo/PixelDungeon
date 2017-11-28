@@ -144,7 +144,7 @@ void Swarm::action()
 	{
 		float dis = getDistance(_player->getPoint().x / TILESIZE, _player->getPoint().y / TILESIZE, _point.x, _point.y);
 
-		if (dis < 2)
+		if (dis < 4)
 		{
 			_myState = ENEMYSTATE_IDLE;
 			_findPlayer = true;
@@ -161,7 +161,7 @@ void Swarm::action()
 
 			float dis = getDistance(_player->getPoint().x / TILESIZE, _player->getPoint().y / TILESIZE, _point.x, _point.y);
 
-			if (dis < 2)
+			if (dis < 4)
 			{
 				//거리가 일정 범위 이내로 적이 들어왔으면 인식
 				//인식한 턴은 그냥 자동으로 넘겨줌
@@ -177,6 +177,7 @@ void Swarm::action()
 					//0부터 시계방향으로, 8은 대기
 					//해당 방향의 타일을 검사한 후에, 갈 수 있다면 그쪽으로 이동
 					int a = RND->getInt(50);
+					_movePoint = _point;
 					_myState = ENEMYSTATE_MOVE;
 					switch (a)
 					{
@@ -337,6 +338,7 @@ void Swarm::action()
 			{
 				_pointY -= TILESIZE / 8;
 			}
+			_action = false;
 
 		}
 	}
