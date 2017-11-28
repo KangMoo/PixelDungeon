@@ -83,9 +83,29 @@ void UI::release()
 void UI::update()
 {
 	_camera = _player->getPoint();
+
+	//카메라 위치 재조정
+	if (_camera.x < WINSIZEX / 2)
+	{
+		_camera.x = WINSIZEX / 2;
+	}
+	//else if (_camera.x > IMAGEMANAGER->findImage("bg")->getWidth() - WINSIZEX / 2)
+	//{
+	//	_camera.x = IMAGEMANAGER->findImage("bg")->getWidth() - WINSIZEX / 2;
+	//}
+	if (_camera.y < WINSIZEY / 2)
+	{
+		_camera.y = WINSIZEY / 2;
+	}
+
+	//else if (_camera.y > IMAGEMANAGER->findImage("bg")->getHeight() - WINSIZEY / 2)
+	//{
+	//	_camera.y = IMAGEMANAGER->findImage("bg")->getHeight() - WINSIZEY / 2;
+	//}
 	_camera.x = WINSIZEX / 2 - _camera.x;
 	_camera.y = WINSIZEY / 2 - _camera.y;
 }
+
 
 void UI::render(POINT camera)
 {
