@@ -45,6 +45,7 @@ HRESULT Swarm::init(POINT point)
 
 	_action = false;
 	_isMove = false;
+	_active = false;
 
 	_statistics.lv = 1;
 	_statistics.maxLv = 10;
@@ -60,6 +61,7 @@ HRESULT Swarm::init(POINT point)
 	a = RND->getInt(2);
 	if (a == 0) _myState = ENEMYSTATE_SLEEP;
 	else _myState = ENEMYSTATE_IDLE;
+	_myState = ENEMYSTATE_IDLE;
 
 	_movePoint = PointMake(0, 0);
 	_frameCount = 0;
@@ -79,6 +81,7 @@ HRESULT Swarm::init(POINT point, int currntHp)
 	//분열했다!
 	_point = point;
 
+	_active = false;
 	_move = new image;
 	_move->init("Img\\Enemy\\swarm_stay.bmp", 264, 56, 11, 2, true, RGB(255, 0, 255));
 	_dead = new image;
@@ -139,6 +142,15 @@ HRESULT Swarm::init(POINT point, int currntHp)
 
 void Swarm::action()
 {
+	if (!_active)
+	{
+		if (_map->getTile(_point.x, _point. y).tileview != TILEVIEW_NO)
+		{
+			_active = true;
+		}
+		_action = false;
+		return;
+	}
 
 	if (_myState == ENEMYSTATE_SLEEP)
 	{
@@ -161,14 +173,18 @@ void Swarm::action()
 
 			float dis = getDistance(_player->getPoint().x / TILESIZE, _player->getPoint().y / TILESIZE, _point.x, _point.y);
 
-			if (dis < 4)
+			if (false)
 			{
-				//거리가 일정 범위 이내로 적이 들어왔으면 인식
-				//인식한 턴은 그냥 자동으로 넘겨줌
-				_myState = ENEMYSTATE_IDLE;
-				_findPlayer = true;
-				_action = false;
+
 			}
+			//if (dis < 4)
+			//{
+			//	//거리가 일정 범위 이내로 적이 들어왔으면 인식
+			//	//인식한 턴은 그냥 자동으로 넘겨줌
+			//	_myState = ENEMYSTATE_IDLE;
+			//	_findPlayer = true;
+			//	_action = false;
+			//}
 			else
 			{
 				//거리가 멀면 랜덤이동
@@ -319,14 +335,20 @@ void Swarm::action()
 		}
 		else
 		{
+			//_point.x += cosf(getAngle(_point.x, _point.y, _movePoint.x, _movePoint.y)) * 3;
+			//_point.y -= sinf(getAngle(_point.x, _point.y, _movePoint.x, _movePoint.y)) * 3;
+			//_action = false;
+			
 			//도달하지 않았으면 이동한다
 			if (_pointX < x)
 			{
 				//현재 좌표가 가려는 좌표의 중심보다 작으면 +
+				_right = true;
 				_pointX += TILESIZE / 8;
 			}
 			else if (_pointX > x)
 			{
+				_right = false;
 				_pointX -= TILESIZE / 8;
 			}
 
@@ -339,7 +361,7 @@ void Swarm::action()
 				_pointY -= TILESIZE / 8;
 			}
 			_action = false;
-
+			
 		}
 	}
 
@@ -349,7 +371,7 @@ void Swarm::action()
 
 void Swarm::frameUpdate()
 {
-	_frameCount++;
+	//_frameCount++;
 
 	if (_findPlayer)
 	{
@@ -358,8 +380,9 @@ void Swarm::frameUpdate()
 	}
 	if (_right) _currntFrameY = 0;
 	else _currntFrameY = 1;
-
-	if (_frameCount >= 10)
+	
+	if(true)
+	//if (_frameCount >= 10)
 	{
 		_frameCount = 0;
 		switch (_myState)
@@ -437,8 +460,8 @@ void Swarm::getDamaged(int damage)
 void Swarm::draw(POINT camera)
 {
 	//_hpBar->setGauge(_currntHp, _statistics.hp);
-
-	_image->frameRender(getMemDC(), _hitBox.left, _hitBox.top);
+	if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
+		_image->frameRender(getMemDC(), _hitBox.left, _hitBox.top);
 
 	//_hpBar->setX(_point.x - 25 + camera.x);
 	//_hpBar->setY(_pointY + _image->getFrameHeight() / 2 + 10 + camera.y);
