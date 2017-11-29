@@ -764,7 +764,8 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 			break;
 		}
 		item->equip = false;
-		item->contentsHide = true;
+		if (!_potionIdentified[0]) item->contentsHide = true;
+		else item->contentsHide = false;
 		break;
 	case NAME_STR:
 		item->type = TYPE_POTION;
@@ -786,7 +787,8 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 			break;
 		}
 		item->equip = false;
-		item->contentsHide = true;
+		if (!_potionIdentified[1]) item->contentsHide = true;
+		else item->contentsHide = false;
 		break;
 	case NAME_EX:
 		item->type = TYPE_POTION;
@@ -808,7 +810,8 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 			break;
 		}
 		item->equip = false;
-		item->contentsHide = true;
+		if (!_potionIdentified[2]) item->contentsHide = true;
+		else item->contentsHide = false;
 		break;
 	case NAME_INVISIBLE:
 		item->type = TYPE_POTION;
@@ -830,7 +833,8 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 			break;
 		}
 		item->equip = false;
-		item->contentsHide = true;
+		if (!_potionIdentified[3]) item->contentsHide = true;
+		else item->contentsHide = false;
 		break;
 	case NAME_LEVITATION:
 		item->type = TYPE_POTION;
@@ -852,7 +856,8 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 			break;
 		}
 		item->equip = false;
-		item->contentsHide = true;
+		if (!_potionIdentified[4]) item->contentsHide = true;
+		else item->contentsHide = false;
 		break;
 	case NAME_FROZEN:
 		item->type = TYPE_POTION;
@@ -873,8 +878,9 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 		case 6:item->img = IMAGEMANAGER->findImage("potion_yellow");
 			break;
 		}
-		item->equip = false;
-		item->contentsHide = true;
+		item->equip = false;		
+		if (!_potionIdentified[5]) item->contentsHide = true;
+		else item->contentsHide = false;
 		break;
 	case NAME_LIQUID_FIRE:
 		item->type = TYPE_POTION;
@@ -896,7 +902,8 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 			break;
 		}
 		item->equip = false;
-		item->contentsHide = true;
+		if (!_potionIdentified[6]) item->contentsHide = true;
+		else item->contentsHide = false;
 		break;
 	case NAME_SEED_HEAL:	//============ 씨 앗 ==========
 		item->type = TYPE_SEED;
@@ -1155,6 +1162,129 @@ void ItemManager::useItem(int position)
 				_viBag->numOfItem--;
 				if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
 				break;
+			case TYPE_POTION:
+			{
+				switch (_viBag->name)
+				{
+				case NAME_BOTTLE:  // 플레이어 체력*0.05 * currentCharge
+				{
+					if (_viBag->currentCharge != 0)
+					{
+						_viBag->currentCharge = 0;
+					}
+					else
+					{
+
+					}
+				}
+				break;
+				case NAME_HEAL: // 플레이어의 체력을 최대 회복.
+				{
+					_potionIdentified[0] = true;
+					_viBag->numOfItem--;
+					if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
+
+				}
+				break;
+				case NAME_STR: // 플레이어의 힘 +1
+				{
+					_potionIdentified[1] = true;
+					_viBag->numOfItem--;
+					if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
+
+				}
+				break;
+				case NAME_EX: // 플레이어의 레벨 +1 , 경험치 0;ㄴ
+				{
+					_potionIdentified[2] = true;
+					
+					
+
+					_viBag->numOfItem--;
+					if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
+
+				}
+				break;
+				case NAME_INVISIBLE: // 플레이어 투명화 버프
+				{
+					_potionIdentified[3] = true;
+					_viBag->numOfItem--;
+					if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
+
+				}
+				break;
+				case NAME_LEVITATION: // 플레이어 공중부양 버프
+				{
+					_potionIdentified[4] = true;
+					_viBag->numOfItem--;
+					if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
+
+				}
+				break;
+				case NAME_FROZEN:	// 플레이어 혹은 던진장소 중심 x 5*5 서리디버프
+				{
+					_potionIdentified[5] = true;
+					frozen();
+					_viBag->numOfItem--;
+					if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
+
+				}
+				break;
+				case NAME_LIQUID_FIRE: // 플레이어 혹은 던징장소 중심 3*3 화염
+				{
+					_potionIdentified[6] = true;
+					liquidFire();
+					_viBag->numOfItem--;
+					if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
+				}
+				break;
+				}
+			}
+			break;
+			case TYPE_SCROLL:
+			{
+				switch (_viBag->name)
+				{
+					case NAME_IDENTIFY:
+					{
+
+					}
+					break;
+					case NAME_UPGRADE:
+					{
+
+					}
+					break;
+					case NAME_PURIFY:
+					{
+
+					}
+					break;
+					case NAME_MAP:
+					{
+
+					}
+					break;
+					case NAME_RECHARGE:
+					{
+						for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+						{
+							if (_viBag->type == TYPE_WAND)
+							{
+								_viBag->currentCharge = _viBag->maxCharge;
+							}
+						}
+					}
+					break;
+
+				default:
+					break;
+				}
+			}
+			break;
+
+
+
 
 			default:
 				break;
@@ -1197,6 +1327,53 @@ void ItemManager::useItem(int position, float x, float y)
 					break;
 				}
 				break;
+			case TYPE_POTION:
+			{
+				switch (_viBag->name)
+				{
+					case NAME_BOTTLE:
+					{
+					}
+					break;
+					case NAME_HEAL:
+					{
+						_potionIdentified[0] = true;
+					}
+					break;
+					case NAME_STR:
+					{
+						_potionIdentified[1] = true;
+					}
+					break;
+					case NAME_EX:
+					{
+						_potionIdentified[2] = true;
+					}
+					break;
+					case NAME_INVISIBLE:
+					{
+						_potionIdentified[3] = true;
+					}
+					break;
+					case NAME_LEVITATION:
+					{
+						_potionIdentified[4] = true;
+					}
+					break;
+					case NAME_FROZEN:
+					{
+						_potionIdentified[5] = true;
+					}
+					break;
+					case NAME_LIQUID_FIRE:
+					{
+						_potionIdentified[6] = true;
+					}
+					break;
+				}
+			}
+			break;
+
 			default:
 				break;
 			}
@@ -1216,15 +1393,68 @@ void ItemManager::useItem(int position, int target)
 			case TYPE_SCROLL:
 				switch (_viBag->name)
 				{
-				case NAME_UPGRADE:
+					case NAME_UPGRADE:
+					for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+					{
+						if (_viBag->position == target)
+						{
+							if (_viBag->type == TYPE_ACC || _viBag->type == TYPE_ARMOR || _viBag->type == TYPE_WEAPON)
+							{
+								_viBag->upgrade++;
+								_scrollIdentified[1] = true;
+							}
+						}
+					}
+					break;
 
+					case NAME_IDENTIFY:
+					for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+					{
+						if (_viBag->position == target)
+						{
+							if (_viBag->contentsHide == true)
+							{
+								_viBag->contentsHide = false;
+								_scrollIdentified[0] = true;
+							}
+						}
+					}
+					break;
+
+					case NAME_PURIFY:
+					for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+					{
+						if (_viBag->position == target)
+						{
+							if (_viBag->type == TYPE_ACC || _viBag->type == TYPE_ARMOR || _viBag->type == TYPE_WEAPON)
+							{
+								_viBag->isCursed = false;
+								_scrollIdentified[2] = true;
+							}
+						}
+					}
+					break;
+
+
+					default:
 					break;
 				}
 				break;
 
-			default:
+			case TYPE_THROW:
+				switch (_viBag->name)
+				{
+				default:
+					break;
+
+				}
+
+
+				break;
+				default:
 				break;
 			}
+
 		}
 
 	}
@@ -1351,4 +1581,13 @@ void ItemManager::removeFieldItem(int arrNum)
 void ItemManager::removeBagItem(int arrNum)
 {
 	_vBag.erase(_vBag.begin() + arrNum);
+}
+
+void ItemManager::liquidFire(void)
+{
+
+}
+void ItemManager::frozen(void)
+{
+
 }
