@@ -175,7 +175,7 @@ void Swarm::action()
 
 			if (false)
 			{
-
+			
 			}
 			//if (dis < 4)
 			//{
@@ -198,10 +198,11 @@ void Swarm::action()
 					switch (a)
 					{
 					case 0:
-						//위
+						//위 (ATTRIBUTE_UNGO & _map[v.x - 1][v.y].terrain) == ATTRIBUTE_UNGO
 						if (_map->getMap(_point.x, _point.y - 1).obj == OBJ_NONE &&
 							(_map->getMap(_point.x, _point.y - 1).terrain == TERRAIN_FLOOR ||
 								_map->getMap(_point.x, _point.y - 1).terrain == TERRAIN_GRASS))
+						//if((ATTRIBUTE_UNGO & _map->getMap(_point.x, _point.y - 1).terrain) == ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x, _point.y - 1);
@@ -213,6 +214,7 @@ void Swarm::action()
 						if (_map->getMap(_point.x + 1, _point.y - 1).obj == OBJ_NONE &&
 							(_map->getMap(_point.x + 1, _point.y - 1).terrain == TERRAIN_FLOOR ||
 								_map->getMap(_point.x + 1, _point.y - 1).terrain == TERRAIN_GRASS))
+						//if ((ATTRIBUTE_UNGO & _map->getMap(_point.x + 1, _point.y - 1).terrain) == ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x + 1, _point.y - 1);
@@ -224,6 +226,7 @@ void Swarm::action()
 						if (_map->getMap(_point.x + 1, _point.y).obj == OBJ_NONE &&
 							(_map->getMap(_point.x + 1, _point.y).terrain == TERRAIN_FLOOR ||
 								_map->getMap(_point.x + 1, _point.y).terrain == TERRAIN_GRASS))
+						//if ((ATTRIBUTE_UNGO & _map->getMap(_point.x + 1, _point.y).terrain) == ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x + 1, _point.y);
@@ -235,6 +238,7 @@ void Swarm::action()
 						if (_map->getMap(_point.x + 1, _point.y + 1).obj == OBJ_NONE &&
 							(_map->getMap(_point.x + 1, _point.y + 1).terrain == TERRAIN_FLOOR ||
 								_map->getMap(_point.x + 1, _point.y + 1).terrain == TERRAIN_GRASS))
+						//if ((ATTRIBUTE_UNGO & _map->getMap(_point.x + 1, _point.y + 1).terrain) == ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x + 1, _point.y + 1);
@@ -246,6 +250,7 @@ void Swarm::action()
 						if (_map->getMap(_point.x, _point.y + 1).obj == OBJ_NONE &&
 							(_map->getMap(_point.x, _point.y + 1).terrain == TERRAIN_FLOOR ||
 								_map->getMap(_point.x, _point.y + 1).terrain == TERRAIN_GRASS))
+						//if ((ATTRIBUTE_UNGO & _map->getMap(_point.x, _point.y + 1).terrain) == ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x, _point.y + 1);
@@ -257,6 +262,7 @@ void Swarm::action()
 						if (_map->getMap(_point.x - 1, _point.y + 1).obj == OBJ_NONE &&
 							(_map->getMap(_point.x - 1, _point.y + 1).terrain == TERRAIN_FLOOR ||
 								_map->getMap(_point.x - 1, _point.y + 1).terrain == TERRAIN_GRASS))
+						//if ((ATTRIBUTE_UNGO & _map->getMap(_point.x - 1, _point.y + 1).terrain) == ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x - 1, _point.y + 1);
@@ -268,6 +274,7 @@ void Swarm::action()
 						if (_map->getMap(_point.x - 1, _point.y).obj == OBJ_NONE &&
 							(_map->getMap(_point.x - 1, _point.y).terrain == TERRAIN_FLOOR ||
 								_map->getMap(_point.x - 1, _point.y).terrain == TERRAIN_GRASS))
+						//if ((ATTRIBUTE_UNGO & _map->getMap(_point.x - 1, _point.y).terrain) == ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x - 1, _point.y);
@@ -279,6 +286,7 @@ void Swarm::action()
 						if (_map->getMap(_point.x - 1, _point.y - 1).obj == OBJ_NONE &&
 							(_map->getMap(_point.x - 1, _point.y - 1).terrain == TERRAIN_FLOOR ||
 								_map->getMap(_point.x - 1, _point.y - 1).terrain == TERRAIN_GRASS))
+						//if ((ATTRIBUTE_UNGO & _map->getMap(_point.x - 1, _point.y - 1).terrain) == ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x - 1, _point.y - 1);
@@ -297,12 +305,13 @@ void Swarm::action()
 		{
 			//적을 발견했으면 A*를 이용해 최적루트로 이동한다
 			//바로 옆칸이면 공격 가능하다
-			int x = abs(_point.x - _player->getPoint().x);
-			int y = abs(_point.y - _player->getPoint().y);
+			int x = abs(_point.x - _player->getPoint().x / TILESIZE);
+			int y = abs(_point.y - _player->getPoint().y / TILESIZE);
 			//둘의 x, y값 차이의 절대값이 각각 1 이하인 경우 공격 가능
 			if (x <= 1 && y <= 1)
 			{
 				_myState = ENEMYSTATE_ATTACK;
+				_currntFrameX = 0;
 				//_player->getDamaged(_statistics.str);
 			}
 			else
@@ -310,7 +319,7 @@ void Swarm::action()
 				//아니라면 astar로 이동한다
 				astarTest = _map->aStar(_point, _player->getPoint());
 				//움직일때 해당 좌표를 4,5 같은 식으로 주면 자동으로 4*TILESIZE + TILESIZE/2, 5*... 해줌
-				_movePoint = PointMake(astarTest[0].destX, astarTest[0].destY);
+				_movePoint = PointMake(astarTest[astarTest.size() - 1].destX, astarTest[astarTest.size() - 1].destY);
 				_myState = ENEMYSTATE_MOVE;
 			}
 		}
@@ -401,6 +410,19 @@ void Swarm::frameUpdate()
 			_image->setFrameX(_currntFrameX);
 			_image->setFrameY(_currntFrameY);
 			break;
+		case ENEMYSTATE_ATTACK:
+			//공격시에는 끝나면 턴 넘겨주게
+			_image = _move;
+			_currntFrameX++;
+			if (_currntFrameX > _image->getMaxFrameX())
+			{
+				_currntFrameX = 0;
+				_myState = ENEMYSTATE_IDLE;
+				_action = false;
+			}
+			_image->setFrameX(_currntFrameX);
+			_image->setFrameY(_currntFrameY);
+			break;
 		}
 	}
 
@@ -460,8 +482,10 @@ void Swarm::getDamaged(int damage)
 void Swarm::draw(POINT camera)
 {
 	//_hpBar->setGauge(_currntHp, _statistics.hp);
+	//시야에 보일때만 출력하게
 	if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
 		_image->frameRender(getMemDC(), _hitBox.left, _hitBox.top);
+	//if(_findPlayer)
 
 	//_hpBar->setX(_point.x - 25 + camera.x);
 	//_hpBar->setY(_pointY + _image->getFrameHeight() / 2 + 10 + camera.y);
