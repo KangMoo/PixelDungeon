@@ -32,24 +32,68 @@ HRESULT ItemManager::init()
 		_scrollIdentified[i] = false;
 	}
 	//==================================================
-	setItemToBag(NAME_CLOTH);
-	setItemToBag(NAME_SHORT_SWORD);
-	setItemToBag(NAME_BATTLE_AXE);
-	setItemToBag(NAME_SPEAR);
-	setItemToBag(NAME_SWORD);
-	setItemToBag(NAME_OLD_SHORT_SWORD);
-	setItemToBag(NAME_LEATHER);
-	setItemToBag(NAME_MAIL);
+	//setItemToBag(NAME_CLOTH);
+	//setItemToBag(NAME_SHORT_SWORD);
+	//setItemToBag(NAME_BATTLE_AXE);
+	//setItemToBag(NAME_SPEAR);
+	//setItemToBag(NAME_SWORD);
+	//setItemToBag(NAME_OLD_SHORT_SWORD);
+	//setItemToBag(NAME_LEATHER);
+	//setItemToBag(NAME_MAIL);
 
-	setItemToBag(NAME_UNKNOWN_MEAT);
-	setItemToBag(NAME_BOTTLE);
-	setItemToBag(NAME_HEAL);
-	setItemToBag(NAME_COOKED_MEAT);
-	setItemToBag(NAME_MAP);
-	setItemToBag(NAME_IDENTIFY);
+	//setItemToBag(NAME_UNKNOWN_MEAT);
+	//setItemToBag(NAME_BOTTLE);
+	//setItemToBag(NAME_HEAL);
+	//setItemToBag(NAME_COOKED_MEAT);
+	//setItemToBag(NAME_MAP);
+	//setItemToBag(NAME_IDENTIFY);
 	//setItemToBag(NAME_PURIFY);
 	//setItemToBag(NAME_DEW);
 	//setItemToBag(NAME_UPGRADE);
+
+	//setItemToBag(NAME_OLD_SHORT_SWORD);
+	//setItemToBag(NAME_SHORT_SWORD);
+	//setItemToBag(NAME_SWORD);
+	//setItemToBag(NAME_SPEAR);
+	//setItemToBag(NAME_BATTLE_AXE);
+	//setItemToBag(NAME_CLOTH);
+	//setItemToBag(NAME_LEATHER);
+	//setItemToBag(NAME_MAIL);
+	//setItemToBag(NAME_RING_POWER);
+	//setItemToBag(NAME_RING_RECHARGE);
+
+	//setItemToBag(NAME_LIOYDS_BEACON);
+	//setItemToBag(NAME_DART);
+	//setItemToBag(NAME_PARALYSIS_DART);
+	//setItemToBag(NAME_POISON_DART);
+	setItemToBag(NAME_EMERGENCY);
+	//setItemToBag(NAME_PASTY);
+	//setItemToBag(NAME_UNKNOWN_MEAT);
+	//setItemToBag(NAME_COOKED_MEAT);
+	//setItemToBag(NAME_FROZEN_MEAT);
+	//setItemToBag(NAME_IDENTIFY);
+	//setItemToBag(NAME_UPGRADE);
+	//setItemToBag(NAME_PURIFY);
+	//setItemToBag(NAME_MAP);
+	//setItemToBag(NAME_RECHARGE);
+	//setItemToBag(NAME_BOTTLE);
+
+	//setItemToBag(NAME_HEAL);
+	//setItemToBag(NAME_STR);
+	//setItemToBag(NAME_EX);
+	//setItemToBag(NAME_INVISIBLE);
+	//setItemToBag(NAME_LEVITATION);
+	//setItemToBag(NAME_FROZEN);
+	//setItemToBag(NAME_LIQUID_FIRE);
+	//setItemToBag(NAME_SEED_HEAL);
+	//setItemToBag(NAME_SEED_FIRE);
+	//setItemToBag(NAME_SEED_SNAKE);
+	//setItemToBag(NAME_SEED_FROST);
+	//setItemToBag(NAME_DEW);
+	//setItemToBag(NAME_MONEY);
+	//setItemToBag(NAME_KEY_IRON);
+	//setItemToBag(NAME_KEY_SILVER);
+	//setItemToBag(NAME_KEY_GOLD);
 
 	//================ F U N C T I O N =================
 
@@ -1047,7 +1091,7 @@ void ItemManager::imgInit()
 	IMAGEMANAGER->addImage("meat_unknown", "Img/Item/unknown_meat.bmp", 32, 32, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("meat_cooked", "Img/Item/cooked_meat.bmp", 32, 32, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("meat_frozen", "Img/Item/frozen_meat.bmp", 32, 32, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addImage("emegency_food", "Img/Item/emergency_food.bmp", 32, 32, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("emergency_food", "Img/Item/emergency_food.bmp", 32, 32, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("pasty", "Img/Item/pasty.bmp", 32, 32, true, RGB(255, 0, 255));
 	//=========================== A C C E S O R Y =========================
 	IMAGEMANAGER->addImage("ring_blue", "Img/Item/ring_blue.bmp", 32, 32, true, RGB(255, 0, 255));
