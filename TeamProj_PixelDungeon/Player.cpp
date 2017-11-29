@@ -41,6 +41,7 @@ HRESULT Player::init(POINT point)
 	_keepMove = false;
 	_isUsingUI = false;
 	_isEnemyTargeted = false;
+	_clickAllowedRC = RectMake(0, 100, 700, 400);
 	return S_OK;
 }
 void Player::release()
@@ -51,8 +52,7 @@ void Player::update()
 {
 	frameUpdate();
 	
-	//시야처리
-	fovCheck();
+
 
 
 	//자기 차례가 아니면 이하 실행X
@@ -73,9 +73,14 @@ void Player::update()
 	{
 		move();
 	}
+	else
+	{
+		//시야처리
+		fovCheck();
+	}
 
 	//마우스 클릭 이벤트 처리
-	if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON) && !_isUsingUI)
+	if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON) && !_isUsingUI && !_keepMove)
 	{
 		mouseClickEvent();
 	}
@@ -97,7 +102,7 @@ void Player::draw(POINT camera)
 	//	LineTo(getMemDC(), _playerPoint.x + cosf(i.eangle) * 100, _playerPoint.y - sinf(i.eangle) * 100);
 	//	LineTo(getMemDC(), _playerPoint.x, _playerPoint.y);
 	//}
-
+	//Rectangle(getMemDC(), _clickAllowedRC.left, _clickAllowedRC.top, _clickAllowedRC.right, _clickAllowedRC.bottom);
 	char str[] = "폰트테스트";
 	HFONT hFont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("궁서"));
 	HFONT oldFont = (HFONT)SelectObject(getMemDC(), hFont);
@@ -112,6 +117,7 @@ void Player::draw(POINT camera)
 	{
 		//RectangleMakeCenter(getMemDC(), i.destX*TILESIZE + TILESIZE / 2, i.destY*TILESIZE + TILESIZE / 2, 5, 5);
 	}
+
 }
 
 void Player::addCanTSeeAngle(float sangle, float eangle)
@@ -463,6 +469,8 @@ void Player::move()
 		//플레이어 위치 조정
 		_playerPoint.x = astar[astar.size() - 1].destX*TILESIZE + TILESIZE / 2;
 		_playerPoint.y = astar[astar.size() - 1].destY*TILESIZE + TILESIZE / 2;
+		//시야처리
+		fovCheck();
 
 		//목표지점 수정
 		astar.erase(astar.begin() + astar.size() - 1);
@@ -506,7 +514,8 @@ void Player::mouseClickEvent()
 	for (auto i : _em->getEnemyVector())
 	{
 		//몬스터를 클릭했다면?
-		if (ptMouse.x / TILESIZE == i->getPoint().x / TILESIZE && ptMouse.y / TILESIZE == i->getPoint().y / TILESIZE)
+		if ((ptMouse.x / TILESIZE == i->getPoint().x / TILESIZE && ptMouse.y / TILESIZE == i->getPoint().y / TILESIZE) &&
+			_map->getTile(ptMouse.x / TILESIZE, ptMouse.y / TILESIZE).tileview != TILEVIEW_NO)
 		{
 			//목표 저장
 			_isEnemyTargeted = true;
@@ -521,7 +530,8 @@ void Player::mouseClickEvent()
 	}
 
 	//몬스터 말고 땅을 클릭했다면?
-	if (_map->getTile(ptMouse.x / TILESIZE, ptMouse.y / TILESIZE).terrain != TERRAIN_NULL && !_isEnemyTargeted)
+	if ((_map->getTile(ptMouse.x / TILESIZE, ptMouse.y / TILESIZE).terrain != TERRAIN_NULL && !_isEnemyTargeted)&&
+		_map->getTile(ptMouse.x / TILESIZE, ptMouse.y / TILESIZE).tileview != TILEVIEW_NO)
 	{
 		//이동경로 저장
 		astar = _map->aStar(_playerPoint, ptMouse);
@@ -548,18 +558,41 @@ void Player::endTurn()
 
 void Player::effectDebuff()
 {
+	bool isThereFrozenDebuff = false;
 	for (auto i : _vdebuff)
 	{
 		switch (i.type)
 		{
 		case DEBUFF_BLEEDING:
+			_playerStat.hp -= i.damage;
 			break;
 		case DEBUFF_FIRE:
+			_playerStat.hp -= i.damage;
 			break;
 		case DEBUFF_FROZEN:
+			isThereFrozenDebuff = true;
 			break;
 		case DEBUFF_HUNGER:
+
 			break;
+		}
+		i.lefttime--;
+	}
+	if (isThereFrozenDebuff)
+	{
+		for (int i = 0; i < _vdebuff.size(); i++)
+		{
+			if (_vdebuff[i].type == DEBUFF_FIRE)
+			{
+				_vdebuff.erase(_vdebuff.begin() + i);
+			}
+		}
+	}
+	for (int i = 0; i < _vdebuff.size(); i++)
+	{
+		if (_vdebuff[i].lefttime <= 0)
+		{
+			_vdebuff.erase(_vdebuff.begin() + i);
 		}
 	}
 }
@@ -570,12 +603,16 @@ void Player::effectBuff()
 		switch (i.type)
 		{
 		case BUFF_INVISIBLE:
+
 			break;
 		case BUFF_LEVITATION:
+
 			break;
 		case BUFF_NATURAL_ARMOR:
+
 			break;
 		case BUFF_NATURAL_HEAL:
+
 			break;
 		}
 	}
