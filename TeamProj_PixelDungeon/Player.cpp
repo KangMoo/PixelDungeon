@@ -50,6 +50,7 @@ void Player::release()
 }
 void Player::update()
 {
+
 	frameUpdate();
 	
 

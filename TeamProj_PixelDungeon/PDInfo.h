@@ -82,6 +82,10 @@ enum ITEMNAME {
 	NAME_KEY_IRON,			//쇠 열쇠	============ 열 쇠 ==========
 	NAME_KEY_SILVER,		//은 열쇠
 	NAME_KEY_GOLD,			//금 열쇠
+	NAME_FLOWER_HEAL,		//태양초
+	NAME_FLOWER_FIRE,		//화염초
+	NAME_FLOWER_FROST,		//얼음송이
+	NAME_FLOWER_SNAKE,		//뱀뿌리
 	NAME_END				//포문 돌리기 위함
 
 };
@@ -165,6 +169,7 @@ typedef struct tagItem {
 	int currentCharge;	// 현재 사용 가능 횟수 ( 완드 )
 	int numOfItem;		// 아이템 개수
 	int position;		// 포지션 저장용
+	int floor;			// 몇층인지
 }ITEM;
 
 
@@ -183,6 +188,8 @@ typedef struct tagItem {
 #define ATTRIBUTE_HIDDEN	0x010000		// 히든 : 보이지 않는다. 특정 조건을 만족해야 드러남
 
 #define ATTRIBUTE_TRAP		0x000010		// 트랩 : 밟거나 아이템 던지면 반응 (트랩 종류는 따로 정의)
+
+#define ATTRIBUTE_OBJECT	0x100000		// 오브젝트가 놓이는 타일(오브젝트 그 자체는 아님)
 
 
 // 맵
@@ -206,7 +213,10 @@ enum TERRAIN {
 
 	TERRAIN_WATER =				ATTRIBUTE_FLOOR + ATTRIBUTE_WATER,
 	
-	TERRAIN_CHASM =				ATTRIBUTE_FLOOR + ATTRIBUTE_CHASM,	
+	TERRAIN_CHASM =				ATTRIBUTE_FLOOR + ATTRIBUTE_CHASM,
+
+	TERRAIN_OBJECT =			ATTRIBUTE_FLOOR + ATTRIBUTE_OBJECT,
+	TERRAIN_OBJECT_UNGO =		ATTRIBUTE_FLOOR + ATTRIBUTE_OBJECT + ATTRIBUTE_UNGO
 };
 
 enum TRAP {
@@ -229,6 +239,9 @@ enum TRAP {
 #define ATTRIBUTE_LOCKED	0x000002		// 잠겨있는 상태
 #define ATTRIBUTE_CRYSTAL	0x000004		// 크리스탈 상자 : 밟거나 조사하면 내부의 물건을 확인할 수 있다
 
+#define ATTRIBUTE_STAIR		0x000010		// 보물상자 : 밟거나 조사하면 열린다
+#define ATTRIBUTE_START		0x000020		// 보물상자 : 밟거나 조사하면 열린다
+#define ATTRIBUTE_END		0x000040		// 보물상자 : 밟거나 조사하면 열린다
 
 
 enum OBJ {
@@ -239,6 +252,8 @@ enum OBJ {
 	OBJ_CRY_CHEST			= ATTRIBUTE_CHEST + ATTRIBUTE_CRYSTAL,
 	OBJ_CRY_CHEST_LOCKED	= ATTRIBUTE_CHEST + ATTRIBUTE_CRYSTAL + ATTRIBUTE_LOCKED,
 
+	OBJ_STAIR_START			= ATTRIBUTE_STAIR + ATTRIBUTE_START,
+	OBJ_STAIR_END			= ATTRIBUTE_STAIR + ATTRIBUTE_END,
 
 	OBJ_TRAP,
 	OBJ_TRAP_UNSIGHT,

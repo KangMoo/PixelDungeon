@@ -15,30 +15,62 @@ Map::~Map()
 }
 HRESULT Map::init()
 {
-	for (int i = 0; i < 100; i++) {
-		for (int j = 0; j < 100; j++) {
-			_map[i][j].terrain = TERRAIN_NULL;
-		}
-
-	}
-
-	
-	start = true;
-	load();
-
+	_mapSizeX = 0;
+	_mapSizeY = 0;
+	imageSetup();
 	spareTileSetup();
 
+	_stageDataList.push_back("SavedData.xml");
+	_stageDataList.push_back("SavedData2.xml");
+
+
+	_curStageNum = 0;
+	start = true;
+	load(_curStageNum);
+
+	
 
 	IMAGEMANAGER->addImage("blackLineVertical", "Img//Map//blackdot.bmp", 1, 32, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("blackLineHorizontal", "Img//Map//blackdot.bmp", 32, 1, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("blackTile", "Img//Map//blackdot.bmp", 32, 32, true, RGB(255, 0, 255));
 	return S_OK;
 }
+
+
+void Map::imageSetup() {
+
+	_imgNameList.push_back("mapTiles");
+	_imgNameList.push_back("chest");
+
+	for (int i = 0; i < _imgNameList.size(); i++) {
+		image* image1 = IMAGEMANAGER->findImage(_imgNameList[i]);
+		_imgList.push_back(image1);
+	}
+}
+
+
 void Map::release()
 {
 }
 void Map::update()
 {
+
+	//test
+	for (int i = 0; i < _vObj.size(); i++) {
+		if (_player->getPoint().x / TILESIZE == _vObj[i].destX && _player->getPoint().y / TILESIZE == _vObj[i].destY) {
+			if (_vObj[i].obj == OBJ_STAIR_END) {
+				if (_curStageNum == 0)
+				{
+					load(1);
+				}
+				else if (_curStageNum == 1)
+					load(0);
+			}
+			if (_vObj[i].obj == OBJ_CHEST) {
+				setObj_OpenChest(i);
+			}
+		}
+	}
 
 	// 타일 상태변화 test
 	if (KEYMANAGER->isOnceKeyDown('A')) {
@@ -65,6 +97,19 @@ void Map::update()
 			}
 		}
 	}
+	if (KEYMANAGER->isOnceKeyDown('D')) {
+		for (int i = 0; i < _vObj.size(); i++){
+			if ((_vObj[i].obj & ATTRIBUTE_CHEST) == ATTRIBUTE_CHEST)
+			{
+				setObj_OpenChest(i);
+			}
+		}
+	}
+
+	if (KEYMANAGER->isOnceKeyDown('Q')) {
+		if (_curStageNum == 0) { load(1); }
+		else { load(0); }
+	}
 	// test
 }
 void Map::render()
@@ -85,8 +130,7 @@ void Map::draw(POINT camera)
 	for (int i = 0; i < TILEXMAX; i++) {
 	
 		for (int j = 0; j < TILEYMAX; j++) {
-			if (_map[i][j].terrain != TERRAIN_NULL)
-			{
+			if (_map[i][j].terrain != TERRAIN_NULL) {
 				switch (_map[i][j].tileview)
 				{
 				case TILEVIEW_ALL:
@@ -98,16 +142,23 @@ void Map::draw(POINT camera)
 					break;
 				case TILEVIEW_NO:
 					_map[i][j].img->frameRender(getMemDC(), i * TILESIZE + camera.x, j * TILESIZE + camera.y, _map[i][j].sourX, _map[i][j].sourY);
-
 					IMAGEMANAGER->render("blackTile", getMemDC(), i*TILESIZE + camera.x, j*TILESIZE + camera.y);
 					break;
 				}
-				//RectangleMake(getMemDC(), i * 10, j * 10, 10, 10);
-				
 			}
+				//RectangleMake(getMemDC(), i * 10, j * 10, 10, 10);				
+			
 		}
 	}
 
+	for (_viObj = _vObj.begin(); _viObj != _vObj.end(); ++_viObj)
+	{
+		if (_viObj->obj != OBJ_NONE) {
+			if (_map[_viObj->destX][_viObj->destY].tileview == TILEVIEW_ALL)
+			_viObj->img->frameRender(getMemDC(), _viObj->destX * TILESIZE + camera.x, _viObj->destY * TILESIZE + camera.y, _viObj->sourX, _viObj->sourY);
+		}
+
+	}
 	
 	//if (start) {
 	//	for (int i = 0; i < _vMapTile.size(); i++) {
@@ -154,8 +205,14 @@ void Map::draw(POINT camera)
 }
 
 
-void Map::load() {
+void Map::load(int stageNum) {
 
+	for (int i = 0; i < 100; i++) {
+		for (int j = 0; j < 100; j++) {
+			_map[i][j].terrain = TERRAIN_NULL;
+			_map[i][j].tileview = TILEVIEW_NO;
+		}
+	}
 
 	//TILE loadMap[10000];
 	////임시로 만듬. 나중에 바꿔야지...
@@ -205,21 +262,30 @@ void Map::load() {
 
 
 	_vMapTile.clear();
+	_vDecoTile.clear();
+	_vObj.clear();
 
+	const char *name = _stageDataList[stageNum].c_str();
 
 	XMLDocument xmlDoc;
 
-	XMLError eResult = xmlDoc.LoadFile("SavedData.xml");
+	XMLError eResult = xmlDoc.LoadFile(name);
 
 	XMLNode * pRoot = xmlDoc.FirstChild();
 
 	XMLElement * pTileElement = pRoot->FirstChildElement("TileList");
+	
+	_mapSizeX = pTileElement->FirstChildElement("sizeX")->IntText();
+	_mapSizeY = pTileElement->FirstChildElement("sizeY")->IntText();
+
 	XMLElement * pTileListElement = pTileElement->FirstChildElement("tile");
 
+	
 	while (pTileListElement != nullptr) {
 		TILE tile;
 
-		tile.img = IMAGEMANAGER->findImage("mapTiles"); //임시, 나중에 주소값으로 바꿀거
+		int imgNum = pTileListElement->FirstChildElement("imgNum")->IntText();
+		tile.img = IMAGEMANAGER->findImage(_imgNameList[imgNum]);
 
 
 		tile.destX = pTileListElement->FirstChildElement("destX")->IntText();
@@ -235,6 +301,52 @@ void Map::load() {
 	}
 
 
+	XMLElement * pDecoElement = pRoot->FirstChildElement("DecoList");
+	XMLElement * pDecoListElement = pDecoElement->FirstChildElement("tile");
+
+	while (pDecoListElement != nullptr) {
+		TILE tile;
+
+		int imgNum = pDecoListElement->FirstChildElement("imgNum")->IntText();
+		tile.img = IMAGEMANAGER->findImage(_imgNameList[imgNum]);
+
+		tile.destX = pDecoListElement->FirstChildElement("destX")->IntText();
+		tile.destY = pDecoListElement->FirstChildElement("destY")->IntText();
+		tile.sourX = pDecoListElement->FirstChildElement("sourX")->IntText();
+		tile.sourY = pDecoListElement->FirstChildElement("sourY")->IntText();
+		tile.obj = (OBJ)pDecoListElement->FirstChildElement("obj")->IntText();
+		tile.terrain = (TERRAIN)pDecoListElement->FirstChildElement("terrain")->IntText();
+
+		_vDecoTile.push_back(tile);
+
+		pDecoListElement = pDecoListElement->NextSiblingElement("tile");
+	}
+
+	XMLElement * pObjElement = pRoot->FirstChildElement("ObjList");
+	XMLElement * pObjListElement = pObjElement->FirstChildElement("obj");
+
+	while (pObjListElement != nullptr) {
+		GAMEOBJECT obj;
+
+		int imgNum = pObjListElement->FirstChildElement("imgNum")->IntText();
+		obj.img = IMAGEMANAGER->findImage(_imgNameList[imgNum]);
+
+		obj.destX = pObjListElement->FirstChildElement("destX")->IntText();
+		obj.destY = pObjListElement->FirstChildElement("destY")->IntText();
+		obj.sourX = pObjListElement->FirstChildElement("sourX")->IntText();
+		obj.sourY = pObjListElement->FirstChildElement("sourY")->IntText();
+		obj.obj = (OBJ)pObjListElement->FirstChildElement("obj")->IntText();
+
+		_vObj.push_back(obj);
+
+		pObjListElement = pObjListElement->NextSiblingElement("obj");
+
+		if (obj.obj == OBJ_STAIR_START) {
+			POINT playerPoint = PointMake(obj.destX*TILESIZE + TILESIZE / 2, obj.destY*TILESIZE + TILESIZE / 2);
+			_player->setPoint(playerPoint);
+		}
+
+	}
 
 	//XMLElement * pDecoElement = pRoot->FirstChildElement("DecoList");
 	//XMLElement * pDecoListElement = pDecoElement->FirstChildElement("tile");
@@ -273,6 +385,8 @@ void Map::load() {
 	}
 
 
+
+	_curStageNum = stageNum;
 	//for (int i = 0; i < _vMapTile.size(); i++) {
 	//	_vMapTile.clear();
 	//	vector<TILE>().swap(_vMapTile);		//메모리 해제
@@ -348,4 +462,10 @@ void Map::setTile_GrassCut(int i, int j) {
 	_map[i][j].terrain = (TERRAIN)((long)_map[i][j].terrain ^ ATTRIBUTE_UNSIGHT);
 
 	_im->setItemToField(NAME_DEW, i * TILESIZE + TILESIZE * 0.5, j * TILESIZE + TILESIZE * 0.5);
+}
+
+
+void Map::setObj_OpenChest(int i) {
+	_vObj[i].obj = OBJ_NONE;
+	_im->setItemToField(NAME_BOTTLE, _vObj[i].destX * TILESIZE + TILESIZE * 0.5, _vObj[i].destY * TILESIZE + TILESIZE * 0.5);
 }

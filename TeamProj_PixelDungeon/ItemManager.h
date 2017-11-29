@@ -80,6 +80,9 @@ public:
 	void throwMove();
 	void removeBullet(int arrNum);
 	void removeThrow(int arrNum);
+	void removeFieldItem(int arrNum);
+	void removeBagItem(int arrNum);
+	
 
 	void setItemToBag(ITEMNAME name);
 	void setItemToField(ITEMNAME name, float x, float y);
@@ -91,8 +94,8 @@ public:
 	void setUiAddressLink(UI* ui) { _ui = ui; }
 	void setPlayerAddressLink(Player* player) { _player = player; }
 
-
-
+	void liquidFire(void);
+	void frozen(void);
 
 
 	vector<tagItem> getvItem() { return _vItem; }

@@ -1,14 +1,12 @@
 #include "stdafx.h"
 #include "timer.h"
-#include <mmsystem.h>	
+#include <mmsystem.h>
 
 #pragma comment(lib, "winmm.lib")
-
 
 timer::timer()
 {
 }
-
 
 timer::~timer()
 {
@@ -47,6 +45,7 @@ void timer::tick(float lockFPS)
 	{
 		QueryPerformanceCounter((LARGE_INTEGER*)&_curTime);
 	}
+
 	else
 	{
 		_curTime = timeGetTime();
@@ -79,7 +78,6 @@ void timer::tick(float lockFPS)
 		_FPSTimeElapsed = 0.0f;
 	}
 }
-
 
 unsigned long timer::getFrameRate(char* str) const
 {
