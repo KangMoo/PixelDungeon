@@ -113,6 +113,16 @@ void Player::draw(POINT camera)
 	{
 		RectangleMakeCenter(getMemDC(), i.destX*TILESIZE + TILESIZE / 2, i.destY*TILESIZE + TILESIZE / 2, 5, 5);
 	}
+
+	//test~
+	vector<TILE> astartest;
+	astartest = _map->aStar(PointMake(400, 400), PointMake(240, 240));
+	for (auto i : astartest)
+	{
+		RectangleMakeCenter(getMemDC(), i.destX*TILESIZE + TILESIZE / 2, i.destY*TILESIZE + TILESIZE / 2, 5, 5);
+	}
+
+	//~test
 }
 
 void Player::addCanTSeeAngle(float sangle, float eangle)

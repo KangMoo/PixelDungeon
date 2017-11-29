@@ -177,14 +177,14 @@ void Swarm::action()
 			{
 			
 			}
-			//if (dis < 4)
-			//{
-			//	//거리가 일정 범위 이내로 적이 들어왔으면 인식
-			//	//인식한 턴은 그냥 자동으로 넘겨줌
-			//	_myState = ENEMYSTATE_IDLE;
-			//	_findPlayer = true;
-			//	_action = false;
-			//}
+			if (dis < 4)
+			{
+				//거리가 일정 범위 이내로 적이 들어왔으면 인식
+				//인식한 턴은 그냥 자동으로 넘겨줌
+				_myState = ENEMYSTATE_IDLE;
+				_findPlayer = true;
+				_action = false;
+			}
 			else
 			{
 				//거리가 멀면 랜덤이동
@@ -317,9 +317,11 @@ void Swarm::action()
 			else
 			{
 				//아니라면 astar로 이동한다
-				astarTest = _map->aStar(_point, _player->getPoint());
+				POINT test = _player->getPoint();
+		
+				astarTest = _map->aStar(PointMake(_pointX, _pointY), test);
 				//움직일때 해당 좌표를 4,5 같은 식으로 주면 자동으로 4*TILESIZE + TILESIZE/2, 5*... 해줌
-				_movePoint = PointMake(astarTest[astarTest.size() - 1].destX, astarTest[astarTest.size() - 1].destY);
+				//_movePoint = PointMake(astarTest[astarTest.size() - 1].destX, astarTest[astarTest.size() - 1].destY);
 				_myState = ENEMYSTATE_MOVE;
 			}
 		}
@@ -491,6 +493,13 @@ void Swarm::draw(POINT camera)
 	//_hpBar->setY(_pointY + _image->getFrameHeight() / 2 + 10 + camera.y);
 	//if (_currntHp < _statistics.hp)
 	//	_hpBar->render();
+	POINT test = _player->getPoint();
+	test.x -= 32;
+	astarTest = _map->aStar(PointMake(_pointX, _pointY), test);
+	for (auto i : astarTest)
+	{
+		RectangleMakeCenter(getMemDC(), i.destX*TILESIZE + TILESIZE / 2, i.destY*TILESIZE + TILESIZE / 2,5,5);
+	}
 }
 
 void Swarm::release()

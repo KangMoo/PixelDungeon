@@ -303,6 +303,7 @@ vector<TILE> Map::aStar(POINT currentPoint, POINT goalPoint)
 	//8방향 탐색 후 열린 목록에 추가
 	add_eightway(startPoint, goalPoint);
 
+	int a = 0;
 	//openlist에 목적지가 있는 경우?
 	if (search_openlist_exsist(goalPoint.x / TILESIZE, goalPoint.y / TILESIZE))
 	{
@@ -488,7 +489,6 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 		bool aU, aD, aR, aL;
 		aU = aD = aR = aL = false;
 
-		bool test = (ATTRIBUTE_UNGO & _map[v.x - 1][v.y].terrain) == ATTRIBUTE_UNGO;
 		//상하좌우
 		if ((ATTRIBUTE_UNGO & _map[v.x - 1][v.y].terrain) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x - 1, v.y))
 		{

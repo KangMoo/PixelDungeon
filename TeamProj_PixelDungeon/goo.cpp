@@ -20,9 +20,9 @@ HRESULT goo::init(POINT point, int cog)
 	//												*GOOIMAGE*	
 	//=======================================================================================================================================================
 
-	IMAGEMANAGER->addFrameImage("gooMove", "Img\Enemy\mimic\mimic_move.bmp", 64, 64, 2, 2, true, RGB(255, 0, 255));//무브인줄 알았는데 아이들이였다
-	IMAGEMANAGER->addFrameImage("gooStay", "Img\Enemy\mimic\mimic_stay.bmp", 160, 64, 5, 2, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addFrameImage("gooDead", "Img\Enemy\mimic\mimic_dead.bmp", 128, 64, 4, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("gooMove", "Img\Enemy\goo\goo_move.bmp", 64, 64, 2, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("gooStay", "Img\Enemy\goo\goo_stay.bmp", 160, 64, 5, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("gooDead", "Img\Enemy\goo\goo_dead.bmp", 128, 64, 4, 2, true, RGB(255, 0, 255));
 
 	//=======================================================================================================================================================
 	//												*GOOINIT*	
@@ -120,15 +120,21 @@ void goo::update()
 	//플레이어와 멀어졌다 해서 다시 비활동 상태로 돌아가지는 않는다.
 	if (_isLive == true && _findPlayer == true)
 	{
+		//상태 아이들로 해준다.
 		_myState = ENEMYSTATE_IDLE;
-		//for (int sightMaxTile = 1; sightMaxTile < 4; sightMaxTile++)
-		//{
-		//
-		//}
-		//if (_map->getTile().terrain)
-		//{
-		//
-		//}
+
+		//맵
+		for (int i = 0; i < TILEXMAX; i++)
+		{
+			for (int j = 0; j < TILEYMAX; j++)
+			{
+				//구 가 물 위에 있으면 체력을 회복을 한다.
+				if (_map->getTile(i,j).terrain == TERRAIN_WATER)_currntHp++;
+			}
+		}
+
+		//최대체력은 넘지마셈
+		if (_currntHp >= _statistics.hp)_currntHp = _statistics.hp;
 
 		//자신의 턴이 아닐시 이미지는 stay로 설정한다.
 		if (_action == false)_image = IMAGEMANAGER->findImage("gooStay");
@@ -184,7 +190,7 @@ void goo::frameUpdate()
 
 	if (_myState == ENEMYSTATE_MOVE)_image = IMAGEMANAGER->findImage("gooMove");
 	else if (_myState == ENEMYSTATE_ATTACK)_image = IMAGEMANAGER->findImage("gooStay");
-	if (_myState == ENEMYSTATE_DEAD)_image = IMAGEMANAGER->findImage("goonDead");
+	else if (_myState == ENEMYSTATE_DEAD)_image = IMAGEMANAGER->findImage("goonDead");
 
 	//==============================================*FRAME UPDATE*========================================
 
@@ -215,11 +221,9 @@ void goo::action()
 	if (distanceToPlayer < 2 && _pumpIt == false) move();
 
 	//팜-프 잇이 활성화된 상태에선 사거리가 길기에 세칸 이상 떨어져 있으면 플레이어 위치로 움직인다. 
-
 	else if (distanceToPlayer < 6 && _pumpIt == true)move();
 
 	//아닐시 플레이어 위치로 공격을 시도합니다.
-
 	else if (rnd == 2 && _pumpIt == false) _pumpIt = true;
 	else attack();
 
