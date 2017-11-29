@@ -63,13 +63,13 @@ HRESULT goo::init(POINT point, int cog)
 	_action = false;	//아직 내 턴이 아닙니다.
 	_findPlayer = false;	//파인드 플레이어가 플레이어 건드렸는지의 여부입니다.
 
-							//==============================================*etc. SETTING*=============================================================================================================
+	//==============================================*etc. SETTING*=============================================================================================================
 
-							//=======================================================================================================================================================
-							//*NOTICE
-							//*FrameY가 0일시 right
-							//*FrameY가 1일시 left
-							//=======================================================================================================================================================
+	//=======================================================================================================================================================
+	//*NOTICE
+	//*FrameY가 0일시 right
+	//*FrameY가 1일시 left
+	//=======================================================================================================================================================
 
 	_currentFrameX = 0;	//프레임을 초기화 해줍니다.
 	_currentFrameY = 0;	//프레임을 초기화 해줍니다.
@@ -83,7 +83,7 @@ HRESULT goo::init(POINT point, int cog)
 	_point.x = point.x;
 	_point.y = point.y;
 
-	pumpIt = false; //매우 강-력한 공격입니다.
+	_pumpIt = false; //매우 강-력한 공격입니다.
 	trunCount = 0; //펌프잇 쓰기위한 턴 카운트, 2가 되면 매우 강력한 공격을 시도 합니다.
 
 	return S_OK;
@@ -161,50 +161,149 @@ void goo::draw(POINT camera)
 
 }
 
+void goo::frameUpdate()
+{
+	//============================================*DIRECTION SETTING*===========================================
+
+	if (_findPlayer == true)
+	{
+		if (_player->getPoint().x > _point.x)	_right = true;
+		else									_right = false;
+	}
+
+	//==========================================*DIRECTION IMAGE CHANGE*========================================
+
+	if (_right)	_currentFrameY = 0;
+	else		_currentFrameY = 1;
+
+	//==============================================*STATE IMAGE CHANGE*========================================
+
+	if (_myState == ENEMYSTATE_MOVE)_image = IMAGEMANAGER->findImage("brownMove");
+	else if (_myState == ENEMYSTATE_ATTACK)_image = IMAGEMANAGER->findImage("brownAttack");
+	if (_myState == ENEMYSTATE_DEAD)_image = IMAGEMANAGER->findImage("brownDead");
+
+	//==============================================*FRAME UPDATE*========================================
+
+	_frameFPS = 10;//프레임 속도 조절용
+	_frameTime++;
+
+	if (_frameFPS <= _frameTime)//프레임을 넘긴다
+	{
+		_currentFrameX++;
+		_frameTime = 0;
+	}
+
+	//프레임 초기화
+	if (_currentFrameX >= _image->getMaxFrameX() &&
+		_myState != ENEMYSTATE_DEAD) _currentFrameX = 0;	//죽은상태가 아니면 프레임을 초기화 한다.
+
+	//==============================================*FRAME UPDATE*========================================
+}
+
 void goo::action()
 {
+	//플레이어와 거리를 계산한다, 공격과 이동여부를 정함
+
 	int distanceToPlayer = getDistance(_point.x, _point.y, _player->getPoint().x, _player->getPoint().y) / TILESIZE;
 	int rnd = RND->getInt(2);
+
 	//두칸 이상 떨어져 있으면 플레이어 위치로 움직입니다.
-	if (distanceToPlayer < 2) move();
+
+	if (distanceToPlayer < 2 && _pumpIt == false) move();
+
+	//팜-프 잇이 활성화된 상태에선 사거리가 길기에 세칸 이상 떨어져 있으면 플레이어 위치로 움직인다. 
+
+	else if (distanceToPlayer < 6 && _pumpIt == true)move();
+
 	//아닐시 플레이어 위치로 공격을 시도합니다.
-	else if (rnd == 2) pumpIt = true;
+
+	else if (rnd == 2 && _pumpIt == false) _pumpIt = true;
 	else attack();
 
 }
 
 void goo::attack()
 {
-	//타일 카운트를 늘려준다
-	if (pumpIt == true)
-	{
-		trunCount++;
-		_action = false;
-	}
-	//사용한다!
-	else if (pumpIt == true && trunCount == 2)
+
+	_myState = ENEMYSTATE_ATTACK;
+
+
+	_attBox = RectMake(_player->getPoint().x, _player->getPoint().y, TILESIZE, TILESIZE);
+
+	//턴 카운트를 늘려준다, 펌프잇을 사용하기 위해서
+
+	if (_pumpIt == true) trunCount++;
+
+	//펌프잇을 사용한다.
+	else if (_pumpIt == true && trunCount == 2)
 	{
 		trunCount = 0;
-		_action = false;
+		_statistics.atk_lck = 30;
+
+		//위키에 (17.5 +- 5.32 이라 되어있던데 뭔뜻인지 모르니 걍 넣자
+		_statistics.str = RND->getFromIntTo(5 + (_statistics.lv * 1 + 17), 30 + (_statistics.lv * 2 + 17));
+		//_player->getDamaged(_statistics.str);
 	}
 	//평타
 	else
 	{
-
+		//위키에 (7 +- 2.26 이라 되어있던데 뭔뜻인지 모르니 걍 넣자
+		_statistics.str = RND->getFromIntTo(2 + (_statistics.lv * 1+7), 12 + (_statistics.lv * 2+7));
+		//_player->getDamaged(_statistics.str);
 	}
+
+	_action = false;
 }
 
 void goo::move()
 {
+	//에이스타로 적을 따라 이동합니다.
 
-}
+	_myState = ENEMYSTATE_MOVE;
 
-void goo::frameUpdate()
-{
+	//7 8 9
+	//4 5 6
+	//1 2 3
+	//5는 idle
+
+
+
+	//A*를 적용하여 '플레이어' 의 '주변 1칸'애 있어야함
+
+	//_map->aStar(_point, _player->getPoint());
+	//
+	//if (_player->getPoint().y > _point.y)
+	//{
+	//	_point.y = _point.y + TILESIZE;
+	//}
+
+	//좌표값 구하기
+	int x = _movePt.x;
+	int y = _movePt.y;
+
+	//해당 좌표값에 도착했는지 체크
+	if (_point.x == x && _point.y == y)
+	{
+		_image = IMAGEMANAGER->findImage("brownIdle"); //갈색
+
+		_myState = ENEMYSTATE_IDLE;
+		_action = false;
+	}
+	//좌표값에 도착하지 못함
+	else
+	{
+		//좌우
+		if (_point.x > x)	_point.x -= TILESIZE / 8;
+		else				_point.x += TILESIZE / 8;
+
+		//상하
+		if (_point.y > y)	_point.y -= TILESIZE / 8;
+		else				_point.y += TILESIZE / 8;
+	}
 
 }
 
 void goo::getDamaged(int damage)
 {
-
+	_currntHp -= (damage - _statistics.def);
 }
