@@ -121,16 +121,20 @@ void goo::update()
 	if (_isLive == true && _findPlayer == true)
 	{
 		_myState = ENEMYSTATE_IDLE;
+		//for (int sightMaxTile = 1; sightMaxTile < 4; sightMaxTile++)
+		//{
+		//
+		//}
+		//if (_map->getTile().terrain)
+		//{
+		//
+		//}
 
-		if (_action == false)
-		{
-			_image = IMAGEMANAGER->findImage("gooStay");
-		}
+		//자신의 턴이 아닐시 이미지는 stay로 설정한다.
+		if (_action == false)_image = IMAGEMANAGER->findImage("gooStay");
 
-		if (_action == true)//나의 턴일때
-		{
-			action();
-		}
+		//자신의 턴일시 액션을 취한다.
+		else if (_action == true)action();
 	}
 
 	if (_currntHp <= 0)
@@ -178,9 +182,9 @@ void goo::frameUpdate()
 
 	//==============================================*STATE IMAGE CHANGE*========================================
 
-	if (_myState == ENEMYSTATE_MOVE)_image = IMAGEMANAGER->findImage("brownMove");
-	else if (_myState == ENEMYSTATE_ATTACK)_image = IMAGEMANAGER->findImage("brownAttack");
-	if (_myState == ENEMYSTATE_DEAD)_image = IMAGEMANAGER->findImage("brownDead");
+	if (_myState == ENEMYSTATE_MOVE)_image = IMAGEMANAGER->findImage("gooMove");
+	else if (_myState == ENEMYSTATE_ATTACK)_image = IMAGEMANAGER->findImage("gooStay");
+	if (_myState == ENEMYSTATE_DEAD)_image = IMAGEMANAGER->findImage("goonDead");
 
 	//==============================================*FRAME UPDATE*========================================
 
@@ -194,8 +198,7 @@ void goo::frameUpdate()
 	}
 
 	//프레임 초기화
-	if (_currentFrameX >= _image->getMaxFrameX() &&
-		_myState != ENEMYSTATE_DEAD) _currentFrameX = 0;	//죽은상태가 아니면 프레임을 초기화 한다.
+	if (_currentFrameX >= _image->getMaxFrameX() && _myState != ENEMYSTATE_DEAD) _currentFrameX = 0;	//죽은상태가 아니면 프레임을 초기화 한다.
 
 	//==============================================*FRAME UPDATE*========================================
 }
@@ -203,12 +206,12 @@ void goo::frameUpdate()
 void goo::action()
 {
 	//플레이어와 거리를 계산한다, 공격과 이동여부를 정함
-
 	int distanceToPlayer = getDistance(_point.x, _point.y, _player->getPoint().x, _player->getPoint().y) / TILESIZE;
+
+	//1/3 확률로 펌프잇을 사용하기 위한 인트값이다.
 	int rnd = RND->getInt(2);
 
 	//두칸 이상 떨어져 있으면 플레이어 위치로 움직입니다.
-
 	if (distanceToPlayer < 2 && _pumpIt == false) move();
 
 	//팜-프 잇이 활성화된 상태에선 사거리가 길기에 세칸 이상 떨어져 있으면 플레이어 위치로 움직인다. 
@@ -305,5 +308,14 @@ void goo::move()
 
 void goo::getDamaged(int damage)
 {
+	//1/3 확률로 한다. 무슨일이 있어도.
+	int rnd = RND->getInt(2);
+
 	_currntHp -= (damage - _statistics.def);
+
+	//디버프에 독인가 그게 없다, 그냥 데미지를 입히는거로 한다.
+	if (rnd == 2)
+	{
+		
+	}
 }
