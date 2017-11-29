@@ -28,9 +28,11 @@ public:
 	void fream_window_draw(size_t sizeX, size_t sizeY);
 	void button_interface(int itemName, int itemtype, int createNumber, int fream_window_sizeX, int fream_window_sizeY);
 	void item_sort();
+	void main_menu();
+	void status_window();
 
 	void BackPack();
-	void TestFunctin();
+	void PrintFont(char name[], HFONT hFont, HFONT oldFont, int x, int y, int size, char r = 0, char g = 0, char b = 0);
 
 	void ResetInventory();
 	void SortInventory();
@@ -62,6 +64,9 @@ private:
 	RECT _Special_ButtonRect;
 	RECT _Monster_DisplyRect;
 
+	RECT _Menu_selectRect;
+	RECT _StatusRect;
+
 	//RECT _inventory[4][6];
 
 	int _selectInterface = INTERFACEMENU_END;
@@ -80,6 +85,8 @@ private:
 		INTERFACEMENU_BACKPACK,
 		INTERFACEMENU_SEARCH,
 		INTERFACEMENU_TURNSKIP,
+		INTERFACEMENU_MENU,
+		INTERFACEMENU_STATUS,
 		INTERFACEMENU_END,
 	};
 
@@ -107,5 +114,10 @@ private:
 
 	int testnumber = 0;
 	int total = 0;
+
+	//ÆùÆ®¿ë
+
+	HFONT namehFont;
+	HFONT nameoldFont;
 };
 

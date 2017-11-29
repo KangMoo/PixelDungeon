@@ -60,6 +60,9 @@ HRESULT UI::init()
 	//hp바
 	IMAGEMANAGER->addImage("hp_bar", "Img/UI/hp_bar.bmp", 192, 12, true, RGB(255, 0, 255));
 
+	//메인메뉴바
+	IMAGEMANAGER->addImage("select_menu_bar2", "Img/UI/select_menu_bar2.bmp", 260, 129, true, RGB(255, 0, 255));
+
 	_backPackRect = RectMake(437, WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight(), 72, (WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight()));
 	_SearchOptionRect = RectMake(509, WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight(), 58.5, (WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight()));
 	_TurnSkipRect = RectMake(567.5, WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight(), 567.5, (WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight()));
@@ -67,7 +70,10 @@ HRESULT UI::init()
 	_Monster_DisplyRect = RectMake(WINSIZEX - IMAGEMANAGER->findImage("Monster_Display")->getFrameWidth(), 40, IMAGEMANAGER->findImage("Monster_Display")->getFrameWidth(), IMAGEMANAGER->findImage("Monster_Display")->getFrameHeight());
 	_Special_ButtonRect = RectMake(WINSIZEX - IMAGEMANAGER->findImage("Special_Button")->getFrameWidth(), 380, IMAGEMANAGER->findImage("Special_Button")->getFrameWidth(), IMAGEMANAGER->findImage("Special_Button")->getFrameHeight());
 	_Target_ButtonRect = RectMake(WINSIZEX - IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), 460, IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), IMAGEMANAGER->findImage("Target_button")->getFrameHeight());
-	
+
+	_Menu_selectRect = RectMake((WINSIZEX - IMAGEMANAGER->findImage("menu_button")->getFrameWidth()) + 60, 0, 30, IMAGEMANAGER->findImage("menu_button")->getFrameHeight());
+	_StatusRect = RectMake(5,5,85,88);
+
 	_interface_button_timer1 = TIMEMANAGER->getWorldTime();
 	_interface_button_timer2 = TIMEMANAGER->getWorldTime();
 	_interface_button_timer3 = TIMEMANAGER->getWorldTime();
@@ -149,6 +155,8 @@ void UI::draw(POINT camera)
 		IMAGEMANAGER->render("Target_button", getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), 460);
 		//Rectangle(getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), 460, (WINSIZEX - IMAGEMANAGER->findImage("Target_button")->getFrameWidth()) + IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), 460 + IMAGEMANAGER->findImage("Target_button")->getFrameHeight());
 	
+	//Rectangle(getMemDC(), 5, 5, 85,88);
+
 	if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && (TIMEMANAGER->getWorldTime() - _interface_button_timer1) > 0.3 && _selectInterface == INTERFACEMENU_END && !_player->getIsPlayerMoving())
 	{
 		//배낭
@@ -168,7 +176,7 @@ void UI::draw(POINT camera)
 		{
 			if (_player->getAction() == true)
 			{
-				_player->setAction(false);
+				_player->endTurn();
 			}
 
 			//_selectInterface = INTERFACEMENU_TURNSKIP;
@@ -180,12 +188,22 @@ void UI::draw(POINT camera)
 			_selectInterface = INTERFACEMENU_SEARCH;
 		}
 
+		else if (PtInRect(&_Menu_selectRect, _ptMouse) && _selectInterface != INTERFACEMENU_MENU)
+		{
+			_selectInterface = INTERFACEMENU_STATUS;
+		}
+
+		else if (PtInRect(&_StatusRect, _ptMouse))
+		{
+			_selectInterface = INTERFACEMENU_STATUS;
+		}
+
 		_interface_button_timer1 = TIMEMANAGER->getWorldTime();
 	}
 
 	else if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && (TIMEMANAGER->getWorldTime() - _interface_button_timer1) > 0.3 && _selectInterface != INTERFACEMENU_END && !_player->getIsPlayerMoving())
 	{
-		if (PtInRect(&_backPackRect, _ptMouse) || PtInRect(&_SearchOptionRect, _ptMouse) || PtInRect(&_TurnSkipRect, _ptMouse))
+		if (PtInRect(&_backPackRect, _ptMouse) || PtInRect(&_SearchOptionRect, _ptMouse) || PtInRect(&_TurnSkipRect, _ptMouse) || PtInRect(&_Menu_selectRect, _ptMouse) || PtInRect(&_StatusRect, _ptMouse))
 		{
 			_selectInterface = INTERFACEMENU_END;
 			_player->setUsingUI(false);
@@ -208,10 +226,52 @@ void UI::draw(POINT camera)
 		//턴스킵
 		case INTERFACEMENU_TURNSKIP:
 			break;
+
+		//메뉴창
+		case INTERFACEMENU_MENU:
+			main_menu();
+			break;
+
+		//메뉴창
+		case INTERFACEMENU_STATUS:
+			status_window();
+			break;
 	}
 
 	//IMAGEMANAGER->findImage("status_pane")->render(getMemDC(), _status_pane_pos.x, _status_pane_pos.y); //고인
 	//TIMEMANAGER->render(getMemDC());
+}
+
+void UI::main_menu()
+{
+	fream_window_draw(19, 10);
+	IMAGEMANAGER->render("select_menu_bar2", getMemDC(), ((WINSIZEX / 2) - (IMAGEMANAGER->findImage("select_menu_bar2")->getWidth() / 2)) + 8 , ((WINSIZEY / 2) - (IMAGEMANAGER->findImage("select_menu_bar2")->getHeight() / 2)) + 7);
+
+}
+
+void UI::status_window()
+{
+	fream_window_draw(18, 20);
+
+	IMAGEMANAGER->frameRender("avatars", getMemDC(), 300, 180, 0, 0);
+
+	char name[] = "레벨 몇의 전사";
+	PrintFont(name, namehFont, nameoldFont, 350, 190, 25, 0, 255, 0);
+
+	char str[] = "힘";
+	PrintFont(str, namehFont, nameoldFont, 300, 250, 18, 255, 255, 255);
+
+	char health[] = "체력";
+	PrintFont(health, namehFont, nameoldFont, 300, 280, 18, 255, 255, 255);
+
+	char ex[] = "경험치";
+	PrintFont(ex, namehFont, nameoldFont, 300, 310, 18, 255, 255, 255);
+
+	char gold[] = "획득한 골드";
+	PrintFont(gold, namehFont, nameoldFont, 300, 380, 18, 255, 255, 255);
+
+	char level[] = "최고 레벨";
+	PrintFont(level, namehFont, nameoldFont, 300, 410, 18, 255, 255, 255);
 }
 
 void UI::ResetInventory()
@@ -369,6 +429,14 @@ void UI::BackPack()
 		case NAME_OLD_SHORT_SWORD:
 			fream_window_draw(28, 12);
 			button_interface(NAME_OLD_SHORT_SWORD, TYPE_WEAPON, 3, 28, 12);
+
+			//char str[] = "폰트테스트";
+			//HFONT hFont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("굴림"));
+			//HFONT oldFont = (HFONT)SelectObject(getMemDC(), hFont);
+			////TextOut(getMemDC(), 300, 300, str, strlen(str));
+			//SelectObject(getMemDC(), oldFont);
+			//DeleteObject(hFont);
+
 			break;
 		
 		//소검
@@ -428,7 +496,7 @@ void UI::BackPack()
 		//완드
 		case NAME_LIOYDS_BEACON:
 			fream_window_draw(47, 12);
-			button_interface(NAME_LIOYDS_BEACON, TYPE_ACC, 5, 28, 12);
+			button_interface(NAME_LIOYDS_BEACON, TYPE_ACC, 5, 47, 12);
 			break;
 
 		//다트
@@ -505,8 +573,8 @@ void UI::BackPack()
 
 		//강화
 		case NAME_UPGRADE:
-			fream_window_draw(28, 12);
-			button_interface(NAME_UPGRADE, TYPE_SCROLL, 3, 28, 12);
+			fream_window_draw(28, 20);
+			button_interface(NAME_UPGRADE, TYPE_SCROLL, 3, 28, 20);
 			break;
 
 		//정화
@@ -553,14 +621,14 @@ void UI::BackPack()
 
 		//투명화
 		case NAME_INVISIBLE:
-			fream_window_draw(28, 12);
-			button_interface(NAME_INVISIBLE, TYPE_POTION, 3, 28, 12);
+			fream_window_draw(28, 15);
+			button_interface(NAME_INVISIBLE, TYPE_POTION, 3, 28, 15);
 			break;
 
 		//공중 부양
 		case NAME_LEVITATION:
-			fream_window_draw(28, 12);
-			button_interface(NAME_LEVITATION, TYPE_POTION, 3, 28, 12);
+			fream_window_draw(28, 15);
+			button_interface(NAME_LEVITATION, TYPE_POTION, 3, 28, 15);
 			break;
 
 		//서리
@@ -707,7 +775,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			}
 		}
 
-		if (itemCheck == NAME_LIOYDS_BEACON && itemType == TYPE_ACC)
+		if (itemName == NAME_LIOYDS_BEACON && itemType == TYPE_ACC)
 		{
 			if (buttonNumber == 3)
 				button_option_value[buttonNumber].number = BUTTONOPTION_LAUNCH;
@@ -771,7 +839,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			{
 				if (_player->getAction() == true)
 				{
-					_player->setAction(false);
+					_player->endTurn();
 				}
 
 				_selectItem = NAME_END;
@@ -783,7 +851,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			{
 				if (_player->getAction() == true)
 				{
-					_player->setAction(false);
+					_player->endTurn();
 				}
 
 				_selectItem = NAME_END;
@@ -795,7 +863,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			{
 				if (_player->getAction() == true)
 				{
-					_player->setAction(false);
+					_player->endTurn();
 				}
 
 				_selectItem = NAME_END;
@@ -807,7 +875,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			{
 				if (_player->getAction() == true)
 				{
-					_player->setAction(false);
+					_player->endTurn();
 				}
 
 				_selectItem = NAME_END;
@@ -819,7 +887,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			{
 				if (_player->getAction() == true)
 				{
-					_player->setAction(false);
+					_player->endTurn();
 				}
 
 				_selectItem = NAME_END;
@@ -832,7 +900,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 				if (_player->getAction() == true)
 				{
 					_player->action_Eat();
-					_player->setAction(false);
+					_player->endTurn();
 
 					//PLAYERSTAT temp = _player->getStat();
 					//temp.exp += 3;
@@ -848,7 +916,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			{
 				if (_player->getAction() == true)
 				{
-					_player->setAction(false);
+					_player->endTurn();
 				}
 
 				_selectItem = NAME_END;
@@ -860,7 +928,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			{
 				if (_player->getAction() == true)
 				{
-					_player->setAction(false);
+					_player->endTurn();
 				}
 
 				_selectItem = NAME_END;
@@ -937,7 +1005,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 
 				if (_player->getAction() == true)
 				{
-					_player->setAction(false);
+					_player->endTurn();
 				}
 
 				_selectItem = NAME_END;
@@ -979,7 +1047,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 
 				if (_player->getAction() == true)
 				{
-					_player->setAction(false);
+					_player->endTurn();
 				}
 
 				_selectItem = NAME_END;
@@ -991,6 +1059,519 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 
 			_interface_button_timer2 = TIMEMANAGER->getWorldTime();
 		}
+	}
+
+	if (itemName == NAME_OLD_SHORT_SWORD)
+	{
+		char name[] = "낡은 소검";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "이 가벼운 갑옷은 기본적인 보호를 제공합니다.";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "보통 소검보다 가볍고 피해를 덜 입힙니다.";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_SHORT_SWORD)
+	{
+		char name[] = "소검";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "이 무기는 단검보다 겨우 한두 뼘 정도 긴 무기에 불과합";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "니다.";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_SWORD)
+	{
+		char name[] = "검";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "괜찮게 균형잡힌 검입니다.";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "너무 크지는 않지만, 확실히 소검보다는 큽니다.";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_SPEAR)
+	{
+		char name[] = "창";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "길쭉한 나무봉 끝에 날카로운 쇠가 붙어있습니다.";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_BATTLE_AXE)
+	{
+		char name[] = "전투 도끼";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_CLOTH)
+	{
+		char name[] = "천 갑옷";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "이 가벼운 갑옷은 기본적인 보호를 제공합니다.";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_LEATHER)
+	{
+		char name[] = "가죽 갑옷";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "그을려진 몬스터의 가죽으로 만든 갑옷입니다.";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "천 갑옷 만큼 가볍지는 않지만 훨씬 더 나은 보호 효과를";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
+
+		char explanationLine3[] = "제공해 줍니다.";
+		PrintFont(explanationLine3, namehFont, nameoldFont, 220, 320, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_MAIL)
+	{
+		char name[] = "사슬 갑옷";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "속 고리를 서로 엮어 만든 갑옷으로 단단하지만 유연한";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "갑옷입니다.";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_RING_POWER)
+	{
+		char name[] = "저항 반지";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_RING_RECHARGE)
+	{
+		char name[] = "충전 반지";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_LIOYDS_BEACON)
+	{
+		char name[] = "로이드의 신호기";
+		PrintFont(name, namehFont, nameoldFont, 120, 245, 25, 255, 255, 0);
+
+		char explanation[] = "로이드의 신호기는 사용자에게 공간이동 마법을 제어할 수 있는 정교한 마법 장치입니다.";
+		PrintFont(explanation, namehFont, nameoldFont, 70, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "신호기에 원하는 위치를 등록 시켜 돌아갈수도 있지만, 장비한 상태에서 충전량을 소모하여 무작위 공";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 70, 300, 15, 255, 255, 255);
+
+		char explanationLine3[] = "간이동 마법을 발사할 수 있습니다. 이 마법은 대상에게 사용하거나 자신에게도 사용할 수 있습니다.";
+		PrintFont(explanationLine3, namehFont, nameoldFont, 70, 320, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_DART)
+	{
+		char name[] = "다트";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_PARALYSIS_DART)
+	{
+		char name[] = "마비 다트";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_POISON_DART)
+	{
+		char name[] = "독 다트";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_LIGHTNING)
+	{
+		char name[] = "전기 완드";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_NORMAL)
+	{
+		char name[] = "마법 막대";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "이 평범해 보이는 막대는 순수한 마법 에너지를 발사합니다.";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "다른 막대에 비해서 강하지는 않지만, 그에 비해 더 많은";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine3[] = "충전량을 가집니다.";
+		PrintFont(explanationLine3, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_POISON)
+	{
+		char name[] = "독 완드";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_EMERGENCY)
+	{
+		char name[] = "비상 식량";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_PASTY)
+	{
+		char name[] = "파스티";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_UNKNOWN_MEAT)
+	{
+		char name[] = "알수없는 고기";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_COOKED_MEAT)
+	{
+		char name[] = "익힌고기";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_FROZEN_MEAT)
+	{
+		char name[] = "얼린고기";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_IDENTIFY)
+	{
+		char name[] = "감정의 주문서";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "이 주문서는 하나의 아이템을 비밀을 영구적으로 드러냅";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "니다.";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_UPGRADE)
+	{
+		char name[] = "강화의 주문서";
+		PrintFont(name, namehFont, nameoldFont, 260, 185, 25, 255, 255, 0);
+
+		char explanation[] = "이 주문서는 하나의 아이템을 강화하여 품질을 높힙니다.";
+		PrintFont(explanation, namehFont, nameoldFont, 210, 220, 15, 255, 255, 255);
+
+		char explanationLine2[] = "마법 막대는 더 강력해지고 충전 횟수가 증가하며, 무기는";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 210, 240, 15, 255, 255, 255);
+
+		char explanationLine3[] = "더 많은 피해를 줄 수 있고, 방어구는 피해를 더 잘 흡수 ";
+		PrintFont(explanationLine3, namehFont, nameoldFont, 210, 260, 15, 255, 255, 255);
+
+		char explanationLine4[] = "하게됩니다. 또한 반지는 착용자에게 주어지는 효과를 더";
+		PrintFont(explanationLine4, namehFont, nameoldFont, 210, 280, 15, 255, 255, 255);
+
+		char explanationLine5[] = "강화합니다. 무기와 갑옷은 또한 착용하는 데 필요한 힘을";
+		PrintFont(explanationLine5, namehFont, nameoldFont, 210, 300, 15, 255, 255, 255);
+
+		char explanationLine6[] = "소폭 감소시키며, 저주해제의 주문서보다는 못하지만 아이";
+		PrintFont(explanationLine6, namehFont, nameoldFont, 210, 320, 15, 255, 255, 255);
+
+		char explanationLine7[] = "템에 걸린 저주를 약화시킬 수도 있습니다.";
+		PrintFont(explanationLine7, namehFont, nameoldFont, 210, 340, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_PURIFY)
+	{
+		char name[] = "저주 해제의 주문서";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "이 주문서에 담긴 마법은 사용자의 무기, 반지, 마법봉, 유";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "물에 깃든 저주를 즉시 제거합니다.";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_MAP)
+	{
+		char name[] = "마법 지도의 주문서";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "이 주문서를 읽으면, 수정같이 맑은 형상이 기억에 각인되";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "어, 현재 층의 모든 비밀을 포함한 지형을 드러나게 합니";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
+
+		char explanationLine3[] = "다. 아이템과 생물체들의 위치는 여전히 알 수 없습니다.";
+		PrintFont(explanationLine3, namehFont, nameoldFont, 220, 320, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_RECHARGE)
+	{
+		char name[] = "충전의 주문서";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "이 주문서에 담겨 있는 그대로의 마력은 풀려날 때 사용자";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "의 마법 막대를 서서히 충전시킵니다.";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_BOTTLE)
+	{
+		char name[] = "이슬";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_HEAL)
+	{
+		char name[] = "치유 물약";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "이 회복약은 체력을 급속도로 회복시키며 많은 상태 이상";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "을 치료합니다.";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_STR)
+	{
+		char name[] = "힘의 물약";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "이 강력한 용액은 당신의 근육을 타고 흘러, 당신의 힘을";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "1만큼 영구적으로 늘립니다.";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_EX)
+	{
+		char name[] = "경험의 물약";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "많은 사람들의 경험을 적은 이야기를 액체로 만든 것이며,";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "이 물약을 마시는 즉시 당신의 경험 레벨을 올릴 것입니다.";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_INVISIBLE)
+	{
+		char name[] = "투명화의 물약";
+		PrintFont(name, namehFont, nameoldFont, 260, 225, 25, 255, 255, 0);
+
+		char explanation[] = "이 물약을 마시면 일시적으로 투명해집니다.";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 260, 15, 255, 255, 255);
+
+		char explanationLine2[] = "투명해진 상태에서는 적들이 당신을 볼 수 없습니다.";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine3[] = "적을 공격하거나, 마법 막대를 사용하거나, 적 앞에서 마";
+		PrintFont(explanationLine3, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
+
+		char explanationLine4[] = "법 주문서를 사용하면 투명 효과가 사라집니다.";
+		PrintFont(explanationLine4, namehFont, nameoldFont, 220, 320, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_LEVITATION)
+	{
+		char name[] = "부유의 물약";
+		PrintFont(name, namehFont, nameoldFont, 260, 225, 25, 255, 255, 0);
+
+		char explanation[] = "이 호기심을 자아내는 물약을 마시면 공중으로 떠오르게";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 260, 15, 255, 255, 255);
+
+		char explanationLine2[] = "됩니다. 당신은 공중을 별 어려움 없이 떠다닐 수 있으며";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine3[] = "함정과 구덩이를 넘어다닐 수 있습니다.물약을 던지면 정";
+		PrintFont(explanationLine3, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
+
+		char explanationLine4[] = "제 되지 않은 가스르 내뿜어 가스를 들이마신 대상의 방향";
+		PrintFont(explanationLine4, namehFont, nameoldFont, 220, 320, 15, 255, 255, 255);
+
+		char explanationLine5[] = "감각을 상실시킵니다.";
+		PrintFont(explanationLine5, namehFont, nameoldFont, 220, 340, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_FROZEN)
+	{
+		char name[] = "서리의 물약";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "이 화합물은 공기에 닿는 즉시 차가운 구름으로 기화합니";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "다.";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_LIQUID_FIRE)
+	{
+		char name[] = "액체 화염 물약";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "이 물병은 불안정한 화합물로 가득 차 있어 공기와 닿으면";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "급격한 폭발을 일으키며 주변을 불로 덮습니다.";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_SEED_HEAL)
+	{
+		char name[] = "치유";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_SEED_FIRE)
+	{
+		char name[] = "화염초의 씨앗";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "이 씨앗을 원하는 곳에다 던져 식물을 자라게 할 수 있습니";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "다. 무언가가 화염초를 건드리게 되면 폭발하여 주변을 불";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
+
+		char explanationLine3[] = "꽃으로 뒤덮습니다.";
+		PrintFont(explanationLine3, namehFont, nameoldFont, 220, 320, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_SEED_SNAKE)
+	{
+		char name[] = "뱀뿌리의 씨앗";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "이 씨앗을 원하는 곳에다 던져 식물을 자라게 할 수 있습니다.";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "생물체가 뱀뿌리를 건드리면, 그 뿌리는 생물체를 자연의 갑";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
+
+		char explanationLine3[] = "옷으로 감싸 움직일 수 없게 만듭니다.";
+		PrintFont(explanationLine3, namehFont, nameoldFont, 220, 320, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_SEED_FROST)
+	{
+		char name[] = "눈꽃송이의 씨앗";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "이 씨앗을 원하는 곳에다 던져 식물을 자라게 할 수 있습니다.";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "얼음 송이를 건드리면 주변에 차가운 포자를 흩뿌립니다.";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
+
+		char explanationLine3[] = "포자의 냉동 효과는 주변 환경이 습할 때 더 강력해집니다.";
+		PrintFont(explanationLine3, namehFont, nameoldFont, 220, 320, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_DEW)
+	{
+		char name[] = "이슬";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_MONEY)
+	{
+		char name[] = "돈";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_KEY_IRON)
+	{
+		char name[] = "쇠 열쇠";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_KEY_SILVER)
+	{
+		char name[] = "은 열쇠";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+	}
+
+	if (itemName == NAME_KEY_GOLD)
+	{
+		char name[] = "금 열쇠";
+		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
+
+		char explanation[] = "";
+		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
 	}
 }
 
@@ -1009,3 +1590,14 @@ void UI::TestFunctin()
 	DeleteObject(hFont);
 }
 */
+
+void UI::PrintFont(char name[], HFONT hFont, HFONT oldFont, int x, int y, int size, char r, char g, char b)
+{
+	namehFont = CreateFont(size, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("굴림"));
+	nameoldFont = (HFONT)SelectObject(getMemDC(), namehFont);
+	SetTextColor(getMemDC(), RGB(r, g, b));
+	TextOut(getMemDC(), x, y, name, strlen(name));
+	SelectObject(getMemDC(), nameoldFont);
+	DeleteObject(namehFont);
+	SetTextColor(getMemDC(), RGB(0, 0, 0));
+}

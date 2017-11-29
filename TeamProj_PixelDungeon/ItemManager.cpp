@@ -32,29 +32,8 @@ HRESULT ItemManager::init()
 		_scrollIdentified[i] = false;
 	}
 	//==================================================
-	setItemToBag(NAME_CLOTH);
-	setItemToBag(NAME_SHORT_SWORD);
-	setItemToBag(NAME_BATTLE_AXE);
-	setItemToBag(NAME_SPEAR);
-	setItemToBag(NAME_SWORD);
-	setItemToBag(NAME_OLD_SHORT_SWORD);
-	setItemToBag(NAME_LEATHER);
-	setItemToBag(NAME_MAIL);
 
-	setItemToBag(NAME_UNKNOWN_MEAT);
-	setItemToBag(NAME_BOTTLE);
-	setItemToBag(NAME_HEAL);
-	setItemToBag(NAME_COOKED_MEAT);
-	setItemToBag(NAME_MAP);
-	setItemToBag(NAME_IDENTIFY);
-	setItemToBag(NAME_PASTY);
 	setItemToBag(NAME_EMERGENCY);
-	setItemToBag(NAME_PURIFY);
-	setItemToBag(NAME_DEW);
-	setItemToBag(NAME_UPGRADE);
-
-	//================ F U N C T I O N =================
-
 	return S_OK;
 }
 void ItemManager::release()
