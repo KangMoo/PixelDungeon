@@ -49,6 +49,7 @@ void Player::release()
 }
 void Player::update()
 {
+
 	frameUpdate();
 	
 	//시야처리
