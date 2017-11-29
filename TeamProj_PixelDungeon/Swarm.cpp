@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Swarm.h"
 #include "Player.h"
+#include "EnemyManager.h"
 #include "UI.h"
 #include "Map.h"
 
@@ -44,12 +45,13 @@ HRESULT Swarm::init(POINT point)
 
 	_action = false;
 	_isMove = false;
+	_active = false;
 
 	_statistics.lv = 1;
 	_statistics.maxLv = 10;
 	_statistics.exp = 1;
-	_statistics.hp = 80;
-	_currntHp = 80;
+	_statistics.hp = 12;
+	_currntHp = 12;
 	_statistics.avd_lck = 5;
 	_statistics.def = 0;
 	a = RND->getFromIntTo(1, 4);
@@ -59,6 +61,7 @@ HRESULT Swarm::init(POINT point)
 	a = RND->getInt(2);
 	if (a == 0) _myState = ENEMYSTATE_SLEEP;
 	else _myState = ENEMYSTATE_IDLE;
+	_myState = ENEMYSTATE_IDLE;
 
 	_movePoint = PointMake(0, 0);
 	_frameCount = 0;
@@ -78,6 +81,7 @@ HRESULT Swarm::init(POINT point, int currntHp)
 	//분열했다!
 	_point = point;
 
+	_active = false;
 	_move = new image;
 	_move->init("Img\\Enemy\\swarm_stay.bmp", 264, 56, 11, 2, true, RGB(255, 0, 255));
 	_dead = new image;
@@ -138,12 +142,21 @@ HRESULT Swarm::init(POINT point, int currntHp)
 
 void Swarm::action()
 {
+	if (!_active)
+	{
+		if (_map->getTile(_point.x, _point. y).tileview != TILEVIEW_NO)
+		{
+			_active = true;
+		}
+		_action = false;
+		return;
+	}
 
 	if (_myState == ENEMYSTATE_SLEEP)
 	{
-		float dis = getDistance(_player->getPoint().x, _player->getPoint().y, _point.x, _point.y);
+		float dis = getDistance(_player->getPoint().x / TILESIZE, _player->getPoint().y / TILESIZE, _point.x, _point.y);
 
-		if (dis < 2)
+		if (dis < 4)
 		{
 			_myState = ENEMYSTATE_IDLE;
 			_findPlayer = true;
@@ -158,9 +171,13 @@ void Swarm::action()
 		{
 			//적을 발견하지 않았으면 랜덤행동
 
-			float dis = getDistance(_player->getPoint().x, _player->getPoint().y, _point.x, _point.y);
+			float dis = getDistance(_player->getPoint().x / TILESIZE, _player->getPoint().y / TILESIZE, _point.x, _point.y);
 
-			if (dis < 2)
+			if (false)
+			{
+			
+			}
+			if (dis < 4)
 			{
 				//거리가 일정 범위 이내로 적이 들어왔으면 인식
 				//인식한 턴은 그냥 자동으로 넘겨줌
@@ -176,14 +193,16 @@ void Swarm::action()
 					//0부터 시계방향으로, 8은 대기
 					//해당 방향의 타일을 검사한 후에, 갈 수 있다면 그쪽으로 이동
 					int a = RND->getInt(50);
+					_movePoint = _point;
 					_myState = ENEMYSTATE_MOVE;
 					switch (a)
 					{
 					case 0:
-						//위
+						//위 (ATTRIBUTE_UNGO & _map[v.x - 1][v.y].terrain) == ATTRIBUTE_UNGO
 						if (_map->getMap(_point.x, _point.y - 1).obj == OBJ_NONE &&
 							(_map->getMap(_point.x, _point.y - 1).terrain == TERRAIN_FLOOR ||
 								_map->getMap(_point.x, _point.y - 1).terrain == TERRAIN_GRASS))
+						//if((ATTRIBUTE_UNGO & _map->getMap(_point.x, _point.y - 1).terrain) == ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x, _point.y - 1);
@@ -195,6 +214,7 @@ void Swarm::action()
 						if (_map->getMap(_point.x + 1, _point.y - 1).obj == OBJ_NONE &&
 							(_map->getMap(_point.x + 1, _point.y - 1).terrain == TERRAIN_FLOOR ||
 								_map->getMap(_point.x + 1, _point.y - 1).terrain == TERRAIN_GRASS))
+						//if ((ATTRIBUTE_UNGO & _map->getMap(_point.x + 1, _point.y - 1).terrain) == ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x + 1, _point.y - 1);
@@ -206,6 +226,7 @@ void Swarm::action()
 						if (_map->getMap(_point.x + 1, _point.y).obj == OBJ_NONE &&
 							(_map->getMap(_point.x + 1, _point.y).terrain == TERRAIN_FLOOR ||
 								_map->getMap(_point.x + 1, _point.y).terrain == TERRAIN_GRASS))
+						//if ((ATTRIBUTE_UNGO & _map->getMap(_point.x + 1, _point.y).terrain) == ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x + 1, _point.y);
@@ -217,6 +238,7 @@ void Swarm::action()
 						if (_map->getMap(_point.x + 1, _point.y + 1).obj == OBJ_NONE &&
 							(_map->getMap(_point.x + 1, _point.y + 1).terrain == TERRAIN_FLOOR ||
 								_map->getMap(_point.x + 1, _point.y + 1).terrain == TERRAIN_GRASS))
+						//if ((ATTRIBUTE_UNGO & _map->getMap(_point.x + 1, _point.y + 1).terrain) == ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x + 1, _point.y + 1);
@@ -228,6 +250,7 @@ void Swarm::action()
 						if (_map->getMap(_point.x, _point.y + 1).obj == OBJ_NONE &&
 							(_map->getMap(_point.x, _point.y + 1).terrain == TERRAIN_FLOOR ||
 								_map->getMap(_point.x, _point.y + 1).terrain == TERRAIN_GRASS))
+						//if ((ATTRIBUTE_UNGO & _map->getMap(_point.x, _point.y + 1).terrain) == ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x, _point.y + 1);
@@ -239,6 +262,7 @@ void Swarm::action()
 						if (_map->getMap(_point.x - 1, _point.y + 1).obj == OBJ_NONE &&
 							(_map->getMap(_point.x - 1, _point.y + 1).terrain == TERRAIN_FLOOR ||
 								_map->getMap(_point.x - 1, _point.y + 1).terrain == TERRAIN_GRASS))
+						//if ((ATTRIBUTE_UNGO & _map->getMap(_point.x - 1, _point.y + 1).terrain) == ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x - 1, _point.y + 1);
@@ -250,6 +274,7 @@ void Swarm::action()
 						if (_map->getMap(_point.x - 1, _point.y).obj == OBJ_NONE &&
 							(_map->getMap(_point.x - 1, _point.y).terrain == TERRAIN_FLOOR ||
 								_map->getMap(_point.x - 1, _point.y).terrain == TERRAIN_GRASS))
+						//if ((ATTRIBUTE_UNGO & _map->getMap(_point.x - 1, _point.y).terrain) == ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x - 1, _point.y);
@@ -261,6 +286,7 @@ void Swarm::action()
 						if (_map->getMap(_point.x - 1, _point.y - 1).obj == OBJ_NONE &&
 							(_map->getMap(_point.x - 1, _point.y - 1).terrain == TERRAIN_FLOOR ||
 								_map->getMap(_point.x - 1, _point.y - 1).terrain == TERRAIN_GRASS))
+						//if ((ATTRIBUTE_UNGO & _map->getMap(_point.x - 1, _point.y - 1).terrain) == ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x - 1, _point.y - 1);
@@ -279,20 +305,21 @@ void Swarm::action()
 		{
 			//적을 발견했으면 A*를 이용해 최적루트로 이동한다
 			//바로 옆칸이면 공격 가능하다
-			int x = abs(_point.x - _player->getPoint().x);
-			int y = abs(_point.y - _player->getPoint().y);
+			int x = abs(_point.x - _player->getPoint().x / TILESIZE);
+			int y = abs(_point.y - _player->getPoint().y / TILESIZE);
 			//둘의 x, y값 차이의 절대값이 각각 1 이하인 경우 공격 가능
 			if (x <= 1 && y <= 1)
 			{
 				_myState = ENEMYSTATE_ATTACK;
+				_currntFrameX = 0;
 				//_player->getDamaged(_statistics.str);
 			}
 			else
 			{
 				//아니라면 astar로 이동한다
-				astarTest = _map->aStar(_point, _player->getPoint());
+				astarTest = _map->aStar(_player->getPoint(), PointMake(_pointX, _pointY));
 				//움직일때 해당 좌표를 4,5 같은 식으로 주면 자동으로 4*TILESIZE + TILESIZE/2, 5*... 해줌
-				_movePoint = PointMake(astarTest[0].destX, astarTest[0].destY);
+				//_movePoint = PointMake(astarTest[astarTest.size() - 1].destX, astarTest[astarTest.size() - 1].destY);
 				_myState = ENEMYSTATE_MOVE;
 			}
 		}
@@ -317,14 +344,20 @@ void Swarm::action()
 		}
 		else
 		{
+			//_point.x += cosf(getAngle(_point.x, _point.y, _movePoint.x, _movePoint.y)) * 3;
+			//_point.y -= sinf(getAngle(_point.x, _point.y, _movePoint.x, _movePoint.y)) * 3;
+			//_action = false;
+			
 			//도달하지 않았으면 이동한다
 			if (_pointX < x)
 			{
 				//현재 좌표가 가려는 좌표의 중심보다 작으면 +
+				_right = true;
 				_pointX += TILESIZE / 8;
 			}
 			else if (_pointX > x)
 			{
+				_right = false;
 				_pointX -= TILESIZE / 8;
 			}
 
@@ -336,7 +369,8 @@ void Swarm::action()
 			{
 				_pointY -= TILESIZE / 8;
 			}
-
+			_action = false;
+			
 		}
 	}
 
@@ -346,7 +380,7 @@ void Swarm::action()
 
 void Swarm::frameUpdate()
 {
-	_frameCount++;
+	//_frameCount++;
 
 	if (_findPlayer)
 	{
@@ -355,8 +389,9 @@ void Swarm::frameUpdate()
 	}
 	if (_right) _currntFrameY = 0;
 	else _currntFrameY = 1;
-
-	if (_frameCount >= 10)
+	
+	if(true)
+	//if (_frameCount >= 10)
 	{
 		_frameCount = 0;
 		switch (_myState)
@@ -375,6 +410,19 @@ void Swarm::frameUpdate()
 			_image->setFrameX(_currntFrameX);
 			_image->setFrameY(_currntFrameY);
 			break;
+		case ENEMYSTATE_ATTACK:
+			//공격시에는 끝나면 턴 넘겨주게
+			_image = _move;
+			_currntFrameX++;
+			if (_currntFrameX > _image->getMaxFrameX())
+			{
+				_currntFrameX = 0;
+				_myState = ENEMYSTATE_IDLE;
+				_action = false;
+			}
+			_image->setFrameX(_currntFrameX);
+			_image->setFrameY(_currntFrameY);
+			break;
 		}
 	}
 
@@ -383,6 +431,10 @@ void Swarm::frameUpdate()
 
 void Swarm::getDamaged(int damage)
 {
+	if (_myState == ENEMYSTATE_SLEEP)
+		_myState = ENEMYSTATE_IDLE;
+	_findPlayer = true;
+
 	int a = RND->getInt(100);
 
 	//0~99 중에 나온 숫자가 회피율보다 낮다면 회피
@@ -400,7 +452,30 @@ void Swarm::getDamaged(int damage)
 			//이걸 어떻게 하지?->ENEMYMANAGER에서 처리하자
 			//ENEMY에 swarm을 구별할 수 있는 무언가를 추가해주고 나머진 false, 얘만 true로 해줘서
 			//그게 true면 분열, 아님 냅두게
-			
+
+			int x = 0;
+			int y = 0;
+			if (_player->getPoint().x / TILESIZE > _point.x)
+				x = 1;
+			else if (_player->getPoint().x / TILESIZE == _point.x)
+				x = 0;
+			else
+				x = -1;
+
+			if (_player->getPoint().y / TILESIZE > _point.y)
+				y = 1;
+			else if (_player->getPoint().y / TILESIZE == _point.y)
+				y = 0;
+			else
+				y = -1;
+
+			//if (_map->getMap(_point.x, _point.y - 1).obj == OBJ_NONE &&
+			//	(_map->getMap(_point.x, _point.y - 1).terrain == TERRAIN_FLOOR ||
+			//		_map->getMap(_point.x, _point.y - 1).terrain == TERRAIN_GRASS))
+			if(_map->getMap(_point.x + x, _point.y + y).obj == OBJ_NONE &&
+				(_map->getMap(_point.x + x, _point.y + y).terrain == TERRAIN_FLOOR ||
+					_map->getMap(_point.x + x, _point.y + y).terrain == TERRAIN_GRASS))
+				_em->setSwarm(PointMake(_point.x + x, _point.y + y), _currntHp);
 		}
 		else
 		{
@@ -413,8 +488,11 @@ void Swarm::getDamaged(int damage)
 void Swarm::draw(POINT camera)
 {
 	//_hpBar->setGauge(_currntHp, _statistics.hp);
-
-	_image->frameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y);
+	//시야에 보일때만 출력하게
+	if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
+		_image->frameRender(getMemDC(), _hitBox.left, _hitBox.top);
+	RectangleMakeCenter(getMemDC(), _pointX, _pointY, _currntHp, _currntHp);
+	//if(_findPlayer)
 
 	//_hpBar->setX(_point.x - 25 + camera.x);
 	//_hpBar->setY(_pointY + _image->getFrameHeight() / 2 + 10 + camera.y);

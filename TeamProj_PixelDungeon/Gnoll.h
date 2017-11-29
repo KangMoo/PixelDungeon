@@ -4,8 +4,6 @@ class Gnoll :
 	public Enemy
 {
 private:
-	//progressBar* _hpBar;
-
 	image* _stay;
 	image* _move;
 	image* _attack;

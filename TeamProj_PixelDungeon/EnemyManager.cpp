@@ -17,6 +17,10 @@ HRESULT EnemyManager::init()
 {
 	_enemyTurn = false;
 	_actionCount = 0;
+
+	setEnemy(PointMake(12, 12), 2);
+	//setEnemy(PointMake(13, 13), 2);
+
 	return S_OK;
 }
 
@@ -51,14 +55,14 @@ void EnemyManager::update()
 void EnemyManager::action()
 {
 
-	if (_actionCount = 0)
+	if (_actionCount == 0)
 	{
 		//첫번째 몬스터에게 턴 넘김
 		_vEnemy[_actionCount]->setAction(true);
 		//다음차례 몬스터 번호 저장
 		_actionCount++;
 	}
-	else if (_vEnemy[_actionCount - 1]->getAction() == false)	//전 차례의 몬스터 행동이 끝났으면
+	else if (_vEnemy[_actionCount - 1]->getAction() == false && _actionCount < _vEnemy.size())	//전 차례의 몬스터 행동이 끝났으면
 	{
 		//다음차례 몬스터에게 턴 넘김
 		_vEnemy[_actionCount]->setAction(true);
@@ -78,6 +82,7 @@ void EnemyManager::action()
 	{
 		//몬스터 차례 false 대입
 		_enemyTurn = false;
+		_actionCount = 0;
 		//플레이어 차례 true 대입
 		_player->setTurn(true);
 	}
@@ -105,27 +110,69 @@ void EnemyManager::setEnemy(POINT point, int type)
 {
 	switch (type)
 	{
-	case 0:
+		case 0:
+		{
 		//쥐, Rat
 
 		break;
-	case 1:
-		//미믹, Mimic
-		break;
-	case 2:
-		//파리, Swarm
-		break;
-	case 3:
-		//놀, Gnoll
-		break;
-	case 4:
-		//
-		break;
-	case 5:
-		//
-		break;
-	default:
-		//
-		break;
+		}
+		case 1:
+		{
+			//미믹, Mimic
+			break;
+		}
+		case 2:
+		{
+			//파리, Swarm
+			Swarm* temp = new Swarm;
+			temp->init(point);
+			temp->setEm(this);
+			temp->setPlayerAddressLink(_player);
+			temp->setItemManagerAddressLink(_im);
+			temp->setUiAddressLink(_ui);
+			temp->setMaAddressLink(_map);
+			_vEnemy.push_back(temp);
+			break;
+		}
+		case 3:
+		{
+			//놀, Gnoll
+			Gnoll* temp = new Gnoll;
+			temp->init(point);
+			temp->setPlayerAddressLink(_player);
+			temp->setItemManagerAddressLink(_im);
+			temp->setUiAddressLink(_ui);
+			temp->setMaAddressLink(_map);
+			_vEnemy.push_back(temp);
+			break;
+		}
+		case 4:
+		{
+			//
+			break;
+		}
+		case 5:
+		{
+			//
+			break;
+		}
+		default:
+		{
+			//
+			break;
+		}
 	}
+}
+
+void EnemyManager::setSwarm(POINT point, int hp)
+{
+	//파리, Swarm
+	Swarm* temp = new Swarm;
+	temp->init(point, hp);
+	temp->setEm(this);
+	temp->setPlayerAddressLink(_player);
+	temp->setItemManagerAddressLink(_im);
+	temp->setUiAddressLink(_ui);
+	temp->setMaAddressLink(_map);
+	_vEnemy.push_back(temp);
 }
