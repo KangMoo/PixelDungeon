@@ -21,6 +21,14 @@ HRESULT Player::init(POINT point)
 	//test~
 	_playerPoint = PointMake(_map->getTile(7, 7).destX*TILESIZE + TILESIZE / 2, _map->getTile(7, 7).destY*TILESIZE + TILESIZE / 2);
 
+	_playerStat.atk_lck = 0;
+	_playerStat.avd_lck = 0;
+	_playerStat.def = 0;
+	_playerStat.exp = 0;
+	_playerStat.hp = 0;
+	_playerStat.hunger = 0;
+	_playerStat.lv = 0;
+	_playerStat.str = 0;
 
 
 
@@ -29,6 +37,10 @@ HRESULT Player::init(POINT point)
 	_frameUpdateTimer = TIMEMANAGER->getWorldTime();
 	_currentFrameX = _currentFrameY = 0;
 	_image = IMAGEMANAGER->findImage("warrior_Idle");
+	_frameTimer = TIMEMANAGER->getWorldTime();
+	_keepMove = false;
+	_isUsingUI = false;
+	_isEnemyTargeted = false;
 	return S_OK;
 }
 void Player::release()
@@ -37,61 +49,37 @@ void Player::release()
 }
 void Player::update()
 {
-
 	frameUpdate();
-	fovCheck();
-	if (_action) action();
-
-	//test~
-	if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON))
-	{
-		astarTest = _map->aStar(_playerPoint, _ptMouse);
-		int a = 0;
-	}
-	//~test
-}
-
-
-void Player::action()
-{
-
-	//무슨행동인지 판별
-	switch (_playerState)
-	{
-	case PLAYERSTATE_IDLE:
-		//마우스 클릭에 따른 액션 변경
-		break;
-	case PLAYERSTATE_MOVE:
-		//행동에 따른 이미지 변경
-		//행동
-		break;
-	case PLAYERSTATE_ATTACK:
-		//행동에 따른 이미지 변경
-		//행동
-		break;
-	case PLAYERSTATE_EAT:
-		//행동에 따른 이미지 변경
-		//행동
-		break;
-	case PLAYERSTATE_SCROLL:
-		//행동에 따른 이미지 변경
-		//행동
-		break;
-	case PLAYERSTATE_DEAD:
-		break;
-	}
-	//행동 종료 후 action값 false로 바꿔주기
-
-	//행동이 종료됐다면 적에게 턴 넘기기
-	if (!_action)
-	{
-		_em->setTurn(true);
-	}
 	
+	//시야처리
+	fovCheck();
+
+
+	//자기 차례가 아니면 이하 실행X
+	if (!_action) return;
+
+	//keepMove는?? -> 아직 갈 길이 있는지 여부 (A*에 길이 남아있는지 여부)
+	if (astar.size() > 0)
+	{
+		_keepMove = true;
+	}
+	else
+	{
+		_keepMove = false;
+	}
+
+	//가야할 길이 있다면~?
+	if (_keepMove == true && !_isUsingUI)
+	{
+		move();
+	}
+
+	//마우스 클릭 이벤트 처리
+	if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON) && !_isUsingUI)
+	{
+		mouseClickEvent();
+	}
 }
-
-
-
 //그릴 때	x좌표에 camera.x 만큼
 //			y좌표에 camera.y 만큼 더해주기!!!!
 void Player::render(POINT camera)
@@ -111,14 +99,19 @@ void Player::draw(POINT camera)
 	//}
 	//RectangleMakeCenter(getMemDC(), _playerPoint.x, _playerPoint.y, 7, 7);
 
+	char str[] = "폰트테스트";
+	HFONT hFont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("궁서"));
+	HFONT oldFont = (HFONT)SelectObject(getMemDC(), hFont);
+	//TextOut(getMemDC(), 300, 300, str, strlen(str));
+	SelectObject(getMemDC(), oldFont);
+	DeleteObject(hFont);
 
 	//~test
-
 	_image->alphaFrameRender(getMemDC(), _playerPoint.x - _image->getFrameWidth() / 2, _playerPoint.y - _image->getFrameHeight() / 2, _currentFrameX, _currentFrameY, 0);
-
-	for (auto i : astarTest)
+	//IMAGEMANAGER->render("blactkTile", getMemDC(), 50, 50, 0, 0, 100, 100);
+	for (auto i : astar)
 	{
-		RectangleMakeCenter(getMemDC(), i.destX*TILESIZE + TILESIZE/2, i.destY*TILESIZE + TILESIZE / 2, 5, 5);
+		RectangleMakeCenter(getMemDC(), i.destX*TILESIZE + TILESIZE / 2, i.destY*TILESIZE + TILESIZE / 2, 5, 5);
 	}
 }
 
@@ -164,7 +157,7 @@ void Player::addCanTSeeAngle(float sangle, float eangle)
 
 void Player::addCanTSeeAngleByRect(RECT rc)
 {
-	POINT rcpoint = PointMake(rc.left + TILESIZE/2, rc.top + TILESIZE/2);
+	POINT rcpoint = PointMake(rc.left + TILESIZE / 2, rc.top + TILESIZE / 2);
 	//동일 y축 위
 	if (_playerPoint.x == rcpoint.x)
 	{
@@ -223,18 +216,42 @@ void Player::addCanTSeeAngleByRect(RECT rc)
 
 void Player::frameUpdate()
 {
-	if (_currentFrameX < _image->getMaxFrameX())
+	if (_playerState == PLAYERSTATE_IDLE && TIMEMANAGER->getWorldTime() - _frameTimer > 1.5)
 	{
-		_currentFrameX++;
-	}
-	else
-	{
-		_currentFrameX = 0;
-		if (_playerState != PLAYERSTATE_IDLE)
+		_frameTimer = TIMEMANAGER->getWorldTime();
+		if (_currentFrameX < _image->getMaxFrameX())
 		{
-			_playerState = PLAYERSTATE_IDLE;
+			_currentFrameX++;
+		}
+		else
+		{
+			_currentFrameX = 0;
+			if (_playerState != PLAYERSTATE_IDLE)
+			{
+				_playerState = PLAYERSTATE_IDLE;
+				_image = IMAGEMANAGER->findImage("warrior_Idle");
+			}
 		}
 	}
+
+	else if (_playerState != PLAYERSTATE_IDLE && TIMEMANAGER->getWorldTime() - _frameTimer > 0.1)
+	{
+		_frameTimer = TIMEMANAGER->getWorldTime();
+		if (_currentFrameX < _image->getMaxFrameX())
+		{
+			_currentFrameX++;
+		}
+		else
+		{
+			_currentFrameX = 0;
+			if (_playerState != PLAYERSTATE_IDLE)
+			{
+				_playerState = PLAYERSTATE_IDLE;
+				_image = IMAGEMANAGER->findImage("warrior_Idle");
+			}
+		}
+	}
+
 }
 
 void Player::imageChange(const char* str)
@@ -248,6 +265,7 @@ void Player::fovCheck()
 	//FOV테스트~
 	tileCanSee.clear();
 	angleCanTSee.clear();
+
 
 	for (int i = 0; i < 100; i++)
 	{
@@ -291,8 +309,8 @@ void Player::fovCheck()
 						//허용 각도 수치
 						int limit = 10;
 						//살짝 보이는정도면 보인다고 쳐주자
-						if (k.sangle - PI/180 * limit <= getAngle(_playerPoint.x, _playerPoint.y, i*TILESIZE + TILESIZE / 2, j*TILESIZE + TILESIZE / 2) &&
-							getAngle(_playerPoint.x, _playerPoint.y, i*TILESIZE + TILESIZE / 2, j*TILESIZE + TILESIZE / 2) <= k.sangle + PI / 180 * limit && 
+						if (k.sangle - PI / 180 * limit <= getAngle(_playerPoint.x, _playerPoint.y, i*TILESIZE + TILESIZE / 2, j*TILESIZE + TILESIZE / 2) &&
+							getAngle(_playerPoint.x, _playerPoint.y, i*TILESIZE + TILESIZE / 2, j*TILESIZE + TILESIZE / 2) <= k.sangle + PI / 180 * limit &&
 							j != _playerPoint.y / TILESIZE)
 						{
 
@@ -307,17 +325,17 @@ void Player::fovCheck()
 						{
 							tileCanSeeChk = false;
 						}
-						
+
 					}
 				}
-				
+
 				//볼 수 있는 타일일 경우
 				if (tileCanSeeChk && i >= 0 && j >= 0)
 				{
 					//볼 수 있는 타일벡터에 push
 					tileCanSee.push_back(_map->getTile(i, j));
 					//장애물이 있을 경우
-					if (_map->getTile(i, j).terrain == TERRAIN_WALL)
+					if ((_map->getTile(i, j).terrain & ATTRIBUTE_UNSIGHT) == ATTRIBUTE_UNSIGHT)
 					{
 						//보지 못하는 각도 추가
 						addCanTSeeAngleByRect(RectMake(i * TILESIZE, j * TILESIZE, TILESIZE, TILESIZE));
@@ -364,5 +382,171 @@ void Player::addImg()
 	IMAGEMANAGER->addFrameImage("warrior_Attack", "Img//Player//warrior_attack.bmp", 72, 210, 3, 7, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("warrior_Scroll", "Img//Player//warrior_scroll.bmp", 72, 210, 3, 7, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("warrior_Move", "Img//Player//warrior_move.bmp", 144, 210, 6, 7, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addImage("blackTile", "Img//Player//blacktile.bmp", TILESIZE, TILESIZE, true, RGB(255, 0, 255));
+}
+
+void Player::addDebuff(DEBUFF debuffType, int lefttime, int damage)
+{
+	tagDebuff temp;
+	temp.type = debuffType;
+	temp.lefttime = lefttime;
+	temp.damage = damage;
+	_vdebuff.push_back(temp);
+}
+
+void Player::action_Move(POINT point)
+{
+	_playerState = PLAYERSTATE_MOVE;
+	_image = IMAGEMANAGER->findImage("warrior_Move");
+
+	astar = _map->aStar(_playerPoint, point);
+	_goalTile = _map->getTile(_ptMouse.x / TILESIZE, _ptMouse.y / TILESIZE);
+}
+void Player::action_Attack()
+{
+	_playerState = PLAYERSTATE_ATTACK;
+	_image = IMAGEMANAGER->findImage("warrior_Attack");
+	_currentFrameX = 0;
+
+	//목표 몬스터 공격
+	if (_isEnemyTargeted)
+	{
+		_TargetEnemy->setHP(_TargetEnemy->getHP() - _playerStat.str);
+	}
+}
+void Player::action_Scroll()
+{
+	_playerState = PLAYERSTATE_SCROLL;
+	_image = IMAGEMANAGER->findImage("warrior_Scroll");
+}
+void Player::action_Eat()
+{
+	_playerState = PLAYERSTATE_EAT;
+	_image = IMAGEMANAGER->findImage("warrior_Eat");
+}
+
+void Player::move()
+{
+	_playerState = PLAYERSTATE_MOVE;
+	_image = IMAGEMANAGER->findImage("warrior_Move");
+
+	_playerPoint.x += cosf(getAngle(_playerPoint.x, _playerPoint.y, astar[astar.size() - 1].destX * TILESIZE + TILESIZE / 2, astar[astar.size() - 1].destY*TILESIZE + TILESIZE / 2)) * 3;
+	_playerPoint.y -= sinf(getAngle(_playerPoint.x, _playerPoint.y, astar[astar.size() - 1].destX * TILESIZE + TILESIZE / 2, astar[astar.size() - 1].destY*TILESIZE + TILESIZE / 2)) * 3;
+
+	//목표에 도달하면 (타일 한칸 이동 완료하면)
+	if (getDistance(_playerPoint.x, _playerPoint.y, astar[astar.size() - 1].destX * TILESIZE + TILESIZE / 2, astar[astar.size() - 1].destY*TILESIZE + TILESIZE / 2) <= 3)
+	{
+		//플레이어 위치 조정
+		_playerPoint.x = astar[astar.size() - 1].destX*TILESIZE + TILESIZE / 2;
+		_playerPoint.y = astar[astar.size() - 1].destY*TILESIZE + TILESIZE / 2;
+
+		//목표지점 수정
+		astar.erase(astar.begin() + astar.size() - 1);
+
+		//몬스터를 추격중이라면 길 재설정
+		if (_isEnemyTargeted)
+		{
+			//목표까지 길 재설정
+			astar = _map->aStar(_playerPoint, PointMake(_TargetEnemy->getPoint().x / TILESIZE, _TargetEnemy->getPoint().y / TILESIZE));
+
+			//길이 있는지 여부 판단
+			if (astar.size() > 0)
+			{
+				//현재 위치는 뺌
+				astar.erase(astar.begin() + astar.size() - 1);
+			}
+			//길이 있는지 여부 판단
+			if (astar.size() > 0)
+			{
+				//몬스터의 타일 빼줌
+				astar.pop_back();
+			}
+			//타일 두개를 빼고 아직 길이 없다면 (몬스터 바로 앞이라면)
+			if (astar.size() <= 0)
+			{
+				action_Attack();
+			}
+		}
+	}
+	//턴 넘기기
+	endTurn();
+}
+
+void Player::mouseClickEvent()
+{
+	for (auto i : _em->getEnemyVector())
+	{
+		//몬스터를 클릭했다면?
+		if (_ptMouse.x / TILESIZE == i->getPoint().x / TILESIZE && _ptMouse.y / TILESIZE == i->getPoint().y / TILESIZE)
+		{
+			//목표 저장
+			_isEnemyTargeted = true;
+			_TargetEnemy = i;
+			//길이 있는지 여부 판단
+			if (astar.size() > 0)
+			{
+				//현재 위치는 뺌
+				astar.erase(astar.begin() + astar.size() - 1);
+			}
+		}
+	}
+
+	//몬스터 말고 땅을 클릭했다면?
+	if (_map->getTile(_ptMouse.x / TILESIZE, _ptMouse.y / TILESIZE).terrain != TERRAIN_NULL && !_isEnemyTargeted)
+	{
+		//이동경로 저장
+		astar = _map->aStar(_playerPoint, _ptMouse);
+		//길이 있는지 여부 판단
+		if (astar.size() > 0)
+		{
+			//현재 위치는 뺌
+			astar.erase(astar.begin() + astar.size() - 1);
+		}
+	}
+}
+
+void Player::endTurn()
+{
+	//턴 종료시 발생하는 효과 추가
+	effectDebuff();
+	effectBuff();
+	_playerStat.hunger--;
+	//턴 종료
+	_action = false;
+	//적 차례
+	_em->setTurn(true);
+}
+
+void Player::effectDebuff()
+{
+	for (auto i : _vdebuff)
+	{
+		switch (i.type)
+		{
+		case DEBUFF_BLEEDING:
+			break;
+		case DEBUFF_FIRE:
+			break;
+		case DEBUFF_FROZEN:
+			break;
+		case DEBUFF_HUNGER:
+			break;
+		}
+	}
+}
+void Player::effectBuff()
+{
+	for (auto i : _vbuff)
+	{
+		switch (i.type)
+		{
+		case BUFF_INVISIBLE:
+			break;
+		case BUFF_LEVITATION:
+			break;
+		case BUFF_NATURAL_ARMOR:
+			break;
+		case BUFF_NATURAL_HEAL:
+			break;
+		}
+	}
 }

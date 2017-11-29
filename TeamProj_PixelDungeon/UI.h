@@ -17,6 +17,7 @@ private:
 	ItemManager* _im;
 
 	POINT _camera;		//camera가 화면의 중심이 됨
+	bool _isPlayerMoving;
 
 public:
 	HRESULT init();
@@ -45,6 +46,13 @@ public:
 	~UI();
 
 private:
+	float _interface_button_timer1;
+	float _interface_button_timer2;
+	float _interface_button_timer3;
+
+	float timer = 0;
+
+	bool testbool = false;
 
 	RECT _backPackRect;
 	RECT _SearchOptionRect;

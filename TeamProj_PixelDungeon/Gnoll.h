@@ -4,7 +4,6 @@ class Gnoll :
 	public Enemy
 {
 private:
-
 	image* _stay;
 	image* _move;
 	image* _attack;
@@ -14,6 +13,7 @@ private:
 	POINT _movePoint;
 
 	int _frameCount;
+	vector<TILE> astarTest;
 
 public:
 	HRESULT init(POINT point); //초기 생성

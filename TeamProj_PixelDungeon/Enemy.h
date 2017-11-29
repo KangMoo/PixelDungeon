@@ -25,6 +25,7 @@ protected:
 	bool _isLive;			//생존여부
 	bool _right;			//오른쪽을 바라보고 있는지 여부
 	bool _findPlayer;
+	bool _active;
 
 	int _currntFrameX, _currntFrameY;	//프레임
 	int _pointX, _pointY;				//혹시 몰라 만들어두었습니다.....
@@ -70,6 +71,7 @@ public:
 	void setPlayerAddressLink(Player* player)				{ _player = player; }
 	void setUiAddressLink(UI* ui)							{ _ui = ui; }
 	void setItemManagerAddressLink(ItemManager* itemManager) { _im = itemManager; }
+	void setMaAddressLink(Map* map)							{ _map = map; }
 
 	Enemy();
 	~Enemy();

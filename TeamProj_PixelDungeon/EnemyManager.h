@@ -2,6 +2,8 @@
 #include "gameNode.h"
 #include "Enemy.h"
 #include "Boss.h"
+#include "Gnoll.h"
+#include "Swarm.h"
 
 class Player;
 class Map;
@@ -40,6 +42,9 @@ public:
 	void setMapAddressLink(Map* map) { _map = map; }
 	void setUiAddressLink(UI* ui) { _ui = ui; }
 	void setItemManagerAddressLink(ItemManager* im) { _im = im; }
+
+	void setEnemy(POINT point, int type);		//enemy 제작
+	void setSwarm(POINT point, int hp);			//파리 전용
 
 	EnemyManager();
 	~EnemyManager();

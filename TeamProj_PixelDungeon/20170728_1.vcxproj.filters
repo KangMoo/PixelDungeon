@@ -338,6 +338,9 @@
     <ClCompile Include="Gnoll.cpp">
       <Filter>MainGame\Enemy\Enemy</Filter>
     </ClCompile>
+    <ClCompile Include="MapToolScene+input.cpp">
+      <Filter>MainGame\Scene</Filter>
+    </ClCompile>
     <ClCompile Include="mimic.cpp">
       <Filter>MainGame\Enemy\Enemy</Filter>
     </ClCompile>

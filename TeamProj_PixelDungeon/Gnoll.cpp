@@ -20,12 +20,13 @@ HRESULT Gnoll::init(POINT point)
 
 	//각 이미지 개별할당(MANAGER는 다 똑같아져버림)
 	_stay = new image;
-	_stay->init("Img\\Enemy\\gnoll_stay.bmp", 44, 60, 2, 2, true, RGB(255, 0, 255));
+	_stay->init("Img//Enemy//gnoll_stay.bmp", 44, 60, 2, 2, true, RGB(255, 0, 255));
 	_move = new image;
-	_move->init("Img\\Enemy\\gnoll_move.bmp", 88, 60, 4, 2, true, RGB(255, 0, 255));
-	_attack->init("Img\\Enemy\\gnoll_attack.bmp", 48, 60, 2, 2, true, RGB(255, 0, 255));
+	_move->init("Img//Enemy//gnoll_move.bmp", 88, 60, 4, 2, true, RGB(255, 0, 255));
+	_attack = new image;
+	_attack->init("Img//Enemy//gnoll_attack.bmp", 48, 60, 2, 2, true, RGB(255, 0, 255));
 	_dead = new image;
-	_dead->init("Img\\Enemy\\gnoll_dead.bmp", 84, 52, 3, 2, true, RGB(255, 0, 255));
+	_dead->init("Img//Enemy//gnoll_dead.bmp", 84, 52, 3, 2, true, RGB(255, 0, 255));
 
 	//초기 설정은 stay
 	_image = _stay;
@@ -88,6 +89,9 @@ HRESULT Gnoll::init(POINT point)
 	ENEMYSTATE_ATTACK,
 	ENEMYSTATE_END*/
 
+	//_hpBar = new progressBar;
+	//_hpBar->init(_pointX - 25, _pointY + _image->getFrameHeight() / 2 + 10, 30, 10);
+
 	return S_OK;
 }
 
@@ -112,18 +116,43 @@ void Gnoll::release()
 
 void Gnoll::getDamaged(int damage)
 {
-	_currntHp -= damage;
+	if (_myState == ENEMYSTATE_SLEEP)
+		_myState = ENEMYSTATE_IDLE;
+	_findPlayer = true;
+
+	int a = RND->getInt(100);
+
+	if (a < _statistics.avd_lck)
+	{
+		return;
+	}
+	else
+	{
+		_currntHp -= damage;
+		if (_currntHp <= 0)
+		{
+			_isLive = false;
+		}
+	}
 }
 
 void Gnoll::draw(POINT camera)
 {
-	_image->frameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y);
+	//_hpBar->setGauge(_currntHp, _statistics.hp);
+
+	if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
+		_image->frameRender(getMemDC(), _hitBox.left, _hitBox.top);
+
+	//_hpBar->setX(_point.x - 25 + camera.x);
+	//_hpBar->setY(_pointY + _image->getFrameHeight() / 2 + 10 + camera.y);
+	//if (_currntHp < _statistics.hp)
+	//	_hpBar->render();
 }
 
 
 void Gnoll::frameUpdate()
 {
-	_frameCount++;
+	//_frameCount++;
 
 	if (_findPlayer)
 	{
@@ -132,8 +161,9 @@ void Gnoll::frameUpdate()
 	}
 	if (_right) _currntFrameY = 0;
 	else _currntFrameY = 1;
-
-	if (_frameCount >= 10)
+	
+	if(true)
+	//if (_frameCount >= 3)
 	{
 		_frameCount = 0;
 		switch (_myState)
@@ -178,11 +208,20 @@ void Gnoll::frameUpdate()
 
 void Gnoll::action()
 {
+	if (!_active)
+	{
+		if (_map->getTile(_point.x, _point.y).tileview != TILEVIEW_NO)
+		{
+			_active = true;
+		}
+		_action = false;
+		return;
+	}
 	if (_myState == ENEMYSTATE_SLEEP)
 	{
-		float dis = getDistance(_player->getPoint().x, _player->getPoint().y, _point.x, _point.y);
+		float dis = getDistance(_player->getPoint().x / TILESIZE, _player->getPoint().y / TILESIZE, _point.x, _point.y);
 
-		if (dis < 2)
+		if (dis < 4)
 		{
 			_myState = ENEMYSTATE_IDLE;
 			_findPlayer = true;
@@ -197,9 +236,9 @@ void Gnoll::action()
 		{
 			//적을 발견하지 않았으면 랜덤행동
 
-			float dis = getDistance(_player->getPoint().x, _player->getPoint().y, _point.x, _point.y);
+			float dis = getDistance(_player->getPoint().x / TILESIZE, _player->getPoint().y / TILESIZE, _point.x, _point.y);
 
-			if (dis < 2)
+			if (dis < 4)
 			{
 				//거리가 일정 범위 이내로 적이 들어왔으면 인식
 				//인식한 턴은 그냥 자동으로 넘겨줌
@@ -215,6 +254,7 @@ void Gnoll::action()
 					//0부터 시계방향으로, 8은 대기
 					//해당 방향의 타일을 검사한 후에, 갈 수 있다면 그쪽으로 이동
 					int a = RND->getInt(50);
+					_movePoint = _point;
 					_myState = ENEMYSTATE_MOVE;
 					switch (a)
 					{
@@ -317,7 +357,23 @@ void Gnoll::action()
 		else
 		{
 			//적을 발견했으면 A*를 이용해 최적루트로 이동한다
-			//A* 아직 안됐으니 미룸
+			//바로 옆칸이면 공격 가능하다
+			int x = abs(_point.x - _player->getPoint().x);
+			int y = abs(_point.y - _player->getPoint().y);
+			//둘의 x, y값 차이의 절대값이 각각 1 이하인 경우 공격 가능
+			if (x <= 1 && y <= 1)
+			{
+				_myState = ENEMYSTATE_ATTACK;
+				//_player->getDamaged(_statistics.str);
+			}
+			else
+			{
+				//아니라면 astar로 이동한다
+				astarTest = _map->aStar(_point, _player->getPoint());
+				//움직일때 해당 좌표를 4,5 같은 식으로 주면 자동으로 4*TILESIZE + TILESIZE/2, 5*... 해줌
+				_movePoint = PointMake(astarTest[0].destX , astarTest[0].destY);
+				_myState = ENEMYSTATE_MOVE;
+			}
 		}
 	}
 	else if (_myState == ENEMYSTATE_MOVE)
@@ -328,24 +384,32 @@ void Gnoll::action()
 		float y = _movePoint.y * TILESIZE + TILESIZE / 2;
 
 		//중심좌표에 도달했는지 확인한다
-		if (static_cast<float>(_pointX) == x &&
-			static_cast<float>(_pointY) == y)
+		if ((static_cast<float>(_pointX) >= x-4 && static_cast<float>(_pointX) <= x+4) &&
+			(static_cast<float>(_pointY) >= y - 4 && static_cast<float>(_pointY) <= y+4))
 		{
 			//턴을 종료하고 넘겨준다
+			_pointX = x;
+			_pointY = y;
 			_isMove = false;
 			_myState = ENEMYSTATE_IDLE;
 			_action = false;
 		}
 		else
 		{
+			//_point.x += cosf(getAngle(_point.x, _point.y, _movePoint.x, _movePoint.y)) * 3;
+			//_point.y -= sinf(getAngle(_point.x, _point.y, _movePoint.x, _movePoint.y)) * 3;
+			//_action = false;
+			
 			//도달하지 않았으면 이동한다
 			if (_pointX < x)
 			{
 				//현재 좌표가 가려는 좌표의 중심보다 작으면 +
+				_right = true;
 				_pointX += TILESIZE / 8;
 			}
 			else if (_pointX > x)
 			{
+				_right = false;
 				_pointX -= TILESIZE / 8;
 			}
 
@@ -357,7 +421,7 @@ void Gnoll::action()
 			{
 				_pointY -= TILESIZE / 8;
 			}
-
+			_action = false;
 		}
 	}
 
