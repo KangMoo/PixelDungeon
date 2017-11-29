@@ -27,8 +27,12 @@ private:
 
 	bool start;
 	TILE _map[100][100];
+	int _mapSizeX, _mapSizeY;
 	vector<TILE> _vMapTile;
+	vector<TILE> _vDecoTile;
 
+	vector<GAMEOBJECT> _vObj;
+	vector<GAMEOBJECT>::iterator _viObj;
 
 	TILE _mapTest[10000];
 
@@ -39,6 +43,13 @@ private:
 	vector<vertex> _closelist;
 	//~A*
 
+	vector<string> _imgNameList;
+	vector<image*> _imgList;
+
+	vector<string> _stageDataList;
+	int _curStageNum;
+
+
 	int _tileNum;
 public:
 	HRESULT init();
@@ -48,16 +59,23 @@ public:
 	void render(POINT camera);
 	void draw(POINT camera);
 
-	void load();
+	void imageSetup(void);
+
+	void load(int stageNum);
 
 	TILE getMap(int i, int j) { return _map[i][j]; }
 	TILE getTile(int i, int j) { return _map[i][j]; }
 	void setTile(TILE tile, int i, int j) { _map[i][j] = tile; }
 
 
-	//타일 상태 변화 일으키는 set 모음
+	//상태 변화 일으키는 set 모음
 	void setTile_Flame(int i, int j);
 	void setTile_GrassCut(int i, int j);
+
+	void setObj_OpenChest(int i);
+
+
+
 
 	//A*~
 	vector<TILE> aStar(POINT currentPoint, POINT goalPoint);	//Astar실행함수
@@ -85,6 +103,7 @@ public:
 	Map();
 	~Map();
 
-
-
+	int getCurStageNum() { return _curStageNum; }
+	int getMapSizeX() { return _mapSizeX; }
+	int getMapSizeY() { return _mapSizeY; }
 };

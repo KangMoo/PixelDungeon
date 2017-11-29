@@ -82,8 +82,8 @@ void MapToolScene::release()
 void MapToolScene::imageSetup() {
 	
 	_imgNameList.push_back("mapTiles");
+	_imgNameList.push_back("chest");
 
-	
 	for (int i = 0; i < _imgNameList.size(); i++) {
 		image* image1 = IMAGEMANAGER->findImage(_imgNameList[i]);
 		_imgList.push_back(image1);		
@@ -95,8 +95,8 @@ void MapToolScene::paletteSetup()
 	int index = 0;
 
 	for (auto img : _imgList) {
-		for (int i = 0; i < img->getMaxFrameY(); i++) {
-			for (int j = 0; j < img->getMaxFrameX(); j++) {
+		for (int i = 0; i <= img->getMaxFrameY(); i++) {
+			for (int j = 0; j <= img->getMaxFrameX(); j++) {
 				TILE palTile;
 				ZeroMemory(&palTile, sizeof(TILE));
 				palTile.img = img;
@@ -228,7 +228,7 @@ void MapToolScene::render()
 
 	//test
 	char str[128];
-	sprintf(str, "CAMERA x : %d y : %d    %d %d", _cameraX, _cameraY, _vMapTile.size(), _vMapSelected.size());
+	sprintf(str, "CAMERA x : %d y : %d    %d %d", _cameraX, _cameraY, _vMapTile.size(), _vObj.size());
 	//sprintf(str, "%d %d %d %d %d %d", _selectRangeRect.left, _selectRangeRect.top, _selectRangeRect.right, _selectRangeRect.bottom, _ptMouse.x, _ptMouse.y);
 
 	TextOut(getMemDC(), 10, 10, str, strlen(str));
@@ -246,6 +246,7 @@ void MapToolScene::render()
 
 		_vPaletTile[i].img->frameRender(getMemDC(), destX, destY, _vPaletTile[tileIndex].sourX, _vPaletTile[tileIndex].sourY);
 	}
+
 
 	for (int i = 0; i < _vMapTile.size(); i++) {
 		if (_vMapTile[i].destX - _cameraX < 0 || _vMapTile[i].destY - _cameraY < 0 ||
@@ -302,9 +303,23 @@ void MapToolScene::render()
 		int destY = _mapRect[index].rc.top;
 		
 		int alpha;
-		if (_inputLayer == LAYER_DECO || _inputMode == MODE_VIEWING) alpha = 0; else alpha = 255;
+		if (_inputLayer >= LAYER_DECO || _inputMode == MODE_VIEWING) alpha = 0; else alpha = 255;
 
 		_vDecoTile[i].img->alphaFrameRender(getMemDC(), destX, destY, _vDecoTile[i].sourX, _vDecoTile[i].sourY, alpha);
+	}
+
+	for (int i = 0; i < _vObj.size(); i++) {
+		if (_vObj[i].destX - _cameraX < 0 || _vObj[i].destY - _cameraY < 0 ||
+			_vObj[i].destX - _cameraX >= GRIDX || _vObj[i].destY - _cameraY >= GRIDY) continue;
+		int index = _vObj[i].destX - _cameraX + (_vObj[i].destY - _cameraY) * GRIDX;
+
+		int destX = _mapRect[index].rc.left;
+		int destY = _mapRect[index].rc.top;
+
+		int alpha;
+		if (_inputLayer >= LAYER_OBJ || _inputMode == MODE_VIEWING) alpha = 0; else alpha = 255;
+
+		_vObj[i].img->alphaFrameRender(getMemDC(), destX, destY, _vObj[i].sourX, _vObj[i].sourY, alpha);
 	}
 
 
@@ -393,7 +408,13 @@ void MapToolScene::render()
 	case MODE_STATUE:		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "STATUE",			strlen("STATUE"));			break;
 	case MODE_DOOR:			TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "DOOR",			strlen("DOOR"));			break;
 	case MODE_DOOR_LOCKED:	TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "DOOR_LOCKED",		strlen("DOOR_LOCKED"));		break;
-	case MODE_TRAP:			TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "TRAP",			strlen("TRAP"));			break;
+	
+	case MODE_CHEST:		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "CHEST",			strlen("BARICADE"));		break;
+	case MODE_STAIR_START:	TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "STAIR_START",		strlen("STAIR_START"));		break;
+	case MODE_STAIR_END:	TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "STAIR_END",		strlen("STAIR_END"));		break;
+	case MODE_POT:			TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "POT",				strlen("POT"));				break;
+	case MODE_WELL:			TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "WELL",			strlen("WELL"));			break;
+
 	case MODE_VIEWING:		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "VIEWING_IMAGE",	strlen("VIEWING_IMAGE"));	break;
 	case MODE_VIEWING_TILE:	TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "VIEWING_TILE",	strlen("VIEWING_TILE"));	break;
 	case MODE_DELET:		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "ERASER",			strlen("ERASER"));			break;
@@ -402,6 +423,7 @@ void MapToolScene::render()
 	switch (_inputLayer) {
 	case LAYER_TILE:		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 40, "TILE",			strlen("TILE"));			break;
 	case LAYER_DECO:		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 40, "DECO",			strlen("DECO"));			break;
+	case LAYER_OBJ:			TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 40, "OBJ",				strlen("OBJ"));				break;
 	case LAYER_ITEM:		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 40, "ITEM",			strlen("ITEM"));			break;
 	case LAYER_MONSTER:		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 40, "MONSTER",			strlen("MONSTER"));			break;
 	}
@@ -460,6 +482,21 @@ void MapToolScene::save()
 	pTileElementSize->SetText(_vMapTile.size());
 	pMapElement_Tile->InsertEndChild(pTileElementSize);
 
+
+	int sizeX = 0, sizeY = 0;
+
+	for (int i = 0; i < _vMapTile.size(); i++) {
+		if (_vMapTile[i].destX > sizeX) sizeX = _vMapTile[i].destX;
+		if (_vMapTile[i].destY > sizeY) sizeY = _vMapTile[i].destY;
+	}
+
+	XMLElement * pTileElementSizeX = xmlDoc.NewElement("sizeX");
+	pTileElementSizeX->SetText(sizeX+1);
+	pMapElement_Tile->InsertEndChild(pTileElementSizeX);
+	XMLElement * pTileElementSizeY = xmlDoc.NewElement("sizeY");
+	pTileElementSizeY->SetText(sizeY+1);
+	pMapElement_Tile->InsertEndChild(pTileElementSizeY);
+
 	for (int i = 0; i < _vMapTile.size(); i++) {
 		XMLElement * pListElementT = xmlDoc.NewElement("tile");
 
@@ -475,6 +512,16 @@ void MapToolScene::save()
 		pListElement5->SetText(OBJ_NONE);
 		XMLElement * pListElement6 = xmlDoc.NewElement("terrain");
 		pListElement6->SetText(_vMapTile[i].terrain);
+		XMLElement * pListElement7 = xmlDoc.NewElement("imgNum");
+		for (int j = 0; j < _imgNameList.size(); j++) {
+			if (_vMapTile[i].img == IMAGEMANAGER->findImage(_imgNameList[j]))
+			{
+				pListElement7->SetText(j);
+				break;
+			}
+			if (j == _imgNameList.size() - 1)
+				pListElement7->SetText(0);
+		}
 
 		pListElementT->InsertEndChild(pListElement1);
 		pListElementT->InsertEndChild(pListElement2);
@@ -482,6 +529,7 @@ void MapToolScene::save()
 		pListElementT->InsertEndChild(pListElement4);
 		pListElementT->InsertEndChild(pListElement5);
 		pListElementT->InsertEndChild(pListElement6);
+		pListElementT->InsertEndChild(pListElement7);
 
 		pMapElement_Tile->InsertEndChild(pListElementT);
 	}
@@ -493,6 +541,7 @@ void MapToolScene::save()
 	XMLElement * pDecoElementSize = xmlDoc.NewElement("size");
 	pDecoElementSize->SetText(_vDecoTile.size());
 	pMapElement_Deco->InsertEndChild(pDecoElementSize);
+
 
 	for (int i = 0; i < _vDecoTile.size(); i++) {
 		XMLElement * pListElementT = xmlDoc.NewElement("tile");
@@ -509,6 +558,16 @@ void MapToolScene::save()
 		pListElement5->SetText(OBJ_NONE);
 		XMLElement * pListElement6 = xmlDoc.NewElement("terrain");
 		pListElement6->SetText(_vDecoTile[i].terrain);
+		XMLElement * pListElement7 = xmlDoc.NewElement("imgNum");
+		for (int j = 0; j < _imgNameList.size(); j++) {
+			if (_vDecoTile[i].img == IMAGEMANAGER->findImage(_imgNameList[j]))
+			{
+				pListElement7->SetText(j);
+				break;
+			}
+			if (j == _imgNameList.size() - 1)
+				pListElement7->SetText(0);
+		}
 
 		pListElementT->InsertEndChild(pListElement1);
 		pListElementT->InsertEndChild(pListElement2);
@@ -516,10 +575,55 @@ void MapToolScene::save()
 		pListElementT->InsertEndChild(pListElement4);
 		pListElementT->InsertEndChild(pListElement5);
 		pListElementT->InsertEndChild(pListElement6);
+		pListElementT->InsertEndChild(pListElement7);
 
 		pMapElement_Deco->InsertEndChild(pListElementT);
 	}
 	pRoot->InsertEndChild(pMapElement_Deco);
+
+	XMLElement * pMapElement_Obj = xmlDoc.NewElement("ObjList");
+
+	XMLElement * pObjElementSize = xmlDoc.NewElement("size");
+	pObjElementSize->SetText(_vObj.size());
+	pMapElement_Obj->InsertEndChild(pObjElementSize);
+
+
+	for (int i = 0; i < _vObj.size(); i++) {
+		XMLElement * pListElementT = xmlDoc.NewElement("obj");
+
+		XMLElement * pListElement1 = xmlDoc.NewElement("destX");
+		pListElement1->SetText(_vObj[i].destX);
+		XMLElement * pListElement2 = xmlDoc.NewElement("destY");
+		pListElement2->SetText(_vObj[i].destY);
+		XMLElement * pListElement3 = xmlDoc.NewElement("sourX");
+		pListElement3->SetText(_vObj[i].sourX);
+		XMLElement * pListElement4 = xmlDoc.NewElement("sourY");
+		pListElement4->SetText(_vObj[i].sourY);
+		XMLElement * pListElement5 = xmlDoc.NewElement("obj");
+		pListElement5->SetText(_vObj[i].obj);
+		XMLElement * pListElement6 = xmlDoc.NewElement("imgNum");
+		for (int j = 0; j < _imgNameList.size(); j++) {
+			if (_vObj[i].img == IMAGEMANAGER->findImage(_imgNameList[j]))
+			{
+				pListElement6->SetText(j);
+				break;
+			}
+			if (j == _imgNameList.size() - 1)
+				pListElement6->SetText(0);
+		}
+
+		pListElementT->InsertEndChild(pListElement1);
+		pListElementT->InsertEndChild(pListElement2);
+		pListElementT->InsertEndChild(pListElement3);
+		pListElementT->InsertEndChild(pListElement4);
+		pListElementT->InsertEndChild(pListElement5);
+		pListElementT->InsertEndChild(pListElement6);
+		
+
+		pMapElement_Obj->InsertEndChild(pListElementT);
+	}
+	pRoot->InsertEndChild(pMapElement_Obj);
+
 
 
 
@@ -582,8 +686,9 @@ void MapToolScene::load()
 	while (pTileListElement != nullptr) {
 		TILE tile;
 
-		tile.img = IMAGEMANAGER->findImage("mapTiles"); //임시, 나중에 주소값으로 바꿀거
-
+		//tile.img = IMAGEMANAGER->findImage("mapTiles"); //임시, 나중에 주소값으로 바꿀거
+		int imgNum = pTileListElement->FirstChildElement("imgNum")->IntText();
+		tile.img = IMAGEMANAGER->findImage(_imgNameList[imgNum]);
 
 		tile.destX = pTileListElement->FirstChildElement("destX")->IntText();
 		tile.destY = pTileListElement->FirstChildElement("destY")->IntText();
@@ -605,8 +710,9 @@ void MapToolScene::load()
 	while (pDecoListElement != nullptr) {
 		TILE tile;
 
-		tile.img = IMAGEMANAGER->findImage("mapTiles"); //임시, 나중에 주소값으로 바꿀거
-		
+		int imgNum = pDecoListElement->FirstChildElement("imgNum")->IntText();
+		tile.img = IMAGEMANAGER->findImage(_imgNameList[imgNum]);
+
 		tile.destX = pDecoListElement->FirstChildElement("destX")->IntText();
 		tile.destY = pDecoListElement->FirstChildElement("destY")->IntText();
 		tile.sourX = pDecoListElement->FirstChildElement("sourX")->IntText();
@@ -619,6 +725,25 @@ void MapToolScene::load()
 		pDecoListElement = pDecoListElement->NextSiblingElement("tile");
 	}
 
+	XMLElement * pObjElement = pRoot->FirstChildElement("ObjList");
+	XMLElement * pObjListElement = pObjElement->FirstChildElement("obj");
+
+	while (pObjListElement != nullptr) {
+		GAMEOBJECT obj;
+
+		int imgNum = pObjListElement->FirstChildElement("imgNum")->IntText();
+		obj.img = IMAGEMANAGER->findImage(_imgNameList[imgNum]);
+
+		obj.destX = pObjListElement->FirstChildElement("destX")->IntText();
+		obj.destY = pObjListElement->FirstChildElement("destY")->IntText();
+		obj.sourX = pObjListElement->FirstChildElement("sourX")->IntText();
+		obj.sourY = pObjListElement->FirstChildElement("sourY")->IntText();
+		obj.obj = (OBJ)pObjListElement->FirstChildElement("obj")->IntText();
+		
+		_vObj.push_back(obj);
+
+		pObjListElement = pObjListElement->NextSiblingElement("obj");
+	}
 	//임시로 만들었던거
 
 	/*

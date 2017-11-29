@@ -89,37 +89,72 @@ void MapToolScene::input_SelectMapGrid() {
 }
 
 void MapToolScene::input_ModeChange() {
-	if (KEYMANAGER->isOnceKeyDown('1')) {
-		switch (_inputMode) {
-		case MODE_FLOOR: _inputMode = MODE_WATER; break;
-		case MODE_WATER: _inputMode = MODE_CHASM; break;
-		default: _inputMode = MODE_FLOOR; break;
+	if (KEYMANAGER->isOnceKeyDown(VK_F1)) { _inputLayer = LAYER_TILE;		_inputMode = MODE_FLOOR; }
+	if (KEYMANAGER->isOnceKeyDown(VK_F2)) { _inputLayer = LAYER_DECO;		_inputMode = MODE_NULL; }
+	if (KEYMANAGER->isOnceKeyDown(VK_F3)) { _inputLayer = LAYER_OBJ;		_inputMode = MODE_CHEST; }
+	if (KEYMANAGER->isOnceKeyDown(VK_F4)) { _inputLayer = LAYER_ITEM;		_inputMode = MODE_NULL; }
+	if (KEYMANAGER->isOnceKeyDown(VK_F5)) { _inputLayer = LAYER_MONSTER;	_inputMode = MODE_NULL; }
+
+	switch (_inputLayer) {
+	case LAYER_TILE:
+		if (KEYMANAGER->isOnceKeyDown('1')) {
+			switch (_inputMode) {
+			case MODE_FLOOR: _inputMode = MODE_WATER; break;
+			case MODE_WATER: _inputMode = MODE_CHASM; break;
+			default: _inputMode = MODE_FLOOR; break;
+			}
 		}
-	}
-	if (KEYMANAGER->isOnceKeyDown('2')) {
-		switch (_inputMode) {
-		case MODE_WALL: _inputMode = MODE_BARRICADE; break;
-		case MODE_BARRICADE: _inputMode = MODE_STATUE; break;
-		default: _inputMode = MODE_WALL; break;
+		if (KEYMANAGER->isOnceKeyDown('2')) {
+			switch (_inputMode) {
+			case MODE_WALL: _inputMode = MODE_BARRICADE; break;
+			case MODE_BARRICADE: _inputMode = MODE_STATUE; break;
+			default: _inputMode = MODE_WALL; break;
+			}
 		}
-	}
-	if (KEYMANAGER->isOnceKeyDown('3')) {
-		switch (_inputMode) {
-		case MODE_DOOR: _inputMode = MODE_DOOR_LOCKED; break;
-		default: _inputMode = MODE_DOOR; break;
+		if (KEYMANAGER->isOnceKeyDown('3')) {
+			switch (_inputMode) {
+			case MODE_DOOR: _inputMode = MODE_DOOR_LOCKED; break;
+			default: _inputMode = MODE_DOOR; break;
+			}
 		}
+
+		if (KEYMANAGER->isOnceKeyDown('4')) {
+			switch (_inputMode) {
+			case MODE_GRASS: _inputMode = MODE_GRASS_UN; break;
+			default: _inputMode = MODE_GRASS; break;
+			}
+		}		
+		
+		break;
+	case LAYER_DECO:
+		break;
+		
+	case LAYER_OBJ:
+		if (KEYMANAGER->isOnceKeyDown('1')) {
+			_inputMode = MODE_CHEST;
+
+		}
+		if (KEYMANAGER->isOnceKeyDown('2')) {
+			switch (_inputMode) {
+			case MODE_STAIR_START: _inputMode = MODE_STAIR_END; break;
+			default: _inputMode = MODE_STAIR_START; break;
+			}
+		}
+		if (KEYMANAGER->isOnceKeyDown('3')) {
+			_inputMode = MODE_POT;
+
+		}
+		if (KEYMANAGER->isOnceKeyDown('4')) {
+			_inputMode = MODE_WELL;
+		}
+		break;
+	case LAYER_ITEM:
+		break;
+	case LAYER_MONSTER:
+		break;
+		
 	}
 
-	if (KEYMANAGER->isOnceKeyDown('4')) {
-		switch (_inputMode) {
-		case MODE_GRASS: _inputMode = MODE_GRASS_UN; break;
-		default: _inputMode = MODE_GRASS; break;
-		}
-	}
-
-	if (KEYMANAGER->isOnceKeyDown('5')) {
-		_inputMode = MODE_TRAP;
-	}
 
 	if (KEYMANAGER->isOnceKeyDown('0')) {
 		switch (_inputMode) {
@@ -132,10 +167,6 @@ void MapToolScene::input_ModeChange() {
 
 
 
-	if (KEYMANAGER->isOnceKeyDown(VK_F1)) { _inputLayer = LAYER_TILE; }
-	if (KEYMANAGER->isOnceKeyDown(VK_F2)) { _inputLayer = LAYER_DECO; }
-	if (KEYMANAGER->isOnceKeyDown(VK_F3)) { _inputLayer = LAYER_ITEM; }
-	if (KEYMANAGER->isOnceKeyDown(VK_F4)) { _inputLayer = LAYER_MONSTER; }
 	
 }
 
@@ -167,8 +198,6 @@ void MapToolScene::input_AddTile() {
 			if (!_paletSelected.empty()) {
 
 				if (_inputMode == MODE_VIEWING || _inputMode == MODE_VIEWING_TILE) return; //읽기 모드   : 아무것도 못한다
-
-
 
 				_showTile = true;					// 현재 선택한 타일을 보여주기
 				_showTileIndex = i;
@@ -272,6 +301,42 @@ void MapToolScene::input_AddTile() {
 								_vMapTile.push_back(inputTile);
 							}
 						}
+
+						else if (_inputLayer == LAYER_OBJ) {
+							for (int j = 0; j < _vMapSelected.size(); j++) {
+								int indexX = _vMapSelected[j].index % GRIDX + _cameraX;
+								int indexY = _vMapSelected[j].index / GRIDX + _cameraY;
+								for (_viObj = _vObj.begin(); _viObj != _vObj.end();) {
+									if (_viObj->destX == indexX && _viObj->destY == indexY) {
+										_viObj = _vObj.erase(_viObj);
+									}
+									else _viObj++;
+								}
+							}
+
+							for (int j = 0; j < _vMapSelected.size(); j++) {
+								int indexX = _vMapSelected[j].index % GRIDX + _cameraX;
+								int indexY = _vMapSelected[j].index / GRIDX + _cameraY;
+
+								GAMEOBJECT inputObj;
+								ZeroMemory(&inputObj, sizeof(GAMEOBJECT));
+								inputObj.img = _vPaletTile[paletIndex].img;
+								inputObj.sourX = _vPaletTile[paletIndex].sourX;
+								inputObj.sourY = _vPaletTile[paletIndex].sourY;
+								inputObj.destX = indexX;
+								inputObj.destY = indexY;
+
+								switch (_inputMode)
+								{
+								case MODE_CHEST:			inputObj.obj = OBJ_CHEST;				break;
+								case MODE_STAIR_START:		inputObj.obj = OBJ_NONE;				break;
+								case MODE_STAIR_END:		inputObj.obj = OBJ_NONE;				break;
+								case MODE_POT:				inputObj.obj = OBJ_NONE;				break;
+								case MODE_GRASS:			inputObj.obj = OBJ_NONE;				break;
+								}
+								_vObj.push_back(inputObj);
+							}
+						}
 					}
 
 					else {
@@ -337,6 +402,35 @@ void MapToolScene::input_AddTile() {
 							
 							_vMapTile.push_back(inputTile);
 						}
+
+						else if (_inputLayer == LAYER_OBJ) {
+							
+							//이미 타일이 있는 경우 지운다
+							for (_viObj = _vObj.begin(); _viObj != _vObj.end();) {
+								if (_viObj->destX == indexX && _viObj->destY == indexY) {
+									_viObj = _vObj.erase(_viObj);
+								}
+								else _viObj++;
+							}
+
+							GAMEOBJECT inputObj;
+							ZeroMemory(&inputObj, sizeof(GAMEOBJECT));
+							inputObj.img = _vPaletTile[paletIndex].img;
+							inputObj.sourX = _vPaletTile[paletIndex].sourX;
+							inputObj.sourY = _vPaletTile[paletIndex].sourY;
+							inputObj.destX = indexX;
+							inputObj.destY = indexY;
+
+							switch (_inputMode)
+							{
+							case MODE_CHEST:			inputObj.obj = OBJ_CHEST;				break;
+							case MODE_STAIR_START:		inputObj.obj = OBJ_STAIR_START;			break;
+							case MODE_STAIR_END:		inputObj.obj = OBJ_STAIR_END;			break;
+							case MODE_POT:				inputObj.obj = OBJ_NONE;				break;
+							case MODE_GRASS:			inputObj.obj = OBJ_NONE;				break;
+							}
+							_vObj.push_back(inputObj);
+						}
 					}
 				}
 				//_vMapSelected.clear();
@@ -357,6 +451,8 @@ void MapToolScene::input_ClickPalet() {
 
 				int paletIndex = _paletRect[i].index + _paletPage * PALETTENUM;
 
+				if (paletIndex >= _vPaletTile.size()) break;
+
 				selectTile.img = _vPaletTile[paletIndex].img; // 팔레트는 이미지 하나만 갖고 있다
 				selectTile.index = paletIndex;
 				selectTile.rc = _paletRect[i].rc;
@@ -370,6 +466,8 @@ void MapToolScene::input_ClickPalet() {
 				S_TILE selectTile;
 
 				int paletIndex = _paletRect[i].index + _paletPage * PALETTENUM;
+
+				if (paletIndex >= _vPaletTile.size()) break;
 
 				selectTile.img = _vPaletTile[paletIndex].img;
 				selectTile.index = paletIndex;

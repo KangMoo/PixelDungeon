@@ -18,32 +18,29 @@
 enum LAYER {
 	LAYER_TILE, 
 	LAYER_DECO,
+	LAYER_OBJ,
 	LAYER_ITEM,
 	LAYER_MONSTER
 };
 
 enum INPUTMODE {
-	MODE_FLOOR,
-	MODE_WATER,
-	MODE_CHASM,
+	MODE_NULL,
 
-	MODE_GRASS,
-	MODE_GRASS_UN,
+	//TERRAIN
+	MODE_FLOOR,	MODE_WATER,	MODE_CHASM,
+	MODE_GRASS,	MODE_GRASS_UN,
+	MODE_WALL,	MODE_BARRICADE,	MODE_STATUE,
+	MODE_DOOR,	MODE_DOOR_LOCKED,
 
-	MODE_WALL,
-	MODE_BARRICADE,
-	MODE_STATUE,
-	
-	MODE_DOOR,
-	MODE_DOOR_LOCKED,
+	//OBJECT
+	MODE_CHEST,
+	MODE_STAIR_START, MODE_STAIR_END,
+	MODE_POT,
+	MODE_WELL,
 
-	MODE_TRAP,
-	
-	MODE_DECO,
-	
 	MODE_VIEWING,
 	MODE_VIEWING_TILE,
-
+	
 	MODE_DELET
 };
 
@@ -56,7 +53,8 @@ class MapToolScene : public gameNode
 	typedef vector<TILE>::iterator viTile;
 	typedef vector<tagSelectTile> vSelectTile;
 	typedef vector<tagSelectTile>::iterator viSelectTile;
-
+	typedef vector<GAMEOBJECT> vObj;
+	typedef vector<GAMEOBJECT>::iterator viObj;
 
 private:
 	bool _leftClicking;
@@ -76,13 +74,16 @@ private:
 	viGrid _viMapSelected; 
 	GRID _mapRect[GRIDNUM]; //맵 전체 그리드 rect
 	
-	
+	vObj _vObj;  // 오브젝트 리스트 (상자, 계단, 항아리 등)
+	viObj _viObj; 
 	
 	vTile _vPaletTile; // 팔레트에 깔아놓은 타일
 	viTile _viPaletTile;
 	vSelectTile _paletSelected; //선택한 팔레트 그리드
 	GRID _paletRect[PALETTENUM]; //팔레트 전체 그리드 rect
 	int _paletPage; // 팔레트 현재 페이지
+
+
 
 	bool _showTile;
 	int _showTileIndex;

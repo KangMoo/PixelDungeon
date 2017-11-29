@@ -49,6 +49,7 @@ void Player::release()
 }
 void Player::update()
 {
+
 	frameUpdate();
 	
 	//시야처리
@@ -97,7 +98,6 @@ void Player::draw(POINT camera)
 	//	LineTo(getMemDC(), _playerPoint.x + cosf(i.eangle) * 100, _playerPoint.y - sinf(i.eangle) * 100);
 	//	LineTo(getMemDC(), _playerPoint.x, _playerPoint.y);
 	//}
-	//RectangleMakeCenter(getMemDC(), _playerPoint.x, _playerPoint.y, 7, 7);
 
 	char str[] = "폰트테스트";
 	HFONT hFont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("궁서"));
@@ -107,11 +107,11 @@ void Player::draw(POINT camera)
 	DeleteObject(hFont);
 
 	//~test
-	_image->alphaFrameRender(getMemDC(), _playerPoint.x - _image->getFrameWidth() / 2, _playerPoint.y - _image->getFrameHeight() / 2, _currentFrameX, _currentFrameY, 0);
+	_image->alphaFrameRender(getMemDC(), _playerPoint.x - _image->getFrameWidth() / 2 + camera.x, _playerPoint.y - _image->getFrameHeight() / 2 + camera.y, _currentFrameX, _currentFrameY, 0);
 	//IMAGEMANAGER->render("blactkTile", getMemDC(), 50, 50, 0, 0, 100, 100);
 	for (auto i : astar)
 	{
-		RectangleMakeCenter(getMemDC(), i.destX*TILESIZE + TILESIZE / 2, i.destY*TILESIZE + TILESIZE / 2, 5, 5);
+		//RectangleMakeCenter(getMemDC(), i.destX*TILESIZE + TILESIZE / 2, i.destY*TILESIZE + TILESIZE / 2, 5, 5);
 	}
 }
 
@@ -179,18 +179,44 @@ void Player::addCanTSeeAngleByRect(RECT rc)
 		//동일 x축 위
 		if (_playerPoint.y / TILESIZE == rcpoint.y / TILESIZE)
 		{
-			addCanTSeeAngle(0, getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.top));
-			addCanTSeeAngle(getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.bottom), PI2);
+			if (getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.bottom) > getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.top))
+			{
+				addCanTSeeAngle(0, getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.top));
+				addCanTSeeAngle(getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.bottom), PI2);
+			}
+			else
+			{
+				addCanTSeeAngle(getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.bottom), getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.top));
+			}
+			
 		}
 		//1사분면
 		else if (_playerPoint.y / TILESIZE> rcpoint.y / TILESIZE)
 		{
-			addCanTSeeAngle(getAngle(_playerPoint.x, _playerPoint.y, rc.right, rc.bottom), getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.top));
+			if (getAngle(_playerPoint.x, _playerPoint.y, rc.right, rc.bottom) >  getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.top))
+			{
+				addCanTSeeAngle(0, getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.top));
+				addCanTSeeAngle(getAngle(_playerPoint.x, _playerPoint.y, rc.right, rc.bottom), PI2);
+			}
+			else
+			{
+				addCanTSeeAngle(getAngle(_playerPoint.x, _playerPoint.y, rc.right, rc.bottom), getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.top));
+			}
+			
 		}
 		//4사분면
 		else if (_playerPoint.y / TILESIZE < rcpoint.y / TILESIZE)
 		{
-			addCanTSeeAngle(getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.bottom), getAngle(_playerPoint.x, _playerPoint.y, rc.right, rc.top));
+			if (getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.bottom) >  getAngle(_playerPoint.x, _playerPoint.y, rc.right, rc.top))
+			{
+				addCanTSeeAngle(0, getAngle(_playerPoint.x, _playerPoint.y, rc.right, rc.top));
+				addCanTSeeAngle(getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.bottom), PI2);
+			}
+			else
+			{
+				addCanTSeeAngle(getAngle(_playerPoint.x, _playerPoint.y, rc.left, rc.bottom), getAngle(_playerPoint.x, _playerPoint.y, rc.right, rc.top));
+			}
+			
 		}
 	}
 	//2,3사분면
@@ -473,10 +499,15 @@ void Player::move()
 
 void Player::mouseClickEvent()
 {
+	
+	POINT ptMouse = _ptMouse;
+	ptMouse.x -= _ui->getCamera().x;
+	ptMouse.y -= _ui->getCamera().y;
+	
 	for (auto i : _em->getEnemyVector())
 	{
 		//몬스터를 클릭했다면?
-		if (_ptMouse.x / TILESIZE == i->getPoint().x / TILESIZE && _ptMouse.y / TILESIZE == i->getPoint().y / TILESIZE)
+		if (ptMouse.x / TILESIZE == i->getPoint().x / TILESIZE && ptMouse.y / TILESIZE == i->getPoint().y / TILESIZE)
 		{
 			//목표 저장
 			_isEnemyTargeted = true;
@@ -491,10 +522,10 @@ void Player::mouseClickEvent()
 	}
 
 	//몬스터 말고 땅을 클릭했다면?
-	if (_map->getTile(_ptMouse.x / TILESIZE, _ptMouse.y / TILESIZE).terrain != TERRAIN_NULL && !_isEnemyTargeted)
+	if (_map->getTile(ptMouse.x / TILESIZE, ptMouse.y / TILESIZE).terrain != TERRAIN_NULL && !_isEnemyTargeted)
 	{
 		//이동경로 저장
-		astar = _map->aStar(_playerPoint, _ptMouse);
+		astar = _map->aStar(_playerPoint, ptMouse);
 		//길이 있는지 여부 판단
 		if (astar.size() > 0)
 		{
