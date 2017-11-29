@@ -25,10 +25,10 @@ HRESULT Player::init(POINT point)
 	_playerStat.avd_lck = 0;
 	_playerStat.def = 0;
 	_playerStat.exp = 0;
-	_playerStat.hp = 0;
-	_playerStat.hunger = 0;
-	_playerStat.lv = 0;
-	_playerStat.str = 0;
+	_playerStat.hp = 50;
+	_playerStat.hunger = 300;
+	_playerStat.lv = 1;
+	_playerStat.str = 10;
 
 
 
@@ -41,7 +41,6 @@ HRESULT Player::init(POINT point)
 	_keepMove = false;
 	_isUsingUI = false;
 	_isEnemyTargeted = false;
-	_clickAllowedRC = RectMake(0, 100, 700, 400);
 	return S_OK;
 }
 void Player::release()
@@ -81,9 +80,28 @@ void Player::update()
 	}
 
 	//마우스 클릭 이벤트 처리
-	if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON) && !_isUsingUI && !_keepMove)
+	if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON) && !_isUsingUI)
 	{
 		mouseClickEvent();
+	}
+	if (KEYMANAGER->isOnceKeyDown(VK_RBUTTON) && _keepMove)
+	{
+		//움직이는 중에 마우스 클릭 이벤트 발생 하면 가던 타일만 마저 가게 함
+		if (_keepMove && astar.size()>0)
+		{
+			TILE temp;
+			temp = astar[astar.size() - 1];
+			astar.clear();
+			astar.push_back(temp);
+			return;
+		}
+	}
+
+	//상태처리
+	if (_playerStat.hp <= 0)
+	{
+		_playerState = PLAYERSTATE_DEAD;
+		_image = IMAGEMANAGER->findImage("warrior_Dead");
 	}
 }
 //그릴 때	x좌표에 camera.x 만큼
@@ -103,7 +121,6 @@ void Player::draw(POINT camera)
 	//	LineTo(getMemDC(), _playerPoint.x + cosf(i.eangle) * 100, _playerPoint.y - sinf(i.eangle) * 100);
 	//	LineTo(getMemDC(), _playerPoint.x, _playerPoint.y);
 	//}
-	//Rectangle(getMemDC(), _clickAllowedRC.left, _clickAllowedRC.top, _clickAllowedRC.right, _clickAllowedRC.bottom);
 	char str[] = "폰트테스트";
 	HFONT hFont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("궁서"));
 	HFONT oldFont = (HFONT)SelectObject(getMemDC(), hFont);
@@ -265,6 +282,8 @@ void Player::frameUpdate()
 	else if (_playerState != PLAYERSTATE_IDLE && TIMEMANAGER->getWorldTime() - _frameTimer > 0.1)
 	{
 		_frameTimer = TIMEMANAGER->getWorldTime();
+
+
 		if (_currentFrameX < _image->getMaxFrameX())
 		{
 			_currentFrameX++;
@@ -272,7 +291,12 @@ void Player::frameUpdate()
 		else
 		{
 			_currentFrameX = 0;
-			if (_playerState != PLAYERSTATE_IDLE)
+
+			if (_playerState == PLAYERSTATE_DEAD)
+			{
+
+			}
+			else if (_playerState != PLAYERSTATE_IDLE)
 			{
 				_playerState = PLAYERSTATE_IDLE;
 				_image = IMAGEMANAGER->findImage("warrior_Idle");
@@ -399,6 +423,10 @@ void Player::fovCheck()
 	{
 		_playerPoint.y += TILESIZE;
 	}
+	if (KEYMANAGER->isOnceKeyDown(VK_SPACE))
+	{
+		_playerStat.hp -= 30;
+	}
 	//~FOV테스트
 }
 
@@ -496,13 +524,25 @@ void Player::move()
 				action_Attack();
 			}
 		}
+
+		//턴 넘기기
+		endTurn();
 	}
-	//턴 넘기기
-	endTurn();
 }
 
 void Player::mouseClickEvent()
 {
+
+
+	//움직이는 중에 마우스 클릭 이벤트 발생 하면 가던 타일만 마저 가게 함
+	if (_keepMove && astar.size()>0)
+	{
+		TILE temp;
+		temp = astar[astar.size()-1];
+		astar.clear();
+		astar.push_back(temp);
+		return;
+	}
 	
 	POINT ptMouse = _ptMouse;
 	ptMouse.x -= _ui->getCamera().x;

@@ -49,6 +49,10 @@ private:
 	vector<string> _stageDataList;
 	int _curStageNum;
 
+	//그림자테스트
+	POINT _camera;
+
+	//
 
 	int _tileNum;
 public:
@@ -58,7 +62,7 @@ public:
 	void render();
 	void render(POINT camera);
 	void draw(POINT camera);
-
+	void drawTileShadow(TILE tile);
 	void imageSetup(void);
 
 	void load(int stageNum);

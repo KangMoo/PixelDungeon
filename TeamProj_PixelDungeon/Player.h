@@ -30,7 +30,7 @@ private:
 	PLAYERSTATE _playerState;
 	vector<tagDebuff> _vdebuff;
 	vector<tagDebuff> _vbuff;
-	RECT _clickAllowedRC;
+
 	int _frameUpdateTimer;
 	float _frameTimer;
 	TILE _goalTile;
@@ -88,18 +88,24 @@ public:
 
 
 	//게터세터
+
 	bool getAction() { return _action; }
 	void setAction(bool action) { _action = action; }
+	bool getTurn() { return _action; }
+	void setTurn(bool turn) { _action = turn; }
+
 	PLAYERSTAT getStat() { return _playerStat; }
 	void setStat(PLAYERSTAT stat) { _playerStat = stat; }
 	POINT getPoint() { return _playerPoint; }
 	void setPoint(POINT point) { _playerPoint = point; }
 	int getHP() { return _playerStat.hp; }
 	void setHP(int hp) { _playerStat.hp = hp; }
-	bool getTurn() { return _action; }
-	void setTurn(bool turn) { _action = turn; }
+
 	vector<tagDebuff> getPlayerDebuffList() { return _vdebuff; }
 	void setPlayerDebuffList(vector<tagDebuff> vDbuff) { _vdebuff = _vdebuff; }
+	vector<tagDebuff> getPlayerBuffList() { return _vbuff; }
+	void setPlayerBuffList(vector<tagDebuff> vBuff) { _vbuff = vBuff; }
+
 	bool getUsingUI() { return _isUsingUI; }
 	void setUsingUI(bool usingUI) { _isUsingUI = usingUI; }
 	vector<TILE> getPlayerRoute() { return astar; }

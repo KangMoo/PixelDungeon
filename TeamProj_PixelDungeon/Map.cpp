@@ -28,7 +28,7 @@ HRESULT Map::init()
 	start = true;
 	load(_curStageNum);
 
-	
+
 
 	IMAGEMANAGER->addImage("blackLineVertical", "Img//Map//blackdot.bmp", 1, 32, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("blackLineHorizontal", "Img//Map//blackdot.bmp", 32, 1, true, RGB(255, 0, 255));
@@ -98,7 +98,7 @@ void Map::update()
 		}
 	}
 	if (KEYMANAGER->isOnceKeyDown('D')) {
-		for (int i = 0; i < _vObj.size(); i++){
+		for (int i = 0; i < _vObj.size(); i++) {
 			if ((_vObj[i].obj & ATTRIBUTE_CHEST) == ATTRIBUTE_CHEST)
 			{
 				setObj_OpenChest(i);
@@ -111,6 +111,7 @@ void Map::update()
 		else { load(0); }
 	}
 	// test
+	_camera = _ui->getCamera();
 }
 void Map::render()
 {
@@ -128,26 +129,14 @@ void Map::draw(POINT camera)
 	if (KEYMANAGER->isStayKeyDown(VK_RIGHT)) temp++;
 	if (KEYMANAGER->isStayKeyDown(VK_LEFT)) temp--;
 	for (int i = 0; i < TILEXMAX; i++) {
-	
+
 		for (int j = 0; j < TILEYMAX; j++) {
 			if (_map[i][j].terrain != TERRAIN_NULL) {
-				switch (_map[i][j].tileview)
-				{
-				case TILEVIEW_ALL:
-					_map[i][j].img->frameRender(getMemDC(), i * TILESIZE + camera.x, j * TILESIZE + camera.y, _map[i][j].sourX, _map[i][j].sourY);
-					break;
-				case TILEVIEW_HALF:
-					_map[i][j].img->frameRender(getMemDC(), i * TILESIZE + camera.x, j * TILESIZE + camera.y, _map[i][j].sourX, _map[i][j].sourY);
-					IMAGEMANAGER->alphaRender("blackTile", getMemDC(), i*TILESIZE + camera.x, j*TILESIZE + camera.y, 150);
-					break;
-				case TILEVIEW_NO:
-					_map[i][j].img->frameRender(getMemDC(), i * TILESIZE + camera.x, j * TILESIZE + camera.y, _map[i][j].sourX, _map[i][j].sourY);
-					IMAGEMANAGER->render("blackTile", getMemDC(), i*TILESIZE + camera.x, j*TILESIZE + camera.y);
-					break;
-				}
+				_map[i][j].img->frameRender(getMemDC(), i * TILESIZE + camera.x, j * TILESIZE + camera.y, _map[i][j].sourX, _map[i][j].sourY);
+				drawTileShadow(_map[i][j]);
 			}
-				//RectangleMake(getMemDC(), i * 10, j * 10, 10, 10);				
-			
+			//RectangleMake(getMemDC(), i * 10, j * 10, 10, 10);				
+
 		}
 	}
 
@@ -155,53 +144,10 @@ void Map::draw(POINT camera)
 	{
 		if (_viObj->obj != OBJ_NONE) {
 			if (_map[_viObj->destX][_viObj->destY].tileview == TILEVIEW_ALL)
-			_viObj->img->frameRender(getMemDC(), _viObj->destX * TILESIZE + camera.x, _viObj->destY * TILESIZE + camera.y, _viObj->sourX, _viObj->sourY);
+				_viObj->img->frameRender(getMemDC(), _viObj->destX * TILESIZE + camera.x, _viObj->destY * TILESIZE + camera.y, _viObj->sourX, _viObj->sourY);
 		}
 
 	}
-	
-	//if (start) {
-	//	for (int i = 0; i < _vMapTile.size(); i++) {
-	//			if (_vMapTile[i].terrain != TERRAIN_NULL)
-	//			{
-	//
-	//
-	//				RectangleMake(getMemDC(), _vMapTile[i].destX * 10, _vMapTile[i].destY * 10, 10, 10);
-	//				_vMapTile[i].img->frameRender(getMemDC(), _vMapTile[i].destX * TILESIZE, _vMapTile[i].destY * TILESIZE, _vMapTile[i].sourX, _vMapTile[i].sourY);
-
-					//if (i == temp)
-					//{
-					//	for (int pix = 0; pix < 32; pix++)
-					//	{
-					//		IMAGEMANAGER->alphaRender("blackLineVertical", getMemDC(), i * 32 + pix, i * 32, pix * 150 / 32);
-					//		//IMAGEMANAGER->alphaRender("blackLineHorizontal", getMemDC(), i * 32, j * 32 + pix, pix * 255 / 32);
-					//	}
-					//}
-					//if (i == temp+1)
-					//{
-					//	IMAGEMANAGER->alphaRender("blackTile", getMemDC(), i * 32, i * 32, 150);
-					//}
-					//if (i == temp+2)
-					//{
-					//	IMAGEMANAGER->alphaRender("blackTile", getMemDC(), i * 32, i * 32, 150);
-					//	for (int pix = 0; pix < 32; pix++)
-					//	{
-					//		IMAGEMANAGER->alphaRender("blackLineVertical", getMemDC(), i * 32 + pix, i * 32, pix * 255 / 32);
-					//		//IMAGEMANAGER->alphaRender("blackLineHorizontal", getMemDC(), i * 32, j * 32 + pix, pix * 255 / 32);
-					//	}
-
-					//}
-					//else if (i > temp+2)
-					//{
-					//	IMAGEMANAGER->render("blackTile", getMemDC(), i * 32, i * 32);
-					//}
-	//			}
-	//
-	//		}
-	//}
-
-
-
 }
 
 
@@ -274,13 +220,13 @@ void Map::load(int stageNum) {
 	XMLNode * pRoot = xmlDoc.FirstChild();
 
 	XMLElement * pTileElement = pRoot->FirstChildElement("TileList");
-	
+
 	_mapSizeX = pTileElement->FirstChildElement("sizeX")->IntText();
 	_mapSizeY = pTileElement->FirstChildElement("sizeY")->IntText();
 
 	XMLElement * pTileListElement = pTileElement->FirstChildElement("tile");
 
-	
+
 	while (pTileListElement != nullptr) {
 		TILE tile;
 
@@ -369,7 +315,7 @@ void Map::load(int stageNum) {
 	//}
 
 
-	
+
 	for (int i = 0; i < 10000; i++) {
 		if (i >= _vMapTile.size()) break;
 
@@ -404,7 +350,7 @@ void Map::spareTileSetup() {
 	flameTile1->terrain = TERRAIN_FLOOR;
 	flameTile1->obj = OBJ_NONE;
 	flameTile1->trap = TRAP_NONE;
-	
+
 	_spareTile.insert(make_pair("AfterFlame1", flameTile1));
 
 	TILE* flameTile2 = new TILE;
@@ -418,7 +364,7 @@ void Map::spareTileSetup() {
 	flameTile2->trap = TRAP_NONE;
 
 	_spareTile.insert(make_pair("AfterFlame2", flameTile2));
-	
+
 	TILE* grassCutTile1 = new TILE;
 	grassCutTile1->img = IMAGEMANAGER->findImage("mapTiles");
 	grassCutTile1->destX = 0;
@@ -468,4 +414,16 @@ void Map::setTile_GrassCut(int i, int j) {
 void Map::setObj_OpenChest(int i) {
 	_vObj[i].obj = OBJ_NONE;
 	_im->setItemToField(NAME_BOTTLE, _vObj[i].destX * TILESIZE + TILESIZE * 0.5, _vObj[i].destY * TILESIZE + TILESIZE * 0.5);
+}
+
+void Map::drawTileShadow(TILE tile)
+{
+	if (tile.tileview == TILEVIEW_HALF)
+	{
+		IMAGEMANAGER->alphaRender("blackTile", getMemDC(), tile.destX* TILESIZE + _camera.x, tile.destY* TILESIZE + _camera.y, 150);
+	}
+	else if (tile.tileview == TILEVIEW_NO)
+	{
+		IMAGEMANAGER->render("blackTile", getMemDC(), tile.destX * TILESIZE + _camera.x, tile.destY* TILESIZE + _camera.y);
+	}
 }
