@@ -7712,31 +7712,7 @@
         </tile>
     </DecoList>
     <ObjList>
-        <size>12</size>
-        <obj>
-            <destX>13</destX>
-            <destY>4</destY>
-            <sourX>4</sourX>
-            <sourY>1</sourY>
-            <obj>1</obj>
-            <imgNum>0</imgNum>
-        </obj>
-        <obj>
-            <destX>13</destX>
-            <destY>3</destY>
-            <sourX>4</sourX>
-            <sourY>1</sourY>
-            <obj>1</obj>
-            <imgNum>0</imgNum>
-        </obj>
-        <obj>
-            <destX>13</destX>
-            <destY>2</destY>
-            <sourX>4</sourX>
-            <sourY>1</sourY>
-            <obj>1</obj>
-            <imgNum>0</imgNum>
-        </obj>
+        <size>6</size>
         <obj>
             <destX>5</destX>
             <destY>6</destY>
@@ -7754,60 +7730,36 @@
             <imgNum>0</imgNum>
         </obj>
         <obj>
-            <destX>13</destX>
-            <destY>4</destY>
-            <sourX>4</sourX>
-            <sourY>1</sourY>
-            <obj>1</obj>
-            <imgNum>0</imgNum>
-        </obj>
-        <obj>
-            <destX>13</destX>
-            <destY>3</destY>
-            <sourX>4</sourX>
-            <sourY>1</sourY>
-            <obj>1</obj>
-            <imgNum>0</imgNum>
-        </obj>
-        <obj>
-            <destX>13</destX>
-            <destY>2</destY>
-            <sourX>4</sourX>
-            <sourY>1</sourY>
-            <obj>1</obj>
-            <imgNum>0</imgNum>
-        </obj>
-        <obj>
-            <destX>13</destX>
-            <destY>4</destY>
-            <sourX>4</sourX>
-            <sourY>1</sourY>
-            <obj>1</obj>
-            <imgNum>0</imgNum>
-        </obj>
-        <obj>
-            <destX>13</destX>
-            <destY>3</destY>
-            <sourX>4</sourX>
-            <sourY>1</sourY>
-            <obj>1</obj>
-            <imgNum>0</imgNum>
-        </obj>
-        <obj>
-            <destX>13</destX>
-            <destY>2</destY>
-            <sourX>4</sourX>
-            <sourY>1</sourY>
-            <obj>1</obj>
-            <imgNum>0</imgNum>
-        </obj>
-        <obj>
             <destX>14</destX>
             <destY>14</destY>
             <sourX>1</sourX>
             <sourY>1</sourY>
             <obj>80</obj>
             <imgNum>0</imgNum>
+        </obj>
+        <obj>
+            <destX>13</destX>
+            <destY>2</destY>
+            <sourX>0</sourX>
+            <sourY>0</sourY>
+            <obj>1</obj>
+            <imgNum>1</imgNum>
+        </obj>
+        <obj>
+            <destX>13</destX>
+            <destY>3</destY>
+            <sourX>0</sourX>
+            <sourY>0</sourY>
+            <obj>1</obj>
+            <imgNum>1</imgNum>
+        </obj>
+        <obj>
+            <destX>13</destX>
+            <destY>4</destY>
+            <sourX>0</sourX>
+            <sourY>0</sourY>
+            <obj>1</obj>
+            <imgNum>1</imgNum>
         </obj>
     </ObjList>
 </map>

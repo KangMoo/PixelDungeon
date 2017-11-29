@@ -103,6 +103,7 @@ public:
 	Map();
 	~Map();
 
-
-
+	int getCurStageNum() { return _curStageNum; }
+	int getMapSizeX() { return _mapSizeX; }
+	int getMapSizeY() { return _mapSizeY; }
 };

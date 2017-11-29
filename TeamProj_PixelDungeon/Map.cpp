@@ -130,8 +130,7 @@ void Map::draw(POINT camera)
 	for (int i = 0; i < TILEXMAX; i++) {
 	
 		for (int j = 0; j < TILEYMAX; j++) {
-			if (_map[i][j].terrain != TERRAIN_NULL)
-			{
+			if (_map[i][j].terrain != TERRAIN_NULL) {
 				switch (_map[i][j].tileview)
 				{
 				case TILEVIEW_ALL:
@@ -146,8 +145,9 @@ void Map::draw(POINT camera)
 					IMAGEMANAGER->render("blackTile", getMemDC(), i*TILESIZE + camera.x, j*TILESIZE + camera.y);
 					break;
 				}
-				//RectangleMake(getMemDC(), i * 10, j * 10, 10, 10);				
 			}
+				//RectangleMake(getMemDC(), i * 10, j * 10, 10, 10);				
+			
 		}
 	}
 
@@ -210,6 +210,7 @@ void Map::load(int stageNum) {
 	for (int i = 0; i < 100; i++) {
 		for (int j = 0; j < 100; j++) {
 			_map[i][j].terrain = TERRAIN_NULL;
+			_map[i][j].tileview = TILEVIEW_NO;
 		}
 	}
 
