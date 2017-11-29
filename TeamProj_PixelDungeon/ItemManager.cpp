@@ -47,9 +47,11 @@ HRESULT ItemManager::init()
 	setItemToBag(NAME_COOKED_MEAT);
 	setItemToBag(NAME_MAP);
 	setItemToBag(NAME_IDENTIFY);
-	//setItemToBag(NAME_PURIFY);
-	//setItemToBag(NAME_DEW);
-	//setItemToBag(NAME_UPGRADE);
+	setItemToBag(NAME_PASTY);
+	setItemToBag(NAME_EMERGENCY);
+	setItemToBag(NAME_PURIFY);
+	setItemToBag(NAME_DEW);
+	setItemToBag(NAME_UPGRADE);
 
 	//================ F U N C T I O N =================
 
@@ -936,6 +938,22 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 		item->type = TYPE_SPECIAL;
 		item->img = IMAGEMANAGER->findImage("key_gold");
 		break;
+	case NAME_FLOWER_HEAL:
+		item->type = TYPE_SPECIAL;
+		item->img = IMAGEMANAGER->findImage("flower_heal");
+		break;
+	case NAME_FLOWER_FIRE:
+		item->type = TYPE_SPECIAL;
+		item->img = IMAGEMANAGER->findImage("flower_fire");
+		break;
+	case NAME_FLOWER_FROST:
+		item->type = TYPE_SPECIAL;
+		item->img = IMAGEMANAGER->findImage("flower_frost");
+		break;
+	case NAME_FLOWER_SNAKE:
+		item->type = TYPE_SPECIAL;
+		item->img = IMAGEMANAGER->findImage("flower_snake");
+		break;
 	case NAME_END:
 		break;
 	}
@@ -1047,7 +1065,7 @@ void ItemManager::imgInit()
 	IMAGEMANAGER->addImage("meat_unknown", "Img/Item/unknown_meat.bmp", 32, 32, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("meat_cooked", "Img/Item/cooked_meat.bmp", 32, 32, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("meat_frozen", "Img/Item/frozen_meat.bmp", 32, 32, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addImage("emegency_food", "Img/Item/emergency_food.bmp", 32, 32, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("emergency_food", "Img/Item/emergency_food.bmp", 32, 32, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("pasty", "Img/Item/pasty.bmp", 32, 32, true, RGB(255, 0, 255));
 	//=========================== A C C E S O R Y =========================
 	IMAGEMANAGER->addImage("ring_blue", "Img/Item/ring_blue.bmp", 32, 32, true, RGB(255, 0, 255));
@@ -1160,7 +1178,25 @@ void ItemManager::useItem(int position, float x, float y)
 					_viBag->currentCharge--;
 				}
 				break;
-
+			case TYPE_SEED:
+				switch (_viBag->name)
+				{
+				case NAME_SEED_HEAL:
+					setItemToField(NAME_FLOWER_HEAL, x, y);
+					break;
+				case NAME_SEED_FIRE:
+					setItemToField(NAME_FLOWER_FIRE, x, y);
+					break;
+				case NAME_SEED_FROST:
+					setItemToField(NAME_FLOWER_FROST, x, y);
+					break;
+				case NAME_SEED_SNAKE:
+					setItemToField(NAME_FLOWER_SNAKE, x, y);
+					break;
+				default:
+					break;
+				}
+				break;
 			default:
 				break;
 			}
@@ -1278,7 +1314,7 @@ void ItemManager::throwMove()
 			{
 				if (_viBag->position == _viThrow->position)
 				{
-					setItemToField(_viBag->name,_viThrow->destX,_viThrow->destY,
+					setItemToField(_viBag->name, _viThrow->destX, _viThrow->destY,
 						_viBag->contentsHide, _viBag->isCursed, _viBag->upgrade,
 						_viBag->numOfItem);
 
@@ -1307,3 +1343,12 @@ void ItemManager::removeThrow(int arrNum)
 	_vThrow.erase(_vThrow.begin() + arrNum);
 }
 
+void ItemManager::removeFieldItem(int arrNum)
+{
+	_vItem.erase(_vItem.begin() + arrNum);
+}
+
+void ItemManager::removeBagItem(int arrNum)
+{
+	_vBag.erase(_vBag.begin() + arrNum);
+}

@@ -82,6 +82,10 @@ enum ITEMNAME {
 	NAME_KEY_IRON,			//쇠 열쇠	============ 열 쇠 ==========
 	NAME_KEY_SILVER,		//은 열쇠
 	NAME_KEY_GOLD,			//금 열쇠
+	NAME_FLOWER_HEAL,		//태양초
+	NAME_FLOWER_FIRE,		//화염초
+	NAME_FLOWER_FROST,		//얼음송이
+	NAME_FLOWER_SNAKE,		//뱀뿌리
 	NAME_END				//포문 돌리기 위함
 
 };
@@ -164,6 +168,7 @@ typedef struct tagItem {
 	int currentCharge;	// 현재 사용 가능 횟수 ( 완드 )
 	int numOfItem;		// 아이템 개수
 	int position;		// 포지션 저장용
+	int floor;			// 몇층인지
 }ITEM;
 
 

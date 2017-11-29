@@ -80,6 +80,9 @@ public:
 	void throwMove();
 	void removeBullet(int arrNum);
 	void removeThrow(int arrNum);
+	void removeFieldItem(int arrNum);
+	void removeBagItem(int arrNum);
+	
 
 	void setItemToBag(ITEMNAME name);
 	void setItemToField(ITEMNAME name, float x, float y);
