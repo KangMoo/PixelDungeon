@@ -67,9 +67,11 @@ HRESULT UI::init()
 	_Monster_DisplyRect = RectMake(WINSIZEX - IMAGEMANAGER->findImage("Monster_Display")->getFrameWidth(), 40, IMAGEMANAGER->findImage("Monster_Display")->getFrameWidth(), IMAGEMANAGER->findImage("Monster_Display")->getFrameHeight());
 	_Special_ButtonRect = RectMake(WINSIZEX - IMAGEMANAGER->findImage("Special_Button")->getFrameWidth(), 380, IMAGEMANAGER->findImage("Special_Button")->getFrameWidth(), IMAGEMANAGER->findImage("Special_Button")->getFrameHeight());
 	_Target_ButtonRect = RectMake(WINSIZEX - IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), 460, IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), IMAGEMANAGER->findImage("Target_button")->getFrameHeight());
-
-
 	
+	_interface_button_timer1 = TIMEMANAGER->getWorldTime();
+	_interface_button_timer2 = TIMEMANAGER->getWorldTime();
+	_interface_button_timer3 = TIMEMANAGER->getWorldTime();
+
 	return S_OK;
 }
 
@@ -86,6 +88,8 @@ void UI::update()
 void UI::render(POINT camera)
 {
 	draw(_camera);
+
+	TIMEMANAGER->render(getMemDC());
 }
 
 void UI::draw(POINT camera)
@@ -122,13 +126,14 @@ void UI::draw(POINT camera)
 	//if (/*몬스터가 근처에 있을시*/)
 		IMAGEMANAGER->render("Target_button", getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), 460);
 		//Rectangle(getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), 460, (WINSIZEX - IMAGEMANAGER->findImage("Target_button")->getFrameWidth()) + IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), 460 + IMAGEMANAGER->findImage("Target_button")->getFrameHeight());
-
-	if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON))
+	
+	if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && (TIMEMANAGER->getWorldTime() - _interface_button_timer1) > 0.3 && _selectInterface == INTERFACEMENU_END && !_player->getIsPlayerMoving())
 	{
 		//배낭
 		if (PtInRect(&_backPackRect, _ptMouse) && _selectInterface == INTERFACEMENU_END)
 		{
 			_selectInterface = INTERFACEMENU_BACKPACK;
+			_player->setUsingUI(true);
 
 			ResetInventory();
 
@@ -136,32 +141,35 @@ void UI::draw(POINT camera)
 				SortInventory();
 		}
 
-		else if (PtInRect(&_backPackRect, _ptMouse) && _selectInterface == INTERFACEMENU_BACKPACK)
+		//탐색
+		else if (PtInRect(&_SearchOptionRect, _ptMouse) && _selectInterface == INTERFACEMENU_END)
 		{
-			_selectInterface = INTERFACEMENU_END;
+			if (_player->getAction() == true)
+			{
+				_player->setAction(false);
+			}
+
+			//_selectInterface = INTERFACEMENU_TURNSKIP;
 		}
 
-		//탐색
-		if (PtInRect(&_SearchOptionRect, _ptMouse) && _selectInterface == INTERFACEMENU_END)
+		//턴스킵
+		else if (PtInRect(&_TurnSkipRect, _ptMouse) && _selectInterface == INTERFACEMENU_END)
 		{
 			_selectInterface = INTERFACEMENU_SEARCH;
 		}
 
-		else if (PtInRect(&_SearchOptionRect, _ptMouse) && _selectInterface == INTERFACEMENU_SEARCH)
+		_interface_button_timer1 = TIMEMANAGER->getWorldTime();
+	}
+
+	else if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && (TIMEMANAGER->getWorldTime() - _interface_button_timer1) > 0.3 && _selectInterface != INTERFACEMENU_END && !_player->getIsPlayerMoving())
+	{
+		if (PtInRect(&_backPackRect, _ptMouse) || PtInRect(&_SearchOptionRect, _ptMouse) || PtInRect(&_TurnSkipRect, _ptMouse))
 		{
 			_selectInterface = INTERFACEMENU_END;
+			_player->setUsingUI(false);
 		}
 
-		//턴스킵
-		if (PtInRect(&_TurnSkipRect, _ptMouse) && _selectInterface == INTERFACEMENU_END)
-		{
-			_selectInterface = INTERFACEMENU_TURNSKIP;
-		}
-
-		else if (PtInRect(&_TurnSkipRect, _ptMouse) && _selectInterface == INTERFACEMENU_TURNSKIP)
-		{
-			_selectInterface = INTERFACEMENU_END;
-		}
+		_interface_button_timer1 = TIMEMANAGER->getWorldTime();
 	}
 
 	switch (_selectInterface)
@@ -181,7 +189,7 @@ void UI::draw(POINT camera)
 	}
 
 	//IMAGEMANAGER->findImage("status_pane")->render(getMemDC(), _status_pane_pos.x, _status_pane_pos.y); //고인
-	TIMEMANAGER->render(getMemDC());
+	//TIMEMANAGER->render(getMemDC());
 }
 
 void UI::ResetInventory()
@@ -260,7 +268,7 @@ void UI::BackPack()
 		FillRect(getMemDC(), &_inventory[Line].inventoryRect, brush);
 		DeleteObject(brush);
 
-		if (GetAsyncKeyState(VK_LBUTTON) && PtInRect(&_inventory[Line].inventoryRect, _ptMouse))
+		if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && PtInRect(&_inventory[Line].inventoryRect, _ptMouse) && (TIMEMANAGER->getWorldTime() - _interface_button_timer2) > 0.3 && _selectItem == NAME_END)
 		{
 			for (int itemNumber = 0; itemNumber < _im->getvBag().size(); itemNumber++)
 			{
@@ -270,14 +278,15 @@ void UI::BackPack()
 					_itemPosition = Line;
 				}
 			}
+
+			_interface_button_timer2 = TIMEMANAGER->getWorldTime();
 		}
 
-		//	IMAGEMANAGER->render("inventorytile", getMemDC(), _inventory[Line].inventoryRect.left, _inventory[Line].inventoryRect.top);
-		//}
-
-		if (GetAsyncKeyState(VK_RBUTTON) && _selectItem != NAME_END)
+		if (GetAsyncKeyState(VK_RBUTTON) && (TIMEMANAGER->getWorldTime() - _interface_button_timer2) > 0.3 && _selectItem != NAME_END)
 		{
 			_selectItem = NAME_END;
+
+			_interface_button_timer2 = TIMEMANAGER->getWorldTime();
 		}
 
 		for (size_t i = 0; i < _im->getvBag().size(); i++)
@@ -733,11 +742,16 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			}
 		}
 
-		if (GetAsyncKeyState(VK_LBUTTON) && PtInRect(&button_option_intersectRect[buttonNumber], _ptMouse))
+		if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && PtInRect(&button_option_intersectRect[buttonNumber], _ptMouse) && (TIMEMANAGER->getWorldTime() - _interface_button_timer2) > 0.3 && _selectItem != NAME_END)
 		{
 			//떨어뜨린다
 			if (button_option_value[buttonNumber].number == BUTTONOPTION_DROP)
 			{
+				if (_player->getAction() == true)
+				{
+					_player->setAction(false);
+				}
+
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -745,6 +759,11 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			//마신다
 			if (button_option_value[buttonNumber].number == BUTTONOPTION_DRINK)
 			{
+				if (_player->getAction() == true)
+				{
+					_player->setAction(false);
+				}
+
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -752,6 +771,11 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			//던진다
 			if (button_option_value[buttonNumber].number == BUTTONOPTION_THROW)
 			{
+				if (_player->getAction() == true)
+				{
+					_player->setAction(false);
+				}
+
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -759,6 +783,11 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			//읽는다
 			if (button_option_value[buttonNumber].number == BUTTONOPTION_READ)
 			{
+				if (_player->getAction() == true)
+				{
+					_player->setAction(false);
+				}
+
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -766,6 +795,11 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			//발사한다
 			if (button_option_value[buttonNumber].number == BUTTONOPTION_LAUNCH)
 			{
+				if (_player->getAction() == true)
+				{
+					_player->setAction(false);
+				}
+
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -773,6 +807,16 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			//먹는다
 			if (button_option_value[buttonNumber].number == BUTTONOPTION_EAT)
 			{
+				if (_player->getAction() == true)
+				{
+					_player->action_Eat();
+					_player->setAction(false);
+
+					//PLAYERSTAT temp = _player->getStat();
+					//temp.exp += 3;
+					//_player->setStat(temp);
+				}
+
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -780,6 +824,11 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			//심는다
 			if (button_option_value[buttonNumber].number == BUTTONOPTION_PLANT)
 			{
+				if (_player->getAction() == true)
+				{
+					_player->setAction(false);
+				}
+
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -787,6 +836,11 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 			//기억한다
 			if (button_option_value[buttonNumber].number == BUTTONOPTION_REMEMBER)
 			{
+				if (_player->getAction() == true)
+				{
+					_player->setAction(false);
+				}
+
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -859,6 +913,11 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					}
 				}
 
+				if (_player->getAction() == true)
+				{
+					_player->setAction(false);
+				}
+
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -896,12 +955,19 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_im->unequipItem(itemCheck);
 				}
 
+				if (_player->getAction() == true)
+				{
+					_player->setAction(false);
+				}
+
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
 
 			if (button_option_value[buttonNumber].number == BUTTONOPTION_END)
 				break;
+
+			_interface_button_timer2 = TIMEMANAGER->getWorldTime();
 		}
 	}
 }
@@ -913,6 +979,11 @@ void UI::item_sort()
 /*test
 void UI::TestFunctin()
 {
-	
+	char str[] = "폰트테스트";
+	HFONT hFont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("궁서"));
+	HFONT oldFont = (HFONT)SelectObject(getMemDC(), hFont);
+	//TextOut(getMemDC(), 300, 300, str, strlen(str));
+	SelectObject(getMemDC(), oldFont);
+	DeleteObject(hFont);
 }
 */

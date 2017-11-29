@@ -5,13 +5,15 @@
 
 class Player;
 class UI;
+class ItemManager;
 class Enemy : public gameNode
 {
 protected:
 	Player* _player;		//플레이어 정보
 	UI* _ui;				//ui
 	Map* _map;				//적 인식용 맵정보
-	progressBar* _hpBar;	//체력바
+	ItemManager* _im;
+	//progressBar* _hpBar;	//체력바
 
 	ENEMYSTAT _statistics;	//몬스터 스텟
 	POINT _point;				//좌표
@@ -29,9 +31,19 @@ protected:
 	int _currntHp;						//maxHp는 statistics.hp 에 있습니다, hpHar용입니다.
 	int _myState;						//현재 상태
 
+	int _frameFPS;
+	int	_frameTime;
+	int _currentFrameY, _currentFrameX;
+
+	RECT _cog;				//최초 인식범위	렉트형태
+	int _deadAlpha;			//죽으면 사라져야함니다
+	bool _deleteForeEm;		//알파가 0이 되어 안보이면 사라집니다.
+
+
 public:
 	virtual HRESULT init();
 	virtual HRESULT init(POINT _point); //포인트 추가
+	virtual HRESULT init(POINT point, int cog);//인식범위 추기
 	virtual void release();
 	virtual void update();
 	virtual void render(POINT camera);
@@ -55,8 +67,9 @@ public:
 	void setHP(int hp) { _statistics.hp = hp; }
 
 	//플레이어, ui랑 연결
-	void setPlayerAddressLink(Player* player) { _player = player; }
-	void setUiAddressLink(UI* ui) { _ui = ui; }
+	void setPlayerAddressLink(Player* player)				{ _player = player; }
+	void setUiAddressLink(UI* ui)							{ _ui = ui; }
+	void setItemManagerAddressLink(ItemManager* itemManager) { _im = itemManager; }
 
 	Enemy();
 	~Enemy();

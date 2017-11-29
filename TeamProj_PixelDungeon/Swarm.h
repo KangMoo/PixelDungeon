@@ -1,5 +1,6 @@
 #pragma once
 #include "Enemy.h"
+
 class Swarm :
 	public Enemy
 {
@@ -30,6 +31,10 @@ private:
 	POINT _movePoint;
 
 	int _frameCount;
+
+	vector<TILE> astarTest;
+
+	progressBar* _hpBar;
 	
 public:
 	HRESULT init(POINT point); //초기 생성

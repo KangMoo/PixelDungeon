@@ -216,6 +216,9 @@
     <ClInclude Include="Gnoll.h">
       <Filter>MainGame\Enemy\Enemy</Filter>
     </ClInclude>
+    <ClInclude Include="mimic.h">
+      <Filter>MainGame\Enemy\Enemy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -331,6 +334,14 @@
     </ClCompile>
     <ClCompile Include="Gnoll.cpp">
       <Filter>MainGame\Enemy\Enemy</Filter>
+    </ClCompile>
+<<<<<<< HEAD
+    <ClCompile Include="MapToolScene+input.cpp">
+      <Filter>MainGame\Scene</Filter>
+=======
+    <ClCompile Include="mimic.cpp">
+      <Filter>MainGame\Enemy\Enemy</Filter>
+>>>>>>> origin/new_monster2
     </ClCompile>
   </ItemGroup>
 </Project>

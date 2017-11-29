@@ -79,7 +79,11 @@ enum ITEMNAME {
 	NAME_SEED_FROST,		//얼음
 	NAME_DEW,				//이슬		============ 특 수 ==========
 	NAME_MONEY,				//돈!
+	NAME_KEY_IRON,			//쇠 열쇠	============ 열 쇠 ==========
+	NAME_KEY_SILVER,		//은 열쇠
+	NAME_KEY_GOLD,			//금 열쇠
 	NAME_END				//포문 돌리기 위함
+
 };
 
 enum BUTTONOPTION
@@ -97,7 +101,6 @@ enum BUTTONOPTION
 	BUTTONOPTION_END
 };
 
-
 typedef struct tagPlayerStat {
 	int lv;			//레벨
 	int hp;			//체력
@@ -106,6 +109,7 @@ typedef struct tagPlayerStat {
 	int def;		//방어력
 	float atk_lck;	//명중률
 	float avd_lck;	//회피율
+	int hunger;		//배고픔
 }PLAYERSTAT;
 enum PLAYERSTATE {
 	PLAYERSTATE_IDLE,
@@ -116,6 +120,7 @@ enum PLAYERSTATE {
 	PLAYERSTATE_DEAD,
 	PLAYERSTATE_END
 };
+
 typedef struct tagEnemyStat {
 	int hp;			//체력
 	int str;		//힘
@@ -134,6 +139,7 @@ enum ENEMYSTATE
 	ENEMYSTATE_IDLE,	//플레이어를 찾은 상태에서의 기본
 	ENEMYSTATE_MOVE,
 	ENEMYSTATE_ATTACK,
+	ENEMYSTATE_DEAD,
 	ENEMYSTATE_END
 };
 
@@ -162,24 +168,69 @@ typedef struct tagItem {
 
 
 
-#define ATTRIBUTE_UNSIGHT 0x0001
-#define ATTRIBUTE_UNGO 0x0002
+#define ATTRIBUTE_FLOOR		0x000001		// 기본 idle
+#define ATTRIBUTE_UNSIGHT	0x000002		// 시야를 가리는 속성
+#define ATTRIBUTE_UNGO		0x000004		// 지나갈 수 없는 속성
+#define ATTRIBUTE_DOOR		0x000008		// 열리고 닫히는 속성
+
+#define ATTRIBUTE_WATER		0x000010		// 물 : 그냥 물 밟는 소리가 난다고 한다...
+#define ATTRIBUTE_GRASS		0x000020		// 풀 : 밟거나 자르면 unsight 속성을 사라지게 만든다
+#define ATTRIBUTE_FLAMMABLE 0x000040		// 태우면 잿더미 타일이 되고 TERRAIN_FLOOR로 바꾼다
+
+#define ATTRIBUTE_CHEST		0x000100		// 보물상자 : 밟거나 조사하면 열린다
+#define ATTRIBUTE_CRYSTAL	0x000200		// 크리스탈 상자 : 밟거나 조사하면 내부의 물건을 확인할 수 있다
+#define ATTRIBUTE_TRAP		0x000400		// 트랩 : 밟거나 아이템 던지면 반응 (트랩 종류는 따로 정의)
+
+#define ATTRIBUTE_CHASM		0x000400		// 구멍 : 빠지면 플레이어는 데미지를 입고, 에너미는 죽는다
+
+#define ATTRIBUTE_HIDDEN	0x010000		// 히든 : 보이지 않는다. 특정 조건을 만족해야 드러남
 
 // 맵
 enum TERRAIN {
-	TERRAIN_NULL = 0,
+	TERRAIN_NULL,
 
-	TERRAIN_FLOOR,
-	TERRAIN_WALL = TERRAIN_FLOOR + ATTRIBUTE_UNGO,
+	TERRAIN_FLOOR =				ATTRIBUTE_FLOOR,
 
-	TERRAIN_DOOR_OPEN,
-	TERRAIN_DOOR_CLOSED = TERRAIN_DOOR_OPEN + ATTRIBUTE_UNSIGHT,
-	TERRAIN_DOOR_LOCKED = TERRAIN_DOOR_OPEN + ATTRIBUTE_UNGO,
+	TERRAIN_GRASS =				ATTRIBUTE_FLOOR + ATTRIBUTE_GRASS + ATTRIBUTE_FLAMMABLE,
+	TERRAIN_GRASS_UNTOUCHED =	ATTRIBUTE_FLOOR + ATTRIBUTE_GRASS + ATTRIBUTE_FLAMMABLE + ATTRIBUTE_UNSIGHT,
 
-	TERRAIN_GRASS_CUT,
-	TERRAIN_GRASS = TERRAIN_GRASS_CUT + ATTRIBUTE_UNSIGHT
+	TERRAIN_WALL =				ATTRIBUTE_FLOOR + ATTRIBUTE_UNGO + ATTRIBUTE_UNSIGHT,
+	TERRAIN_BARRICADE =			ATTRIBUTE_FLOOR + ATTRIBUTE_UNGO + ATTRIBUTE_UNSIGHT +  ATTRIBUTE_FLAMMABLE,
+	TERRAIN_STATUE =			ATTRIBUTE_FLOOR + ATTRIBUTE_UNGO,
+
+	TERRAIN_DOOR =				ATTRIBUTE_FLOOR + ATTRIBUTE_DOOR,
+	TERRAIN_DOOR_OPEN =			ATTRIBUTE_FLOOR + ATTRIBUTE_DOOR + ATTRIBUTE_FLAMMABLE,
+	TERRAIN_DOOR_CLOSED =		ATTRIBUTE_FLOOR + ATTRIBUTE_DOOR + ATTRIBUTE_UNSIGHT + ATTRIBUTE_FLAMMABLE,
+	TERRAIN_DOOR_LOCKED =		ATTRIBUTE_FLOOR + ATTRIBUTE_DOOR + ATTRIBUTE_UNSIGHT + ATTRIBUTE_UNGO,
+	TERRAIN_DOOR_HIDDEN =		ATTRIBUTE_FLOOR + ATTRIBUTE_DOOR + ATTRIBUTE_UNSIGHT + ATTRIBUTE_UNGO + ATTRIBUTE_HIDDEN,
+
+	TERRAIN_WATER =				ATTRIBUTE_FLOOR + ATTRIBUTE_WATER,
+
+	TERRAIN_TRAP =				ATTRIBUTE_FLOOR + ATTRIBUTE_TRAP,
+	TERRAIN_TRAP_HIDDEN =		ATTRIBUTE_FLOOR + ATTRIBUTE_TRAP + ATTRIBUTE_HIDDEN,
+
+	TERRAIN_CHASM =				ATTRIBUTE_FLOOR + ATTRIBUTE_CHASM,
+	
+	TERRAIN_CHEST =				ATTRIBUTE_FLOOR + ATTRIBUTE_CHEST,
+	TERRAIN_CHEST_LOCKED =		ATTRIBUTE_FLOOR + ATTRIBUTE_CHEST + ATTRIBUTE_UNGO,
+	TERRAIN_CRY_CHEST =			ATTRIBUTE_FLOOR + ATTRIBUTE_CHEST + ATTRIBUTE_CRYSTAL,
+	TERRAIN_CRY_CHEST_LOCKED =	ATTRIBUTE_FLOOR + ATTRIBUTE_CHEST + ATTRIBUTE_CRYSTAL + ATTRIBUTE_UNGO
 };
 
+enum TRAP {
+	TRAP_NONE,
+
+	TRAP_INACTIVE,
+
+	TRAP_GAS,
+	TRAP_FIRE,
+	TRAP_PARALYZE,
+	TRAP_POISON,
+	TRAP_ALARM,
+	TRAP_LIGHTNING,
+	TRAP_GRIPPING,
+	TRAP_SUMMONING,
+};
 
 enum OBJ {
 	OBJ_NONE,
@@ -187,8 +238,6 @@ enum OBJ {
 	OBJ_TRAP_UNSIGHT,
 	OBJ_TRAP_ACTIVATE
 };
-
-
 
 enum TILEVIEW {
 	TILEVIEW_NO,
@@ -201,32 +250,18 @@ typedef struct tagTile {
 	image* img; //받아올 이미지
 	int sourX, sourY; //받아올 타일 좌표값
 	int destX, destY; //뿌릴 타일 좌표값
-	int index;
 	TILEVIEW tileview;
 	TERRAIN terrain;
+	TRAP trap;
 	OBJ obj;
 }TILE;
-
-typedef struct tagSaveTile {
-	//string imgName; //받아올 이미지
-	int sourX, sourY; //받아올 타일 좌표값
-	int destX, destY; //뿌릴 타일 좌표값
-	int index;
-	TILEVIEW tileview;
-	TERRAIN terrain;
-	OBJ obj;
-}SAVETILE;
-
-typedef struct tagSaveMap {
-	int size;
-	SAVETILE* tiles;
-}SAVEMAP;
 
 typedef struct tagGrid {
 	image* img; //들어있는 이미지
 	int x, y;
 	int index;
 	RECT rc;
+	bool empty;
 }GRID;
 
 typedef struct tagSelectTile {
@@ -241,3 +276,9 @@ typedef struct tagButton {
 	char text[128];
 	bool isClicked;
 }BUTTON;
+
+struct tagDebuff {
+	int lefttime;		//잔여시간
+	int damage;			//데미지
+	DEBUFF type;		//디버프 타입
+};
