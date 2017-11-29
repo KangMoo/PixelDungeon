@@ -161,6 +161,7 @@ void ItemManager::draw(POINT camera)
 	}
 	for ( _viItem = _vItem.begin(); _viItem != _vItem.end(); ++_viItem)
 	{
+		if(_viItem->floor == _map->getCurStageNum())
 		_viItem->img->render(getMemDC(), _viItem->rc.left + camera.x, _viItem->rc.top + camera.y);
 	}
 }
@@ -255,7 +256,7 @@ void ItemManager::setItemToField(ITEMNAME name, float x, float y)
 	ZeroMemory(&item, sizeof(tagItem));
 
 	item.upgrade = 0;
-
+	item.floor = _map->getCurStageNum();
 	setItem(&item, name);
 
 	item.point.x = x;
@@ -374,7 +375,7 @@ void ItemManager::setItemToField(ITEMNAME name, float x, float y, bool identify,
 	ZeroMemory(&item, sizeof(tagItem));
 
 	item.upgrade = upgrade;
-
+	item.floor = _map->getCurStageNum();
 	setItem(&item, name);
 
 	item.contentsHide = identify;
