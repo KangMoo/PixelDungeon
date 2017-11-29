@@ -50,8 +50,8 @@ HRESULT Swarm::init(POINT point)
 	_statistics.lv = 1;
 	_statistics.maxLv = 10;
 	_statistics.exp = 1;
-	_statistics.hp = 80;
-	_currntHp = 80;
+	_statistics.hp = 12;
+	_currntHp = 12;
 	_statistics.avd_lck = 5;
 	_statistics.def = 0;
 	a = RND->getFromIntTo(1, 4);
@@ -177,14 +177,14 @@ void Swarm::action()
 			{
 			
 			}
-			//if (dis < 4)
-			//{
-			//	//거리가 일정 범위 이내로 적이 들어왔으면 인식
-			//	//인식한 턴은 그냥 자동으로 넘겨줌
-			//	_myState = ENEMYSTATE_IDLE;
-			//	_findPlayer = true;
-			//	_action = false;
-			//}
+			if (dis < 4)
+			{
+				//거리가 일정 범위 이내로 적이 들어왔으면 인식
+				//인식한 턴은 그냥 자동으로 넘겨줌
+				_myState = ENEMYSTATE_IDLE;
+				_findPlayer = true;
+				_action = false;
+			}
 			else
 			{
 				//거리가 멀면 랜덤이동
@@ -317,7 +317,7 @@ void Swarm::action()
 			else
 			{
 				//아니라면 astar로 이동한다
-				astarTest = _map->aStar(_point, _player->getPoint());
+				astarTest = _map->aStar(_player->getPoint(), PointMake(_pointX, _pointY));
 				//움직일때 해당 좌표를 4,5 같은 식으로 주면 자동으로 4*TILESIZE + TILESIZE/2, 5*... 해줌
 				_movePoint = PointMake(astarTest[astarTest.size() - 1].destX, astarTest[astarTest.size() - 1].destY);
 				_myState = ENEMYSTATE_MOVE;
@@ -469,7 +469,13 @@ void Swarm::getDamaged(int damage)
 			else
 				y = -1;
 
-			_em->setSwarm(PointMake(_point.x + x, _point.y + y), _currntHp);
+			//if (_map->getMap(_point.x, _point.y - 1).obj == OBJ_NONE &&
+			//	(_map->getMap(_point.x, _point.y - 1).terrain == TERRAIN_FLOOR ||
+			//		_map->getMap(_point.x, _point.y - 1).terrain == TERRAIN_GRASS))
+			if(_map->getMap(_point.x + x, _point.y + y).obj == OBJ_NONE &&
+				(_map->getMap(_point.x + x, _point.y + y).terrain == TERRAIN_FLOOR ||
+					_map->getMap(_point.x + x, _point.y + y).terrain == TERRAIN_GRASS))
+				_em->setSwarm(PointMake(_point.x + x, _point.y + y), _currntHp);
 		}
 		else
 		{
@@ -485,6 +491,7 @@ void Swarm::draw(POINT camera)
 	//시야에 보일때만 출력하게
 	if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
 		_image->frameRender(getMemDC(), _hitBox.left, _hitBox.top);
+	RectangleMakeCenter(getMemDC(), _pointX, _pointY, _currntHp, _currntHp);
 	//if(_findPlayer)
 
 	//_hpBar->setX(_point.x - 25 + camera.x);
