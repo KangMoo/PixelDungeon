@@ -72,7 +72,7 @@ HRESULT UI::init()
 	_Target_ButtonRect = RectMake(WINSIZEX - IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), 460, IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), IMAGEMANAGER->findImage("Target_button")->getFrameHeight());
 
 	_Menu_selectRect = RectMake((WINSIZEX - IMAGEMANAGER->findImage("menu_button")->getFrameWidth()) + 60, 0, 30, IMAGEMANAGER->findImage("menu_button")->getFrameHeight());
-	_StatusRect = RectMake(5,5,85,88);
+	_StatusRect = RectMake(5, 5, 85, 88);
 
 	_interface_button_timer1 = TIMEMANAGER->getWorldTime();
 	_interface_button_timer2 = TIMEMANAGER->getWorldTime();
@@ -80,10 +80,10 @@ HRESULT UI::init()
 
 	_uitimer = TIMEMANAGER->getWorldTime();
 
-	_Menu_WindowRect[GAMEMENU_SET] = RectMake(278,242,260,45);
-	_Menu_WindowRect[GAMEMENU_MAIN] = RectMake(278,287,130,45);
-	_Menu_WindowRect[GAMEMENU_EXIT] = RectMake(408,287,130,45);
-	_Menu_WindowRect[GAMEMENU_BACK] = RectMake(278,332,260,45);
+	_Menu_WindowRect[GAMEMENU_SET] = RectMake(278, 242, 260, 45);
+	_Menu_WindowRect[GAMEMENU_MAIN] = RectMake(278, 287, 130, 45);
+	_Menu_WindowRect[GAMEMENU_EXIT] = RectMake(408, 287, 130, 45);
+	_Menu_WindowRect[GAMEMENU_BACK] = RectMake(278, 332, 260, 45);
 
 	return S_OK;
 }
@@ -156,18 +156,18 @@ void UI::draw(POINT camera)
 	//Rectangle(getMemDC(), (WINSIZEX - IMAGEMANAGER->findImage("menu_button")->getFrameWidth()) + 60, 0, ((WINSIZEX - IMAGEMANAGER->findImage("menu_button")->getFrameWidth()) + 60) + 30, IMAGEMANAGER->findImage("menu_button")->getFrameHeight());
 
 	//if (/*몬스터가 근처에 있을시에 표시*/)
-		IMAGEMANAGER->render("Monster_Display", getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Monster_Display")->getFrameWidth(), 40);
-		//Rectangle(getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Monster_Display")->getFrameWidth(), 40, (WINSIZEX - IMAGEMANAGER->findImage("Monster_Display")->getFrameWidth()) + IMAGEMANAGER->findImage("Monster_Display")->getFrameWidth(), 40 + IMAGEMANAGER->findImage("Monster_Display")->getFrameHeight());
+	IMAGEMANAGER->render("Monster_Display", getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Monster_Display")->getFrameWidth(), 40);
+	//Rectangle(getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Monster_Display")->getFrameWidth(), 40, (WINSIZEX - IMAGEMANAGER->findImage("Monster_Display")->getFrameWidth()) + IMAGEMANAGER->findImage("Monster_Display")->getFrameWidth(), 40 + IMAGEMANAGER->findImage("Monster_Display")->getFrameHeight());
 
-	//if (/*플레이어가 특수 아이템을 소지하고 있을시*/)
-		IMAGEMANAGER->render("Special_Button", getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Special_Button")->getFrameWidth(), 380);
-		//Rectangle(getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Special_Button")->getFrameWidth(), 380, (WINSIZEX - IMAGEMANAGER->findImage("Special_Button")->getFrameWidth()) + IMAGEMANAGER->findImage("Special_Button")->getFrameWidth(), 380 + IMAGEMANAGER->findImage("Special_Button")->getFrameHeight());
+//if (/*플레이어가 특수 아이템을 소지하고 있을시*/)
+	IMAGEMANAGER->render("Special_Button", getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Special_Button")->getFrameWidth(), 380);
+	//Rectangle(getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Special_Button")->getFrameWidth(), 380, (WINSIZEX - IMAGEMANAGER->findImage("Special_Button")->getFrameWidth()) + IMAGEMANAGER->findImage("Special_Button")->getFrameWidth(), 380 + IMAGEMANAGER->findImage("Special_Button")->getFrameHeight());
 
-	//if (/*몬스터가 근처에 있을시*/)
-		IMAGEMANAGER->render("Target_button", getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), 460);
-		//Rectangle(getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), 460, (WINSIZEX - IMAGEMANAGER->findImage("Target_button")->getFrameWidth()) + IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), 460 + IMAGEMANAGER->findImage("Target_button")->getFrameHeight());
-	
-	//Rectangle(getMemDC(), 5, 5, 85,88);
+//if (/*몬스터가 근처에 있을시*/)
+	IMAGEMANAGER->render("Target_button", getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), 460);
+	//Rectangle(getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), 460, (WINSIZEX - IMAGEMANAGER->findImage("Target_button")->getFrameWidth()) + IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), 460 + IMAGEMANAGER->findImage("Target_button")->getFrameHeight());
+
+//Rectangle(getMemDC(), 5, 5, 85,88);
 
 	if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && (TIMEMANAGER->getWorldTime() - _interface_button_timer1) > 0.3 && _selectInterface == INTERFACEMENU_END && !_player->getIsPlayerMoving())
 	{
@@ -219,7 +219,7 @@ void UI::draw(POINT camera)
 		{
 			_selectInterface = INTERFACEMENU_END;
 			//_player->setUsingUI(false);
-			
+
 			usingui();
 		}
 
@@ -229,28 +229,28 @@ void UI::draw(POINT camera)
 	switch (_selectInterface)
 	{
 		//배낭
-		case INTERFACEMENU_BACKPACK:
-			BackPack();
-			break;
+	case INTERFACEMENU_BACKPACK:
+		BackPack();
+		break;
 
 		//턴스킵
-		case INTERFACEMENU_TURNSKIP:
-			break;
+	case INTERFACEMENU_TURNSKIP:
+		break;
 
 		//탐색
-		case INTERFACEMENU_SEARCH:
-			search();
-			break;
+	case INTERFACEMENU_SEARCH:
+		search();
+		break;
 
 		//메뉴창
-		case INTERFACEMENU_MENU:
-			main_menu();
-			break;
+	case INTERFACEMENU_MENU:
+		main_menu();
+		break;
 
 		//스테이터스 창
-		case INTERFACEMENU_STATUS:
-			status_window();
-			break;
+	case INTERFACEMENU_STATUS:
+		status_window();
+		break;
 	}
 
 	//IMAGEMANAGER->findImage("status_pane")->render(getMemDC(), _status_pane_pos.x, _status_pane_pos.y); //고인
@@ -260,7 +260,7 @@ void UI::draw(POINT camera)
 void UI::main_menu()
 {
 	fream_window_draw(19, 10);
-	IMAGEMANAGER->render("select_menu_bar2", getMemDC(), ((WINSIZEX / 2) - (IMAGEMANAGER->findImage("select_menu_bar2")->getWidth() / 2)) + 8 , ((WINSIZEY / 2) - (IMAGEMANAGER->findImage("select_menu_bar2")->getHeight() / 2)) + 7);
+	IMAGEMANAGER->render("select_menu_bar2", getMemDC(), ((WINSIZEX / 2) - (IMAGEMANAGER->findImage("select_menu_bar2")->getWidth() / 2)) + 8, ((WINSIZEY / 2) - (IMAGEMANAGER->findImage("select_menu_bar2")->getHeight() / 2)) + 7);
 
 	//Rectangle(getMemDC(), 278, 242, 538, 287);
 	//Rectangle(getMemDC(), 278, 287, 408, 329);
@@ -335,7 +335,7 @@ void UI::status_window()
 
 void UI::search()
 {
-	fream_window_draw(18, 4, 0 ,170);
+	fream_window_draw(18, 4, 0, 170);
 
 	char name[] = "탐색 지역을 선택하시오";
 	PrintFont(name, namehFont, nameoldFont, 290, 468, 18, 0, 255, 0);
@@ -386,11 +386,14 @@ bool UI::usingInterface()
 	if (_selectInterface == INTERFACEMENU_END &&_selectItem == NAME_END && _selectMenu == GAMEMENU_END)
 	{
 		return false;
+		if (TIMEMANAGER->getWorldTime() - _interface_button_timer1 > 0.1 &&
+			TIMEMANAGER->getWorldTime() - _interface_button_timer2 > 0.1 &&
+			TIMEMANAGER->getWorldTime() - _interface_button_timer3 > 0.1)
+		{
+			
+		}
 	}
-	else if(_selectInterface != INTERFACEMENU_END ||_selectItem != NAME_END || _selectMenu != GAMEMENU_END)
-	{
-		return true;
-	}
+	return true;
 }
 
 void UI::BackPack()
@@ -506,256 +509,256 @@ void UI::BackPack()
 	switch (_selectItem)
 	{
 		//낡은 소검
-		case NAME_OLD_SHORT_SWORD:
-			fream_window_draw(28, 12);
-			button_interface(NAME_OLD_SHORT_SWORD, TYPE_WEAPON, 3, 28, 12);
+	case NAME_OLD_SHORT_SWORD:
+		fream_window_draw(28, 12);
+		button_interface(NAME_OLD_SHORT_SWORD, TYPE_WEAPON, 3, 28, 12);
 
-			//char str[] = "폰트테스트";
-			//HFONT hFont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("굴림"));
-			//HFONT oldFont = (HFONT)SelectObject(getMemDC(), hFont);
-			////TextOut(getMemDC(), 300, 300, str, strlen(str));
-			//SelectObject(getMemDC(), oldFont);
-			//DeleteObject(hFont);
+		//char str[] = "폰트테스트";
+		//HFONT hFont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("굴림"));
+		//HFONT oldFont = (HFONT)SelectObject(getMemDC(), hFont);
+		////TextOut(getMemDC(), 300, 300, str, strlen(str));
+		//SelectObject(getMemDC(), oldFont);
+		//DeleteObject(hFont);
 
-			break;
-		
+		break;
+
 		//소검
-		case NAME_SHORT_SWORD:
-			fream_window_draw(28, 12);
-			button_interface(NAME_SHORT_SWORD, TYPE_WEAPON, 3, 28, 12);
-			break;
+	case NAME_SHORT_SWORD:
+		fream_window_draw(28, 12);
+		button_interface(NAME_SHORT_SWORD, TYPE_WEAPON, 3, 28, 12);
+		break;
 
 		//검
-		case NAME_SWORD:
-			fream_window_draw(28, 12);
-			button_interface(NAME_SWORD, TYPE_WEAPON, 3, 28, 12);
-			break;
+	case NAME_SWORD:
+		fream_window_draw(28, 12);
+		button_interface(NAME_SWORD, TYPE_WEAPON, 3, 28, 12);
+		break;
 
 		//창
-		case NAME_SPEAR:
-			fream_window_draw(28, 12);
-			button_interface(NAME_SPEAR, TYPE_WEAPON, 3, 28, 12);
-			break;
+	case NAME_SPEAR:
+		fream_window_draw(28, 12);
+		button_interface(NAME_SPEAR, TYPE_WEAPON, 3, 28, 12);
+		break;
 
 		//전투 도끼
-		case NAME_BATTLE_AXE:
-			fream_window_draw(28, 12);
-			button_interface(NAME_BATTLE_AXE, TYPE_WEAPON, 3, 28, 12);
-			break;
+	case NAME_BATTLE_AXE:
+		fream_window_draw(28, 12);
+		button_interface(NAME_BATTLE_AXE, TYPE_WEAPON, 3, 28, 12);
+		break;
 
 		//일반 옷
-		case NAME_CLOTH:
-			fream_window_draw(28, 12);
-			button_interface(NAME_CLOTH, TYPE_ARMOR, 3, 28, 12);
-			break;
+	case NAME_CLOTH:
+		fream_window_draw(28, 12);
+		button_interface(NAME_CLOTH, TYPE_ARMOR, 3, 28, 12);
+		break;
 
 		//경갑
-		case NAME_LEATHER:
-			fream_window_draw(28, 12);
-			button_interface(NAME_LEATHER, TYPE_ARMOR, 3, 28, 12);
-			break;
+	case NAME_LEATHER:
+		fream_window_draw(28, 12);
+		button_interface(NAME_LEATHER, TYPE_ARMOR, 3, 28, 12);
+		break;
 
 		//중갑
-		case NAME_MAIL:
-			fream_window_draw(28, 12);
-			button_interface(NAME_MAIL, TYPE_ARMOR, 3, 28, 12);
-			break;
+	case NAME_MAIL:
+		fream_window_draw(28, 12);
+		button_interface(NAME_MAIL, TYPE_ARMOR, 3, 28, 12);
+		break;
 
 		//저항 반지
-		case NAME_RING_POWER:
-			fream_window_draw(28, 12);
-			button_interface(NAME_RING_POWER, TYPE_ACC, 3, 28, 12);
-			break;
+	case NAME_RING_POWER:
+		fream_window_draw(28, 12);
+		button_interface(NAME_RING_POWER, TYPE_ACC, 3, 28, 12);
+		break;
 
 		//충전 반지
-		case NAME_RING_RECHARGE:
-			fream_window_draw(28, 12);
-			button_interface(NAME_RING_RECHARGE, TYPE_ACC, 3, 28, 12);
-			break;
+	case NAME_RING_RECHARGE:
+		fream_window_draw(28, 12);
+		button_interface(NAME_RING_RECHARGE, TYPE_ACC, 3, 28, 12);
+		break;
 
 		//완드
-		case NAME_LIOYDS_BEACON:
-			fream_window_draw(47, 12);
-			button_interface(NAME_LIOYDS_BEACON, TYPE_ACC, 5, 47, 12);
-			break;
+	case NAME_LIOYDS_BEACON:
+		fream_window_draw(47, 12);
+		button_interface(NAME_LIOYDS_BEACON, TYPE_ACC, 5, 47, 12);
+		break;
 
 		//다트
-		case NAME_DART:
-			fream_window_draw(28, 12);
-			button_interface(NAME_DART, TYPE_THROW, 2, 28, 12);
-			break;
+	case NAME_DART:
+		fream_window_draw(28, 12);
+		button_interface(NAME_DART, TYPE_THROW, 2, 28, 12);
+		break;
 
 		//마비 다트
-		case NAME_PARALYSIS_DART:
-			fream_window_draw(28, 12);
-			button_interface(NAME_PARALYSIS_DART, TYPE_THROW, 2, 28, 12);
-			break;
+	case NAME_PARALYSIS_DART:
+		fream_window_draw(28, 12);
+		button_interface(NAME_PARALYSIS_DART, TYPE_THROW, 2, 28, 12);
+		break;
 
 		//독 다트
-		case NAME_POISON_DART:
-			fream_window_draw(28, 12);
-			button_interface(NAME_POISON_DART, TYPE_THROW, 2, 28, 12);
-			break;
+	case NAME_POISON_DART:
+		fream_window_draw(28, 12);
+		button_interface(NAME_POISON_DART, TYPE_THROW, 2, 28, 12);
+		break;
 
 		//전기 완드
-		case NAME_LIGHTNING:
-			fream_window_draw(28, 12);
-			button_interface(NAME_LIGHTNING, TYPE_WAND, 2, 28, 12);
-			break;
+	case NAME_LIGHTNING:
+		fream_window_draw(28, 12);
+		button_interface(NAME_LIGHTNING, TYPE_WAND, 2, 28, 12);
+		break;
 
 		//마법 완드
-		case NAME_NORMAL:
-			fream_window_draw(28, 12);
-			button_interface(NAME_NORMAL, TYPE_WAND, 2, 28, 12);
-			break;
+	case NAME_NORMAL:
+		fream_window_draw(28, 12);
+		button_interface(NAME_NORMAL, TYPE_WAND, 2, 28, 12);
+		break;
 
 		//독 완드
-		case NAME_POISON:
-			fream_window_draw(28, 12);
-			button_interface(NAME_POISON, TYPE_WAND, 2, 28, 12);
-			break;
+	case NAME_POISON:
+		fream_window_draw(28, 12);
+		button_interface(NAME_POISON, TYPE_WAND, 2, 28, 12);
+		break;
 
 		//비상식량
-		case NAME_EMERGENCY:
-			fream_window_draw(28, 12);
-			button_interface(NAME_EMERGENCY, TYPE_FOOD, 3, 28, 12);
-			break;
+	case NAME_EMERGENCY:
+		fream_window_draw(28, 12);
+		button_interface(NAME_EMERGENCY, TYPE_FOOD, 3, 28, 12);
+		break;
 
 		//파스티
-		case NAME_PASTY:
-			fream_window_draw(28, 12);
-			button_interface(NAME_PASTY, TYPE_FOOD, 3, 28, 12);
-			break;
+	case NAME_PASTY:
+		fream_window_draw(28, 12);
+		button_interface(NAME_PASTY, TYPE_FOOD, 3, 28, 12);
+		break;
 
 		//알수없는 고기
-		case NAME_UNKNOWN_MEAT:
-			fream_window_draw(28, 12);
-			button_interface(NAME_UNKNOWN_MEAT, TYPE_FOOD, 3, 28, 12);
-			break;
+	case NAME_UNKNOWN_MEAT:
+		fream_window_draw(28, 12);
+		button_interface(NAME_UNKNOWN_MEAT, TYPE_FOOD, 3, 28, 12);
+		break;
 
 		//익힌 고기
-		case NAME_COOKED_MEAT:
-			fream_window_draw(28, 12);
-			button_interface(NAME_COOKED_MEAT, TYPE_FOOD, 3, 28, 12);
-			break;
+	case NAME_COOKED_MEAT:
+		fream_window_draw(28, 12);
+		button_interface(NAME_COOKED_MEAT, TYPE_FOOD, 3, 28, 12);
+		break;
 
 		//얼린 고기
-		case NAME_FROZEN_MEAT:
-			fream_window_draw(28, 12);
-			button_interface(NAME_FROZEN_MEAT, TYPE_FOOD, 3, 28, 12);
-			break;
+	case NAME_FROZEN_MEAT:
+		fream_window_draw(28, 12);
+		button_interface(NAME_FROZEN_MEAT, TYPE_FOOD, 3, 28, 12);
+		break;
 
 		//확인
-		case NAME_IDENTIFY:
-			fream_window_draw(28, 12);
-			button_interface(NAME_IDENTIFY, TYPE_SCROLL, 3, 28, 12);
-			break;
+	case NAME_IDENTIFY:
+		fream_window_draw(28, 12);
+		button_interface(NAME_IDENTIFY, TYPE_SCROLL, 3, 28, 12);
+		break;
 
 		//강화
-		case NAME_UPGRADE:
-			fream_window_draw(28, 20);
-			button_interface(NAME_UPGRADE, TYPE_SCROLL, 3, 28, 20);
-			break;
+	case NAME_UPGRADE:
+		fream_window_draw(28, 20);
+		button_interface(NAME_UPGRADE, TYPE_SCROLL, 3, 28, 20);
+		break;
 
 		//정화
-		case NAME_PURIFY:
-			fream_window_draw(28, 12);
-			button_interface(NAME_PURIFY, TYPE_SCROLL, 3, 28, 12);
-			break;
+	case NAME_PURIFY:
+		fream_window_draw(28, 12);
+		button_interface(NAME_PURIFY, TYPE_SCROLL, 3, 28, 12);
+		break;
 
 		//지도
-		case NAME_MAP:
-			fream_window_draw(28, 12);
-			button_interface(NAME_MAP, TYPE_SCROLL, 3, 28, 12);
-			break;
+	case NAME_MAP:
+		fream_window_draw(28, 12);
+		button_interface(NAME_MAP, TYPE_SCROLL, 3, 28, 12);
+		break;
 
 		//재충전
-		case NAME_RECHARGE:
-			fream_window_draw(28, 12);
-			button_interface(NAME_RECHARGE, TYPE_SCROLL, 3, 28, 12);
-			break;
+	case NAME_RECHARGE:
+		fream_window_draw(28, 12);
+		button_interface(NAME_RECHARGE, TYPE_SCROLL, 3, 28, 12);
+		break;
 
 		//이슬
-		case NAME_BOTTLE:
-			fream_window_draw(28, 12);
-			button_interface(NAME_BOTTLE, TYPE_POTION, 3, 28, 12);
-			break;
+	case NAME_BOTTLE:
+		fream_window_draw(28, 12);
+		button_interface(NAME_BOTTLE, TYPE_POTION, 3, 28, 12);
+		break;
 
 		//회복
-		case NAME_HEAL:
-			fream_window_draw(28, 12);
-			button_interface(NAME_HEAL, TYPE_POTION, 3, 28, 12);
-			break;
+	case NAME_HEAL:
+		fream_window_draw(28, 12);
+		button_interface(NAME_HEAL, TYPE_POTION, 3, 28, 12);
+		break;
 
 		//힘
-		case NAME_STR:
-			fream_window_draw(28, 12);
-			button_interface(NAME_STR, TYPE_POTION, 3, 28, 12);
-			break;
+	case NAME_STR:
+		fream_window_draw(28, 12);
+		button_interface(NAME_STR, TYPE_POTION, 3, 28, 12);
+		break;
 
 		//숙련도
-		case NAME_EX:
-			fream_window_draw(28, 12);
-			button_interface(NAME_EX, TYPE_POTION, 3, 28, 12);
-			break;
+	case NAME_EX:
+		fream_window_draw(28, 12);
+		button_interface(NAME_EX, TYPE_POTION, 3, 28, 12);
+		break;
 
 		//투명화
-		case NAME_INVISIBLE:
-			fream_window_draw(28, 15);
-			button_interface(NAME_INVISIBLE, TYPE_POTION, 3, 28, 15);
-			break;
+	case NAME_INVISIBLE:
+		fream_window_draw(28, 15);
+		button_interface(NAME_INVISIBLE, TYPE_POTION, 3, 28, 15);
+		break;
 
 		//공중 부양
-		case NAME_LEVITATION:
-			fream_window_draw(28, 15);
-			button_interface(NAME_LEVITATION, TYPE_POTION, 3, 28, 15);
-			break;
+	case NAME_LEVITATION:
+		fream_window_draw(28, 15);
+		button_interface(NAME_LEVITATION, TYPE_POTION, 3, 28, 15);
+		break;
 
 		//서리
-		case NAME_FROZEN:
-			fream_window_draw(28, 12);
-			button_interface(NAME_FROZEN, TYPE_POTION, 3, 28, 12);
-			break;
+	case NAME_FROZEN:
+		fream_window_draw(28, 12);
+		button_interface(NAME_FROZEN, TYPE_POTION, 3, 28, 12);
+		break;
 
 		//액체 화염
-		case NAME_LIQUID_FIRE:
-			fream_window_draw(28, 12);
-			button_interface(NAME_LIQUID_FIRE, TYPE_POTION, 3, 28, 12);
-			break;
+	case NAME_LIQUID_FIRE:
+		fream_window_draw(28, 12);
+		button_interface(NAME_LIQUID_FIRE, TYPE_POTION, 3, 28, 12);
+		break;
 
 		//치유
-		case NAME_SEED_HEAL:
-			fream_window_draw(28, 12);
-			button_interface(NAME_SEED_HEAL, TYPE_SEED, 3, 28, 12);
-			break;
+	case NAME_SEED_HEAL:
+		fream_window_draw(28, 12);
+		button_interface(NAME_SEED_HEAL, TYPE_SEED, 3, 28, 12);
+		break;
 
 		//화염초
-		case NAME_SEED_FIRE:
-			fream_window_draw(28, 12);
-			button_interface(NAME_SEED_FIRE, TYPE_SEED, 3, 28, 12);
-			break;
+	case NAME_SEED_FIRE:
+		fream_window_draw(28, 12);
+		button_interface(NAME_SEED_FIRE, TYPE_SEED, 3, 28, 12);
+		break;
 
 		//뱀뿌리
-		case NAME_SEED_SNAKE:
-			fream_window_draw(28, 12);
-			button_interface(NAME_SEED_SNAKE, TYPE_SEED, 3, 28, 12);
-			break;
+	case NAME_SEED_SNAKE:
+		fream_window_draw(28, 12);
+		button_interface(NAME_SEED_SNAKE, TYPE_SEED, 3, 28, 12);
+		break;
 
 		//얼음
-		case NAME_SEED_FROST:
-			fream_window_draw(28, 12);
-			button_interface(NAME_SEED_FROST, TYPE_SEED, 3, 28, 12);
-			break;
+	case NAME_SEED_FROST:
+		fream_window_draw(28, 12);
+		button_interface(NAME_SEED_FROST, TYPE_SEED, 3, 28, 12);
+		break;
 
 		//이슬
-		case NAME_DEW:
-			fream_window_draw(28, 12);
-			button_interface(NAME_DEW, TYPE_SPECIAL, 3, 28, 12);
-			break;
+	case NAME_DEW:
+		fream_window_draw(28, 12);
+		button_interface(NAME_DEW, TYPE_SPECIAL, 3, 28, 12);
+		break;
 
 		//없음
-		case NAME_END:
-			break;
+	case NAME_END:
+		break;
 	}
 }
 
@@ -811,7 +814,7 @@ void UI::fream_window_draw(size_t sizeX, size_t sizeY, int coordX, int coordY)
 				}
 			}
 
-			IMAGEMANAGER->frameRender("fream_window1", getMemDC(), 
+			IMAGEMANAGER->frameRender("fream_window1", getMemDC(),
 				((WINSIZEX / 2) - ((sizeX * IMAGEMANAGER->findImage("fream_window1")->getFrameWidth()) / 2)) + (fream_windowX * IMAGEMANAGER->findImage("fream_window1")->getFrameWidth()) + coordX,
 				((WINSIZEY / 2) - ((sizeY * IMAGEMANAGER->findImage("fream_window1")->getFrameHeight()) / 2)) + (fream_windowY * IMAGEMANAGER->findImage("fream_window1")->getFrameHeight()) + coordY,
 				fream_valueX, fream_valueY);

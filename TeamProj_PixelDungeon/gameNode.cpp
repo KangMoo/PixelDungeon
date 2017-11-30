@@ -98,6 +98,12 @@ LRESULT gameNode::MainProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lPara
 		//case WM_TIMER:
 		//	this->update();
 		//break;
+		case WM_MBUTTONDOWN:
+			
+		break;
+		case WM_LBUTTONDOWN:
+
+		break;
 		case WM_MOUSEMOVE:
 			_ptMouse.x = static_cast<float>LOWORD(lParam);
 			_ptMouse.y = static_cast<float>HIWORD(lParam);

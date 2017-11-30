@@ -80,22 +80,26 @@ void Player::update()
 	}
 
 	//마우스 클릭 이벤트 처리
-	if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON) && !_isUsingUI)
+	if (!_ui->usingInterface())
 	{
-		mouseClickEvent();
-	}
-	if (KEYMANAGER->isOnceKeyDown(VK_RBUTTON) && _keepMove)
-	{
-		//움직이는 중에 마우스 클릭 이벤트 발생 하면 가던 타일만 마저 가게 함
-		if (_keepMove && astar.size()>0)
+		if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON))
 		{
-			TILE temp;
-			temp = astar[astar.size() - 1];
-			astar.clear();
-			astar.push_back(temp);
-			return;
+			mouseClickEvent();
+		}
+		if (!_ui->usingInterface() && KEYMANAGER->isOnceKeyDown(VK_RBUTTON))
+		{
+			//움직이는 중에 마우스 클릭 이벤트 발생 하면 가던 타일만 마저 가게 함
+			if (_keepMove && astar.size()>0)
+			{
+				TILE temp;
+				temp = astar[astar.size() - 1];
+				astar.clear();
+				astar.push_back(temp);
+				return;
+			}
 		}
 	}
+	
 
 	//상태처리
 	if (_playerStat.hp <= 0)
@@ -553,8 +557,6 @@ void Player::getDamaged(int damage)
 }
 void Player::mouseClickEvent()
 {
-
-
 	//움직이는 중에 마우스 클릭 이벤트 발생 하면 가던 타일만 마저 가게 함
 	if (_keepMove && astar.size()>0)
 	{
