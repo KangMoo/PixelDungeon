@@ -30,7 +30,6 @@ private:
 	PLAYERSTATE _playerState;
 	vector<tagDebuff> _vdebuff;
 	vector<tagDebuff> _vbuff;
-
 	int _frameUpdateTimer;
 	float _frameTimer;
 	TILE _goalTile;
@@ -38,7 +37,7 @@ private:
 	bool _keepMove;
 	bool _isUsingUI;
 	bool _isEnemyTargeted;
-
+	
 	//test~
 	vector<TILE> tileCanSee;
 	vector<sightAngle> angleCanTSee;
@@ -63,7 +62,7 @@ public:
 	
 	void move();
 
-	void getDamaged(int damange);
+	void getDamaged(int damage);
 
 	//시야처리 함수
 	void addCanTSeeAngle(float sangle, float eangle);
@@ -73,7 +72,7 @@ public:
 
 	//버프, 디버프 추가
 	void addDebuff(DEBUFF debuffType, int lefttime, int damage);
-	void addBuff(BUFF buffType);
+	void addBuff(BUFF buffType, int lefttime);
 
 	//버프, 디버프 효과 적용
 	void effectDebuff();
@@ -115,7 +114,7 @@ public:
 	void setMapAddressLink(Map* map) { _map = map; }
 	void setUiAddressLink(UI* ui) { _ui = ui; }
 	void setItemManagerAddressLink(ItemManager* im) { _im = im; }
-
+	void setChangeFoor();
 	Player();
 	~Player();
 };

@@ -113,6 +113,8 @@ public:
 	void add_eightway(vertex v, POINT goalPoint);					//8방향 탐색 후 추가
 	bool check_goal();												//목적지 탐색
 
+	void playerTurnEnd() {};
+
 	//~A*
 
 	void spareTileSetup();

@@ -529,7 +529,28 @@ void Player::move()
 		endTurn();
 	}
 }
+void Player::getDamaged(int damage)
+{
+	if (RND->getFloat(1.0)<_playerStat.atk_lck)
+	{
+		//ºø³ª°¨
 
+	}
+	else
+	{
+		if (damage - _playerStat.def > 0)
+		{
+			//¹æ¾î
+			_playerStat.hp -= damage;
+		}
+		else
+		{
+			//¿ÏÀü¹æ¾î
+
+		}
+	}
+
+}
 void Player::mouseClickEvent()
 {
 
@@ -591,6 +612,9 @@ void Player::endTurn()
 	_action = false;
 	//Àû Â÷·Ê
 	_em->setTurn(true);
+
+	//¸Ê¿¡ ÅÏ ³¡³µ´Ù´Â Á¤º¸ ³Ñ°ÜÁÜ
+	_map->playerTurnEnd();
 }
 
 void Player::effectDebuff()
@@ -653,4 +677,11 @@ void Player::effectBuff()
 			break;
 		}
 	}
+}
+
+void Player::setChangeFoor()
+{
+	if (astar.size() > 0) astar.clear();
+	fovCheck();
+	endTurn();
 }

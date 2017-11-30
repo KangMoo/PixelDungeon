@@ -115,6 +115,8 @@ typedef struct tagPlayerStat {
 	float atk_lck;	//명중률
 	float avd_lck;	//회피율
 	int hunger;		//배고픔
+	int mindmg;		//최소데미지
+	int maxdmg;		//최대데미지
 }PLAYERSTAT;
 enum PLAYERSTATE {
 	PLAYERSTATE_IDLE,
