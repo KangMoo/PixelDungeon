@@ -67,6 +67,8 @@ public:
 	int getHP() { return _statistics.hp; }
 	void setHP(int hp) { _statistics.hp = hp; }
 
+	bool getLive() { return _isLive; }
+
 	//플레이어, ui랑 연결
 	void setPlayerAddressLink(Player* player)				{ _player = player; }
 	void setUiAddressLink(UI* ui)							{ _ui = ui; }

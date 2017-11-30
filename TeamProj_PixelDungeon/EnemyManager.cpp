@@ -17,8 +17,11 @@ HRESULT EnemyManager::init()
 {
 	_enemyTurn = false;
 	_actionCount = 0;
+	
+	_isSwarmSpawn = false;
 
-	setEnemy(PointMake(12, 12), 2);
+	setEnemy(PointMake(12, 12), 3);
+	//setEnemy(PointMake(12, 12), 2);
 	//setEnemy(PointMake(13, 13), 2);
 
 	return S_OK;
@@ -75,6 +78,11 @@ void EnemyManager::action()
 	{
 		//차례를 마치지 않은 적이 있으면 allEnemyTurnOver = false
 		if (i->getAction()) allEnemyTurnOver = false;
+	}
+	if (_isSwarmSpawn)
+	{
+		setSwarm(_swarmSpawn, _swarmSpawnHp);
+		_isSwarmSpawn = false;
 	}
 
 	//모든 적이 행동을 마쳤으면
@@ -174,5 +182,5 @@ void EnemyManager::setSwarm(POINT point, int hp)
 	temp->setItemManagerAddressLink(_im);
 	temp->setUiAddressLink(_ui);
 	temp->setMaAddressLink(_map);
-	_vEnemy.push_back(temp);
+	_vEnemy.insert(_vEnemy.begin(),temp);
 }

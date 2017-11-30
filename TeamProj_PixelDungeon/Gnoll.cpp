@@ -82,6 +82,8 @@ HRESULT Gnoll::init(POINT point)
 	//초기값 설정
 	_movePoint = PointMake(0, 0);
 	_frameCount = 0;
+	_deadAlpha = 0;
+	_active = false;
 
 	/*ENEMYSTATE_SLEEP,	//플레이어를 찾지 못한상태/수면상태
 	ENEMYSTATE_IDLE,	//플레이어를 찾은 상태에서의 기본
@@ -128,20 +130,19 @@ void Gnoll::getDamaged(int damage)
 	}
 	else
 	{
-		_currntHp -= damage;
-		if (_currntHp <= 0)
-		{
-			_isLive = false;
-		}
+		if(_currntHp > 0)
+			_currntHp -= damage;
 	}
 }
 
 void Gnoll::draw(POINT camera)
 {
 	//_hpBar->setGauge(_currntHp, _statistics.hp);
-
+	//시야에 보일때만 출력하게
 	if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
-		_image->frameRender(getMemDC(), _hitBox.left, _hitBox.top);
+		_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
+	RectangleMakeCenter(getMemDC(), _pointX + camera.x, _pointY + camera.y, _currntHp, _currntHp);
+	//if(_findPlayer)
 
 	//_hpBar->setX(_point.x - 25 + camera.x);
 	//_hpBar->setY(_pointY + _image->getFrameHeight() / 2 + 10 + camera.y);
@@ -196,6 +197,7 @@ void Gnoll::frameUpdate()
 				_currntFrameX = 0;
 				_myState = ENEMYSTATE_IDLE;
 				_image = _stay;
+				_action = false;
 			}
 			_image->setFrameX(_currntFrameX);
 			_image->setFrameY(_currntFrameY);
@@ -217,6 +219,9 @@ void Gnoll::action()
 		_action = false;
 		return;
 	}
+
+	//if (KEYMANAGER->isOnceKeyDown('E')) getDamaged(3);
+
 	if (_myState == ENEMYSTATE_SLEEP)
 	{
 		float dis = getDistance(_player->getPoint().x / TILESIZE, _player->getPoint().y / TILESIZE, _point.x, _point.y);
@@ -259,10 +264,11 @@ void Gnoll::action()
 					switch (a)
 					{
 					case 0:
-						//위
-						if (_map->getMap(_point.x, _point.y - 1).obj == OBJ_NONE &&
-							(_map->getMap(_point.x, _point.y - 1).terrain == TERRAIN_FLOOR ||
-								_map->getMap(_point.x, _point.y - 1).terrain == TERRAIN_GRASS))
+						//위 (ATTRIBUTE_UNGO & _map[v.x - 1][v.y].terrain) == ATTRIBUTE_UNGO
+						//if (_map->getMap(_point.x, _point.y - 1).obj == OBJ_NONE &&
+						//	(_map->getMap(_point.x, _point.y - 1).terrain == TERRAIN_FLOOR ||
+						//		_map->getMap(_point.x, _point.y - 1).terrain == TERRAIN_GRASS))
+						if ((ATTRIBUTE_UNGO & _map->getMap(_point.x, _point.y - 1).terrain) != ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x, _point.y - 1);
@@ -271,9 +277,10 @@ void Gnoll::action()
 						break;
 					case 1:
 						//오른쪽 위
-						if (_map->getMap(_point.x + 1, _point.y - 1).obj == OBJ_NONE &&
-							(_map->getMap(_point.x + 1, _point.y - 1).terrain == TERRAIN_FLOOR ||
-								_map->getMap(_point.x + 1, _point.y - 1).terrain == TERRAIN_GRASS))
+						//if (_map->getMap(_point.x + 1, _point.y - 1).obj == OBJ_NONE &&
+						//	(_map->getMap(_point.x + 1, _point.y - 1).terrain == TERRAIN_FLOOR ||
+						//		_map->getMap(_point.x + 1, _point.y - 1).terrain == TERRAIN_GRASS))
+						if ((ATTRIBUTE_UNGO & _map->getMap(_point.x + 1, _point.y - 1).terrain) != ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x + 1, _point.y - 1);
@@ -282,9 +289,10 @@ void Gnoll::action()
 						break;
 					case 2:
 						//오른쪽
-						if (_map->getMap(_point.x + 1, _point.y).obj == OBJ_NONE &&
-							(_map->getMap(_point.x + 1, _point.y).terrain == TERRAIN_FLOOR ||
-								_map->getMap(_point.x + 1, _point.y).terrain == TERRAIN_GRASS))
+						//if (_map->getMap(_point.x + 1, _point.y).obj == OBJ_NONE &&
+						//	(_map->getMap(_point.x + 1, _point.y).terrain == TERRAIN_FLOOR ||
+						//		_map->getMap(_point.x + 1, _point.y).terrain == TERRAIN_GRASS))
+						if ((ATTRIBUTE_UNGO & _map->getMap(_point.x + 1, _point.y).terrain) != ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x + 1, _point.y);
@@ -293,9 +301,10 @@ void Gnoll::action()
 						break;
 					case 3:
 						//오른쪽 아래
-						if (_map->getMap(_point.x + 1, _point.y + 1).obj == OBJ_NONE &&
-							(_map->getMap(_point.x + 1, _point.y + 1).terrain == TERRAIN_FLOOR ||
-								_map->getMap(_point.x + 1, _point.y + 1).terrain == TERRAIN_GRASS))
+						//if (_map->getMap(_point.x + 1, _point.y + 1).obj == OBJ_NONE &&
+						//	(_map->getMap(_point.x + 1, _point.y + 1).terrain == TERRAIN_FLOOR ||
+						//		_map->getMap(_point.x + 1, _point.y + 1).terrain == TERRAIN_GRASS))
+						if ((ATTRIBUTE_UNGO & _map->getMap(_point.x + 1, _point.y + 1).terrain) != ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x + 1, _point.y + 1);
@@ -304,9 +313,10 @@ void Gnoll::action()
 						break;
 					case 4:
 						//아래
-						if (_map->getMap(_point.x, _point.y + 1).obj == OBJ_NONE &&
-							(_map->getMap(_point.x, _point.y + 1).terrain == TERRAIN_FLOOR ||
-								_map->getMap(_point.x, _point.y + 1).terrain == TERRAIN_GRASS))
+						//if (_map->getMap(_point.x, _point.y + 1).obj == OBJ_NONE &&
+						//	(_map->getMap(_point.x, _point.y + 1).terrain == TERRAIN_FLOOR ||
+						//		_map->getMap(_point.x, _point.y + 1).terrain == TERRAIN_GRASS))
+						if ((ATTRIBUTE_UNGO & _map->getMap(_point.x, _point.y + 1).terrain) != ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x, _point.y + 1);
@@ -315,9 +325,10 @@ void Gnoll::action()
 						break;
 					case 5:
 						//왼쪽 아래
-						if (_map->getMap(_point.x - 1, _point.y + 1).obj == OBJ_NONE &&
-							(_map->getMap(_point.x - 1, _point.y + 1).terrain == TERRAIN_FLOOR ||
-								_map->getMap(_point.x - 1, _point.y + 1).terrain == TERRAIN_GRASS))
+						//if (_map->getMap(_point.x - 1, _point.y + 1).obj == OBJ_NONE &&
+						//	(_map->getMap(_point.x - 1, _point.y + 1).terrain == TERRAIN_FLOOR ||
+						//		_map->getMap(_point.x - 1, _point.y + 1).terrain == TERRAIN_GRASS))
+						if ((ATTRIBUTE_UNGO & _map->getMap(_point.x - 1, _point.y + 1).terrain) != ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x - 1, _point.y + 1);
@@ -326,9 +337,10 @@ void Gnoll::action()
 						break;
 					case 6:
 						//왼쪽
-						if (_map->getMap(_point.x - 1, _point.y).obj == OBJ_NONE &&
-							(_map->getMap(_point.x - 1, _point.y).terrain == TERRAIN_FLOOR ||
-								_map->getMap(_point.x - 1, _point.y).terrain == TERRAIN_GRASS))
+						//if (_map->getMap(_point.x - 1, _point.y).obj == OBJ_NONE &&
+						//	(_map->getMap(_point.x - 1, _point.y).terrain == TERRAIN_FLOOR ||
+						//		_map->getMap(_point.x - 1, _point.y).terrain == TERRAIN_GRASS))
+						if ((ATTRIBUTE_UNGO & _map->getMap(_point.x - 1, _point.y).terrain) != ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x - 1, _point.y);
@@ -337,9 +349,10 @@ void Gnoll::action()
 						break;
 					case 7:
 						//왼쪽 위
-						if (_map->getMap(_point.x - 1, _point.y - 1).obj == OBJ_NONE &&
-							(_map->getMap(_point.x - 1, _point.y - 1).terrain == TERRAIN_FLOOR ||
-								_map->getMap(_point.x - 1, _point.y - 1).terrain == TERRAIN_GRASS))
+						//if (_map->getMap(_point.x - 1, _point.y - 1).obj == OBJ_NONE &&
+						//	(_map->getMap(_point.x - 1, _point.y - 1).terrain == TERRAIN_FLOOR ||
+						//		_map->getMap(_point.x - 1, _point.y - 1).terrain == TERRAIN_GRASS))
+						if ((ATTRIBUTE_UNGO & _map->getMap(_point.x - 1, _point.y - 1).terrain) != ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x - 1, _point.y - 1);
@@ -358,20 +371,23 @@ void Gnoll::action()
 		{
 			//적을 발견했으면 A*를 이용해 최적루트로 이동한다
 			//바로 옆칸이면 공격 가능하다
-			int x = abs(_point.x - _player->getPoint().x);
-			int y = abs(_point.y - _player->getPoint().y);
+			int x = _point.x - _player->getPoint().x / TILESIZE;
+			int y = _point.y - _player->getPoint().y / TILESIZE;
 			//둘의 x, y값 차이의 절대값이 각각 1 이하인 경우 공격 가능
-			if (x <= 1 && y <= 1)
+			if ((x <= 1 && x >= -1) && (y <= 1 && y >= -1))
 			{
 				_myState = ENEMYSTATE_ATTACK;
+				_currntFrameX = 0;
 				//_player->getDamaged(_statistics.str);
+				//_action = false;
 			}
 			else
 			{
 				//아니라면 astar로 이동한다
-				astarTest = _map->aStar(_point, _player->getPoint());
+				astarTest = _map->aStar(PointMake(_pointX, _pointY), _player->getPoint());
 				//움직일때 해당 좌표를 4,5 같은 식으로 주면 자동으로 4*TILESIZE + TILESIZE/2, 5*... 해줌
-				_movePoint = PointMake(astarTest[0].destX , astarTest[0].destY);
+				//_movePoint = PointMake(astarTest[astarTest.size() - 1].destX, astarTest[astarTest.size() - 1].destY);
+				_movePoint = PointMake(astarTest[astarTest.size() - 2].destX, astarTest[astarTest.size() - 2].destY);
 				_myState = ENEMYSTATE_MOVE;
 			}
 		}
@@ -384,10 +400,11 @@ void Gnoll::action()
 		float y = _movePoint.y * TILESIZE + TILESIZE / 2;
 
 		//중심좌표에 도달했는지 확인한다
-		if ((static_cast<float>(_pointX) >= x-4 && static_cast<float>(_pointX) <= x+4) &&
-			(static_cast<float>(_pointY) >= y - 4 && static_cast<float>(_pointY) <= y+4))
+		if ((static_cast<float>(_pointX) >= x - 4 && static_cast<float>(_pointX) <= x + 4) &&
+			(static_cast<float>(_pointY) >= y - 4 && static_cast<float>(_pointY) <= y + 4))
 		{
 			//턴을 종료하고 넘겨준다
+			_point = _movePoint;
 			_pointX = x;
 			_pointY = y;
 			_isMove = false;
@@ -399,7 +416,7 @@ void Gnoll::action()
 			//_point.x += cosf(getAngle(_point.x, _point.y, _movePoint.x, _movePoint.y)) * 3;
 			//_point.y -= sinf(getAngle(_point.x, _point.y, _movePoint.x, _movePoint.y)) * 3;
 			//_action = false;
-			
+
 			//도달하지 않았으면 이동한다
 			if (_pointX < x)
 			{
@@ -421,10 +438,27 @@ void Gnoll::action()
 			{
 				_pointY -= TILESIZE / 8;
 			}
-			_action = false;
+			//_action = false;
+
 		}
 	}
 
 
 	frameUpdate();
+}
+
+void Gnoll::update()
+{
+
+	if (_currntHp <= 0)
+	{
+		_deadAlpha += 5;
+		if (_deadAlpha >= 255)
+		{
+			_isLive = false;
+			_action = false;
+		}
+	}
+
+	if (_action && _currntHp > 0 && _isLive) action();
 }

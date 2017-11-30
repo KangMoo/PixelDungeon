@@ -24,6 +24,10 @@ private:
 	bool _enemyTurn;
 	int _actionCount;	//몇번째 몬스터가 행동하고 있는지 확인하기 위한 int값
 
+	bool _isSwarmSpawn;
+	POINT _swarmSpawn;
+	int _swarmSpawnHp;
+
 public:
 	HRESULT init();
 	void release();
@@ -45,6 +49,12 @@ public:
 
 	void setEnemy(POINT point, int type);		//enemy 제작
 	void setSwarm(POINT point, int hp);			//파리 전용
+	void setSwarmSpawn(POINT pt, int hp)
+	{
+		_swarmSpawn = pt;
+		_swarmSpawnHp = hp;
+		_isSwarmSpawn = true;
+	}
 
 	EnemyManager();
 	~EnemyManager();

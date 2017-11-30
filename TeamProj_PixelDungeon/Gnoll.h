@@ -18,6 +18,7 @@ private:
 public:
 	HRESULT init(POINT point); //초기 생성
 	void getDamaged(int damage);
+	void update();
 
 	void action();
 	void frameUpdate();
