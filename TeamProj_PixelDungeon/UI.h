@@ -25,11 +25,12 @@ public:
 	void update();
 	void render(POINT camera);
 	void draw(POINT camera);
-	void fream_window_draw(size_t sizeX, size_t sizeY);
+	void fream_window_draw(size_t sizeX, size_t sizeY, int coordX = 0, int coordY = 0);
 	void button_interface(int itemName, int itemtype, int createNumber, int fream_window_sizeX, int fream_window_sizeY);
 	void item_sort();
 	void main_menu();
 	void status_window();
+	void search();
 
 	void BackPack();
 	void PrintFont(char name[], HFONT hFont, HFONT oldFont, int x, int y, int size, char r = 0, char g = 0, char b = 0);
@@ -47,15 +48,6 @@ public:
 	UI();
 	~UI();
 
-private:
-	float _interface_button_timer1;
-	float _interface_button_timer2;
-	float _interface_button_timer3;
-
-	float timer = 0;
-
-	bool testbool = false;
-
 	RECT _backPackRect;
 	RECT _SearchOptionRect;
 	RECT _TurnSkipRect;
@@ -66,11 +58,22 @@ private:
 
 	RECT _Menu_selectRect;
 	RECT _StatusRect;
+	RECT _Menu_WindowRect[5];
+
+private:
+	float _interface_button_timer1;
+	float _interface_button_timer2;
+	float _interface_button_timer3;
+
+	float timer = 0;
+
+	bool testbool = false;
 
 	//RECT _inventory[4][6];
 
 	int _selectInterface = INTERFACEMENU_END;
 	int _selectItem = NAME_END;
+	int _selectMenu = GAMEMENU_END;
 
 	typedef struct TagInventory
 	{
@@ -88,6 +91,15 @@ private:
 		INTERFACEMENU_MENU,
 		INTERFACEMENU_STATUS,
 		INTERFACEMENU_END,
+	};
+
+	enum GAMEMENU
+	{
+		GAMEMENU_SET,
+		GAMEMENU_MAIN,
+		GAMEMENU_EXIT,
+		GAMEMENU_BACK,
+		GAMEMENU_END,
 	};
 
 	typedef struct tagButtonOption

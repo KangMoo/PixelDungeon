@@ -78,6 +78,11 @@ HRESULT UI::init()
 	_interface_button_timer2 = TIMEMANAGER->getWorldTime();
 	_interface_button_timer3 = TIMEMANAGER->getWorldTime();
 
+	_Menu_WindowRect[GAMEMENU_SET] = RectMake(278,242,260,45);
+	_Menu_WindowRect[GAMEMENU_MAIN] = RectMake(278,287,130,45);
+	_Menu_WindowRect[GAMEMENU_EXIT] = RectMake(408,287,130,45);
+	_Menu_WindowRect[GAMEMENU_BACK] = RectMake(278,332,260,45);
+
 	return S_OK;
 }
 
@@ -190,10 +195,10 @@ void UI::draw(POINT camera)
 
 		else if (PtInRect(&_Menu_selectRect, _ptMouse) && _selectInterface != INTERFACEMENU_MENU)
 		{
-			_selectInterface = INTERFACEMENU_STATUS;
+			_selectInterface = INTERFACEMENU_MENU;
 		}
 
-		else if (PtInRect(&_StatusRect, _ptMouse))
+		else if (PtInRect(&_StatusRect, _ptMouse) && _selectInterface == INTERFACEMENU_END)
 		{
 			_selectInterface = INTERFACEMENU_STATUS;
 		}
@@ -218,13 +223,14 @@ void UI::draw(POINT camera)
 		case INTERFACEMENU_BACKPACK:
 			BackPack();
 			break;
-		
-		//탐색
-		case INTERFACEMENU_SEARCH:
-			break;
 
 		//턴스킵
 		case INTERFACEMENU_TURNSKIP:
+			break;
+
+		//탐색
+		case INTERFACEMENU_SEARCH:
+			search();
 			break;
 
 		//메뉴창
@@ -232,7 +238,7 @@ void UI::draw(POINT camera)
 			main_menu();
 			break;
 
-		//메뉴창
+		//스테이터스 창
 		case INTERFACEMENU_STATUS:
 			status_window();
 			break;
@@ -246,6 +252,50 @@ void UI::main_menu()
 {
 	fream_window_draw(19, 10);
 	IMAGEMANAGER->render("select_menu_bar2", getMemDC(), ((WINSIZEX / 2) - (IMAGEMANAGER->findImage("select_menu_bar2")->getWidth() / 2)) + 8 , ((WINSIZEY / 2) - (IMAGEMANAGER->findImage("select_menu_bar2")->getHeight() / 2)) + 7);
+
+	//Rectangle(getMemDC(), 278, 242, 538, 287);
+	//Rectangle(getMemDC(), 278, 287, 408, 329);
+	//Rectangle(getMemDC(), 408, 287, 538, 329);
+	//Rectangle(getMemDC(), 278, 329, 538, 372);
+
+	if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && (TIMEMANAGER->getWorldTime() - _interface_button_timer1) > 0.3 && _selectMenu == GAMEMENU_END && !_player->getIsPlayerMoving())
+	{
+		for (int MenuNumber = 0; MenuNumber < GAMEMENU_END; MenuNumber++)
+		{
+			if (PtInRect(&_Menu_WindowRect[MenuNumber], _ptMouse) && _selectMenu == GAMEMENU_END)
+			{
+				_selectMenu = MenuNumber;
+			}
+		}
+
+		_interface_button_timer1 = TIMEMANAGER->getWorldTime();
+	}
+
+	switch (_selectMenu)
+	{
+	case GAMEMENU_SET:
+		_selectInterface = INTERFACEMENU_END;
+		_selectMenu = GAMEMENU_END;
+		break;
+
+	case GAMEMENU_MAIN:
+		_selectInterface = INTERFACEMENU_END;
+		_selectMenu = GAMEMENU_END;
+		break;
+
+	case GAMEMENU_EXIT:
+		_selectInterface = INTERFACEMENU_END;
+		_selectMenu = GAMEMENU_END;
+		break;
+
+	case GAMEMENU_BACK:
+		_selectInterface = INTERFACEMENU_END;
+		_selectMenu = GAMEMENU_END;
+		break;
+
+	default:
+		break;
+	}
 
 }
 
@@ -272,6 +322,14 @@ void UI::status_window()
 
 	char level[] = "최고 레벨";
 	PrintFont(level, namehFont, nameoldFont, 300, 410, 18, 255, 255, 255);
+}
+
+void UI::search()
+{
+	fream_window_draw(18, 4, 0 ,170);
+
+	char name[] = "탐색 지역을 선택하시오";
+	PrintFont(name, namehFont, nameoldFont, 290, 468, 18, 0, 255, 0);
 }
 
 void UI::ResetInventory()
@@ -319,15 +377,6 @@ void UI::BackPack()
 		{
 			SortInventory();
 		}
-
-		/*테스트 공간*/
-		//_inventory[0][4].itemNumber = _im->getvBag()[0].name;
-		//_inventory[0][5].itemNumber = _im->getvBag()[1].name;
-		//_inventory[1][0].itemNumber = _im->getvBag()[2].name;
-		//_inventory[1][1].itemNumber = _im->getvBag()[3].name;
-		//_inventory[1][2].itemNumber = _im->getvBag()[4].name;
-		//_inventory[1][3].itemNumber = _im->getvBag()[5].name;
-		/*테스트 공간*/
 
 		int _ix = ((WINSIZEX / 2 - (IMAGEMANAGER->findImage("backpack")->getFrameWidth() / 2)) + 35) + (Line % 6) * 92;
 		int _iy = ((WINSIZEX / 2 - (IMAGEMANAGER->findImage("backpack")->getFrameWidth() / 2)) + 30) + (Line / 6) * 92;
@@ -679,7 +728,7 @@ void UI::BackPack()
 	}
 }
 
-void UI::fream_window_draw(size_t sizeX, size_t sizeY)
+void UI::fream_window_draw(size_t sizeX, size_t sizeY, int coordX, int coordY)
 {
 	for (size_t fream_windowY = 0; fream_windowY <= sizeY; fream_windowY++)
 	{
@@ -732,8 +781,8 @@ void UI::fream_window_draw(size_t sizeX, size_t sizeY)
 			}
 
 			IMAGEMANAGER->frameRender("fream_window1", getMemDC(), 
-				((WINSIZEX / 2) - ((sizeX * IMAGEMANAGER->findImage("fream_window1")->getFrameWidth()) / 2)) + (fream_windowX * IMAGEMANAGER->findImage("fream_window1")->getFrameWidth()), 
-				((WINSIZEY / 2) - ((sizeY * IMAGEMANAGER->findImage("fream_window1")->getFrameHeight()) / 2)) + (fream_windowY * IMAGEMANAGER->findImage("fream_window1")->getFrameHeight()), 
+				((WINSIZEX / 2) - ((sizeX * IMAGEMANAGER->findImage("fream_window1")->getFrameWidth()) / 2)) + (fream_windowX * IMAGEMANAGER->findImage("fream_window1")->getFrameWidth()) + coordX,
+				((WINSIZEY / 2) - ((sizeY * IMAGEMANAGER->findImage("fream_window1")->getFrameHeight()) / 2)) + (fream_windowY * IMAGEMANAGER->findImage("fream_window1")->getFrameHeight()) + coordY,
 				fream_valueX, fream_valueY);
 		}
 	}
@@ -842,6 +891,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
+				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -854,6 +904,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
+				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -866,6 +917,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
+				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -878,6 +930,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
+				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -890,6 +943,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
+				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -907,6 +961,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					//_player->setStat(temp);
 				}
 
+				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -919,6 +974,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
+				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -931,6 +987,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
+				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -1008,6 +1065,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
+				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
