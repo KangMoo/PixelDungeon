@@ -62,13 +62,22 @@ void GameScene::release()
 void GameScene::update()
 {
 	_em->update();
-	_player->update();
 	_ui->update();
+	_player->update();
 	_map->update();
 	_im->update();
 	//ui로부터 카메라 정보 받아오기
 	_camera = _ui->getCamera();
 
+	if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON))
+	{
+		_ui->LbuttonClickEvnet();
+		if (!_ui->usingInterface())
+		{
+			_player->mouseClickEvent();
+		}
+		
+	}
 	SOUNDMANAGER->update();
 
 

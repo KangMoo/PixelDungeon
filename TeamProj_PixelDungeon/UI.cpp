@@ -95,28 +95,7 @@ void UI::release()
 
 void UI::update()
 {
-	_camera = _player->getPoint();
-
-	//Ä«¸Þ¶ó À§Ä¡ ÀçÁ¶Á¤
-	if (_camera.x < WINSIZEX / 2)
-	{
-		_camera.x = WINSIZEX / 2;
-	}
-	//else if (_camera.x > IMAGEMANAGER->findImage("bg")->getWidth() - WINSIZEX / 2)
-	//{
-	//	_camera.x = IMAGEMANAGER->findImage("bg")->getWidth() - WINSIZEX / 2;
-	//}
-	if (_camera.y < WINSIZEY / 2)
-	{
-		_camera.y = WINSIZEY / 2;
-	}
-
-	//else if (_camera.y > IMAGEMANAGER->findImage("bg")->getHeight() - WINSIZEY / 2)
-	//{
-	//	_camera.y = IMAGEMANAGER->findImage("bg")->getHeight() - WINSIZEY / 2;
-	//}
-	_camera.x = WINSIZEX / 2 - _camera.x;
-	_camera.y = WINSIZEY / 2 - _camera.y;
+	cameraSet();
 }
 
 
@@ -169,62 +148,65 @@ void UI::draw(POINT camera)
 
 //Rectangle(getMemDC(), 5, 5, 85,88);
 
-	if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && (TIMEMANAGER->getWorldTime() - _interface_button_timer1) > 0.3 && _selectInterface == INTERFACEMENU_END && !_player->getIsPlayerMoving())
-	{
-		//¹è³¶
-		if (PtInRect(&_backPackRect, _ptMouse) && _selectInterface == INTERFACEMENU_END)
-		{
-			_selectInterface = INTERFACEMENU_BACKPACK;
-			_player->setUsingUI(true);
 
-			ResetInventory();
 
-			for (int i = 0; i < 10; i++)
-				SortInventory();
-		}
-
-		//Å½»ö
-		else if (PtInRect(&_SearchOptionRect, _ptMouse) && _selectInterface == INTERFACEMENU_END)
-		{
-			if (_player->getAction() == true)
-			{
-				_player->endTurn();
-			}
-
-			//_selectInterface = INTERFACEMENU_TURNSKIP;
-		}
-
-		//ÅÏ½ºÅµ
-		else if (PtInRect(&_TurnSkipRect, _ptMouse) && _selectInterface == INTERFACEMENU_END)
-		{
-			_selectInterface = INTERFACEMENU_SEARCH;
-		}
-
-		else if (PtInRect(&_Menu_selectRect, _ptMouse) && _selectInterface != INTERFACEMENU_MENU)
-		{
-			_selectInterface = INTERFACEMENU_MENU;
-		}
-
-		else if (PtInRect(&_StatusRect, _ptMouse) && _selectInterface == INTERFACEMENU_END)
-		{
-			_selectInterface = INTERFACEMENU_STATUS;
-		}
-
-		_interface_button_timer1 = TIMEMANAGER->getWorldTime();
-	}
-
-	else if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && (TIMEMANAGER->getWorldTime() - _interface_button_timer1) > 0.3 && _selectInterface != INTERFACEMENU_END && !_player->getIsPlayerMoving())
-	{
-		if (PtInRect(&_backPackRect, _ptMouse) || PtInRect(&_SearchOptionRect, _ptMouse) || PtInRect(&_TurnSkipRect, _ptMouse) || PtInRect(&_Menu_selectRect, _ptMouse) || PtInRect(&_StatusRect, _ptMouse))
-		{
-			_selectInterface = INTERFACEMENU_END;
-			//_player->setUsingUI(false);
-
-			usingui();
-		}
-
-		_interface_button_timer1 = TIMEMANAGER->getWorldTime();
-	}
+	//
+	//if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && (TIMEMANAGER->getWorldTime() - _interface_button_timer1) > 0.3 && _selectInterface == INTERFACEMENU_END && !_player->getIsPlayerMoving())
+	//{
+	//	//¹è³¶
+	//	if (PtInRect(&_backPackRect, _ptMouse) && _selectInterface == INTERFACEMENU_END)
+	//	{
+	//		_selectInterface = INTERFACEMENU_BACKPACK;
+	//		_player->setUsingUI(true);
+	//
+	//		ResetInventory();
+	//
+	//		for (int i = 0; i < 10; i++)
+	//			SortInventory();
+	//	}
+	//
+	//	//Å½»ö
+	//	else if (PtInRect(&_SearchOptionRect, _ptMouse) && _selectInterface == INTERFACEMENU_END)
+	//	{
+	//		if (_player->getAction() == true)
+	//		{
+	//			_player->endTurn();
+	//		}
+	//
+	//		//_selectInterface = INTERFACEMENU_TURNSKIP;
+	//	}
+	//
+	//	//ÅÏ½ºÅµ
+	//	else if (PtInRect(&_TurnSkipRect, _ptMouse) && _selectInterface == INTERFACEMENU_END)
+	//	{
+	//		_selectInterface = INTERFACEMENU_SEARCH;
+	//	}
+	//
+	//	else if (PtInRect(&_Menu_selectRect, _ptMouse) && _selectInterface != INTERFACEMENU_MENU)
+	//	{
+	//		_selectInterface = INTERFACEMENU_MENU;
+	//	}
+	//
+	//	else if (PtInRect(&_StatusRect, _ptMouse) && _selectInterface == INTERFACEMENU_END)
+	//	{
+	//		_selectInterface = INTERFACEMENU_STATUS;
+	//	}
+	//
+	//	_interface_button_timer1 = TIMEMANAGER->getWorldTime();
+	//}
+	//
+	//else if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && (TIMEMANAGER->getWorldTime() - _interface_button_timer1) > 0.3 && _selectInterface != INTERFACEMENU_END && !_player->getIsPlayerMoving())
+	//{
+	//	if (PtInRect(&_backPackRect, _ptMouse) || PtInRect(&_SearchOptionRect, _ptMouse) || PtInRect(&_TurnSkipRect, _ptMouse) || PtInRect(&_Menu_selectRect, _ptMouse) || PtInRect(&_StatusRect, _ptMouse))
+	//	{
+	//		_selectInterface = INTERFACEMENU_END;
+	//		//_player->setUsingUI(false);
+	//
+	//		usingui();
+	//	}
+	//
+	//	_interface_button_timer1 = TIMEMANAGER->getWorldTime();
+	//}
 
 	switch (_selectInterface)
 	{
@@ -267,18 +249,18 @@ void UI::main_menu()
 	//Rectangle(getMemDC(), 408, 287, 538, 329);
 	//Rectangle(getMemDC(), 278, 329, 538, 372);
 
-	if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && (TIMEMANAGER->getWorldTime() - _interface_button_timer1) > 0.3 && _selectMenu == GAMEMENU_END && !_player->getIsPlayerMoving())
-	{
-		for (int MenuNumber = 0; MenuNumber < GAMEMENU_END; MenuNumber++)
-		{
-			if (PtInRect(&_Menu_WindowRect[MenuNumber], _ptMouse) && _selectMenu == GAMEMENU_END)
-			{
-				_selectMenu = MenuNumber;
-			}
-		}
-
-		_interface_button_timer1 = TIMEMANAGER->getWorldTime();
-	}
+//	if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && (TIMEMANAGER->getWorldTime() - _interface_button_timer1) > 0.3 && _selectMenu == GAMEMENU_END && !_player->getIsPlayerMoving())
+//	{
+//		for (int MenuNumber = 0; MenuNumber < GAMEMENU_END; MenuNumber++)
+//		{
+//			if (PtInRect(&_Menu_WindowRect[MenuNumber], _ptMouse) && _selectMenu == GAMEMENU_END)
+//			{
+//				_selectMenu = MenuNumber;
+//			}
+//		}
+//
+//		_interface_button_timer1 = TIMEMANAGER->getWorldTime();
+//	}
 
 	switch (_selectMenu)
 	{
@@ -383,15 +365,10 @@ void UI::SortInventory()
 
 bool UI::usingInterface()
 {
-	if (_selectInterface == INTERFACEMENU_END &&_selectItem == NAME_END && _selectMenu == GAMEMENU_END)
+	if (_selectInterface == INTERFACEMENU_END && _selectItem == NAME_END && _selectMenu == GAMEMENU_END)
 	{
 		return false;
-		if (TIMEMANAGER->getWorldTime() - _interface_button_timer1 > 0.1 &&
-			TIMEMANAGER->getWorldTime() - _interface_button_timer2 > 0.1 &&
-			TIMEMANAGER->getWorldTime() - _interface_button_timer3 > 0.1)
-		{
-			
-		}
+
 	}
 	return true;
 }
@@ -433,24 +410,24 @@ void UI::BackPack()
 		FillRect(getMemDC(), &_inventory[Line].inventoryRect, brush);
 		DeleteObject(brush);
 
-		if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && PtInRect(&_inventory[Line].inventoryRect, _ptMouse) && (TIMEMANAGER->getWorldTime() - _interface_button_timer2) > 0.3 && _selectItem == NAME_END)
-		{
-			for (int itemNumber = 0; itemNumber < _im->getvBag().size(); itemNumber++)
-			{
-				if (_inventory[Line].itemNumber == _im->getvBag()[itemNumber].name)
-				{
-					_selectItem = _im->getvBag()[itemNumber].name;
-					_itemPosition = Line;
-				}
-			}
-
-			_interface_button_timer2 = TIMEMANAGER->getWorldTime();
-		}
-
+	//	if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && PtInRect(&_inventory[Line].inventoryRect, _ptMouse) && (TIMEMANAGER->getWorldTime() - _interface_button_timer2) > 0.3 && _selectItem == NAME_END)
+	//	{
+	//		for (int itemNumber = 0; itemNumber < _im->getvBag().size(); itemNumber++)
+	//		{
+	//			if (_inventory[Line].itemNumber == _im->getvBag()[itemNumber].name)
+	//			{
+	//				_selectItem = _im->getvBag()[itemNumber].name;
+	//				_itemPosition = Line;
+	//			}
+	//		}
+	//
+	//		_interface_button_timer2 = TIMEMANAGER->getWorldTime();
+	//	}
+	//
 		if (GetAsyncKeyState(VK_RBUTTON) && (TIMEMANAGER->getWorldTime() - _interface_button_timer2) > 0.3 && _selectItem != NAME_END)
 		{
 			_selectItem = NAME_END;
-
+	
 			_interface_button_timer2 = TIMEMANAGER->getWorldTime();
 		}
 
@@ -1693,4 +1670,141 @@ void UI::PrintFont(char name[], HFONT hFont, HFONT oldFont, int x, int y, int si
 	SelectObject(getMemDC(), nameoldFont);
 	DeleteObject(namehFont);
 	SetTextColor(getMemDC(), RGB(0, 0, 0));
+}
+
+
+void UI::cameraSet()
+{
+	_camera = _player->getPoint();
+
+	//Ä«¸Þ¶ó À§Ä¡ ÀçÁ¶Á¤
+	if (_camera.x < WINSIZEX / 2)
+	{
+		_camera.x = WINSIZEX / 2;
+	}
+	//else if (_camera.x > IMAGEMANAGER->findImage("bg")->getWidth() - WINSIZEX / 2)
+	//{
+	//	_camera.x = IMAGEMANAGER->findImage("bg")->getWidth() - WINSIZEX / 2;
+	//}
+	if (_camera.y < WINSIZEY / 2)
+	{
+		_camera.y = WINSIZEY / 2;
+	}
+
+	//else if (_camera.y > IMAGEMANAGER->findImage("bg")->getHeight() - WINSIZEY / 2)
+	//{
+	//	_camera.y = IMAGEMANAGER->findImage("bg")->getHeight() - WINSIZEY / 2;
+	//}
+	_camera.x = WINSIZEX / 2 - _camera.x;
+	_camera.y = WINSIZEY / 2 - _camera.y;
+
+}
+
+void UI::LbuttonClickEvnet()
+{
+	int a = 0;
+	//selectInterface == INTERFACEMENU_END
+	if (_selectInterface == INTERFACEMENU_END)
+	{
+		//¹è³¶
+		if (PtInRect(&_backPackRect, _ptMouse))
+		{
+			_selectInterface = INTERFACEMENU_BACKPACK;
+			_player->setUsingUI(true);
+
+			ResetInventory(); 
+
+			for (int i = 0; i < 10; i++)
+			{
+				SortInventory();
+			}
+
+		}
+		//Å½»ö
+		else if (PtInRect(&_SearchOptionRect, _ptMouse))
+		{
+			if (_player->getAction() == true)
+			{
+				_player->endTurn();
+			}
+		}
+		//ÅÏ ½ºÅµ
+		else if (PtInRect(&_SearchOptionRect, _ptMouse))
+		{
+			_selectInterface = INTERFACEMENU_SEARCH;
+		}
+		//½ºÅ×ÀÌÅÍ½º
+		else if (PtInRect(&_StatusRect, _ptMouse))
+		{
+			_selectInterface = INTERFACEMENU_STATUS;
+		}
+	}
+	else if (_selectInterface != INTERFACEMENU_END)
+	{
+		if (PtInRect(&_backPackRect, _ptMouse) || PtInRect(&_SearchOptionRect, _ptMouse) || PtInRect(&_TurnSkipRect, _ptMouse) || PtInRect(&_Menu_selectRect, _ptMouse) || PtInRect(&_StatusRect, _ptMouse))
+		{
+			_selectInterface = INTERFACEMENU_END;
+			//_player->setUsingUI(false);
+			usingui();
+		}
+	}
+	if (_selectInterface != INTERFACEMENU_MENU)
+	{
+		if (PtInRect(&_Menu_selectRect, _ptMouse))
+		{
+			_selectInterface = INTERFACEMENU_MENU;
+		}
+	}
+
+
+	switch (_selectInterface)
+	{
+		//¹è³¶
+	case INTERFACEMENU_BACKPACK:
+		//BackPack();
+		for (size_t Line = 0; Line < ARRSIZE; Line++)
+		{
+			if (PtInRect(&_inventory[Line].inventoryRect, _ptMouse) && _selectItem == NAME_END)
+			{
+				for (int itemNumber = 0; itemNumber < _im->getvBag().size(); itemNumber++)
+				{
+					if (_inventory[Line].itemNumber == _im->getvBag()[itemNumber].name)
+					{
+						_selectItem = _im->getvBag()[itemNumber].name;
+						_itemPosition = Line;
+					}
+				}
+				_interface_button_timer2 = TIMEMANAGER->getWorldTime();
+			}
+		}
+		break;
+
+		//ÅÏ½ºÅµ
+	case INTERFACEMENU_TURNSKIP:
+		break;
+
+		//Å½»ö
+	case INTERFACEMENU_SEARCH:
+		break;
+
+		//¸Þ´ºÃ¢
+	case INTERFACEMENU_MENU:
+		//main_menu()
+		if (_selectMenu == GAMEMENU_END && !_player->getIsPlayerMoving())
+		{
+			for (int MenuNumber = 0; MenuNumber < GAMEMENU_END; MenuNumber++)
+			{
+				if (PtInRect(&_Menu_WindowRect[MenuNumber], _ptMouse) && _selectMenu == GAMEMENU_END)
+				{
+					_selectMenu = MenuNumber;
+				}
+			}
+		}
+		break;
+
+		//½ºÅ×ÀÌÅÍ½º Ã¢
+	case INTERFACEMENU_STATUS:
+		//status_window();
+		break;
+	}
 }

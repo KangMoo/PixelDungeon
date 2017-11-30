@@ -82,10 +82,7 @@ void Player::update()
 	//마우스 클릭 이벤트 처리
 	if (!_ui->usingInterface())
 	{
-		if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON))
-		{
-			mouseClickEvent();
-		}
+		
 		if (!_ui->usingInterface() && KEYMANAGER->isOnceKeyDown(VK_RBUTTON))
 		{
 			//움직이는 중에 마우스 클릭 이벤트 발생 하면 가던 타일만 마저 가게 함

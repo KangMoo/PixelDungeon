@@ -38,6 +38,11 @@ public:
 
 	void ResetInventory();
 	void SortInventory();
+	//추가~
+	void cameraSet();
+	void LbuttonClickEvnet();
+	int getInterFaceState() {return _selectInterface;}
+	//~추가
 
 	POINT getCamera() { return _camera; }
 	void setCamera(POINT camera) { _camera = camera; }
@@ -76,18 +81,6 @@ private:
 		//bool itemWear = false;
 	}Inventory;
 
-
-	RECT _backPackRect;
-	RECT _SearchOptionRect;
-	RECT _TurnSkipRect;
-
-	RECT _Target_ButtonRect;
-	RECT _Special_ButtonRect;
-	RECT _Monster_DisplyRect;
-
-	RECT _Menu_selectRect;
-	RECT _StatusRect;
-	RECT _Menu_WindowRect[5];
 	enum INTERFACEMENU
 	{
 		INTERFACEMENU_BACKPACK,
@@ -106,6 +99,19 @@ private:
 		GAMEMENU_BACK,
 		GAMEMENU_END,
 	};
+
+	RECT _backPackRect;
+	RECT _SearchOptionRect;
+	RECT _TurnSkipRect;
+
+	RECT _Target_ButtonRect;
+	RECT _Special_ButtonRect;
+	RECT _Monster_DisplyRect;
+
+	RECT _Menu_selectRect;
+	RECT _StatusRect;
+	RECT _Menu_WindowRect[5];
+	
 
 	typedef struct tagButtonOption
 	{
