@@ -518,6 +518,7 @@ void Swarm::update()
 		_deadAlpha += 5;
 		if (_deadAlpha >= 255)
 		{
+			_deadAlpha = 255;
 			_isLive = false;
 			_action = false;
 		}
