@@ -706,15 +706,6 @@
             <imgNum>0</imgNum>
         </tile>
         <tile>
-            <destX>15</destX>
-            <destY>2</destY>
-            <sourX>2</sourX>
-            <sourY>5</sourY>
-            <obj>0</obj>
-            <terrain>75</terrain>
-            <imgNum>0</imgNum>
-        </tile>
-        <tile>
             <destX>18</destX>
             <destY>0</destY>
             <sourX>0</sourX>
@@ -7669,6 +7660,15 @@
             <sourY>0</sourY>
             <obj>0</obj>
             <terrain>1</terrain>
+            <imgNum>0</imgNum>
+        </tile>
+        <tile>
+            <destX>15</destX>
+            <destY>2</destY>
+            <sourX>0</sourX>
+            <sourY>5</sourY>
+            <obj>0</obj>
+            <terrain>75</terrain>
             <imgNum>0</imgNum>
         </tile>
     </TileList>

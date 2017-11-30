@@ -340,12 +340,9 @@
     </ClCompile>
     <ClCompile Include="mimic.cpp">
       <Filter>MainGame\Enemy\Enemy</Filter>
-<<<<<<< HEAD
     </ClCompile>
     <ClCompile Include="Map+AStar.cpp">
       <Filter>MainGame\Map</Filter>
-=======
->>>>>>> origin/Item_sub
     </ClCompile>
   </ItemGroup>
 </Project>

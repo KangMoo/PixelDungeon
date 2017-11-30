@@ -19,16 +19,25 @@ HRESULT Map::init()
 	_mapSizeY = 0;
 	imageSetup();
 	spareTileSetup();
+	spareObjSetup();
 
-	_stageDataList.push_back("SavedData.xml");
-	_stageDataList.push_back("SavedData2.xml");
+	_stageDataList.push_back("map/SavedData.xml");
+	_stageDataList.push_back("map/SavedData2.xml");
 
+
+	_renderStartX = 0;
+	_renderStartY = 0;
+	_renderSizeX = (int) WINSIZEX / TILESIZE + 10;
+	_renderSizeY = (int) WINSIZEY / TILESIZE + 10;
 
 	_curStageNum = 0;
 	start = true;
-	load(_curStageNum);
 
-	
+	for (int i = 0; i < _stageDataList.size(); i++) {
+		load(i);
+	}
+
+	changeFloor(0, true);
 
 	IMAGEMANAGER->addImage("blackLineVertical", "Img//Map//blackdot.bmp", 1, 32, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("blackLineHorizontal", "Img//Map//blackdot.bmp", 32, 1, true, RGB(255, 0, 255));
@@ -41,6 +50,8 @@ void Map::imageSetup() {
 
 	_imgNameList.push_back("mapTiles");
 	_imgNameList.push_back("chest");
+	_imgNameList.push_back("water");
+	_imgNameList.push_back("trap");
 
 	for (int i = 0; i < _imgNameList.size(); i++) {
 		image* image1 = IMAGEMANAGER->findImage(_imgNameList[i]);
@@ -55,19 +66,37 @@ void Map::release()
 void Map::update()
 {
 
-	//test
+	int playerX = _player->getPoint().x / TILESIZE;
+	int playerY = _player->getPoint().y / TILESIZE;
+	
+	//오브젝트 상호작용 test
 	for (int i = 0; i < _vObj.size(); i++) {
-		if (_player->getPoint().x / TILESIZE == _vObj[i].destX && _player->getPoint().y / TILESIZE == _vObj[i].destY) {
+		if (playerX == _vObj[i].destX && playerY == _vObj[i].destY && _vObj[i].floor == _curStageNum) {
 			if (_vObj[i].obj == OBJ_STAIR_END) {
 				if (_curStageNum == 0)
 				{
-					load(1);
+					changeFloor(1, false);
+					break;
 				}
-				else if (_curStageNum == 1)
-					load(0);
+				else if (_curStageNum == 1){
+					changeFloor(0, false);
+					break;
+				}
 			}
+
 			if (_vObj[i].obj == OBJ_CHEST) {
 				setObj_OpenChest(i);
+				break;
+			}
+
+			if ((_vObj[i].obj & ATTRIBUTE_WELL) == ATTRIBUTE_WELL && (_vObj[i].obj & ATTRIBUTE_ACTIVE) == ATTRIBUTE_ACTIVE) {
+				setObj_UseWell(i);
+				break;				
+			}
+
+			if ((_vObj[i].obj & ATTRIBUTE_TRAP) == ATTRIBUTE_TRAP && (_vObj[i].obj & ATTRIBUTE_ACTIVE) == ATTRIBUTE_ACTIVE) { 
+				setObj_ActivTrap(i);
+				break;
 			}
 		}
 	}
@@ -98,7 +127,7 @@ void Map::update()
 		}
 	}
 	if (KEYMANAGER->isOnceKeyDown('D')) {
-		for (int i = 0; i < _vObj.size(); i++){
+		for (int i = 0; i < _vObj.size(); i++) {
 			if ((_vObj[i].obj & ATTRIBUTE_CHEST) == ATTRIBUTE_CHEST)
 			{
 				setObj_OpenChest(i);
@@ -107,10 +136,25 @@ void Map::update()
 	}
 
 	if (KEYMANAGER->isOnceKeyDown('Q')) {
-		if (_curStageNum == 0) { load(1); }
-		else { load(0); }
+
+		for (int i = -1; i <= 1; i++) {
+			for (int j = -1; j <= 1; j++) {
+				if (_map[playerX + i][playerY + j].terrain == TERRAIN_DOOR_LOCKED)
+				{
+					setTile_UnlockDoor(playerX + i, playerY + j);
+				}
+			}
+		}
 	}
+
+	if ((_map[playerX][playerY].terrain & ATTRIBUTE_GRASS) == ATTRIBUTE_GRASS &&
+		(_map[playerX][playerY].terrain & ATTRIBUTE_UNSIGHT) == ATTRIBUTE_UNSIGHT) {
+		setTile_GrassCut(playerX, playerY);
+	}
+
+
 	// test
+	_camera = _ui->getCamera();
 }
 void Map::render()
 {
@@ -124,95 +168,67 @@ void Map::render(POINT camera)
 }
 void Map::draw(POINT camera)
 {
+
 	int temp = 7;
 	if (KEYMANAGER->isStayKeyDown(VK_RIGHT)) temp++;
 	if (KEYMANAGER->isStayKeyDown(VK_LEFT)) temp--;
-	for (int i = 0; i < TILEXMAX; i++) {
-	
-		for (int j = 0; j < TILEYMAX; j++) {
+
+
+	//뒷배경 검은색
+	RECT bg = RectMake(0, 0, WINSIZEX, WINSIZEY);
+	HBRUSH b = CreateSolidBrush(RGB(0, 0, 0));
+	FillRect(getMemDC(), &bg, b);
+	DeleteObject(b);
+		
+	// 렌더링 범위 설정 (100,100 다 for문 안 돌리기 위해)
+	_renderStartX = ((int)(-camera.x / TILESIZE) - 5 > 0) ? (int)(-_camera.x / TILESIZE) - 5 : 0;
+	_renderStartY = ((int)(-camera.y / TILESIZE) - 5 > 0) ? (int)(-_camera.y / TILESIZE) - 5 : 0;
+
+
+	// 타일 그리기
+	for (int i = _renderStartX; i < _renderStartX + _renderSizeX; i++) {
+		for (int j = _renderStartY; j < _renderStartY + _renderSizeY; j++) {
 			if (_map[i][j].terrain != TERRAIN_NULL) {
-				switch (_map[i][j].tileview)
-				{
-				case TILEVIEW_ALL:
-					_map[i][j].img->frameRender(getMemDC(), i * TILESIZE + camera.x, j * TILESIZE + camera.y, _map[i][j].sourX, _map[i][j].sourY);
-					break;
-				case TILEVIEW_HALF:
-					_map[i][j].img->frameRender(getMemDC(), i * TILESIZE + camera.x, j * TILESIZE + camera.y, _map[i][j].sourX, _map[i][j].sourY);
-					IMAGEMANAGER->alphaRender("blackTile", getMemDC(), i*TILESIZE + camera.x, j*TILESIZE + camera.y, 150);
-					break;
-				case TILEVIEW_NO:
-					_map[i][j].img->frameRender(getMemDC(), i * TILESIZE + camera.x, j * TILESIZE + camera.y, _map[i][j].sourX, _map[i][j].sourY);
-					IMAGEMANAGER->render("blackTile", getMemDC(), i*TILESIZE + camera.x, j*TILESIZE + camera.y);
-					break;
-				}
+				_map[i][j].img->frameRender(getMemDC(), i * TILESIZE + camera.x, j * TILESIZE + camera.y, _map[i][j].sourX, _map[i][j].sourY);
 			}
-				//RectangleMake(getMemDC(), i * 10, j * 10, 10, 10);				
-			
+			//RectangleMake(getMemDC(), i * 10, j * 10, 10, 10);				
 		}
 	}
 
+	// 장식 그리기
+	for (_viDecoTile = _vDecoTile.begin(); _viDecoTile != _vDecoTile.end(); ++_viDecoTile)
+	{
+		if (_viDecoTile->floor == _curStageNum) {
+			_viDecoTile->img->frameRender(getMemDC(), _viDecoTile->destX * TILESIZE + camera.x, _viDecoTile->destY * TILESIZE + camera.y, _viDecoTile->sourX, _viDecoTile->sourY);		
+		}
+	}
+
+	//그림자 그리기 (deco 때문에 여기로 옮김)
+	for (int i = _renderStartX; i < _renderStartX + _renderSizeX; i++) {
+		for (int j = _renderStartY; j < _renderStartY + _renderSizeY; j++) {
+			if (_map[i][j].terrain != TERRAIN_NULL) {
+				drawTileShadow(_map[i][j]);
+			}
+			//RectangleMake(getMemDC(), i * 10, j * 10, 10, 10);				
+		}
+	}
+
+	// 오브젝트 그리기
 	for (_viObj = _vObj.begin(); _viObj != _vObj.end(); ++_viObj)
 	{
-		if (_viObj->obj != OBJ_NONE) {
+		if ((_map[_viObj->destX][_viObj->destY].terrain & ATTRIBUTE_HIDDEN) == ATTRIBUTE_HIDDEN && !(KEYMANAGER->isStayKeyDown(VK_LSHIFT))) continue;
+
+
+		if (_viObj->obj != OBJ_NONE && _viObj->floor == _curStageNum) {
 			if (_map[_viObj->destX][_viObj->destY].tileview == TILEVIEW_ALL)
-			_viObj->img->frameRender(getMemDC(), _viObj->destX * TILESIZE + camera.x, _viObj->destY * TILESIZE + camera.y, _viObj->sourX, _viObj->sourY);
+				_viObj->img->frameRender(getMemDC(), _viObj->destX * TILESIZE + camera.x, _viObj->destY * TILESIZE + camera.y, _viObj->sourX, _viObj->sourY);
 		}
-
 	}
-	
-	//if (start) {
-	//	for (int i = 0; i < _vMapTile.size(); i++) {
-	//			if (_vMapTile[i].terrain != TERRAIN_NULL)
-	//			{
-	//
-	//
-	//				RectangleMake(getMemDC(), _vMapTile[i].destX * 10, _vMapTile[i].destY * 10, 10, 10);
-	//				_vMapTile[i].img->frameRender(getMemDC(), _vMapTile[i].destX * TILESIZE, _vMapTile[i].destY * TILESIZE, _vMapTile[i].sourX, _vMapTile[i].sourY);
-
-					//if (i == temp)
-					//{
-					//	for (int pix = 0; pix < 32; pix++)
-					//	{
-					//		IMAGEMANAGER->alphaRender("blackLineVertical", getMemDC(), i * 32 + pix, i * 32, pix * 150 / 32);
-					//		//IMAGEMANAGER->alphaRender("blackLineHorizontal", getMemDC(), i * 32, j * 32 + pix, pix * 255 / 32);
-					//	}
-					//}
-					//if (i == temp+1)
-					//{
-					//	IMAGEMANAGER->alphaRender("blackTile", getMemDC(), i * 32, i * 32, 150);
-					//}
-					//if (i == temp+2)
-					//{
-					//	IMAGEMANAGER->alphaRender("blackTile", getMemDC(), i * 32, i * 32, 150);
-					//	for (int pix = 0; pix < 32; pix++)
-					//	{
-					//		IMAGEMANAGER->alphaRender("blackLineVertical", getMemDC(), i * 32 + pix, i * 32, pix * 255 / 32);
-					//		//IMAGEMANAGER->alphaRender("blackLineHorizontal", getMemDC(), i * 32, j * 32 + pix, pix * 255 / 32);
-					//	}
-
-					//}
-					//else if (i > temp+2)
-					//{
-					//	IMAGEMANAGER->render("blackTile", getMemDC(), i * 32, i * 32);
-					//}
-	//			}
-	//
-	//		}
-	//}
-
-
-
 }
 
 
 void Map::load(int stageNum) {
 
-	for (int i = 0; i < 100; i++) {
-		for (int j = 0; j < 100; j++) {
-			_map[i][j].terrain = TERRAIN_NULL;
-			_map[i][j].tileview = TILEVIEW_NO;
-		}
-	}
 
 	//TILE loadMap[10000];
 	////임시로 만듬. 나중에 바꿔야지...
@@ -261,10 +277,6 @@ void Map::load(int stageNum) {
 	//}
 
 
-	_vMapTile.clear();
-	_vDecoTile.clear();
-	_vObj.clear();
-
 	const char *name = _stageDataList[stageNum].c_str();
 
 	XMLDocument xmlDoc;
@@ -274,13 +286,13 @@ void Map::load(int stageNum) {
 	XMLNode * pRoot = xmlDoc.FirstChild();
 
 	XMLElement * pTileElement = pRoot->FirstChildElement("TileList");
-	
+
 	_mapSizeX = pTileElement->FirstChildElement("sizeX")->IntText();
 	_mapSizeY = pTileElement->FirstChildElement("sizeY")->IntText();
 
 	XMLElement * pTileListElement = pTileElement->FirstChildElement("tile");
 
-	
+
 	while (pTileListElement != nullptr) {
 		TILE tile;
 
@@ -294,7 +306,7 @@ void Map::load(int stageNum) {
 		tile.sourY = pTileListElement->FirstChildElement("sourY")->IntText();
 		tile.obj = (OBJ)pTileListElement->FirstChildElement("obj")->IntText();
 		tile.terrain = (TERRAIN)pTileListElement->FirstChildElement("terrain")->IntText();
-
+		tile.floor = stageNum;
 		_vMapTile.push_back(tile);
 
 		pTileListElement = pTileListElement->NextSiblingElement("tile");
@@ -316,6 +328,7 @@ void Map::load(int stageNum) {
 		tile.sourY = pDecoListElement->FirstChildElement("sourY")->IntText();
 		tile.obj = (OBJ)pDecoListElement->FirstChildElement("obj")->IntText();
 		tile.terrain = (TERRAIN)pDecoListElement->FirstChildElement("terrain")->IntText();
+		tile.floor = stageNum;
 
 		_vDecoTile.push_back(tile);
 
@@ -336,15 +349,31 @@ void Map::load(int stageNum) {
 		obj.sourX = pObjListElement->FirstChildElement("sourX")->IntText();
 		obj.sourY = pObjListElement->FirstChildElement("sourY")->IntText();
 		obj.obj = (OBJ)pObjListElement->FirstChildElement("obj")->IntText();
+		obj.floor = stageNum;
+
+		if (obj.obj == OBJ_TRAP)
+		{
+			obj.obj = OBJ_TRAP_ACTIVE;
+		}
 
 		_vObj.push_back(obj);
 
 		pObjListElement = pObjListElement->NextSiblingElement("obj");
 
-		if (obj.obj == OBJ_STAIR_START) {
-			POINT playerPoint = PointMake(obj.destX*TILESIZE + TILESIZE / 2, obj.destY*TILESIZE + TILESIZE / 2);
-			_player->setPoint(playerPoint);
+
+		for (int i = 0; i < _vMapTile.size(); i++){
+			if (_vMapTile[i].destX == obj.destX && _vMapTile[i].destY == obj.destY) {
+				_vMapTile[i].terrain = (TERRAIN)((long)_vMapTile[i].terrain | ATTRIBUTE_OBJECT);
+				if (obj.obj == OBJ_POT) {
+					_vMapTile[i].terrain = (TERRAIN)((long)_vMapTile[i].terrain | ATTRIBUTE_UNGO);
+				}
+				if ((obj.obj & ATTRIBUTE_TRAP) == ATTRIBUTE_TRAP) {
+					_vMapTile[i].terrain = (TERRAIN)((long)_vMapTile[i].terrain | ATTRIBUTE_HIDDEN);
+				}
+			}
 		}
+		
+
 
 	}
 
@@ -369,24 +398,6 @@ void Map::load(int stageNum) {
 	//}
 
 
-	
-	for (int i = 0; i < 10000; i++) {
-		if (i >= _vMapTile.size()) break;
-
-		_map[_vMapTile[i].destX][_vMapTile[i].destY].img = IMAGEMANAGER->findImage("mapTiles");
-
-		_map[_vMapTile[i].destX][_vMapTile[i].destY].destX = _vMapTile[i].destX;
-		_map[_vMapTile[i].destX][_vMapTile[i].destY].destY = _vMapTile[i].destY;
-		_map[_vMapTile[i].destX][_vMapTile[i].destY].sourX = _vMapTile[i].sourX;
-		_map[_vMapTile[i].destX][_vMapTile[i].destY].sourY = _vMapTile[i].sourY;
-		_map[_vMapTile[i].destX][_vMapTile[i].destY].obj = _vMapTile[i].obj;
-		_map[_vMapTile[i].destX][_vMapTile[i].destY].terrain = _vMapTile[i].terrain;
-		_map[_vMapTile[i].destX][_vMapTile[i].destY].tileview = TILEVIEW_NO;
-	}
-
-
-
-	_curStageNum = stageNum;
 	//for (int i = 0; i < _vMapTile.size(); i++) {
 	//	_vMapTile.clear();
 	//	vector<TILE>().swap(_vMapTile);		//메모리 해제
@@ -397,51 +408,53 @@ void Map::load(int stageNum) {
 void Map::spareTileSetup() {
 	TILE* flameTile1 = new TILE;
 	flameTile1->img = IMAGEMANAGER->findImage("mapTiles");
-	flameTile1->destX = 0;
-	flameTile1->destY = 0;
 	flameTile1->sourX = 3;
 	flameTile1->sourY = 0;
 	flameTile1->terrain = TERRAIN_FLOOR;
-	flameTile1->obj = OBJ_NONE;
-	flameTile1->trap = TRAP_NONE;
-	
+
 	_spareTile.insert(make_pair("AfterFlame1", flameTile1));
 
 	TILE* flameTile2 = new TILE;
 	flameTile2->img = IMAGEMANAGER->findImage("mapTiles");
-	flameTile2->destX = 0;
-	flameTile2->destY = 0;
 	flameTile2->sourX = 9;
 	flameTile2->sourY = 0;
 	flameTile2->terrain = TERRAIN_FLOOR;
-	flameTile2->obj = OBJ_NONE;
-	flameTile2->trap = TRAP_NONE;
 
 	_spareTile.insert(make_pair("AfterFlame2", flameTile2));
-	
+
 	TILE* grassCutTile1 = new TILE;
 	grassCutTile1->img = IMAGEMANAGER->findImage("mapTiles");
-	grassCutTile1->destX = 0;
-	grassCutTile1->destY = 0;
 	grassCutTile1->sourX = 2;
 	grassCutTile1->sourY = 0;
 	grassCutTile1->terrain = TERRAIN_GRASS;
-	grassCutTile1->obj = OBJ_NONE;
-	grassCutTile1->trap = TRAP_NONE;
 
 	_spareTile.insert(make_pair("AfterGrass1", grassCutTile1));
 
 	TILE* grassCutTile2 = new TILE;
 	grassCutTile2->img = IMAGEMANAGER->findImage("mapTiles");
-	grassCutTile2->destX = 0;
-	grassCutTile2->destY = 0;
 	grassCutTile2->sourX = 8;
 	grassCutTile2->sourY = 0;
 	grassCutTile2->terrain = TERRAIN_GRASS;
-	grassCutTile2->obj = OBJ_NONE;
-	grassCutTile2->trap = TRAP_NONE;
 
 	_spareTile.insert(make_pair("AfterGrass2", grassCutTile2));
+
+	TILE* unlockDoor = new TILE;
+	unlockDoor->img = IMAGEMANAGER->findImage("mapTiles");
+	unlockDoor->sourX = 0;
+	unlockDoor->sourY = 5;
+	unlockDoor->terrain = TERRAIN_DOOR_CLOSED;
+
+	_spareTile.insert(make_pair("ClosedDoor", unlockDoor));
+}
+
+void Map::spareObjSetup() {
+	GAMEOBJECT* emptyWell = new GAMEOBJECT;
+	emptyWell->img = IMAGEMANAGER->findImage("mapTiles");
+	emptyWell->sourX = 2;
+	emptyWell->sourY = 1;
+	emptyWell->obj = OBJ_WELL;
+
+	_spareObj.insert(make_pair("EmptyWell", emptyWell));
 }
 
 void Map::setTile_Flame(int i, int j) {
@@ -461,11 +474,125 @@ void Map::setTile_GrassCut(int i, int j) {
 	_map[i][j].sourY = newTile->sourY;
 	_map[i][j].terrain = (TERRAIN)((long)_map[i][j].terrain ^ ATTRIBUTE_UNSIGHT);
 
-	_im->setItemToField(NAME_DEW, i * TILESIZE + TILESIZE * 0.5, j * TILESIZE + TILESIZE * 0.5);
+
+	int dropRate = RND->getFromIntTo(1, 15);
+	if (dropRate == 15) {
+		ITEMNAME drop = (ITEMNAME)((int)NAME_SEED_HEAL + RND->getFromIntTo(0, 3));
+		_im->setItemToField(drop, i * TILESIZE + TILESIZE * 0.5, j * TILESIZE + TILESIZE * 0.5);
+	}
+	else if (dropRate <= 3)
+		_im->setItemToField(NAME_DEW, i * TILESIZE + TILESIZE * 0.5, j * TILESIZE + TILESIZE * 0.5);
+}
+
+
+void Map::setTile_UnlockDoor(int i, int j) {
+	TILE* newTile = _spareTile.find("ClosedDoor")->second;
+
+	_map[i][j].sourX = newTile->sourX;
+	_map[i][j].sourY = newTile->sourY;
+	_map[i][j].terrain = newTile->terrain;
 }
 
 
 void Map::setObj_OpenChest(int i) {
 	_vObj[i].obj = OBJ_NONE;
-	_im->setItemToField(NAME_BOTTLE, _vObj[i].destX * TILESIZE + TILESIZE * 0.5, _vObj[i].destY * TILESIZE + TILESIZE * 0.5);
+	
+	int dropRate = RND->getFromIntTo(1, 5);
+	if (dropRate == 1) { 
+		ITEMNAME drop = (ITEMNAME)((int)NAME_BOTTLE + RND->getFromIntTo(0, 7));
+		_im->setItemToField(drop, _vObj[i].destX * TILESIZE + TILESIZE * 0.5, _vObj[i].destY * TILESIZE + TILESIZE * 0.5);
+	}
+	else if (dropRate == 2) {
+		_im->setItemToField(NAME_PASTY,	_vObj[i].destX * TILESIZE + TILESIZE * 0.5, _vObj[i].destY * TILESIZE + TILESIZE * 0.5);
+	}
+	else if (dropRate == 3) {
+		_im->setItemToField(NAME_BOTTLE, _vObj[i].destX * TILESIZE + TILESIZE * 0.5, _vObj[i].destY * TILESIZE + TILESIZE * 0.5);
+	}
+	else if (dropRate == 4) {
+		ITEMNAME drop = (ITEMNAME)((int)NAME_IDENTIFY + RND->getFromIntTo(0, 4));
+		_im->setItemToField(drop, _vObj[i].destX * TILESIZE + TILESIZE * 0.5, _vObj[i].destY * TILESIZE + TILESIZE * 0.5);
+	}
+	else { // 미믹용(임시)
+		_im->setItemToField(NAME_BOTTLE, _vObj[i].destX * TILESIZE + TILESIZE * 0.5, _vObj[i].destY * TILESIZE + TILESIZE * 0.5);
+	}
+}
+
+
+void Map::setObj_UseWell(int i) {
+	GAMEOBJECT* newObj = _spareObj.find("EmptyWell")->second;
+	
+	_vObj[i].sourX = newObj->sourX;
+	_vObj[i].sourY = newObj->sourY;
+
+	_vObj[i].obj = (OBJ)((long)_vObj[i].obj ^ ATTRIBUTE_ACTIVE);
+}
+
+void Map::setObj_ActivTrap(int i) {
+	_vObj[i].sourX = 8;
+	_vObj[i].obj = (OBJ)((long)_vObj[i].obj ^ ATTRIBUTE_ACTIVE);
+
+	_map[_vObj[i].destX][_vObj[i].destY].terrain = (TERRAIN)((long)_map[_vObj[i].destX][_vObj[i].destY].terrain ^ ATTRIBUTE_HIDDEN);
+}
+
+
+void Map::changeFloor(int floor, bool firstTime){
+
+	// 변화한 타일 저장
+	if (!firstTime) {
+		for (int i = 0; i < _vMapTile.size(); i++) {
+			if (_vMapTile[i].floor == _curStageNum) {
+				_map[_vMapTile[i].destX][_vMapTile[i].destY].img = _vMapTile[i].img;
+
+				_vMapTile[i].sourX = _map[_vMapTile[i].destX][_vMapTile[i].destY].sourX;
+				_vMapTile[i].sourY = _map[_vMapTile[i].destX][_vMapTile[i].destY].sourY;
+
+				_vMapTile[i].terrain = _map[_vMapTile[i].destX][_vMapTile[i].destY].terrain;
+			}
+		}
+	}
+
+	// 맵 비우기
+	for (int i = 0; i < 100; i++) {
+		for (int j = 0; j < 100; j++) {
+			_map[i][j].terrain = TERRAIN_NULL;
+			_map[i][j].tileview = TILEVIEW_NO;
+		}
+	}
+
+	// 옮길 층의 타일 불러오기
+	for (int i = 0; i < _vMapTile.size(); i++) {
+		if (_vMapTile[i].floor == floor) {
+			_map[_vMapTile[i].destX][_vMapTile[i].destY].img = _vMapTile[i].img;
+
+			_map[_vMapTile[i].destX][_vMapTile[i].destY].destX = _vMapTile[i].destX;
+			_map[_vMapTile[i].destX][_vMapTile[i].destY].destY = _vMapTile[i].destY;
+			_map[_vMapTile[i].destX][_vMapTile[i].destY].sourX = _vMapTile[i].sourX;
+			_map[_vMapTile[i].destX][_vMapTile[i].destY].sourY = _vMapTile[i].sourY;
+			_map[_vMapTile[i].destX][_vMapTile[i].destY].obj = _vMapTile[i].obj;
+			_map[_vMapTile[i].destX][_vMapTile[i].destY].terrain = _vMapTile[i].terrain;
+			_map[_vMapTile[i].destX][_vMapTile[i].destY].tileview = TILEVIEW_NO;
+		}
+	}
+	for (int i = 0; i < _vObj.size(); i++) {
+		if (_vObj[i].obj == OBJ_STAIR_START) {
+			POINT playerPoint = PointMake(_vObj[i].destX*TILESIZE + TILESIZE / 2, _vObj[i].destY*TILESIZE + TILESIZE / 2);
+			_player->setPoint(playerPoint);
+			break;
+		}
+	}
+
+	_curStageNum = floor;
+}
+
+
+void Map::drawTileShadow(TILE tile)
+{
+	if (tile.tileview == TILEVIEW_HALF)
+	{
+		IMAGEMANAGER->alphaRender("blackTile", getMemDC(), tile.destX* TILESIZE + _camera.x, tile.destY* TILESIZE + _camera.y, 150);
+	}
+	else if (tile.tileview == TILEVIEW_NO)
+	{
+		IMAGEMANAGER->render("blackTile", getMemDC(), tile.destX * TILESIZE + _camera.x, tile.destY* TILESIZE + _camera.y);
+	}
 }

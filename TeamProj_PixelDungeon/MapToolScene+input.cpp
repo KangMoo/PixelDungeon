@@ -147,6 +147,9 @@ void MapToolScene::input_ModeChange() {
 		if (KEYMANAGER->isOnceKeyDown('4')) {
 			_inputMode = MODE_WELL;
 		}
+		if (KEYMANAGER->isOnceKeyDown('5')) {
+			_inputMode = MODE_TRAP;
+		}
 		break;
 	case LAYER_ITEM:
 		break;
@@ -183,20 +186,47 @@ void MapToolScene::input_AddTile() {
 				if (KEYMANAGER->isStayKeyDown(VK_LBUTTON)) {
 					int indexX = i % GRIDX + _cameraX;
 					int indexY = i / GRIDX + _cameraY;
-					for (_viMapTile = _vMapTile.begin(); _viMapTile != _vMapTile.end();) {
-						if (_viMapTile->destX == indexX && _viMapTile->destY == indexY) {
-							_viMapTile = _vMapTile.erase(_viMapTile);
-							return;
+					switch (_inputLayer) {
+					case LAYER_TILE:
+						for (_viMapTile = _vMapTile.begin(); _viMapTile != _vMapTile.end();) {
+							if (_viMapTile->destX == indexX && _viMapTile->destY == indexY) {
+								_viMapTile = _vMapTile.erase(_viMapTile);
+								return;
+							}
+							else
+								_viMapTile++;
 						}
-						else
-							_viMapTile++;
+						break;
+					case LAYER_DECO:
+						for (_viDecoTile = _vDecoTile.begin(); _viDecoTile != _vDecoTile.end();) {
+							if (_viDecoTile->destX == indexX && _viDecoTile->destY == indexY) {
+								_viDecoTile = _vDecoTile.erase(_viDecoTile);
+								return;
+							}
+							else
+								_viDecoTile++;
+						}
+						break;
+					case LAYER_OBJ:
+						for (_viObj = _vObj.begin(); _viObj != _vObj.end();) {
+							if (_viObj->destX == indexX && _viObj->destY == indexY) {
+								_viObj = _vObj.erase(_viObj);
+								return;
+							}
+							else
+								_viObj++;
+						}
+						break;
+					case LAYER_ITEM:
+
+						break;
+
 					}
 				}
 				break;
 			}
 
 			if (!_paletSelected.empty()) {
-
 				if (_inputMode == MODE_VIEWING || _inputMode == MODE_VIEWING_TILE) return; //읽기 모드   : 아무것도 못한다
 
 				_showTile = true;					// 현재 선택한 타일을 보여주기
@@ -329,10 +359,11 @@ void MapToolScene::input_AddTile() {
 								switch (_inputMode)
 								{
 								case MODE_CHEST:			inputObj.obj = OBJ_CHEST;				break;
-								case MODE_STAIR_START:		inputObj.obj = OBJ_NONE;				break;
-								case MODE_STAIR_END:		inputObj.obj = OBJ_NONE;				break;
-								case MODE_POT:				inputObj.obj = OBJ_NONE;				break;
-								case MODE_GRASS:			inputObj.obj = OBJ_NONE;				break;
+								case MODE_STAIR_START:		inputObj.obj = OBJ_STAIR_START;			break;
+								case MODE_STAIR_END:		inputObj.obj = OBJ_STAIR_END;			break;
+								case MODE_POT:				inputObj.obj = OBJ_POT;					break;
+								case MODE_WELL:				inputObj.obj = OBJ_WELL;				break;
+								case MODE_TRAP:				inputObj.obj = OBJ_TRAP;				break;
 								}
 								_vObj.push_back(inputObj);
 							}
@@ -426,8 +457,9 @@ void MapToolScene::input_AddTile() {
 							case MODE_CHEST:			inputObj.obj = OBJ_CHEST;				break;
 							case MODE_STAIR_START:		inputObj.obj = OBJ_STAIR_START;			break;
 							case MODE_STAIR_END:		inputObj.obj = OBJ_STAIR_END;			break;
-							case MODE_POT:				inputObj.obj = OBJ_NONE;				break;
-							case MODE_GRASS:			inputObj.obj = OBJ_NONE;				break;
+							case MODE_POT:				inputObj.obj = OBJ_POT;					break;
+							case MODE_WELL:				inputObj.obj = OBJ_WELL;				break;
+							case MODE_TRAP:				inputObj.obj = OBJ_TRAP;				break;
 							}
 							_vObj.push_back(inputObj);
 						}

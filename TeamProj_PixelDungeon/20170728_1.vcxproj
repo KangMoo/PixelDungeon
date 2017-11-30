@@ -92,6 +92,7 @@
     <ClInclude Include="gameNode.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="Gnoll.h" />
+    <ClInclude Include="goo.h" />
     <ClInclude Include="image.h" />
     <ClInclude Include="imageManager.h" />
     <ClInclude Include="iniDataManager.h" />
@@ -137,6 +138,7 @@
     <ClCompile Include="gameNode.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="Gnoll.cpp" />
+    <ClCompile Include="goo.cpp" />
     <ClCompile Include="image.cpp" />
     <ClCompile Include="imageManager.cpp" />
     <ClCompile Include="iniDataManager.cpp" />
