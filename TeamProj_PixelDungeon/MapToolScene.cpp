@@ -83,6 +83,8 @@ void MapToolScene::imageSetup() {
 	
 	_imgNameList.push_back("mapTiles");
 	_imgNameList.push_back("chest");
+	_imgNameList.push_back("water");
+	_imgNameList.push_back("trap");
 
 	for (int i = 0; i < _imgNameList.size(); i++) {
 		image* image1 = IMAGEMANAGER->findImage(_imgNameList[i]);
@@ -131,19 +133,53 @@ void MapToolScene::input()
 
 
 	if (KEYMANAGER->isOnceKeyDown(VK_DELETE)) {
+
 		if (!_vMapSelected.empty()) {
-			for (int i = 0; i < _vMapSelected.size(); i++) {
-				int indexX = _vMapSelected[i].index % GRIDX + _cameraX;
-				int indexY = _vMapSelected[i].index / GRIDX + _cameraY;
-				for (_viMapTile = _vMapTile.begin(); _viMapTile != _vMapTile.end();) {
-					if (_viMapTile->destX == indexX && _viMapTile->destY == indexY) {
-						_viMapTile = _vMapTile.erase(_viMapTile);
+			switch (_inputLayer) {
+			case LAYER_TILE:
+				for (int i = 0; i < _vMapSelected.size(); i++) {
+					int indexX = _vMapSelected[i].index % GRIDX + _cameraX;
+					int indexY = _vMapSelected[i].index / GRIDX + _cameraY;
+					for (_viMapTile = _vMapTile.begin(); _viMapTile != _vMapTile.end();) {
+						if (_viMapTile->destX == indexX && _viMapTile->destY == indexY) {
+							_viMapTile = _vMapTile.erase(_viMapTile);
+						}
+						else _viMapTile++;
 					}
-					else _viMapTile++;
 				}
+			break;
+			case LAYER_DECO:
+				for (int i = 0; i < _vMapSelected.size(); i++) {
+					int indexX = _vMapSelected[i].index % GRIDX + _cameraX;
+					int indexY = _vMapSelected[i].index / GRIDX + _cameraY;
+					for (_viDecoTile = _vDecoTile.begin(); _viDecoTile != _vDecoTile.end();) {
+						if (_viDecoTile->destX == indexX && _viDecoTile->destY == indexY) {
+							_viDecoTile = _vDecoTile.erase(_viDecoTile);
+						}
+						else
+							_viDecoTile++;
+					}
+				}
+				break;
+			case LAYER_OBJ:
+				for (int i = 0; i < _vMapSelected.size(); i++) {
+					int indexX = _vMapSelected[i].index % GRIDX + _cameraX;
+					int indexY = _vMapSelected[i].index / GRIDX + _cameraY;
+					for (_viObj = _vObj.begin(); _viObj != _vObj.end();) {
+						if (_viObj->destX == indexX && _viObj->destY == indexY) {
+							_viObj = _vObj.erase(_viObj);
+						}
+						else
+							_viObj++;
+					}
+				}
+				break;
+			case LAYER_ITEM:
+				break;
 			}
 		}
 	}
+	
 
 	if (KEYMANAGER->isStayKeyDown(VK_LCONTROL) && KEYMANAGER->isOnceKeyDown('S')) {
 		save();
@@ -244,7 +280,7 @@ void MapToolScene::render()
 		int destX = _paletRect[rectIndex].rc.left;
 		int destY = _paletRect[rectIndex].rc.top;
 
-		_vPaletTile[i].img->frameRender(getMemDC(), destX, destY, _vPaletTile[tileIndex].sourX, _vPaletTile[tileIndex].sourY);
+		_vPaletTile[tileIndex].img->frameRender(getMemDC(), destX, destY, _vPaletTile[tileIndex].sourX, _vPaletTile[tileIndex].sourY);
 	}
 
 
@@ -258,21 +294,28 @@ void MapToolScene::render()
 		int destY = _mapRect[index].rc.top;
 
 		int alpha;
-		if		(_vMapTile[i].terrain == TERRAIN_FLOOR				&& _inputMode == MODE_FLOOR)				alpha = 0;
-		else if (_vMapTile[i].terrain == TERRAIN_WATER				&& _inputMode == MODE_WATER)				alpha = 0;
-		else if (_vMapTile[i].terrain == TERRAIN_CHASM				&& _inputMode == MODE_CHASM)				alpha = 0;
-		else if (_vMapTile[i].terrain == TERRAIN_GRASS				&& _inputMode == MODE_GRASS)				alpha = 0;
-		else if (_vMapTile[i].terrain == TERRAIN_GRASS_UNTOUCHED	&& _inputMode == MODE_GRASS_UN)				alpha = 0;
-		else if (_vMapTile[i].terrain == TERRAIN_WALL				&& _inputMode == MODE_WALL)					alpha = 0;
-		else if (_vMapTile[i].terrain == TERRAIN_BARRICADE			&& _inputMode == MODE_BARRICADE)			alpha = 0;
-		else if (_vMapTile[i].terrain == TERRAIN_STATUE				&& _inputMode == MODE_STATUE)				alpha = 0;
-		else if (_vMapTile[i].terrain == TERRAIN_DOOR_CLOSED		&& _inputMode == MODE_DOOR)					alpha = 0;
-		else if (_vMapTile[i].terrain == TERRAIN_DOOR_LOCKED		&& _inputMode == MODE_DOOR_LOCKED)			alpha = 0;
-		else if (_inputMode == MODE_VIEWING || _inputMode == MODE_DELET)										alpha = 0;
-		else if (_inputMode == MODE_VIEWING_TILE)																alpha = 255;
-		else alpha = 100;
+		if (_inputLayer == LAYER_TILE) {
+			if		(_vMapTile[i].terrain == TERRAIN_FLOOR				&& _inputMode == MODE_FLOOR)				alpha = 0;
+			else if (_vMapTile[i].terrain == TERRAIN_WATER				&& _inputMode == MODE_WATER)				alpha = 0;
+			else if (_vMapTile[i].terrain == TERRAIN_CHASM				&& _inputMode == MODE_CHASM)				alpha = 0;
+			else if (_vMapTile[i].terrain == TERRAIN_GRASS				&& _inputMode == MODE_GRASS)				alpha = 0;
+			else if (_vMapTile[i].terrain == TERRAIN_GRASS_UNTOUCHED	&& _inputMode == MODE_GRASS_UN)				alpha = 0;
+			else if (_vMapTile[i].terrain == TERRAIN_WALL				&& _inputMode == MODE_WALL)					alpha = 0;
+			else if (_vMapTile[i].terrain == TERRAIN_BARRICADE			&& _inputMode == MODE_BARRICADE)			alpha = 0;
+			else if (_vMapTile[i].terrain == TERRAIN_STATUE				&& _inputMode == MODE_STATUE)				alpha = 0;
+			else if (_vMapTile[i].terrain == TERRAIN_DOOR_CLOSED		&& _inputMode == MODE_DOOR)					alpha = 0;
+			else if (_vMapTile[i].terrain == TERRAIN_DOOR_LOCKED		&& _inputMode == MODE_DOOR_LOCKED)			alpha = 0;
+			else if (_inputMode == MODE_DELET)																		alpha = 0;
+			else alpha = 100;
+		}
+		else if (_inputLayer < LAYER_TILE)																			alpha = 255;
+		else if (_inputLayer > LAYER_TILE)																			alpha = 150;
+		
+		if (_inputMode == MODE_VIEWING)																				alpha = 0;
+		if (_inputMode == MODE_VIEWING_TILE)																		alpha = 255;
 
 		_vMapTile[i].img->alphaFrameRender(getMemDC(), destX, destY, _vMapTile[i].sourX, _vMapTile[i].sourY, alpha);
+
 
 		if ((_inputMode == MODE_VIEWING_TILE)) {
 			HBRUSH brush;
@@ -303,7 +346,12 @@ void MapToolScene::render()
 		int destY = _mapRect[index].rc.top;
 		
 		int alpha;
-		if (_inputLayer >= LAYER_DECO || _inputMode == MODE_VIEWING) alpha = 0; else alpha = 255;
+		if (_inputLayer == LAYER_DECO)																				alpha = 0;
+		else if (_inputLayer < LAYER_DECO)																			alpha = 255;
+		else if (_inputLayer > LAYER_DECO)																			alpha = 150;
+
+		if (_inputMode == MODE_VIEWING)																				alpha = 0;
+		if (_inputMode == MODE_VIEWING_TILE)																		alpha = 255;
 
 		_vDecoTile[i].img->alphaFrameRender(getMemDC(), destX, destY, _vDecoTile[i].sourX, _vDecoTile[i].sourY, alpha);
 	}
@@ -317,9 +365,27 @@ void MapToolScene::render()
 		int destY = _mapRect[index].rc.top;
 
 		int alpha;
-		if (_inputLayer >= LAYER_OBJ || _inputMode == MODE_VIEWING) alpha = 0; else alpha = 255;
+		if (_inputLayer == LAYER_OBJ) {
+			if		(_vObj[i].obj == OBJ_CHEST					&& _inputMode == MODE_CHEST)						alpha = 0;
+			else if (_vObj[i].obj == OBJ_STAIR_START			&& _inputMode == MODE_STAIR_START)					alpha = 0;
+			else if (_vObj[i].obj == OBJ_STAIR_END				&& _inputMode == MODE_STAIR_END)					alpha = 0;
+			else if (_vObj[i].obj == OBJ_POT					&& _inputMode == MODE_POT)							alpha = 0;
+			else if (_vObj[i].obj == OBJ_WELL					&& _inputMode == MODE_WELL)							alpha = 0;
+			else if (_vObj[i].obj == OBJ_TRAP					&& _inputMode == MODE_TRAP)							alpha = 0;
+			else if (_inputMode == MODE_DELET)																		alpha = 0;
+			else alpha = 100;
+		}
+		else if (_inputLayer < LAYER_OBJ)																			alpha = 255;
+		else if (_inputLayer > LAYER_OBJ)																			alpha = 150;
+
+
+		if (_inputMode == MODE_VIEWING)																				alpha = 0;
+		if (_inputMode == MODE_VIEWING_TILE)																		alpha = 255;
+
 
 		_vObj[i].img->alphaFrameRender(getMemDC(), destX, destY, _vObj[i].sourX, _vObj[i].sourY, alpha);
+
+		
 	}
 
 
@@ -409,11 +475,12 @@ void MapToolScene::render()
 	case MODE_DOOR:			TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "DOOR",			strlen("DOOR"));			break;
 	case MODE_DOOR_LOCKED:	TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "DOOR_LOCKED",		strlen("DOOR_LOCKED"));		break;
 	
-	case MODE_CHEST:		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "CHEST",			strlen("BARICADE"));		break;
+	case MODE_CHEST:		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "CHEST",			strlen("CHEST"));			break;
 	case MODE_STAIR_START:	TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "STAIR_START",		strlen("STAIR_START"));		break;
 	case MODE_STAIR_END:	TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "STAIR_END",		strlen("STAIR_END"));		break;
 	case MODE_POT:			TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "POT",				strlen("POT"));				break;
 	case MODE_WELL:			TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "WELL",			strlen("WELL"));			break;
+	case MODE_TRAP:			TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "TRAP",			strlen("TRAP"));			break;
 
 	case MODE_VIEWING:		TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "VIEWING_IMAGE",	strlen("VIEWING_IMAGE"));	break;
 	case MODE_VIEWING_TILE:	TextOut(getMemDC(), _buttonRect[5].rc.right, _buttonRect[5].rc.top + 20, "VIEWING_TILE",	strlen("VIEWING_TILE"));	break;

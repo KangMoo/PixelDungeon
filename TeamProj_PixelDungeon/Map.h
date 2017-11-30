@@ -28,15 +28,24 @@ private:
 	bool start;
 	TILE _map[100][100];
 	int _mapSizeX, _mapSizeY;
-	vector<TILE> _vMapTile;
-	vector<TILE> _vDecoTile;
 
+	vector<TILE> _vMapTile;
+	vector<TILE>::iterator _viMapTile;
+	vector<TILE> _vDecoTile;
+	vector<TILE>::iterator _viDecoTile;
 	vector<GAMEOBJECT> _vObj;
 	vector<GAMEOBJECT>::iterator _viObj;
 
 	TILE _mapTest[10000];
 
+	int _renderStartX;
+	int _renderStartY;
+	int _renderSizeX;
+	int _renderSizeY;
+
+
 	map<string, TILE*> _spareTile; // 바꿔치기용 타일 저장 (flame, grass 등)
+	map<string, GAMEOBJECT*> _spareObj; // 바꿔치기용 타일 저장 (flame, grass 등)
 
 	//A*~
 	vector<vertex> _openlist;
@@ -75,8 +84,16 @@ public:
 	//상태 변화 일으키는 set 모음
 	void setTile_Flame(int i, int j);
 	void setTile_GrassCut(int i, int j);
-
+	void setTile_OpenDoor(int i, int j);
+	void setTile_CloseDoor(int i, int j);
+	void setTile_UnlockDoor(int i, int j);
+	
 	void setObj_OpenChest(int i);
+	void setObj_UseWell(int i);
+	void setObj_ActivTrap(int i);
+	
+
+	void changeFloor(int floor, bool firstTime);
 
 
 
@@ -99,6 +116,7 @@ public:
 	//~A*
 
 	void spareTileSetup();
+	void spareObjSetup();
 
 	void setPlayerAddressLink(Player* player) { _player = player; }
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }

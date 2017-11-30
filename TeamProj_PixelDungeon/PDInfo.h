@@ -174,22 +174,23 @@ typedef struct tagItem {
 
 
 
-#define ATTRIBUTE_FLOOR		0x000001		// 기본 idle
+#define ATTRIBUTE_FLOOR			0x000001		// 기본 idle
 
-#define ATTRIBUTE_UNSIGHT	0x000002		// 시야를 가리는 속성
-#define ATTRIBUTE_UNGO		0x000004		// 지나갈 수 없는 속성
+#define ATTRIBUTE_UNSIGHT		0x000002		// 시야를 가리는 속성
+#define ATTRIBUTE_UNGO			0x000004		// 지나갈 수 없는 속성
 
-#define ATTRIBUTE_DOOR		0x000008		// 열리고 닫히는 속성
-#define ATTRIBUTE_WATER		0x000010		// 불을 끈다든가 이것저것 다양한 역할
-#define ATTRIBUTE_GRASS		0x000020		// 밟거나 자르면 setTile_GrassCut() 실행
-#define ATTRIBUTE_FLAMMABLE 0x000040		// 태우면 setTile_Flame() 실행
-#define ATTRIBUTE_CHASM		0x000080		// 빠지면 플레이어는 데미지를 입고, 에너미는 죽는다
+#define ATTRIBUTE_DOOR			0x000008		// 열리고 닫히는 속성
+#define ATTRIBUTE_WATER			0x000010		// 불을 끈다든가 이것저것 다양한 역할
+#define ATTRIBUTE_GRASS			0x000020		// 밟거나 자르면 setTile_GrassCut() 실행
+#define ATTRIBUTE_FLAMMABLE		0x000040		// 태우면 setTile_Flame() 실행
+#define ATTRIBUTE_CHASM			0x000080		// 빠지면 플레이어는 데미지를 입고, 에너미는 죽는다
 
-#define ATTRIBUTE_HIDDEN	0x010000		// 히든 : 보이지 않는다. 특정 조건을 만족해야 드러남
 
-#define ATTRIBUTE_TRAP		0x000010		// 트랩 : 밟거나 아이템 던지면 반응 (트랩 종류는 따로 정의)
+#define ATTRIBUTE_TRAP			0x000010		// 트랩 : 밟거나 아이템 던지면 반응 (트랩 종류는 따로 정의)
 
-#define ATTRIBUTE_OBJECT	0x100000		// 오브젝트가 놓이는 타일(오브젝트 그 자체는 아님)
+#define ATTRIBUTE_OBJECT		0x100000		// 오브젝트가 놓이는 타일(오브젝트 그 자체는 아님)
+
+#define ATTRIBUTE_HIDDEN		0x200000		// 히든 : 보이지 않는다. 특정 조건을 만족해야 드러남
 
 
 // 맵
@@ -216,7 +217,8 @@ enum TERRAIN {
 	TERRAIN_CHASM =				ATTRIBUTE_FLOOR + ATTRIBUTE_CHASM,
 
 	TERRAIN_OBJECT =			ATTRIBUTE_FLOOR + ATTRIBUTE_OBJECT,
-	TERRAIN_OBJECT_UNGO =		ATTRIBUTE_FLOOR + ATTRIBUTE_OBJECT + ATTRIBUTE_UNGO
+	TERRAIN_OBJECT_UNGO =		ATTRIBUTE_FLOOR + ATTRIBUTE_OBJECT + ATTRIBUTE_UNGO,
+	TERRAIN_OBJECT_HIDDEN =		ATTRIBUTE_FLOOR + ATTRIBUTE_OBJECT + ATTRIBUTE_HIDDEN
 };
 
 enum TRAP {
@@ -236,12 +238,18 @@ enum TRAP {
 
 
 #define ATTRIBUTE_CHEST		0x000001		// 보물상자 : 밟거나 조사하면 열린다
+#define ATTRIBUTE_STAIR		0x000010		// 계단 속성
+#define ATTRIBUTE_POT		0x000100
+#define ATTRIBUTE_WELL		0x001000
+#define ATTRIBUTE_TRAP		0x010000		
+
 #define ATTRIBUTE_LOCKED	0x000002		// 잠겨있는 상태
 #define ATTRIBUTE_CRYSTAL	0x000004		// 크리스탈 상자 : 밟거나 조사하면 내부의 물건을 확인할 수 있다
 
-#define ATTRIBUTE_STAIR		0x000010		// 보물상자 : 밟거나 조사하면 열린다
-#define ATTRIBUTE_START		0x000020		// 보물상자 : 밟거나 조사하면 열린다
-#define ATTRIBUTE_END		0x000040		// 보물상자 : 밟거나 조사하면 열린다
+#define ATTRIBUTE_START		0x000020		// 시작
+#define ATTRIBUTE_END		0x000040		// 끝
+
+#define ATTRIBUTE_ACTIVE	0x100000
 
 
 enum OBJ {
@@ -255,9 +263,13 @@ enum OBJ {
 	OBJ_STAIR_START			= ATTRIBUTE_STAIR + ATTRIBUTE_START,
 	OBJ_STAIR_END			= ATTRIBUTE_STAIR + ATTRIBUTE_END,
 
-	OBJ_TRAP,
-	OBJ_TRAP_UNSIGHT,
-	OBJ_TRAP_ACTIVATE
+	OBJ_POT					= ATTRIBUTE_POT,
+	
+	OBJ_WELL_EMPTY			= ATTRIBUTE_WELL,
+	OBJ_WELL				= ATTRIBUTE_WELL + ATTRIBUTE_ACTIVE,
+
+	OBJ_TRAP				= ATTRIBUTE_TRAP,
+	OBJ_TRAP_ACTIVE			= ATTRIBUTE_TRAP + ATTRIBUTE_ACTIVE
 };
 
 
@@ -275,8 +287,8 @@ typedef struct tagTile {
 	int destX, destY; //뿌릴 타일 좌표값
 	TILEVIEW tileview;
 	TERRAIN terrain;
-	TRAP trap;
 	OBJ obj; // 안씀
+	int floor;			// 몇층인지
 }TILE;
 
 
@@ -285,7 +297,8 @@ typedef struct tagGameObject {
 	int sourX, sourY; //받아올 타일 좌표값
 	int destX, destY; //뿌릴 타일 좌표값
 	OBJ obj;
-
+	TRAP trap;
+	int floor;			// 몇층인지
 }GAMEOBJECT;
 
 

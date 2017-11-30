@@ -18,7 +18,8 @@ HRESULT mainGame::init(void)
 	
 	IMAGEMANAGER->addFrameImage("mapTiles", "Img/Map/tiles_sewers.bmp", 0, 0, 512, 512, 16, 16, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("chest", "Img/Map/chest.bmp", 0, 0, 32, 32, 1, 1, true, RGB(255, 0, 255));
-
+	IMAGEMANAGER->addFrameImage("water", "Img/Map/water0.bmp", 0, 0, 32, 32, 1, 1, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("trap", "Img/Map/trap.bmp", 0, 0, 512, 256, 16, 8, true, RGB(255, 0, 255));
 
 	SCENEMANAGER->addScene("∞‘¿”æ¿", new GameScene);
 	SCENEMANAGER->addScene("∏ﬁ¿Œ∏ﬁ¥∫æ¿", new MainMenuScene);
