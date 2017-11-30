@@ -31,6 +31,7 @@ public:
 	void main_menu();
 	void status_window();
 	void search();
+	void usingui();
 
 	void BackPack();
 	void PrintFont(char name[], HFONT hFont, HFONT oldFont, int x, int y, int size, char r = 0, char g = 0, char b = 0);
@@ -40,6 +41,7 @@ public:
 
 	POINT getCamera() { return _camera; }
 	void setCamera(POINT camera) { _camera = camera; }
+	bool usingInterface();
 
 	void setPlayerAddressLink(Player* player) { _player = player; }
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }
@@ -48,22 +50,12 @@ public:
 	UI();
 	~UI();
 
-	RECT _backPackRect;
-	RECT _SearchOptionRect;
-	RECT _TurnSkipRect;
-
-	RECT _Target_ButtonRect;
-	RECT _Special_ButtonRect;
-	RECT _Monster_DisplyRect;
-
-	RECT _Menu_selectRect;
-	RECT _StatusRect;
-	RECT _Menu_WindowRect[5];
 
 private:
 	float _interface_button_timer1;
 	float _interface_button_timer2;
 	float _interface_button_timer3;
+	float _uitimer;
 
 	float timer = 0;
 
@@ -83,6 +75,18 @@ private:
 		//bool itemWear = false;
 	}Inventory;
 
+
+	RECT _backPackRect;
+	RECT _SearchOptionRect;
+	RECT _TurnSkipRect;
+
+	RECT _Target_ButtonRect;
+	RECT _Special_ButtonRect;
+	RECT _Monster_DisplyRect;
+
+	RECT _Menu_selectRect;
+	RECT _StatusRect;
+	RECT _Menu_WindowRect[5];
 	enum INTERFACEMENU
 	{
 		INTERFACEMENU_BACKPACK,
