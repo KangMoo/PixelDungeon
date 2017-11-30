@@ -78,6 +78,8 @@ HRESULT UI::init()
 	_interface_button_timer2 = TIMEMANAGER->getWorldTime();
 	_interface_button_timer3 = TIMEMANAGER->getWorldTime();
 
+	_uitimer = TIMEMANAGER->getWorldTime();
+
 	_Menu_WindowRect[GAMEMENU_SET] = RectMake(278,242,260,45);
 	_Menu_WindowRect[GAMEMENU_MAIN] = RectMake(278,287,130,45);
 	_Menu_WindowRect[GAMEMENU_EXIT] = RectMake(408,287,130,45);
@@ -127,6 +129,11 @@ void UI::render(POINT camera)
 
 void UI::draw(POINT camera)
 {
+	if (!_player->getUsingUI())
+	{
+		_uitimer = TIMEMANAGER->getWorldTime();
+	}
+
 	IMAGEMANAGER->render("status_pane", getMemDC(), 0, 0);
 	IMAGEMANAGER->render("hp_bar", getMemDC(), 90, 9);
 
@@ -211,7 +218,9 @@ void UI::draw(POINT camera)
 		if (PtInRect(&_backPackRect, _ptMouse) || PtInRect(&_SearchOptionRect, _ptMouse) || PtInRect(&_TurnSkipRect, _ptMouse) || PtInRect(&_Menu_selectRect, _ptMouse) || PtInRect(&_StatusRect, _ptMouse))
 		{
 			_selectInterface = INTERFACEMENU_END;
-			_player->setUsingUI(false);
+			//_player->setUsingUI(false);
+			
+			usingui();
 		}
 
 		_interface_button_timer1 = TIMEMANAGER->getWorldTime();
@@ -332,6 +341,16 @@ void UI::search()
 	PrintFont(name, namehFont, nameoldFont, 290, 468, 18, 0, 255, 0);
 }
 
+void UI::usingui()
+{
+	if ((TIMEMANAGER->getWorldTime() - _uitimer) > 1 && _player->getUsingUI())
+	{
+		_player->setUsingUI(false);
+
+		_uitimer = TIMEMANAGER->getWorldTime();
+	}
+}
+
 void UI::ResetInventory()
 {
 	for (size_t i = 0; i < _im->getvBag().size(); i++)
@@ -359,6 +378,18 @@ void UI::SortInventory()
 				_inventory[x + 4 + 1].itemNumber = t1tmep;
 			}
 		}
+	}
+}
+
+bool UI::usingInterface()
+{
+	if (_selectInterface == INTERFACEMENU_END &&_selectItem == NAME_END && _selectMenu == GAMEMENU_END)
+	{
+		return false;
+	}
+	else if(_selectInterface != INTERFACEMENU_END ||_selectItem != NAME_END || _selectMenu != GAMEMENU_END)
+	{
+		return true;
 	}
 }
 
@@ -891,9 +922,9 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
-				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
+				usingui();
 			}
 
 			//마신다
@@ -904,9 +935,9 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
-				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
+				usingui();
 			}
 
 			//던진다
@@ -917,9 +948,9 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
-				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
+				usingui();
 			}
 
 			//읽는다
@@ -930,9 +961,9 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
-				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
+				usingui();
 			}
 
 			//발사한다
@@ -943,9 +974,9 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
-				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
+				usingui();
 			}
 
 			//먹는다
@@ -961,9 +992,9 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					//_player->setStat(temp);
 				}
 
-				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
+				usingui();
 			}
 
 			//심는다
@@ -974,9 +1005,9 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
-				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
+				usingui();
 			}
 
 			//기억한다
@@ -987,9 +1018,9 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
-				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
+				usingui();
 			}
 
 			//착용한다
@@ -1065,9 +1096,9 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
-				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
+				usingui();
 			}
 
 			//해제한다
@@ -1110,6 +1141,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
+				usingui();
 			}
 
 			if (button_option_value[buttonNumber].number == BUTTONOPTION_END)
