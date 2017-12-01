@@ -377,7 +377,7 @@ void Rat::attack()
 	
 	if (PtInRect(&_attBox, _player->getPoint()))
 	{
-		//_player->getDamaged(_statistics.str);
+		_player->getDamaged(_statistics.str);
 	}
 
 	//플레이어 위치가 중점으로 설정된거 같다, 타일사이즈의 반정도를 빼서 타일에 맞추는것이 좋을것 같다.
