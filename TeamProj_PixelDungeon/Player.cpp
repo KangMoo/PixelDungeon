@@ -616,7 +616,15 @@ void Player::endTurn()
 	_action = false;
 	//적 차례
 	_em->setTurn(true);
-
+	//keepMove는?? -> 아직 갈 길이 있는지 여부 (A*에 길이 남아있는지 여부)
+	if (astar.size() > 0)
+	{
+		_keepMove = true;
+	}
+	else
+	{
+		_keepMove = false;
+	}
 	//맵에 턴 끝났다는 정보 넘겨줌
 	_map->playerTurnEnd();
 }
