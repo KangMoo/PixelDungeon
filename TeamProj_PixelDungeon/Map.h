@@ -87,6 +87,7 @@ public:
 	void setTile_OpenDoor(int i, int j);
 	void setTile_CloseDoor(int i, int j);
 	void setTile_UnlockDoor(int i, int j);
+	void setTile_SearchHidden(int i, int j);
 	
 	void setObj_OpenChest(int i);
 	void setObj_UseWell(int i);

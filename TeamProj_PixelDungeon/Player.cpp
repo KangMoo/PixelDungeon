@@ -19,7 +19,7 @@ HRESULT Player::init(POINT point)
 
 	addImg();
 	//test~
-	_playerPoint = PointMake(_map->getTile(7, 7).destX*TILESIZE + TILESIZE / 2, _map->getTile(7, 7).destY*TILESIZE + TILESIZE / 2);
+	//_playerPoint = PointMake(_map->getTile(7, 7).destX*TILESIZE + TILESIZE / 2, _map->getTile(7, 7).destY*TILESIZE + TILESIZE / 2);
 
 	_playerStat.atk_lck = 0;
 	_playerStat.avd_lck = 0;
