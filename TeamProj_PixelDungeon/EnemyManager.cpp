@@ -106,7 +106,7 @@ void EnemyManager::action()
 		_enemyTurn = false;
 		_actionCount = 0;
 		//플레이어 차례 true 대입
-		_player->setTurn(true);
+		_player->activeTurn();
 	}
 }
 void EnemyManager::render()
