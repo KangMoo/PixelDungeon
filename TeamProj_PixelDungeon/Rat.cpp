@@ -215,7 +215,7 @@ void Rat::update()
 	{
 		//액션을 취하지 않은 상태
 		//상태를 아이들로 해준다.
-		_myState = ENEMYSTATE_IDLE;
+		//_myState = ENEMYSTATE_IDLE;
 
 		if (_action == true) action();
 
@@ -248,6 +248,7 @@ void Rat::update()
 
 
 	//턴을 무조건적으로 넘긴다.
+
 }
 
 void Rat::render(POINT camera)
@@ -299,14 +300,6 @@ void Rat::frameUpdate()
 		
 	}
 	//이동상태
-
-	//공격상태
-	//if (_myState == ENEMYSTATE_ATTACK)
-	//{
-	//	
-	//	//_currentFrameX = 0;
-	//}
-	//공격상태
 
 	//죽은상태
 	if (_myState == ENEMYSTATE_DEAD)
@@ -383,10 +376,10 @@ void Rat::attack()
 	_myState = ENEMYSTATE_IDLE;
 
 
-	if (_currentFrameX >= _image->getMaxFrameX())
-	{
-		_action = false; //턴을 넘김다
-	}
+	//if (_currentFrameX >= _image->getMaxFrameX())
+	//{
+	//	_action = false; //턴을 넘김다
+	//}
 
 }
 
@@ -394,51 +387,92 @@ void Rat::move()
 {
 	//에이스타로 적을 따라 이동합니다.
 
-	_myState = ENEMYSTATE_MOVE;
-	
-	astar = _map->aStar(_player->getPoint(), PointMake(_point.x, _point.x));
+	//TILE goaltile;
+	//temp = _map->aStar(PointMake(_point.x * TILESIZE + TILESIZE / 2, _point.y * TILESIZE + TILESIZE / 2), _player->getPoint());
+	//if (temp.size() > 0)
+	//{
+	//	temp.erase(temp.begin() + temp.size() - 1);
+	//}
+	//if (temp.size() > 0)
+	//{
+	//	temp.pop_back();
+	//}
+	//if (temp.size() > 0)
+	//{
+	//	goaltile = temp[temp.size() - 1];
+	//}
+
+	aStar = _map->aStar(PointMake(_point.x, _point.y), _player->getPoint());
+
 	//움직일때 해당 좌표를 4,5 같은 식으로 주면 자동으로 4*TILESIZE + TILESIZE/2, 5*... 해줌
-	_movePt = PointMake(astar[astar.size() - 1].destX, astar[astar.size() - 1].destY);
+	_movePt = PointMake(aStar[aStar.size() - 1].destX, aStar[aStar.size() - 1].destY);
+
 	_myState = ENEMYSTATE_MOVE;
-	
-	if (_myState == ENEMYSTATE_MOVE)
+
+	if (true)
 	{
-		//좌표가 주어졌으면 해당 좌표로 가야한다
-		//중심좌표를 구한다
 		float x = _movePt.x * TILESIZE + TILESIZE / 2;
 		float y = _movePt.y * TILESIZE + TILESIZE / 2;
-	
-		//중심좌표에 도달했는지 확인한다
-		if ((static_cast<float>(_point.x) >= x - 4 && static_cast<float>(_point.x) <= x + 4) &&
-			(static_cast<float>(_point.y) >= y - 4 && static_cast<float>(_point.y) <= y + 4))
+
+		if (PtInRect(&attackRange, _player->getPoint()))
 		{
 			//턴을 종료하고 넘겨준다
 			_point.x = x;
 			_point.y = y;
 			_isMove = false;
-			_myState = ENEMYSTATE_IDLE;
+			//_myState = ENEMYSTATE_IDLE;
 			_action = false;
 		}
 		else
 		{
-			//_point.x += cosf(getAngle(_point.x, _point.y, _movePoint.x, _movePoint.y)) * 3;
-			//_point.y -= sinf(getAngle(_point.x, _point.y, _movePoint.x, _movePoint.y)) * 3;
-			//_action = false;
-	
-			//도달하지 않았으면 이동한다
-			if (_point.x < x)_point.x += TILESIZE / 8;
-			else if (_point.x > x)_point.x -= TILESIZE / 8;
-			if (_point.y < y) _point.y += TILESIZE / 8;
-			else if (_point.y > y) _point.y -= TILESIZE / 8;
+			if (_point.x < _player->getPoint().x)
+			{
+				//현재 좌표가 가려는 좌표의 중심보다 작으면 +
+				_right = true;
+				_point.x += 16;
+			}
+			else if (_point.x > _player->getPoint().x)
+			{
+				_right = false;
+				_point.x -= 16;
+			}
+
+			if (_point.y < _player->getPoint().y)
+			{
+				_point.y += 16;
+			}
+			else if (_point.y > _player->getPoint().y)
+			{
+				_point.y -= 16;
+			}
 			_action = false;
-	
 		}
+		_hitBox = RectMake(_point.x, _point.y, TILESIZE, TILESIZE);	//32로 고정을 해줍니다. 혹시 모르니까요.
+
+
+			//if (PtInRect(&_hitBox, _movePt))
+			//{
+			//	_point.x = aStar[aStar.size() - 1].destX*TILESIZE + TILESIZE / 2;
+			//	_point.y = aStar[aStar.size() - 1].destY*TILESIZE + TILESIZE / 2;
+			//
+			//	//턴을 종료하고 넘겨준다
+			//	_myState = ENEMYSTATE_IDLE;
+			//	_action = false;
+			//	aStar.erase(aStar.begin() + aStar.size() - 1);
+			//
+			//}
+			//if (_point.x < _movePt.x)_point.x += TILESIZE;
+			//else if (_point.x > _movePt.x)_point.x -= TILESIZE;
+			//if (_point.y < _movePt.y) _point.y += TILESIZE;
+			//else if (_point.y > _movePt.y) _point.y -= TILESIZE;
+		
 	}
-	_action = false;
+	//_action = false;
 }
 
 void Rat::getDamaged(int damage)
 {
+
 	//자는 상태에서 맞았으면 내 상태를 변경해준다.
 	if (_myState == ENEMYSTATE_SLEEP)
 	{
@@ -462,20 +496,21 @@ void Rat::getDamaged(int damage)
 
 void Rat::draw(POINT camera)
 {
-
-	for (auto i : astar)
+	for (auto i : aStar)
 	{
 		RectangleMakeCenter(getMemDC(), i.destX*TILESIZE + TILESIZE / 2 + camera.x, i.destY * TILESIZE + TILESIZE / 2 + camera.y, 5, 5);
 	}
 
 	Rectangle(getMemDC(), _attBox.left + camera.x, _attBox.top + camera.y, _attBox.right + camera.x, _attBox.bottom + camera.y);
+	Rectangle(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _hitBox.right + camera.x, _hitBox.bottom + camera.y);
+
 	//_image->frameRender(getMemDC(), _point.x + camera.x, _point.y + camera.y);
 	_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _currentFrameX, _currentFrameY, _deadAlpha);
 	//_image->frameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _currentFrameX, _currentFrameY);
 
 	char str[128];
 
-	wsprintf(str, "%d", _currentFrameX);
+	wsprintf(str, "%d", _action);
 	TextOut(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, str, strlen(str));
 
 	//_hpBar->render();
