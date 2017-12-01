@@ -79,7 +79,7 @@
     <Filter Include="MainGame\Info">
       <UniqueIdentifier>{4638e7c0-1084-4e16-af54-c9f64a40c08a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MainGame\Map\Item">
+    <Filter Include="MainGame\Item">
       <UniqueIdentifier>{77d9f4ac-4948-4088-a43e-84d854cc2fd9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -190,7 +190,7 @@
       <Filter>MainGame\Enemy\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="Item.h">
-      <Filter>MainGame\Map\Item</Filter>
+      <Filter>MainGame\Item</Filter>
     </ClInclude>
     <ClInclude Include="PDInfo.h">
       <Filter>MainGame\Info</Filter>
@@ -202,7 +202,7 @@
       <Filter>MainGame\Scene</Filter>
     </ClInclude>
     <ClInclude Include="ItemManager.h">
-      <Filter>MainGame\Map\Item</Filter>
+      <Filter>MainGame\Item</Filter>
     </ClInclude>
     <ClInclude Include="tinyxml2.h">
       <Filter>2DGameFramework</Filter>
@@ -315,7 +315,7 @@
       <Filter>MainGame\Enemy\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="Item.cpp">
-      <Filter>MainGame\Map\Item</Filter>
+      <Filter>MainGame\Item</Filter>
     </ClCompile>
     <ClCompile Include="MapToolScene.cpp">
       <Filter>MainGame\Scene</Filter>
@@ -324,7 +324,7 @@
       <Filter>MainGame\Scene</Filter>
     </ClCompile>
     <ClCompile Include="ItemManager.cpp">
-      <Filter>MainGame\Map\Item</Filter>
+      <Filter>MainGame\Item</Filter>
     </ClCompile>
     <ClCompile Include="tinyxml2.cpp">
       <Filter>2DGameFramework</Filter>

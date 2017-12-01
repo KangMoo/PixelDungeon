@@ -111,7 +111,8 @@ typedef struct tagPlayerStat {
 	int maxhp;		//최대체력
 	int str;		//힘
 	int exp;		//경험치
-	int def;		//방어력
+	int mindef;		//방어력
+	int maxdef;
 	float atk_lck;	//명중률
 	float avd_lck;	//회피율
 	int hunger;		//배고픔
@@ -158,11 +159,13 @@ typedef struct tagItem {
 	ITEMNAME name;		// 아이템 이름
 	tagPlayerStat stat;	// 스탯 증가
 	POINT point;		// 필드위 중심좌표
+	POINT initPoint;
 	RECT rc;			// 아이템 충돌용 렉트
 	float range;		// 완드 스킬 사거리
 	bool equip;			// 창착 여부
 	bool isCursed;		// 저주 여부
 	bool contentsHide;	// 아이템 확인 여부 ( 주문서 , 물약 , 장비 )
+	bool drop;
 	int tier;			// 아이템 등급 (1,2,3,4 티어)
 	int upgrade;		// 강화 횟수
 	int Power;			// 필요 힘
