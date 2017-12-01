@@ -242,8 +242,8 @@ void ItemManager::setItemToField(ITEMNAME name, float x, float y)
 	item.floor = _map->getCurStageNum();
 	setItem(&item, name);
 
-	item.point.x = x;
-	item.point.y = y;
+	item.point.x = (int)(x / TILESIZE)*TILESIZE + 16;
+	item.point.y = (int)(y / TILESIZE)*TILESIZE + 16;
 	item.rc = RectMakeCenter(item.point.x, item.point.y,
 		item.img->getWidth(), item.img->getHeight());
 
@@ -365,8 +365,8 @@ void ItemManager::setItemToField(ITEMNAME name, float x, float y, bool identify,
 	item.isCursed = isCursed;
 	item.numOfItem = numOfItem;
 
-	item.point.x = x;
-	item.point.y = y;
+	item.point.x = (int)(x / TILESIZE)*TILESIZE + 16;
+	item.point.y = (int)(y / TILESIZE)*TILESIZE + 16;
 	item.rc = RectMakeCenter(item.point.x, item.point.y,
 		item.img->getWidth(), item.img->getHeight());
 
@@ -1523,13 +1523,14 @@ void ItemManager::throwMove()
 
 		if (getDistance(_viThrow->initX, _viThrow->initY, _viThrow->x, _viThrow->y) >
 			getDistance(_viThrow->initX, _viThrow->initY, _viThrow->destX, _viThrow->destY)
-			|| (_map->getMap(0,0).terrain & ATTRIBUTE_UNGO) == ATTRIBUTE_UNGO))
+			|| (_map->getMap(_viThrow->x/TILESIZE, _viThrow->y/TILESIZE).terrain & ATTRIBUTE_UNGO) == ATTRIBUTE_UNGO)
 		{
 			for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); )
 			{
 				if (_viBag->position == _viThrow->position)
 				{
-					setItemToField(_viBag->name, _viThrow->destX, _viThrow->destY,
+					setItemToField(_viBag->name, _viThrow->x - cosf(_viThrow->angle)*TILESIZE, 
+						_viThrow->y - sinf(_viThrow->angle)*TILESIZE,
 						_viBag->contentsHide, _viBag->isCursed, _viBag->upgrade,
 						_viBag->numOfItem);
 					
