@@ -61,7 +61,6 @@ public:
 	void imageChange(const char* str);
 	
 	void move();
-
 	void getDamaged(int damage);
 
 	//시야처리 함수
@@ -85,6 +84,8 @@ public:
 	void action_Eat();
 	void endTurn();
 
+	//멈추는 함수
+	void stopMoving();
 
 	//게터세터
 

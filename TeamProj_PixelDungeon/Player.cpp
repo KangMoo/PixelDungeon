@@ -472,7 +472,7 @@ void Player::action_Attack()
 	//목표 몬스터 공격
 	if (_isEnemyTargeted)
 	{
-		_TargetEnemy->setHP(_TargetEnemy->getHP() - _playerStat.str);
+		_TargetEnemy->setHP(_TargetEnemy->getHP() -RND->getFromIntTo(_playerStat.mindmg,_playerStat.maxdmg));
 	}
 }
 void Player::action_Scroll()
@@ -555,7 +555,7 @@ void Player::getDamaged(int damage)
 
 		}
 	}
-
+	stopMoving();
 }
 void Player::mouseClickEvent()
 {
@@ -602,6 +602,26 @@ void Player::mouseClickEvent()
 		{
 			//현재 위치는 뺌
 			astar.erase(astar.begin() + astar.size() - 1);
+		}
+	}
+	//keepMove는?? -> 아직 갈 길이 있는지 여부 (A*에 길이 남아있는지 여부)
+	if (astar.size() > 0)
+	{
+		_keepMove = true;
+	}
+	else
+	{
+		_keepMove = false;
+	}
+
+	if (!_keepMove)
+	{
+		RECT temp = RectMakeCenter(_playerPoint.x, _playerPoint.y, TILESIZE * 2, TILESIZE * 2);
+		if (PtInRect(&temp, ptMouse))
+		{
+			//열쇠를 가지고 있으면
+			//if()~~~~~
+			_map->setTile_UnlockDoor(ptMouse.x / TILESIZE, ptMouse.y / TILESIZE);
 		}
 	}
 }
@@ -696,4 +716,16 @@ void Player::setChangeFoor()
 	if (astar.size() > 0) astar.clear();
 	fovCheck();
 	endTurn();
+}
+
+void Player::stopMoving()
+{
+	if (_keepMove && astar.size()>0)
+	{
+		TILE temp;
+		temp = astar[astar.size() - 1];
+		astar.clear();
+		astar.push_back(temp);
+		return;
+	}
 }
