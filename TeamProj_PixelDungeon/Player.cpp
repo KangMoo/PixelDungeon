@@ -41,6 +41,8 @@ HRESULT Player::init(POINT point)
 	_keepMove = false;
 	_isUsingUI = false;
 	_isEnemyTargeted = false;
+
+
 	return S_OK;
 }
 void Player::release()
@@ -53,7 +55,7 @@ void Player::update()
 	frameUpdate();
 	
 
-
+	if (_playerState == PLAYERSTATE_DEAD) return;
 
 	//자기 차례가 아니면 이하 실행X
 	if (!_action) return;
@@ -123,10 +125,6 @@ void Player::draw(POINT camera)
 	//	LineTo(getMemDC(), _playerPoint.x, _playerPoint.y);
 	//}
 
-	for (auto i : astar)
-	{
-		RectangleMakeCenter(getMemDC(), i.destX*TILESIZE + TILESIZE / 2 + camera.x, i.destY * TILESIZE + TILESIZE / 2+camera.y,5,5);
-	}
 	char str[] = "폰트테스트";
 	HFONT hFont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("궁서"));
 	HFONT oldFont = (HFONT)SelectObject(getMemDC(), hFont);
@@ -540,7 +538,6 @@ void Player::getDamaged(int damage)
 	if (RND->getFloat(1.0)<_playerStat.atk_lck)
 	{
 		//빗나감
-
 	}
 	else
 	{
@@ -616,12 +613,13 @@ void Player::mouseClickEvent()
 
 	if (!_keepMove)
 	{
-		RECT temp = RectMakeCenter(_playerPoint.x, _playerPoint.y, TILESIZE * 2, TILESIZE * 2);
+		RECT temp = RectMakeCenter(_playerPoint.x, _playerPoint.y, TILESIZE * 3, TILESIZE * 3);
 		if (PtInRect(&temp, ptMouse))
 		{
 			//열쇠를 가지고 있으면
 			//if()~~~~~
 			_map->setTile_UnlockDoor(ptMouse.x / TILESIZE, ptMouse.y / TILESIZE);
+			
 		}
 	}
 }
