@@ -62,8 +62,8 @@ public:
 	void setAction(bool action) { _action = action; }
 	ENEMYSTAT getStat() { return _statistics; }
 	void setStat(ENEMYSTAT stat) { _statistics = stat; }
-	POINT getPoint() { return _point; }
-	void setPoint(POINT point) { _point = point; }
+	virtual POINT getPoint() { return _point; }
+	virtual void setPoint(POINT point) { _point = point; }
 	int getHP() { return _statistics.hp; }
 	void setHP(int hp) { _statistics.hp = hp; }
 

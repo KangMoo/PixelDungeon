@@ -144,6 +144,7 @@ HRESULT Swarm::init(POINT point, int currntHp)
 
 void Swarm::action()
 {
+	if (KEYMANAGER->isOnceKeyDown('E')) getDamaged(3);
 	if (!_active)
 	{
 		if (_map->getTile(_point.x, _point. y).tileview != TILEVIEW_NO)
@@ -154,7 +155,6 @@ void Swarm::action()
 		return;
 	}
 
-	if (KEYMANAGER->isOnceKeyDown('E')) getDamaged(3);
 
 	if (_myState == ENEMYSTATE_SLEEP)
 	{
@@ -321,7 +321,10 @@ void Swarm::action()
 				astarTest = _map->aStar(PointMake(_pointX, _pointY), _player->getPoint());
 				//움직일때 해당 좌표를 4,5 같은 식으로 주면 자동으로 4*TILESIZE + TILESIZE/2, 5*... 해줌
 				//_movePoint = PointMake(astarTest[astarTest.size() - 1].destX, astarTest[astarTest.size() - 1].destY);
-				_movePoint = PointMake(astarTest[astarTest.size() - 2].destX, astarTest[astarTest.size() - 2].destY);
+				if (astarTest.size() > 2)
+					_movePoint = PointMake(astarTest[astarTest.size() - 2].destX, astarTest[astarTest.size() - 2].destY);
+				else
+					_movePoint = _point;
 				_myState = ENEMYSTATE_MOVE;
 			}
 		}
@@ -479,11 +482,11 @@ void Swarm::getDamaged(int damage)
 				//_em->setSwarm(PointMake(_point.x + x, _point.y + y), _currntHp);
 			if ((ATTRIBUTE_UNGO & _map->getMap(_point.x + x, _point.y + y).terrain) != ATTRIBUTE_UNGO)
 			{
-				//for (int i = 0; i < _em->getEnemy().size(); i++)
-				//{
-				//	if (_em->getEnemy()[i]->getPoint().x == _point.x + x &&
-				//		_em->getEnemy()[i]->getPoint().y == _point.y + y) return;
-				//}
+				for (int i = 0; i < _em->getEnemy().size(); i++)
+				{
+					if (_em->getEnemy()[i]->getTilePt().x == _point.x + x &&
+						_em->getEnemy()[i]->getTilePt().y == _point.y + y) return;
+				}
 				_em->setSwarmSpawn(PointMake(_point.x + x, _point.y + y), _currntHp);
 			}
 		}
