@@ -19,7 +19,7 @@ HRESULT EnemyManager::init()
 	_actionCount = 0;
 
 	//setEnemy(PointMake(12, 12), 2);
-	setEnemy(PointMake(13, 12), 0);
+	setEnemy(PointMake(13, 5), 0);
 	//setEnemy(PointMake(13, 13), 2);
 
 	return S_OK;

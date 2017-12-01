@@ -62,7 +62,7 @@ public:
 	void setAction(bool action) { _action = action; }
 	ENEMYSTAT getStat() { return _statistics; }
 	void setStat(ENEMYSTAT stat) { _statistics = stat; }
-	POINT getPoint() { return _point; }
+	POINT getPoint() { return PointMake(_point.x * TILESIZE + TILESIZE / 2, _point.y * TILESIZE + TILESIZE / 2); }
 	void setPoint(POINT point) { _point = point; }
 	int getHP() { return _statistics.hp; }
 	void setHP(int hp) { _statistics.hp = hp; }

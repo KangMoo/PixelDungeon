@@ -511,10 +511,10 @@ void Rat::draw(POINT camera)
 {
 	//if (_map->getTile(_point.x , _point.y).tileview == TILEVIEW_ALL)
 	//{
-	Rectangle(getMemDC(), _cog.left + camera.x, _cog.top + camera.y, _cog.right + camera.x, _cog.bottom + camera.y);
-	Rectangle(getMemDC(), attackRange.left + camera.x, attackRange.top + camera.y, attackRange.right + camera.x, attackRange.bottom + camera.y);
-	RectangleMake(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, TILESIZE, TILESIZE);
-	Rectangle(getMemDC(), _attBox.left + camera.x, _attBox.top + camera.y, _attBox.right + camera.x, _attBox.bottom + camera.y);
+	//Rectangle(getMemDC(), _cog.left + camera.x, _cog.top + camera.y, _cog.right + camera.x, _cog.bottom + camera.y);
+	//Rectangle(getMemDC(), attackRange.left + camera.x, attackRange.top + camera.y, attackRange.right + camera.x, attackRange.bottom + camera.y);
+	//RectangleMake(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, TILESIZE, TILESIZE);
+	//Rectangle(getMemDC(), _attBox.left + camera.x, _attBox.top + camera.y, _attBox.right + camera.x, _attBox.bottom + camera.y);
 	//_image->frameRender(getMemDC(), _point.x + camera.x, _point.y + camera.y);
 	_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _currentFrameX, _currentFrameY, _deadAlpha);
 	//_image->frameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _currentFrameX, _currentFrameY);

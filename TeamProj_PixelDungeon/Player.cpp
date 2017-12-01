@@ -122,6 +122,11 @@ void Player::draw(POINT camera)
 	//	LineTo(getMemDC(), _playerPoint.x + cosf(i.eangle) * 100, _playerPoint.y - sinf(i.eangle) * 100);
 	//	LineTo(getMemDC(), _playerPoint.x, _playerPoint.y);
 	//}
+
+	for (auto i : astar)
+	{
+		RectangleMakeCenter(getMemDC(), i.destX*TILESIZE + TILESIZE / 2 + camera.x, i.destY * TILESIZE + TILESIZE / 2+camera.y,5,5);
+	}
 	char str[] = "폰트테스트";
 	HFONT hFont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("궁서"));
 	HFONT oldFont = (HFONT)SelectObject(getMemDC(), hFont);
@@ -567,7 +572,7 @@ void Player::mouseClickEvent()
 	POINT ptMouse = _ptMouse;
 	ptMouse.x -= _ui->getCamera().x;
 	ptMouse.y -= _ui->getCamera().y;
-	
+	_isEnemyTargeted = false;
 	for (auto i : _em->getEnemyVector())
 	{
 		//몬스터를 클릭했다면?
