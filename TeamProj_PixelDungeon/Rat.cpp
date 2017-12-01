@@ -248,6 +248,7 @@ void Rat::update()
 
 
 	//턴을 무조건적으로 넘긴다.
+	_hitBox = RectMake(_point.x, _point.y, TILESIZE, TILESIZE);	//32로 고정을 해줍니다. 혹시 모르니까요.
 
 }
 
@@ -350,7 +351,7 @@ void Rat::attack()
 	//흰 쥐는 일정 확률로 출혈을 일으키고 공격력도 다릅니다.
 	if (_myColor == WHITE)
 	{
-		//공격력 랜덤으로 나옵니다.
+		//공격력
 		_statistics.str = RND->getFromIntTo(3 + (_statistics.lv * 1), 5 + (_statistics.lv * 2));
 
 		//출혈 디버프를 걸기위한 랜덤값
@@ -363,23 +364,25 @@ void Rat::attack()
 	//갈색쥐는 출혈을 일으키지 않습니다.
 	else if (_myColor == BROWN)
 	{
+		//공격력
 		_statistics.str = RND->getFromIntTo(2 + (_statistics.lv * 1), 5 + (_statistics.lv * 2));
 	}
 
 	//플레이어에게 공격 전달
-	//_player->getDamaged(_statistics.str);
+	_attBox = RectMake(_player->getPoint().x - (TILESIZE / 2), _player->getPoint().y - (TILESIZE / 2), 32, 32);
+	
+	if (PtInRect(&_attBox, _player->getPoint()))
+	{
+		_player->getDamaged(_statistics.str);
+	}
 
 	//플레이어 위치가 중점으로 설정된거 같다, 타일사이즈의 반정도를 빼서 타일에 맞추는것이 좋을것 같다.
 	//공격렉트 설정		플레이어 위치 X			플레이어 위치 y		타일 사이즈만큼
-	_attBox = RectMake(_player->getPoint().x - (TILESIZE / 2), _player->getPoint().y - (TILESIZE / 2), 32, 32);
 
-	_myState = ENEMYSTATE_IDLE;
-
-
-	//if (_currentFrameX >= _image->getMaxFrameX())
-	//{
-	//	_action = false; //턴을 넘김다
-	//}
+	if (_currentFrameX >= _image->getMaxFrameX())
+	{
+		_action = false; //턴을 넘김다
+	}
 
 }
 
@@ -411,8 +414,8 @@ void Rat::move()
 
 	if (true)
 	{
-		float x = _movePt.x * TILESIZE + TILESIZE / 2;
-		float y = _movePt.y * TILESIZE + TILESIZE / 2;
+		int x = _movePt.x * TILESIZE + TILESIZE / 2;
+		int y = _movePt.y * TILESIZE + TILESIZE / 2;
 
 		if (PtInRect(&attackRange, _player->getPoint()))
 		{
@@ -425,29 +428,28 @@ void Rat::move()
 		}
 		else
 		{
-			if (_point.x < _player->getPoint().x)
+			if (_point.x < x)
 			{
 				//현재 좌표가 가려는 좌표의 중심보다 작으면 +
 				_right = true;
-				_point.x += 16;
+				_point.x += TILESIZE/8;
 			}
-			else if (_point.x > _player->getPoint().x)
+			else if (_point.x > x)
 			{
 				_right = false;
-				_point.x -= 16;
+				_point.x -= TILESIZE / 8;
 			}
 
-			if (_point.y < _player->getPoint().y)
+			if (_point.y < y)
 			{
-				_point.y += 16;
+				_point.y += TILESIZE / 8;
 			}
-			else if (_point.y > _player->getPoint().y)
+			else if (_point.y > y)
 			{
-				_point.y -= 16;
+				_point.y -= TILESIZE / 8;
 			}
-			_action = false;
+			//_action = false;
 		}
-		_hitBox = RectMake(_point.x, _point.y, TILESIZE, TILESIZE);	//32로 고정을 해줍니다. 혹시 모르니까요.
 
 
 			//if (PtInRect(&_hitBox, _movePt))
