@@ -31,12 +31,29 @@ HRESULT ItemManager::init()
 	{
 		_scrollIdentified[i] = false;
 	}
+	_fire = false;
+	_frozen = false;
+	for (int i = 0; i < 20; i++)
+	{
+		frozenE[i].img = IMAGEMANAGER->findImage("effectFrozen");
+		frozenE[i].size = 10;
+		frozenE[i].Trans = RND->getFromIntTo(0, 255);
+		frozenE[i].isSee = true;
+		fireE[i].img = IMAGEMANAGER->findImage("effectFire");
+		fireE[i].size = RND->getFromIntTo(1,5);
+		fireE[i].Trans = RND->getFromIntTo(0, 150);
+		fireE[i].isSee = true;
 
+	}
 	//==================================================
 
 	setItemToBag(NAME_EMERGENCY);
 	setItemToBag(NAME_OLD_SHORT_SWORD);
 	setItemToBag(NAME_NORMAL);
+
+	setItemToBag(NAME_FROZEN);
+	setItemToBag(NAME_LIQUID_FIRE);
+	setItemToBag(NAME_UNKNOWN_MEAT);
 	return S_OK;
 }
 void ItemManager::release()
@@ -128,6 +145,10 @@ void ItemManager::update()
 	}
 	bulletMove();
 	throwMove();
+
+
+
+
 }
 void ItemManager::render(POINT camera)
 {
@@ -147,6 +168,13 @@ void ItemManager::draw(POINT camera)
 	{
 		if (_viItem->floor == _map->getCurStageNum() && _map->getTile(_viItem->point.x / TILESIZE, _viItem->point.y / TILESIZE).tileview == TILEVIEW_ALL)
 		_viItem->img->render(getMemDC(), _viItem->rc.left + camera.x, _viItem->rc.top + camera.y);
+	}
+		for (int i = 0; i < 20; i++)
+		{
+			Rectangle(getMemDC(), frozenE[i].rc.left+camera.x, frozenE[i].rc.top + camera.y, frozenE[i].rc.right + camera.x, frozenE[i].rc.bottom + camera.y);
+		}
+	if (_fire)
+	{
 	}
 }
 
@@ -1093,6 +1121,9 @@ void ItemManager::imgInit()
 	IMAGEMANAGER->addImage("key_iron", "Img/Item/key_iron.bmp", 32, 32, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("key_silver", "Img/Item/key_silver.bmp", 32, 32, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("key_gold", "Img/Item/key_gold.bmp", 32, 32, true, RGB(255, 0, 255));
+	//=========================== E F F E C T  =============================
+	IMAGEMANAGER->addImage("effectFire", "Img/Item/effect_fire.bmp", 10, 10, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("effectFrozen", "Img/Item/effect_snow.bmp", 10, 10, true, RGB(255, 0, 255));
 
 }
 
@@ -1143,7 +1174,7 @@ void ItemManager::equipItem(int position)
 }
 void ItemManager::useItem(int position)
 {
-	for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+	for (_viBag = _vBag.begin(); _viBag != _vBag.end();)
 	{
 		if (_viBag->position == position)
 		{
@@ -1151,7 +1182,7 @@ void ItemManager::useItem(int position)
 			{
 			case TYPE_FOOD:
 				_viBag->numOfItem--;
-				if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
+				goto stop;
 				break;
 			case TYPE_POTION:
 			{
@@ -1177,7 +1208,7 @@ void ItemManager::useItem(int position)
 					_potionIdentified[0] = true;
 					_player->setHP(_player->getStat().maxhp);
 					_viBag->numOfItem--;
-					if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
+					goto stop;
 
 				}
 				break;
@@ -1188,7 +1219,7 @@ void ItemManager::useItem(int position)
 	
 					_potionIdentified[1] = true;
 					_viBag->numOfItem--;
-					if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
+					goto stop;
 
 				}
 				break;
@@ -1203,7 +1234,7 @@ void ItemManager::useItem(int position)
 					
 
 					_viBag->numOfItem--;
-					if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
+					goto stop;
 
 				}
 				break;
@@ -1211,7 +1242,7 @@ void ItemManager::useItem(int position)
 				{
 					_potionIdentified[3] = true;
 					_viBag->numOfItem--;
-					if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
+					goto stop;
 
 				}
 				break;
@@ -1219,25 +1250,25 @@ void ItemManager::useItem(int position)
 				{
 					_potionIdentified[4] = true;
 					_viBag->numOfItem--;
-					if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
+					goto stop;
 
 				}
 				break;
 				case NAME_FROZEN:	// 플레이어 혹은 던진장소 중심 x 5*5 서리디버프
 				{
 					_potionIdentified[5] = true;
-					frozen(_player->getPoint().x, _player->getPoint().y);
 					_viBag->numOfItem--;
-					if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
-
+					frozen(_player->getPoint().x, _player->getPoint().y);
+					goto stop;
 				}
 				break;
 				case NAME_LIQUID_FIRE: // 플레이어 혹은 던징장소 중심 3*3 화염
 				{
 					_potionIdentified[6] = true;
-					liquidFire(_player->getPoint().x, _player->getPoint().y);
 					_viBag->numOfItem--;
-					if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
+					liquidFire(_player->getPoint().x, _player->getPoint().y);
+					
+					goto stop;
 				}
 				break;
 				}
@@ -1264,6 +1295,7 @@ void ItemManager::useItem(int position)
 					break;
 					case NAME_MAP: // 맵의 시야를 밝혀주는용 
 					{
+						_viBag->numOfItem--;
 						for (int i = 0; i < 100; i++)
 						{
 							for (int j = 0; j < 100; j++)
@@ -1276,10 +1308,12 @@ void ItemManager::useItem(int position)
 								}
 							}
 						}
+						goto stop;
 					}
 					break;
 					case NAME_RECHARGE:
 					{
+						_viBag->numOfItem--;
 						for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
 						{
 							if (_viBag->type == TYPE_WAND)
@@ -1287,6 +1321,8 @@ void ItemManager::useItem(int position)
 								_viBag->currentCharge = _viBag->maxCharge;
 							}continue;
 						}
+
+						goto stop;
 					}
 					break;
 
@@ -1303,12 +1339,23 @@ void ItemManager::useItem(int position)
 				break;
 			}
 		}
+		else  ++_viBag;
 
 	}
+	stop:
+	for (_viBag = _vBag.begin(); _viBag != _vBag.end();)
+	{
+		if (_viBag->numOfItem <= 0)
+		{
+			_viBag = _vBag.erase(_viBag);
+		}
+		else ++_viBag;
+	}
+
 }
 void ItemManager::useItem(int position, float x, float y)
 {
-	for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+	for (_viBag = _vBag.begin(); _viBag != _vBag.end();)
 	{
 		if (_viBag->position == position)
 		{
@@ -1317,7 +1364,7 @@ void ItemManager::useItem(int position, float x, float y)
 			case TYPE_WAND:
 				if (_viBag->currentCharge > 0)
 				{
-					fire(_viBag->throwImg, x,y);
+					fire(_viBag->throwImg, x, y);
 					_viBag->currentCharge--;
 				}
 				break;
@@ -1344,95 +1391,95 @@ void ItemManager::useItem(int position, float x, float y)
 			{
 				switch (_viBag->name)
 				{
-					case NAME_BOTTLE:
-					{
-						setItemToField(NAME_BOTTLE, x, y);
-					}
-					break;
-					case NAME_HEAL: // 아무런 효과가 발생하지 않는다 ( 아이템 식별 불가 )
-					{
-						fire(_viBag->throwImg, x, y);
-						_viBag->numOfItem--;
-						if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
-					}
-					break;
-					case NAME_STR: // 아무런 효과가 발생하지 않는다 ( 아이템 식별 불가 )
-					{
-						fire(_viBag->img, x, y);
-						_viBag->numOfItem--;
-						if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
-					}
-					break;
-					case NAME_EX:// 아무런 효과가 발생하지 않는다 ( 아이템 식별 불가 )
-					{
-						fire(_viBag->img, x, y);
-						_viBag->numOfItem--;
-						if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
-					}
-					break;
-					case NAME_INVISIBLE:// 아무런 효과가 발생하지 않는다 ( 아이템 식별 불가 )
-					{
-						fire(_viBag->img, x, y);
-						_viBag->numOfItem--;
-						if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
-					}
-					break;
-					case NAME_LEVITATION:// 아무런 효과가 발생하지 않는다 ( 아이템 식별 불가 )
-					{
-						fire(_viBag->img, x, y);
-						_viBag->numOfItem--;
-						if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
-					}
-					break;
-					case NAME_FROZEN:
-					{
-						_potionIdentified[5] = true;
-						frozen(x, y);
-						_viBag->numOfItem--;
-						if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
-					}
-					break;
-					case NAME_LIQUID_FIRE:
-					{
-						_potionIdentified[6] = true;
-						liquidFire(x, y);
-						_viBag->numOfItem--;
-						if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
-					}
-					break;
+				case NAME_BOTTLE:
+				{
+					setItemToField(NAME_BOTTLE, x, y);
+				}
+				break;
+				case NAME_HEAL: // 아무런 효과가 발생하지 않는다 ( 아이템 식별 불가 )
+				{
+					fire(_viBag->throwImg, x, y);
+					_viBag->numOfItem--;
+					goto stop;
+				}
+				break;
+				case NAME_STR: // 아무런 효과가 발생하지 않는다 ( 아이템 식별 불가 )
+				{
+					fire(_viBag->img, x, y);
+					_viBag->numOfItem--;
+					goto stop;
+				}
+				break;
+				case NAME_EX:// 아무런 효과가 발생하지 않는다 ( 아이템 식별 불가 )
+				{
+					fire(_viBag->img, x, y);
+					_viBag->numOfItem--;
+					goto stop;
+				}
+				break;
+				case NAME_INVISIBLE:// 아무런 효과가 발생하지 않는다 ( 아이템 식별 불가 )
+				{
+					fire(_viBag->img, x, y);
+					_viBag->numOfItem--;
+					goto stop;
+				}
+				break;
+				case NAME_LEVITATION:// 아무런 효과가 발생하지 않는다 ( 아이템 식별 불가 )
+				{
+					fire(_viBag->img, x, y);
+					_viBag->numOfItem--;
+					goto stop;
+				}
+				break;
+				case NAME_FROZEN:
+				{
+					_potionIdentified[5] = true;
+					frozen(x, y);
+					_viBag->numOfItem--;
+					goto stop;
+				}
+				break;
+				case NAME_LIQUID_FIRE:
+				{
+					_potionIdentified[6] = true;
+					liquidFire(x, y);
+					_viBag->numOfItem--;
+					goto stop;
+				}
+				break;
 				}
 			}
 			break;
 			case TYPE_THROW:
 				switch (_viBag->name)
 				{
-					case NAME_DART:
-					{
-						fire(_viBag->throwImg, x, y);
-						_viBag->numOfItem--;
-						if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
+				case NAME_DART:
+				{
+					fire(_viBag->throwImg, x, y);
+					_viBag->numOfItem--;
+					goto stop;
 
-					}
-					break;
+				}
+				break;
 
-					case NAME_PARALYSIS_DART:
-					{
-						fire(_viBag->throwImg, x, y);
-						_viBag->numOfItem--;
-						if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
-					}
-					break;
+				case NAME_PARALYSIS_DART:
+				{
+					fire(_viBag->throwImg, x, y);
+					_viBag->numOfItem--;
+					goto stop;
+				}
+				break;
 
-					case NAME_POISON_DART :
-					{
-						fire(_viBag->throwImg, x, y);
-						_viBag->numOfItem--;
-						if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
-					}
-					break;
+				case NAME_POISON_DART:
+				{
+					fire(_viBag->throwImg, x, y);
+					_viBag->numOfItem--;
+					goto stop;
+				}
+				break;
 
 
-					default:
+				default:
 					break;
 
 				}
@@ -1443,7 +1490,16 @@ void ItemManager::useItem(int position, float x, float y)
 				break;
 			}
 		}
-
+		else  ++_viBag;
+	}
+	stop:
+	for (_viBag = _vBag.begin(); _viBag != _vBag.end();)
+	{
+		if (_viBag->numOfItem <= 0)
+		{
+			_viBag = _vBag.erase(_viBag);
+		}
+		else ++_viBag;
 	}
 }
 
@@ -1467,7 +1523,9 @@ void ItemManager::useItem(int position, int target)
 							{
 								_viBag->upgrade++;
 								_scrollIdentified[1] = true;
+								_viBag->numOfItem--;
 							}
+							goto stop;
 						}
 					}
 					break;
@@ -1481,7 +1539,9 @@ void ItemManager::useItem(int position, int target)
 							{
 								_viBag->contentsHide = false;
 								_scrollIdentified[0] = true;
+								_viBag->numOfItem--;
 							}
+							goto stop;
 						}
 					}
 					break;
@@ -1495,7 +1555,9 @@ void ItemManager::useItem(int position, int target)
 							{
 								_viBag->isCursed = false;
 								_scrollIdentified[2] = true;
+								_viBag->numOfItem--;
 							}
+							goto stop;
 						}
 					}
 					break;
@@ -1512,6 +1574,15 @@ void ItemManager::useItem(int position, int target)
 
 		}
 
+	}
+stop:
+	for (_viBag = _vBag.begin(); _viBag != _vBag.end();)
+	{
+		if (_viBag->numOfItem <= 0)
+		{
+			_viBag = _vBag.erase(_viBag);
+		}
+		else ++_viBag;
 	}
 }
 
@@ -1645,21 +1716,19 @@ void ItemManager::liquidFire(float x, float y)
 {
 	int TileX[3];
 	int TileY[3];
+
 	for (int i = 0; i < 3; i++)
 	{
-		TileX[i] = x - (TILESIZE * 2) / TILESIZE + i;
-		if (TileX[i] <= 0) TileY[i] = 0;
-		TileY[i] = y - (TILESIZE * 2) / TILESIZE + i;
-		if (TileY[i] <= 0) TileY[i] = 0;
+		TileX[i] = x / TILESIZE - 2 + i;
+		TileY[i] = y / TILESIZE - 2 + i;
 	}
-
 	for (int i = 0; i < 3; i++)
 	{
 		for (int j = 0; j < 3; j++)
 		{
 			if (_player->getPoint().x / TILESIZE == TileX[i] && _player->getPoint().y / TILESIZE == TileY[j])
 			{
-				for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+				for (_viBag = _vBag.begin(); _viBag != _vBag.end();)
 				{
 					if (_viBag->name == NAME_UNKNOWN_MEAT)
 					{
@@ -1669,9 +1738,12 @@ void ItemManager::liquidFire(float x, float y)
 
 						for (int i = 0; i < temp; i++)
 						{
-							setItemToBag(NAME_FROZEN_MEAT);
+							setItemToBag(NAME_COOKED_MEAT);
 						}
+						break;
+
 					}
+					else ++_viBag;
 				}
 				//����& �����  �߰�
 			}
@@ -1683,6 +1755,8 @@ void ItemManager::liquidFire(float x, float y)
 
 				}
 			}
+			liquidFireEffect(TileX[i], TileY[i]);
+			_fire = true;
 		}
 	}
 
@@ -1692,19 +1766,21 @@ void ItemManager::frozen(float x, float y)
 {
 	int TileX[5];
 	int TileY[5];
+
 	for (int i = 0; i < 5; i++)
 	{
-		TileX[i] = x - (TILESIZE * 2) / TILESIZE + i;
-		TileY[i] = y - (TILESIZE * 2) / TILESIZE + i;
+		TileX[i] = x/TILESIZE-2  + i;
+		TileY[i] = y/TILESIZE-2 + i;
 	}
 
 	for (int i = 0; i < 5; i++)
 	{
 		for (int j = 0; j < 5; j++)
 		{
+		
 			if (_player->getPoint().x / TILESIZE == TileX[i] && _player->getPoint().y / TILESIZE == TileY[j])
 			{
-				for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+				for (_viBag = _vBag.begin(); _viBag != _vBag.end();)
 				{
 					if (_viBag->name == NAME_UNKNOWN_MEAT)
 					{
@@ -1716,7 +1792,10 @@ void ItemManager::frozen(float x, float y)
 						{
 							setItemToBag(NAME_FROZEN_MEAT);
 						}
+						break;
+
 					}
+					else ++_viBag;
 				}
 				//����& �����  �߰�
 			}
@@ -1728,9 +1807,49 @@ void ItemManager::frozen(float x, float y)
 
 				}
 			}
+			_frozen = true;
+			frozenEffect(TileX[i], TileY[i]);
 		}
 	}
 }
+
+
+void ItemManager::liquidFireEffect(float x, float y)
+{
+	for (int i = 0; i < 20; i++)
+	{
+		fireE[i].rc = RectMakeCenter(RND->getFromIntTo(x*TILESIZE - TILESIZE / 2, x*TILESIZE + TILESIZE / 2), RND->getFromIntTo(y*TILESIZE - TILESIZE / 2, y*TILESIZE + TILESIZE / 2), frozenE[i].size, frozenE[i].size);
+	}
+}
+void ItemManager::frozenEffect(float x, float y)
+{
+	for (int i = 0; i < 20; i++)
+	{
+		frozenE[i].rc = RectMakeCenter(RND->getFromIntTo(x*TILESIZE - TILESIZE / 2, x*TILESIZE + TILESIZE / 2), RND->getFromIntTo(y*TILESIZE - TILESIZE / 2, y*TILESIZE + TILESIZE / 2), frozenE[i].size, frozenE[i].size);
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void ItemManager::keyControl()
 {
@@ -1754,4 +1873,33 @@ void ItemManager::keyControl()
 			}
 		}
 	}
+	if (KEYMANAGER->isOnceKeyDown('R'))
+	{
+		for (_viBag = _vBag.begin(); _viBag != _vBag.end();)
+		{
+			if (_viBag->name == NAME_FROZEN)
+			{
+				useItem(_viBag->position);
+				break;
+			}
+			else ++_viBag;
+
+
+		}
+	}
+	if (KEYMANAGER->isOnceKeyDown('W'))
+	{
+		for (_viBag = _vBag.begin(); _viBag != _vBag.end();)
+		{
+			if (_viBag->name == NAME_LIQUID_FIRE)
+			{
+				useItem(_viBag->position);
+				break;
+			}
+			else ++_viBag;
+
+
+		}
+	}
+
 }
