@@ -93,7 +93,7 @@ public:
 	void removeFieldItem(int arrNum);
 	void removeBagItem(int arrNum);
 	
-	//=========== A D D   M O V E ============
+	//=========== A D D   I T E M  ============
 	void setItemToBag(ITEMNAME name);
 	void setItemToField(ITEMNAME name, float x, float y);
 	void setItemToBag(ITEMNAME name, bool identify, bool isCursed, int upgrade, int numOfItem);
