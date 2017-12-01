@@ -31,18 +31,21 @@ HRESULT Mimic::init(POINT point, int cog)
 
 	//==============================================*LV/STAT SETTING*=============================================================================================================
 
-	_statistics.exp		= 2 + (_statistics.lv - 1) * 2 / 5;
+	_statistics.exp		= 2 + (_statistics.lv - 1) * 2 / 5; //경험치, 위키에서 이랬음
 	_statistics.lv		= 1;  //플레이어 레벨에 비례하여 오릅니다.
-	_statistics.maxLv	= 30;
+	_statistics.maxLv	= 30; //최대레벨
 
 	//최대레벨 고정
 	if (_statistics.lv >= _statistics.maxLv) _statistics.lv = _statistics.maxLv;
 
 	_statistics.hp	= 12 + (_statistics.lv * 4);//레벨에 비례하여 상승합니다.
-	_statistics.def = 0;
+	_statistics.def = 0; //방어력은 없다, 위키에서 그랫으ㅡㅁ
 
+
+	//미믹이 들키지 않은 상태, 근데 이건 나도 어떻게 될지는 모르겠다.
 	_image = IMAGEMANAGER->findImage("mimicDisable");
 
+	//ㅎㅎ;
 	_statistics.avd_lck = 0;
 	_statistics.atk_lck = 9 + _statistics.lv;
 
@@ -504,8 +507,30 @@ void Mimic::itemDrop()
 
 void Mimic::getDamaged(int damage)
 {
-	_currntHp -= (damage - _statistics.def);
+	//자는 상태에서 맞았으면 내 상태를 변경해준다.
+	if (_myState == ENEMYSTATE_SLEEP)
+	{
+		_myState = ENEMYSTATE_IDLE;
+		_findPlayer = true;
+	}
 
-	int hitGift = RND->getInt(2);
-	if (hitGift == 2) _im->setItemToField(NAME_POISON, _point.x, _point.y, false, false, 0, money);
+	//플레이어의 명중률을 0부터 플레이어의 명중률로 계산해서
+	//그 값이 나의 회피율보다 낮으면
+	//회피 성공
+	int rnd = RND->getInt(_player->getStat().atk_lck);
+
+	//회피했음
+	if (rnd < _statistics.avd_lck)
+	{
+		//ui에 회피 했다는것을 띄울것
+		return;
+	}
+	else
+	{
+		int hitGift = RND->getInt(2);
+		if (hitGift == 2) _im->setItemToField(NAME_POISON, _point.x, _point.y, false, false, 0, money);
+
+		_currntHp -= (damage - _statistics.def);
+
+	}
 }

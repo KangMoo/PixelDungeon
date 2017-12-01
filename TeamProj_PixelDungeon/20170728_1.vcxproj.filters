@@ -219,6 +219,9 @@
     <ClInclude Include="mimic.h">
       <Filter>MainGame\Enemy\Enemy</Filter>
     </ClInclude>
+    <ClInclude Include="goo.h">
+      <Filter>MainGame\Enemy\Boss</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -343,6 +346,9 @@
     </ClCompile>
     <ClCompile Include="Map+AStar.cpp">
       <Filter>MainGame\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="goo.cpp">
+      <Filter>MainGame\Enemy\Boss</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

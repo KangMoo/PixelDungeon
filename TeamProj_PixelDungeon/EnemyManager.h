@@ -4,6 +4,9 @@
 #include "Boss.h"
 #include "Gnoll.h"
 #include "Swarm.h"
+#include "Rat.h"
+#include "mimic.h"
+#include "goo.h"
 
 class Player;
 class Map;

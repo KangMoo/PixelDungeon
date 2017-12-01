@@ -21,8 +21,8 @@ HRESULT goo::init(POINT point, int cog)
 	//=======================================================================================================================================================
 
 	IMAGEMANAGER->addFrameImage("gooMove", "Img\Enemy\goo\goo_move.bmp", 64, 64, 2, 2, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addFrameImage("gooStay", "Img\Enemy\goo\goo_stay.bmp", 160, 64, 5, 2, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addFrameImage("gooDead", "Img\Enemy\goo\goo_dead.bmp", 128, 64, 4, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("gooStay", "Img\Enemy\goo\goo_stay.bmp", 192, 64, 6, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("gooDead", "Img\Enemy\goo\goo_dead.bmp", 96, 64, 3, 2, true, RGB(255, 0, 255));
 
 	//=======================================================================================================================================================
 	//												*GOOINIT*	
