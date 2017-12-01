@@ -157,7 +157,7 @@ void Gnoll::frameUpdate()
 
 	if (_findPlayer)
 	{
-		if (_player->getPoint().x >= _point.x) _right = true;
+		if (_player->getPoint().x >= _pointX) _right = true;
 		else _right = false;
 	}
 	if (_right) _currntFrameY = 0;
@@ -378,7 +378,7 @@ void Gnoll::action()
 			{
 				_myState = ENEMYSTATE_ATTACK;
 				_currntFrameX = 0;
-				//_player->getDamaged(_statistics.str);
+				_player->getDamaged(_statistics.str);
 				//_action = false;
 			}
 			else
