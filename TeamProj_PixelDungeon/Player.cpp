@@ -472,7 +472,7 @@ void Player::action_Attack()
 	//목표 몬스터 공격
 	if (_isEnemyTargeted)
 	{
-		_TargetEnemy->setHP(_TargetEnemy->getHP() - _playerStat.str);
+		_TargetEnemy->setHP(_TargetEnemy->getHP() -RND->getFromIntTo(_playerStat.mindmg,_playerStat.maxdmg));
 	}
 }
 void Player::action_Scroll()
@@ -555,7 +555,7 @@ void Player::getDamaged(int damage)
 
 		}
 	}
-
+	stopMoving();
 }
 void Player::mouseClickEvent()
 {
@@ -604,6 +604,26 @@ void Player::mouseClickEvent()
 			astar.erase(astar.begin() + astar.size() - 1);
 		}
 	}
+	//keepMove는?? -> 아직 갈 길이 있는지 여부 (A*에 길이 남아있는지 여부)
+	if (astar.size() > 0)
+	{
+		_keepMove = true;
+	}
+	else
+	{
+		_keepMove = false;
+	}
+
+	if (!_keepMove)
+	{
+		RECT temp = RectMakeCenter(_playerPoint.x, _playerPoint.y, TILESIZE * 2, TILESIZE * 2);
+		if (PtInRect(&temp, ptMouse))
+		{
+			//열쇠를 가지고 있으면
+			//if()~~~~~
+			_map->setTile_UnlockDoor(ptMouse.x / TILESIZE, ptMouse.y / TILESIZE);
+		}
+	}
 }
 
 void Player::endTurn()
@@ -612,6 +632,17 @@ void Player::endTurn()
 	effectDebuff();
 	effectBuff();
 	_playerStat.hunger--;
+
+	//배고픔 처리
+	if (_playerStat.hunger < 50)
+	{
+		_playerStat.hp--;
+	}
+	else if (_playerStat.hunger > 100)
+	{
+		_playerStat.hp++;
+	}
+
 	//턴 종료
 	_action = false;
 	//적 차례
@@ -627,6 +658,21 @@ void Player::endTurn()
 	}
 	//맵에 턴 끝났다는 정보 넘겨줌
 	_map->playerTurnEnd();
+}
+
+void Player::expUp(int exp)
+{
+	_playerStat.exp += exp;
+	if(_playerStat.exp >= 100)
+	{
+		_playerStat.lv++;
+		_playerStat.exp = 0;
+
+		_playerStat.maxhp += 15;
+		//회피 & 명중률 up
+		//_playerStat.atk_lck += 0.1;
+		//_playerStat.avd_lck += 0.1;
+	}	
 }
 
 void Player::effectDebuff()
@@ -696,4 +742,16 @@ void Player::setChangeFoor()
 	if (astar.size() > 0) astar.clear();
 	fovCheck();
 	endTurn();
+}
+
+void Player::stopMoving()
+{
+	if (_keepMove && astar.size()>0)
+	{
+		TILE temp;
+		temp = astar[astar.size() - 1];
+		astar.clear();
+		astar.push_back(temp);
+		return;
+	}
 }
