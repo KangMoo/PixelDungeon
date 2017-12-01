@@ -50,8 +50,8 @@ HRESULT Swarm::init(POINT point)
 	_statistics.lv = 1;
 	_statistics.maxLv = 10;
 	_statistics.exp = 1;
-	_statistics.hp = 12;
-	_currntHp = 12;
+	_statistics.hp = 80;
+	_currntHp = 80;
 	_statistics.avd_lck = 5;
 	_statistics.def = 0;
 	a = RND->getFromIntTo(1, 4);
@@ -144,6 +144,7 @@ HRESULT Swarm::init(POINT point, int currntHp)
 
 void Swarm::action()
 {
+	//if (KEYMANAGER->isOnceKeyDown('E')) getDamaged(3);
 	if (!_active)
 	{
 		if (_map->getTile(_point.x, _point. y).tileview != TILEVIEW_NO)
@@ -154,7 +155,6 @@ void Swarm::action()
 		return;
 	}
 
-	if (KEYMANAGER->isOnceKeyDown('E')) getDamaged(3);
 
 	if (_myState == ENEMYSTATE_SLEEP)
 	{
@@ -312,7 +312,7 @@ void Swarm::action()
 			{
 				_myState = ENEMYSTATE_ATTACK;
 				_currntFrameX = 0;
-				//_player->getDamaged(_statistics.str);
+				_player->getDamaged(_statistics.str);
 				//_action = false;
 			}
 			else
@@ -321,7 +321,10 @@ void Swarm::action()
 				astarTest = _map->aStar(PointMake(_pointX, _pointY), _player->getPoint());
 				//움직일때 해당 좌표를 4,5 같은 식으로 주면 자동으로 4*TILESIZE + TILESIZE/2, 5*... 해줌
 				//_movePoint = PointMake(astarTest[astarTest.size() - 1].destX, astarTest[astarTest.size() - 1].destY);
-				_movePoint = PointMake(astarTest[astarTest.size() - 2].destX, astarTest[astarTest.size() - 2].destY);
+				if (astarTest.size() > 2)
+					_movePoint = PointMake(astarTest[astarTest.size() - 2].destX, astarTest[astarTest.size() - 2].destY);
+				else
+					_movePoint = _point;
 				_myState = ENEMYSTATE_MOVE;
 			}
 		}
@@ -356,27 +359,26 @@ void Swarm::action()
 			{
 				//현재 좌표가 가려는 좌표의 중심보다 작으면 +
 				_right = true;
-				_pointX += TILESIZE / 8;
+				_pointX += TILESIZE / 4;
 			}
 			else if (_pointX > x)
 			{
 				_right = false;
-				_pointX -= TILESIZE / 8;
+				_pointX -= TILESIZE / 4;
 			}
 
 			if (_pointY < y)
 			{
-				_pointY += TILESIZE / 8;
+				_pointY += TILESIZE / 4;
 			}
 			else if (_pointY > y)
 			{
-				_pointY -= TILESIZE / 8;
+				_pointY -= TILESIZE / 4;
 			}
 			//_action = false;
 			
 		}
 	}
-
 
 	frameUpdate();
 }
@@ -387,7 +389,7 @@ void Swarm::frameUpdate()
 
 	if (_findPlayer)
 	{
-		if (_player->getPoint().x >= _point.x) _right = true;
+		if (_player->getPoint().x >= _pointX) _right = true;
 		else _right = false;
 	}
 	if (_right) _currntFrameY = 0;
@@ -448,7 +450,7 @@ void Swarm::getDamaged(int damage)
 	else
 	{
 		//높다면 뎀지받음
-		_currntHp -= damage;
+		_currntHp -= damage - _statistics.def;
 		if (_currntHp > 0)
 		{
 			//죽지 않았다면 분열을 해야한다
@@ -479,11 +481,11 @@ void Swarm::getDamaged(int damage)
 				//_em->setSwarm(PointMake(_point.x + x, _point.y + y), _currntHp);
 			if ((ATTRIBUTE_UNGO & _map->getMap(_point.x + x, _point.y + y).terrain) != ATTRIBUTE_UNGO)
 			{
-				//for (int i = 0; i < _em->getEnemy().size(); i++)
-				//{
-				//	if (_em->getEnemy()[i]->getPoint().x == _point.x + x &&
-				//		_em->getEnemy()[i]->getPoint().y == _point.y + y) return;
-				//}
+				for (int i = 0; i < _em->getEnemyVector().size(); i++)
+				{
+					if (_em->getEnemyVector()[i]->getTilePt().x == _point.x + x &&
+						_em->getEnemyVector()[i]->getTilePt().y == _point.y + y) return;
+				}
 				_em->setSwarmSpawn(PointMake(_point.x + x, _point.y + y), _currntHp);
 			}
 		}
@@ -497,7 +499,7 @@ void Swarm::draw(POINT camera)
 	//시야에 보일때만 출력하게
 	if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
 		_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
-	RectangleMakeCenter(getMemDC(), _pointX + camera.x, _pointY + camera.y, _currntHp, _currntHp);
+	//RectangleMakeCenter(getMemDC(), _pointX + camera.x, _pointY + camera.y, _currntHp, _currntHp);
 	//if(_findPlayer)
 
 	//_hpBar->setX(_point.x - 25 + camera.x);

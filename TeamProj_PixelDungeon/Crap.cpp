@@ -1,32 +1,33 @@
 #include "stdafx.h"
-#include "Gnoll.h"
+#include "Crap.h"
 #include "Player.h"
 #include "Map.h"
 #include "UI.h"
 
-Gnoll::Gnoll()
+
+Crap::Crap()
 {
 }
 
 
-Gnoll::~Gnoll()
+Crap::~Crap()
 {
 }
 
-HRESULT Gnoll::init(POINT point)
+HRESULT Crap::init(POINT point)
 {
 	//입력받은 좌표를 초기 위치로
 	_point = point;
 
 	//각 이미지 개별할당(MANAGER는 다 똑같아져버림)
 	_stay = new image;
-	_stay->init("Img//Enemy//gnoll_stay.bmp", 44, 60, 2, 2, true, RGB(255, 0, 255));
+	_stay->init("Img//Enemy//crap_stay.bmp", 90, 52, 3, 2, true, RGB(255, 0, 255));
 	_move = new image;
-	_move->init("Img//Enemy//gnoll_move.bmp", 88, 60, 4, 2, true, RGB(255, 0, 255));
+	_move->init("Img//Enemy//crap_move.bmp", 112, 52, 4, 2, true, RGB(255, 0, 255));
 	_attack = new image;
-	_attack->init("Img//Enemy//gnoll_attack.bmp", 48, 60, 2, 2, true, RGB(255, 0, 255));
+	_attack->init("Img//Enemy//crap_attack.bmp", 96, 64, 3, 2, true, RGB(255, 0, 255));
 	_dead = new image;
-	_dead->init("Img//Enemy//gnoll_dead.bmp", 84, 52, 3, 2, true, RGB(255, 0, 255));
+	_dead->init("Img//Enemy//crap_dead.bmp", 128, 52, 4, 2, true, RGB(255, 0, 255));
 
 	//초기 설정은 stay
 	_image = _stay;
@@ -64,15 +65,15 @@ HRESULT Gnoll::init(POINT point)
 
 	//스탯 설정
 	_statistics.lv = 1;
-	_statistics.maxLv = 8;
-	_statistics.exp = 2;
-	_statistics.hp = 12;
-	_currntHp = 12;
+	_statistics.maxLv = 9;
+	_statistics.exp = 3;
+	_statistics.hp = 15;
+	_currntHp = 15;
 	_statistics.avd_lck = 4;
 	_statistics.def = 2;
-	a = RND->getFromIntTo(2, 5);
+	a = RND->getFromIntTo(3, 6);
 	_statistics.str = a;
-	_statistics.atk_lck = 11;
+	_statistics.atk_lck = 12;
 
 	//깨어있을지 자고있을지 랜덤 설정
 	a = RND->getInt(2);
@@ -84,6 +85,7 @@ HRESULT Gnoll::init(POINT point)
 	_frameCount = 0;
 	_deadAlpha = 0;
 	_active = false;
+	_turnCount = 0;
 
 	/*ENEMYSTATE_SLEEP,	//플레이어를 찾지 못한상태/수면상태
 	ENEMYSTATE_IDLE,	//플레이어를 찾은 상태에서의 기본
@@ -95,29 +97,11 @@ HRESULT Gnoll::init(POINT point)
 	//_hpBar->init(_pointX - 25, _pointY + _image->getFrameHeight() / 2 + 10, 30, 10);
 
 	return S_OK;
+
 }
-
-void Gnoll::release()
+void Crap::getDamaged(int damage)
 {
-	SAFE_RELEASE(_image);
-	SAFE_DELETE(_image);
 
-	SAFE_RELEASE(_stay);
-	SAFE_DELETE(_stay);
-
-	SAFE_RELEASE(_move);
-	SAFE_DELETE(_move);
-
-	SAFE_RELEASE(_attack);
-	SAFE_DELETE(_attack);
-
-	SAFE_RELEASE(_dead);
-	SAFE_DELETE(_dead);
-}
-
-
-void Gnoll::getDamaged(int damage)
-{
 	if (_myState == ENEMYSTATE_SLEEP)
 		_myState = ENEMYSTATE_IDLE;
 	_findPlayer = true;
@@ -130,90 +114,40 @@ void Gnoll::getDamaged(int damage)
 	}
 	else
 	{
-		if(_currntHp > 0)
+		if (_currntHp > 0)
 			_currntHp -= damage - _statistics.def;
 	}
 }
-
-void Gnoll::draw(POINT camera)
+void Crap::update()				 
 {
-	//_hpBar->setGauge(_currntHp, _statistics.hp);
-	//시야에 보일때만 출력하게
-	if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
-		_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
-	//RectangleMakeCenter(getMemDC(), _pointX + camera.x, _pointY + camera.y, _currntHp, _currntHp);
-	//if(_findPlayer)
-
-	//_hpBar->setX(_point.x - 25 + camera.x);
-	//_hpBar->setY(_pointY + _image->getFrameHeight() / 2 + 10 + camera.y);
-	//if (_currntHp < _statistics.hp)
-	//	_hpBar->render();
-}
-
-
-void Gnoll::frameUpdate()
-{
-	//_frameCount++;
-
-	if (_findPlayer)
+	if (_currntHp <= 0)
 	{
-		if (_player->getPoint().x >= _pointX) _right = true;
-		else _right = false;
-	}
-	if (_right) _currntFrameY = 0;
-	else _currntFrameY = 1;
-	
-	if(true)
-	//if (_frameCount >= 3)
-	{
-		_frameCount = 0;
-		switch (_myState)
+		_turnCount = 0;
+		_deadAlpha += 25;
+		_action = false;
+		if (_deadAlpha >= 255)
 		{
-		case ENEMYSTATE_SLEEP:
-			_image = _stay;
-			_currntFrameX = 0;
-			_image->setFrameX(_currntFrameX);
-			_image->setFrameY(_currntFrameY);
-			break;
-		case ENEMYSTATE_IDLE:
-			_image = _stay;
-			_currntFrameX++;
-			if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = 0;
-			_image->setFrameX(_currntFrameX);
-			_image->setFrameY(_currntFrameY);
-			break;
-		case ENEMYSTATE_MOVE:
-			_image = _move;
-			_currntFrameX++;
-			if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = 0;
-			_image->setFrameX(_currntFrameX);
-			_image->setFrameY(_currntFrameY);
-			break;
-		case ENEMYSTATE_ATTACK:
-			_image = _attack;
-			_currntFrameX++;
-			if (_currntFrameX > _image->getMaxFrameX())
-			{
-				_currntFrameX = 0;
-				_myState = ENEMYSTATE_IDLE;
-				_image = _stay;
-				_action = false;
-			}
-			_image->setFrameX(_currntFrameX);
-			_image->setFrameY(_currntFrameY);
-			break;
+			_deadAlpha = 255;
+			_isLive = false;
+			_action = false;
 		}
 	}
 
-	_hitBox = RectMakeCenter(_pointX, _pointY, _image->getFrameWidth(), _image->getFrameHeight());
-}
+	if (_turnCount >= 2)
+	{
+		_action = false;
+		_turnCount = 0;
+	}
 
-void Gnoll::action()
+	if (_action && _currntHp > 0 && _isLive) action();
+}
+void Crap::action()				 
 {
 	if (!_active)
 	{
 		if (_map->getTile(_point.x, _point.y).tileview != TILEVIEW_NO)
 		{
+			_turnCount = 0;
 			_active = true;
 		}
 		_action = false;
@@ -379,6 +313,8 @@ void Gnoll::action()
 				_myState = ENEMYSTATE_ATTACK;
 				_currntFrameX = 0;
 				_player->getDamaged(_statistics.str);
+
+				_turnCount = 0;
 				//_action = false;
 			}
 			else
@@ -412,7 +348,9 @@ void Gnoll::action()
 			_pointY = y;
 			_isMove = false;
 			_myState = ENEMYSTATE_IDLE;
-			_action = false;
+			//_action = false;
+
+			_turnCount++;
 		}
 		else
 		{
@@ -449,21 +387,91 @@ void Gnoll::action()
 
 	frameUpdate();
 }
-
-void Gnoll::update()
+void Crap::frameUpdate()		 
 {
+	//_frameCount++;
 
-	if (_currntHp <= 0)
+	if (_findPlayer)
 	{
-		_deadAlpha += 25;
-		_action = false;
-		if (_deadAlpha >= 255)
+		if (_player->getPoint().x >= _pointX) _right = true;
+		else _right = false;
+	}
+	if (_right) _currntFrameY = 0;
+	else _currntFrameY = 1;
+
+	if (true)
+		//if (_frameCount >= 3)
+	{
+		_frameCount = 0;
+		switch (_myState)
 		{
-			_deadAlpha = 255;
-			_isLive = false;
-			_action = false;
+		case ENEMYSTATE_SLEEP:
+			_image = _stay;
+			_currntFrameX = 0;
+			_image->setFrameX(_currntFrameX);
+			_image->setFrameY(_currntFrameY);
+			break;
+		case ENEMYSTATE_IDLE:
+			_image = _stay;
+			_currntFrameX++;
+			if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = 0;
+			_image->setFrameX(_currntFrameX);
+			_image->setFrameY(_currntFrameY);
+			break;
+		case ENEMYSTATE_MOVE:
+			_image = _move;
+			_currntFrameX++;
+			if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = 0;
+			_image->setFrameX(_currntFrameX);
+			_image->setFrameY(_currntFrameY);
+			break;
+		case ENEMYSTATE_ATTACK:
+			_image = _attack;
+			_currntFrameX++;
+			if (_currntFrameX > _image->getMaxFrameX())
+			{
+				_currntFrameX = 0;
+				_myState = ENEMYSTATE_IDLE;
+				_image = _stay;
+				_action = false;
+			}
+			_image->setFrameX(_currntFrameX);
+			_image->setFrameY(_currntFrameY);
+			break;
 		}
 	}
 
-	if (_action && _currntHp > 0 && _isLive) action();
+	_hitBox = RectMakeCenter(_pointX, _pointY, _image->getFrameWidth(), _image->getFrameHeight());
+}
+void Crap::draw(POINT camera)	 
+{
+
+	//_hpBar->setGauge(_currntHp, _statistics.hp);
+	//시야에 보일때만 출력하게
+	if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
+		_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
+	//RectangleMakeCenter(getMemDC(), _pointX + camera.x, _pointY + camera.y, _currntHp, _currntHp);
+	//if(_findPlayer)
+
+	//_hpBar->setX(_point.x - 25 + camera.x);
+	//_hpBar->setY(_pointY + _image->getFrameHeight() / 2 + 10 + camera.y);
+	//if (_currntHp < _statistics.hp)
+	//	_hpBar->render();
+}
+void Crap::release()			 
+{
+	SAFE_RELEASE(_image);
+	SAFE_DELETE(_image);
+
+	SAFE_RELEASE(_stay);
+	SAFE_DELETE(_stay);
+
+	SAFE_RELEASE(_move);
+	SAFE_DELETE(_move);
+
+	SAFE_RELEASE(_attack);
+	SAFE_DELETE(_attack);
+
+	SAFE_RELEASE(_dead);
+	SAFE_DELETE(_dead);
 }

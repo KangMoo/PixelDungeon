@@ -84,6 +84,7 @@
     <ClInclude Include="button.h" />
     <ClInclude Include="collision.h" />
     <ClInclude Include="commonMacroFunction.h" />
+    <ClInclude Include="Crap.h" />
     <ClInclude Include="database.h" />
     <ClInclude Include="effect.h" />
     <ClInclude Include="effectManager.h" />
@@ -130,6 +131,7 @@
     <ClCompile Include="Boss.cpp" />
     <ClCompile Include="button.cpp" />
     <ClCompile Include="collision.cpp" />
+    <ClCompile Include="Crap.cpp" />
     <ClCompile Include="database.cpp" />
     <ClCompile Include="effect.cpp" />
     <ClCompile Include="effectManager.cpp" />

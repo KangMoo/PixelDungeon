@@ -7,6 +7,7 @@
 #include "Rat.h"
 #include "mimic.h"
 #include "goo.h"
+#include "Crap.h"
 
 struct tagSwarmSpawn
 {
@@ -34,7 +35,7 @@ private:
 	int _actionCount;	//몇번째 몬스터가 행동하고 있는지 확인하기 위한 int값
 
 	bool _isSwarmSpawn;
-	vector<tagSwarmSpawn> _swarmSpawn;
+	tagSwarmSpawn _temp;
 public:
 	HRESULT init();
 	void release();
@@ -54,18 +55,16 @@ public:
 	void setUiAddressLink(UI* ui) { _ui = ui; }
 	void setItemManagerAddressLink(ItemManager* im) { _im = im; }
 
+	void enemyClear();
+
 	void setEnemy(POINT point, int type);		//enemy 제작
 	void setSwarm();			//파리 전용
 	void setSwarmSpawn(POINT pt, int hp)
 	{
-		tagSwarmSpawn temp;
-		temp.pt = pt;
-		temp.hp = hp;
-		_swarmSpawn.push_back(temp);
+		_temp.pt = pt;
+		_temp.hp = hp;
 		_isSwarmSpawn = true;
 	}
-
-	vector<Enemy*> getEnemy() { return _vEnemy; }
 
 	EnemyManager();
 	~EnemyManager();
