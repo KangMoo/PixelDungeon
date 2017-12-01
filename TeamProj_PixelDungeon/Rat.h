@@ -17,6 +17,7 @@ private:
 	POINT _movePt;	//움직이기 위한 포인트
 	RECT attackRange;
 	vector<TILE> astar;
+	bool _isMove;
 
 	//image* wIdle, *wAttack, *wMove, *wDead;
 	//image* bIdle, *bAttack, *bMove, *bDead;
