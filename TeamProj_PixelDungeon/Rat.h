@@ -16,7 +16,9 @@ private:
 	int _myColor;	//그 색의 결과값
 	POINT _movePt;	//움직이기 위한 포인트
 	RECT attackRange;
-	vector<TILE> astar;
+	vector<TILE> aStar;
+	vector<TILE> temp;
+
 	bool _isMove;
 
 	//image* wIdle, *wAttack, *wMove, *wDead;

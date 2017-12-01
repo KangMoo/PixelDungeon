@@ -140,7 +140,7 @@ HRESULT Rat::init(POINT point)
 	_currentFrameX = 0;							//프레임을 초기화 해줍니다.
 	if (_right == true)	_currentFrameY = 0;		
 	else				_currentFrameY = 1;
-	_image->setFrameX(_currentFrameY);			//이미지 프레임을 초기화 해줍니다.
+	_image->setFrameX(_currentFrameX);			//이미지 프레임을 초기화 해줍니다.
 	_image->setFrameY(_currentFrameY);			//이미지 프레임을 초기화 해줍니다.
 
 	_deadAlpha = 0;							//죽으면 감소시킬 알파값
@@ -162,6 +162,15 @@ void Rat::release()
 
 void Rat::update()
 {
+	//if (!_active)
+	//{
+	//	if (_map->getTile(_point.x, _point.y).tileview != TILEVIEW_NO)
+	//	{
+	//		_active = true;
+	//	}
+	//	_action = false;
+	//}
+
 	frameUpdate();
 
 	_attBox = RectMake(0, 0, 0, 0);
@@ -215,7 +224,7 @@ void Rat::update()
 	{
 		//액션을 취하지 않은 상태
 		//상태를 아이들로 해준다.
-		_myState = ENEMYSTATE_IDLE;
+		//_myState = ENEMYSTATE_IDLE;
 
 		if (_action == true) action();
 
@@ -248,7 +257,10 @@ void Rat::update()
 
 
 	//턴을 무조건적으로 넘긴다.
-	//_action = false;
+	_hitBox = RectMake(_point.x, _point.y, TILESIZE, TILESIZE);	//32로 고정을 해줍니다. 혹시 모르니까요.
+	_cog = RectMake((_point.x) - TILESIZE * 2, (_point.y) - TILESIZE * 2, 5 * TILESIZE, 5 * TILESIZE);//플레이어를 찾아낼 거리
+	attackRange = RectMake((_point.x) - TILESIZE, (_point.y) - TILESIZE, TILESIZE * 3, TILESIZE * 3);//플레이어를 공격할 거리
+
 }
 
 void Rat::render(POINT camera)
@@ -268,7 +280,7 @@ void Rat::action()
 	//ㅁㅁㅁ
 	
 	if		(PtInRect(&attackRange, _player->getPoint())) attack();
-	//else	move();
+	else	move();
 
 }
 
@@ -282,42 +294,27 @@ void Rat::frameUpdate()
 		else									_right = false;
 	}
 
-	//==========================================*DIRECTION IMAGE CHANGE*========================================
-
 	if (_right)	_currentFrameY = 0;
 	else		_currentFrameY = 1;
 
 	//==============================================*STATE IMAGE CHANGE*========================================
+
 	//이동상태
 	if (_myState == ENEMYSTATE_MOVE)
 	{
-		
 		//흰 쥐
-	//_currentFrameX = 0;
-	if (_myColor == WHITE)		_image = IMAGEMANAGER->findImage("whiteMove");//이미지 변경
-	else if (_myColor == BROWN)	_image = IMAGEMANAGER->findImage("brownMove");
-
-		
+		//_currentFrameX = 0;
+		if (_myColor == WHITE)		_image = IMAGEMANAGER->findImage("whiteMove");//이미지 변경
+		else if (_myColor == BROWN)	_image = IMAGEMANAGER->findImage("brownMove");
 	}
 	//이동상태
-
-	//공격상태
-	//if (_myState == ENEMYSTATE_ATTACK)
-	//{
-	//	
-	//	//_currentFrameX = 0;
-	//}
-	//공격상태
 
 	//죽은상태
 	if (_myState == ENEMYSTATE_DEAD)
 	{
-		
-				//_currentFrameX = 0;
-	if (_myColor == WHITE)	_image = IMAGEMANAGER->findImage("whiteDead");
-	else if (_myColor == BROWN)	_image = IMAGEMANAGER->findImage("brownDead");
-
-		
+		//_currentFrameX = 0;
+		if (_myColor == WHITE)	_image = IMAGEMANAGER->findImage("whiteDead");
+		else if (_myColor == BROWN)	_image = IMAGEMANAGER->findImage("brownDead");
 	}
 	//죽은상태
 
@@ -340,45 +337,6 @@ void Rat::frameUpdate()
 		_currentFrameX = 0;	//죽은상태가 아니면 프레임을 초기화 한다.
 		_action = false;
 	}
-
-	//if (_currentFrameX > _image->getMaxFrameX() && _myState == ENEMYSTATE_SLEEP)
-	//{
-	//	_currentFrameX = 0;	//죽은상태가 아니면 프레임을 초기화 한다.
-	//}
-	//else if (_currentFrameX > _image->getMaxFrameX() && _myState == ENEMYSTATE_IDLE)
-	//{
-	//	_currentFrameX = 0;	//죽은상태가 아니면 프레임을 초기화 한다.
-	//}
-	//else if (_currentFrameX > _image->getMaxFrameX() && _myState == ENEMYSTATE_ATTACK)
-	//{
-	//	_currentFrameX = 0;	//죽은상태가 아니면 프레임을 초기화 한다.
-	//	_myState = ENEMYSTATE_IDLE;
-	//	_action = false;
-	//
-	//}
-	//else if (_currentFrameX > _image->getMaxFrameX() && _myState == ENEMYSTATE_MOVE)
-	//{
-	//	_currentFrameX = 0;	//죽은상태가 아니면 프레임을 초기화 한다.
-	//	_myState = ENEMYSTATE_IDLE;
-	//	_action = false;
-	//}
-	//else if (_currentFrameX > _image->getMaxFrameX() && _myState == ENEMYSTATE_DEAD)
-	//{
-	//	return;
-	//}
-	//else if (_currentFrameX > _image->getMaxFrameX())
-	//{
-	//	_currentFrameX = 0;	//죽은상태가 아니면 프레임을 초기화 한다.
-	//	//_myState = ENEMYSTATE_IDLE;
-	//	_action = false;
-	//}
-	//else if (_currentFrameX > _image->getMaxFrameX() && _myState == ENEMYSTATE_DEAD)
-	//{
-	//
-	//}
-	//if (_currentFrameX >= _image->getMaxFrameX() && _myState == ENEMYSTATE_DEAD) _currentFrameX = 0;	//죽은상태가 아니면 프레임을 초기화 한다.
-
-	//==============================================*FRAME UPDATE*========================================
 }
 
 void Rat::attack()
@@ -388,19 +346,16 @@ void Rat::attack()
 	if (_myColor == WHITE)	_image = IMAGEMANAGER->findImage("whiteAttack");
 	else if (_myColor == BROWN)	_image = IMAGEMANAGER->findImage("brownAttack");
 
-	//_currentFrameX = 0;	//죽은상태가 아니면 프레임을 초기화 한다.
-
+	//_currentFrameX = 0;	//혼자 초기화 한다.
 
 	//플레이어의 위치를 찾아서 그 방향에 어택렉트를 생성해 줍니다. 그다음에 초기화를 시켜줍시다.
 
 	//상태를 변경합니다.
 
-	//_attBox = RectMake(_player->getPoint().x / TILESIZE, _player->getPoint().y / TILESIZE, TILESIZE, TILESIZE);
-
 	//흰 쥐는 일정 확률로 출혈을 일으키고 공격력도 다릅니다.
 	if (_myColor == WHITE)
 	{
-		//공격력 랜덤으로 나옵니다.
+		//공격력
 		_statistics.str = RND->getFromIntTo(3 + (_statistics.lv * 1), 5 + (_statistics.lv * 2));
 
 		//출혈 디버프를 걸기위한 랜덤값
@@ -413,18 +368,20 @@ void Rat::attack()
 	//갈색쥐는 출혈을 일으키지 않습니다.
 	else if (_myColor == BROWN)
 	{
-		_statistics.str = RND->getFromIntTo(2 + (_statistics.lv * 1), 5 + (_statistics.lv * 2));
+		//공격력
+		_statistics.str = RND->getFromIntTo(2, 5);
 	}
 
 	//플레이어에게 공격 전달
-	//_player->getDamaged(_statistics.str);
+	_attBox = RectMake(_player->getPoint().x - (TILESIZE / 2), _player->getPoint().y - (TILESIZE / 2), 32, 32);
+	
+	if (PtInRect(&_attBox, _player->getPoint()))
+	{
+		_player->getDamaged(_statistics.str);
+	}
 
 	//플레이어 위치가 중점으로 설정된거 같다, 타일사이즈의 반정도를 빼서 타일에 맞추는것이 좋을것 같다.
 	//공격렉트 설정		플레이어 위치 X			플레이어 위치 y		타일 사이즈만큼
-	_attBox = RectMake(_player->getPoint().x - (TILESIZE / 2), _player->getPoint().y - (TILESIZE / 2), 32, 32);
-
-	_myState = ENEMYSTATE_IDLE;
-
 
 	if (_currentFrameX >= _image->getMaxFrameX())
 	{
@@ -437,222 +394,67 @@ void Rat::move()
 {
 	//에이스타로 적을 따라 이동합니다.
 
+	//TILE goaltile;
+	//temp = _map->aStar(PointMake(_point.x * TILESIZE + TILESIZE / 2, _point.y * TILESIZE + TILESIZE / 2), _player->getPoint());
+	//if (temp.size() > 0)
+	//{
+	//	temp.erase(temp.begin() + temp.size() - 1);
+	//}
+	//if (temp.size() > 0)
+	//{
+	//	temp.pop_back();
+	//}
+	//if (temp.size() > 0)
+	//{
+	//	goaltile = temp[temp.size() - 1];
+	//}
+
+	aStar = _map->aStar(PointMake(_point.x, _point.y), _player->getPoint());
+
+	//움직일때 해당 좌표를 4,5 같은 식으로 주면 자동으로 4*TILESIZE + TILESIZE/2, 5*... 해줌
+	_movePt = PointMake(aStar[aStar.size() - 1].destX, aStar[aStar.size() - 1].destY);
+
 	_myState = ENEMYSTATE_MOVE;
-
-	//astar = _map->aStar(PointMake(_point.x - 32, _point.y - 32) ,PointMake(_player->getPoint().x - 32 ,_player->getPoint().y - 32));
-	//
-	////좌표값 구하기
-	//int x = _movePt.x * TILESIZE + TILESIZE / 2;
-	//int y = _movePt.y * TILESIZE + TILESIZE / 2;
-	//
-	////해당 좌표값에 도착했는지 체크
-	//if ((static_cast<float>(_point.x) >= x - 4 && static_cast<float>(_point.y) <= x + 4) &&
-	//	(static_cast<float>(_point.x) >= y - 4 && static_cast<float>(_point.y) <= y + 4))
-	//{
-	//	_point.x = x;
-	//	_point.y = y;
-	//
-	//	_myState = ENEMYSTATE_IDLE;
-	//	_action = false;
-	//}
-	////좌표값에 도착하지 못함
-	//else
-	//{
-	//	//좌우
-	//	if (_point.x > x)	_point.x -= TILESIZE / 8;
-	//	else				_point.x += TILESIZE / 8;
-	//
-	//	//상하
-	//	if (_point.y > y)	_point.y -= TILESIZE / 8;
-	//	else				_point.y += TILESIZE / 8;
-	//
-	//	_action = false;
-	//}
-
-	if (!_isMove)
-	{
-		//0부터 시계방향으로, 8은 대기
-		//해당 방향의 타일을 검사한 후에, 갈 수 있다면 그쪽으로 이동
-		int a = RND->getInt(9);
-		_movePt = _point;
-		_myState = ENEMYSTATE_MOVE;
-		switch (a)
-		{
-		case 0:
-			//위 (ATTRIBUTE_UNGO & _map[v.x - 1][v.y].terrain) == ATTRIBUTE_UNGO
-			if (_map->getMap(_point.x, _point.y - 1).obj == OBJ_NONE &&
-				(_map->getMap(_point.x, _point.y - 1).terrain == TERRAIN_FLOOR ||
-					_map->getMap(_point.x, _point.y - 1).terrain == TERRAIN_GRASS))
-				//if((ATTRIBUTE_UNGO & _map->getMap(_point.x, _point.y - 1).terrain) == ATTRIBUTE_UNGO)
-			{
-				_isMove = true;
-				_movePt = PointMake(_point.x, _point.y - 1);
-				_right = false;
-				_action = false;
-			}
-			break;
-		case 1:
-			//오른쪽 위
-			if (_map->getMap(_point.x + 1, _point.y - 1).obj == OBJ_NONE &&
-				(_map->getMap(_point.x + 1, _point.y - 1).terrain == TERRAIN_FLOOR ||
-					_map->getMap(_point.x + 1, _point.y - 1).terrain == TERRAIN_GRASS))
-				//if ((ATTRIBUTE_UNGO & _map->getMap(_point.x + 1, _point.y - 1).terrain) == ATTRIBUTE_UNGO)
-			{
-				_isMove = true;
-				_movePt = PointMake(_point.x + 1, _point.y - 1);
-				_right = true;
-				_action = false;
-			}
-			break;
-		case 2:
-			//오른쪽
-			if (_map->getMap(_point.x + 1, _point.y).obj == OBJ_NONE &&
-				(_map->getMap(_point.x + 1, _point.y).terrain == TERRAIN_FLOOR ||
-					_map->getMap(_point.x + 1, _point.y).terrain == TERRAIN_GRASS))
-				//if ((ATTRIBUTE_UNGO & _map->getMap(_point.x + 1, _point.y).terrain) == ATTRIBUTE_UNGO)
-			{
-				_isMove = true;
-				_movePt = PointMake(_point.x + 1, _point.y+ 1);
-				_right = true;
-				_action = false;
-			}
-			break;
-		case 3:
-			//오른쪽 아래
-			if (_map->getMap(_point.x + 1, _point.y + 1).obj == OBJ_NONE &&
-				(_map->getMap(_point.x + 1, _point.y + 1).terrain == TERRAIN_FLOOR ||
-					_map->getMap(_point.x + 1, _point.y + 1).terrain == TERRAIN_GRASS))
-				//if ((ATTRIBUTE_UNGO & _map->getMap(_point.x + 1, _point.y + 1).terrain) == ATTRIBUTE_UNGO)
-			{
-				_isMove = true;
-				_movePt = PointMake(_point.x + 1, _point.y + 1);
-				_right = true;
-				_action = false;
-			}
-			break;
-		case 4:
-			//아래
-			if (_map->getMap(_point.x, _point.y + 1).obj == OBJ_NONE &&
-				(_map->getMap(_point.x, _point.y + 1).terrain == TERRAIN_FLOOR ||
-					_map->getMap(_point.x, _point.y + 1).terrain == TERRAIN_GRASS))
-				//if ((ATTRIBUTE_UNGO & _map->getMap(_point.x, _point.y + 1).terrain) == ATTRIBUTE_UNGO)
-			{
-				_isMove = true;
-				_movePt = PointMake(_point.x, _point.y + 1);
-				_right = false;
-				_action = false;
-			}
-			break;
-		case 5:
-			//왼쪽 아래
-			if (_map->getMap(_point.x - 1, _point.y + 1).obj == OBJ_NONE &&
-				(_map->getMap(_point.x - 1, _point.y + 1).terrain == TERRAIN_FLOOR ||
-					_map->getMap(_point.x - 1, _point.y + 1).terrain == TERRAIN_GRASS))
-				//if ((ATTRIBUTE_UNGO & _map->getMap(_point.x - 1, _point.y + 1).terrain) == ATTRIBUTE_UNGO)
-			{
-				_isMove = true;
-				_movePt = PointMake(_point.x - 1, _point.y + 1);
-				_right = false;
-				_action = false;
-			}
-			break;
-		case 6:
-			//왼쪽
-			if (_map->getMap(_point.x - 1, _point.y).obj == OBJ_NONE &&
-				(_map->getMap(_point.x - 1, _point.y).terrain == TERRAIN_FLOOR ||
-					_map->getMap(_point.x - 1, _point.y).terrain == TERRAIN_GRASS))
-				//if ((ATTRIBUTE_UNGO & _map->getMap(_point.x - 1, _point.y).terrain) == ATTRIBUTE_UNGO)
-			{
-				_isMove = true;
-				_movePt = PointMake(_point.x - 1, _point.y);
-				_right = false;
-				_action = false;
-			}
-			break;
-		case 7:
-			//왼쪽 위
-			if (_map->getMap(_point.x - 1, _point.y - 1).obj == OBJ_NONE &&
-				(_map->getMap(_point.x - 1, _point.y - 1).terrain == TERRAIN_FLOOR ||
-					_map->getMap(_point.x - 1, _point.y - 1).terrain == TERRAIN_GRASS))
-				//if ((ATTRIBUTE_UNGO & _map->getMap(_point.x - 1, _point.y - 1).terrain) == ATTRIBUTE_UNGO)
-			{
-				_isMove = true;
-				_movePt = PointMake(_point.x - 1, _point.y - 1);
-				_right = false;
-				_action = false;
-			}
-			break;
-		default:
-			_action = false;
-			_myState = ENEMYSTATE_IDLE;
-			break;
-		}
-	}
-	else
-	{
-		//아니라면 astar로 이동한다
-		astar = _map->aStar(_player->getPoint(), PointMake(_point.x, _point.x));
-		//움직일때 해당 좌표를 4,5 같은 식으로 주면 자동으로 4*TILESIZE + TILESIZE/2, 5*... 해줌
-		_movePt = PointMake(astar[astar.size() - 1].destX, astar[astar.size() - 1].destY);
-		_myState = ENEMYSTATE_MOVE;
-
-	}
-
+	_isMove = false;
 	if (_myState == ENEMYSTATE_MOVE)
 	{
-		//좌표가 주어졌으면 해당 좌표로 가야한다
-		//중심좌표를 구한다
-		float x = _movePt.x * TILESIZE + TILESIZE / 2;
-		float y = _movePt.y * TILESIZE + TILESIZE / 2;
+ 		int x = _movePt.x * TILESIZE;
+		int y = _movePt.y * TILESIZE;
 
-		//중심좌표에 도달했는지 확인한다
-		if ((static_cast<float>(_point.x) >= x - 4 && static_cast<float>(_point.x) <= x + 4) &&
-			(static_cast<float>(_point.y) >= y - 4 && static_cast<float>(_point.y) <= y + 4))
+		if (PtInRect(&attackRange, PointMake(_player->getPoint().x - TILESIZE, _player->getPoint().y - TILESIZE)))
 		{
 			//턴을 종료하고 넘겨준다
 			_point.x = x;
 			_point.y = y;
 			_isMove = false;
-			_myState = ENEMYSTATE_IDLE;
+			//_myState = ENEMYSTATE_IDLE;
 			_action = false;
+			//aStar.erase(aStar.begin());
 		}
-		else
+		else if(true)
 		{
-			//_point.x += cosf(getAngle(_point.x, _point.y, _movePoint.x, _movePoint.y)) * 3;
-			//_point.y -= sinf(getAngle(_point.x, _point.y, _movePoint.x, _movePoint.y)) * 3;
-			//_action = false;
-
-			//도달하지 않았으면 이동한다
-			if (_point.x < x)
+			if (_point.x <= _player->getPoint().x)
 			{
 				//현재 좌표가 가려는 좌표의 중심보다 작으면 +
 				_right = true;
-				_point.x += TILESIZE / 8;
+				_point.x += TILESIZE;
 			}
-			else if (_point.x > x)
+			else
 			{
 				_right = false;
-				_point.x -= TILESIZE / 8;
+				_point.x -= TILESIZE;
 			}
 
-			if (_point.y < y)
-			{
-				_point.y += TILESIZE / 8;
-			}
-			else if (_point.y > y)
-			{
-				_point.y -= TILESIZE / 8;
-			}
+			if (_point.y <= _player->getPoint().y) _point.y += TILESIZE;
+			else _point.y -= TILESIZE;
 			_action = false;
-
 		}
 	}
-	_action = false;
-
 }
 
 void Rat::getDamaged(int damage)
 {
+
 	//자는 상태에서 맞았으면 내 상태를 변경해준다.
 	if (_myState == ENEMYSTATE_SLEEP)
 	{
@@ -676,21 +478,25 @@ void Rat::getDamaged(int damage)
 
 void Rat::draw(POINT camera)
 {
-	//if (_map->getTile(_point.x , _point.y).tileview == TILEVIEW_ALL)
-	//{
-	//Rectangle(getMemDC(), _cog.left + camera.x, _cog.top + camera.y, _cog.right + camera.x, _cog.bottom + camera.y);
-	//Rectangle(getMemDC(), attackRange.left + camera.x, attackRange.top + camera.y, attackRange.right + camera.x, attackRange.bottom + camera.y);
-	//RectangleMake(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, TILESIZE, TILESIZE);
-
-	Rectangle(getMemDC(), _attBox.left + camera.x, _attBox.top + camera.y, _attBox.right + camera.x, _attBox.bottom + camera.y);
+	for (auto i : aStar)
+	{
+		RectangleMakeCenter(getMemDC(), i.destX*TILESIZE + TILESIZE / 2 + camera.x, i.destY * TILESIZE + TILESIZE / 2 + camera.y, 5, 5);
+	}
+	
+	//Rectangle(getMemDC(), _attBox.left + camera.x, _attBox.top + camera.y, _attBox.right + camera.x, _attBox.bottom + camera.y);
+	//Rectangle(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _hitBox.right + camera.x, _hitBox.bottom + camera.y);
+	Rectangle(getMemDC(), attackRange.left + camera.x, attackRange.top + camera.y, attackRange.right + camera.x, attackRange.bottom + camera.y);
 	//_image->frameRender(getMemDC(), _point.x + camera.x, _point.y + camera.y);
-	_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _currentFrameX, _currentFrameY, _deadAlpha);
+	if (_map->getTile(_point.x / TILESIZE, _point.y / TILESIZE).tileview == TILEVIEW_ALL)
+	{
+		_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _currentFrameX, _currentFrameY, _deadAlpha);
+	}
 	//_image->frameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _currentFrameX, _currentFrameY);
 
-	char str[128];
-
-	wsprintf(str, "%d", _currentFrameX);
-	TextOut(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, str, strlen(str));
+	//char str[128];
+	//
+	//wsprintf(str, "%d", _action);
+	//TextOut(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, str, strlen(str));
 
 	//_hpBar->render();
 	//}
