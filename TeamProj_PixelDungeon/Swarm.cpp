@@ -50,8 +50,8 @@ HRESULT Swarm::init(POINT point)
 	_statistics.lv = 1;
 	_statistics.maxLv = 10;
 	_statistics.exp = 1;
-	_statistics.hp = 12;
-	_currntHp = 12;
+	_statistics.hp = 80;
+	_currntHp = 80;
 	_statistics.avd_lck = 5;
 	_statistics.def = 0;
 	a = RND->getFromIntTo(1, 4);
@@ -380,7 +380,6 @@ void Swarm::action()
 		}
 	}
 
-
 	frameUpdate();
 }
 
@@ -500,7 +499,7 @@ void Swarm::draw(POINT camera)
 	//시야에 보일때만 출력하게
 	if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
 		_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
-	RectangleMakeCenter(getMemDC(), _pointX + camera.x, _pointY + camera.y, _currntHp, _currntHp);
+	//RectangleMakeCenter(getMemDC(), _pointX + camera.x, _pointY + camera.y, _currntHp, _currntHp);
 	//if(_findPlayer)
 
 	//_hpBar->setX(_point.x - 25 + camera.x);
