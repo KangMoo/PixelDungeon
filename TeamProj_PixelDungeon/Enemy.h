@@ -62,10 +62,12 @@ public:
 	void setAction(bool action) { _action = action; }
 	ENEMYSTAT getStat() { return _statistics; }
 	void setStat(ENEMYSTAT stat) { _statistics = stat; }
-	POINT getPoint() { return PointMake(_point.x * TILESIZE + TILESIZE / 2, _point.y * TILESIZE + TILESIZE / 2); }
+	POINT getPoint() { return _point; }
 	void setPoint(POINT point) { _point = point; }
 	int getHP() { return _statistics.hp; }
 	void setHP(int hp) { _statistics.hp = hp; }
+
+	bool getLive() { return _isLive; }
 
 	//플레이어, ui랑 연결
 	void setPlayerAddressLink(Player* player)				{ _player = player; }

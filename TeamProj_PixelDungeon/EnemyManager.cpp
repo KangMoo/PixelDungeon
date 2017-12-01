@@ -18,6 +18,11 @@ HRESULT EnemyManager::init()
 	_enemyTurn = false;
 	_actionCount = 0;
 
+	_isSwarmSpawn = false;
+	_swarmSpawn.clear();
+
+	setEnemy(PointMake(12, 12), 2);
+
 	//setEnemy(PointMake(12, 12), 2);
 	//setEnemy(PointMake(TILESIZE*14, TILESIZE*13), 0);
 	//setEnemy(PointMake(13, 13), 2);
@@ -32,6 +37,16 @@ void EnemyManager::release()
 
 void EnemyManager::update()
 {
+	for (int i = 0; i < _vEnemy.size(); i++)
+	{
+		_viEnemy = _vEnemy.begin() + i;
+		if (!(*_viEnemy)->getLive())
+		{
+			_vEnemy.erase(_viEnemy);
+			i--;
+			break;
+		}
+	}
 	for (auto i : _vEnemy)
 	{
 		i->update();
@@ -76,6 +91,11 @@ void EnemyManager::action()
 	{
 		//차례를 마치지 않은 적이 있으면 allEnemyTurnOver = false
 		if (i->getAction()) allEnemyTurnOver = false;
+	}
+	if (_isSwarmSpawn)
+	{
+		setSwarm();
+		_isSwarmSpawn = false;
 	}
 
 	//모든 적이 행동을 마쳤으면
@@ -192,15 +212,20 @@ void EnemyManager::setEnemy(POINT point, int type)
 	}
 }
 
-void EnemyManager::setSwarm(POINT point, int hp)
+void EnemyManager::setSwarm()
 {
-	//파리, Swarm
-	Swarm* temp = new Swarm;
-	temp->init(point, hp);
-	temp->setEm(this);
-	temp->setPlayerAddressLink(_player);
-	temp->setItemManagerAddressLink(_im);
-	temp->setUiAddressLink(_ui);
-	temp->setMapAddressLink(_map);
-	_vEnemy.push_back(temp);
+	for (int i = 0; i < _swarmSpawn.size(); i++)
+	{
+		Swarm* temp = new Swarm;
+		temp->init(_swarmSpawn[i].pt, _swarmSpawn[i].hp);
+		temp->setEm(this);
+		temp->setPlayerAddressLink(_player);
+		temp->setItemManagerAddressLink(_im);
+		temp->setUiAddressLink(_ui);
+		temp->setMapAddressLink(_map);
+		_vEnemy.push_back(temp);
+	}
+
+	for(;_swarmSpawn.empty() ;)
+		_swarmSpawn.clear();
 }
