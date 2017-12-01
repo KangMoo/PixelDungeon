@@ -115,6 +115,7 @@ typedef struct tagPlayerStat {
 	float avd_lck;	//회피율
 	int hunger;		//배고픔
 }PLAYERSTAT;
+
 enum PLAYERSTATE {
 	PLAYERSTATE_IDLE,
 	PLAYERSTATE_MOVE,

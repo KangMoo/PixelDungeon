@@ -34,6 +34,8 @@ HRESULT ItemManager::init()
 	//==================================================
 
 	setItemToBag(NAME_EMERGENCY);
+	setItemToBag(NAME_OLD_SHORT_SWORD);
+	setItemToBag(NAME_NORMAL);
 	return S_OK;
 }
 void ItemManager::release()
@@ -42,6 +44,8 @@ void ItemManager::release()
 }
 void ItemManager::update()
 {
+	
+	keyControl();
 
 	for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
 	{
@@ -140,7 +144,7 @@ void ItemManager::draw(POINT camera)
 	}
 	for ( _viItem = _vItem.begin(); _viItem != _vItem.end(); ++_viItem)
 	{
-		if(_viItem->floor == _map->getCurStageNum())
+		if (_viItem->floor == _map->getCurStageNum() && _map->getTile(_viItem->point.x / TILESIZE, _viItem->point.y / TILESIZE).tileview == TILEVIEW_ALL)
 		_viItem->img->render(getMemDC(), _viItem->rc.left + camera.x, _viItem->rc.top + camera.y);
 	}
 }
@@ -1284,7 +1288,7 @@ void ItemManager::useItem(int position, float x, float y)
 			case TYPE_WAND:
 				if (_viBag->currentCharge > 0)
 				{
-					fire(_viBag->throwImg, _player->getPoint().x, _player->getPoint().y, x, y);
+					fire(_viBag->throwImg, x,y);
 					_viBag->currentCharge--;
 				}
 				break;
@@ -1440,34 +1444,34 @@ void ItemManager::useItem(int position, int target)
 	}
 }
 
-void ItemManager::fire(image* img, float x, float y, float destX, float destY)
+void ItemManager::fire(image* img, float destX, float destY)
 {
 	tagBullet bullet;
 	ZeroMemory(&bullet, sizeof(tagBullet));
-	bullet.x = bullet.initX = x;
-	bullet.y = bullet.initY = y;
+	bullet.x = bullet.initX = _player->getPoint().x;
+	bullet.y = bullet.initY = _player->getPoint().y;
 	bullet.destX = destX;
 	bullet.destY = destY;
-	bullet.angle = getAngle(x, y, destX, destY);
+	bullet.angle = atan2f(bullet.destY - bullet.y, bullet.destX - bullet.x);
 	bullet.speed = 7;
 	bullet.img = img;
 	bullet.rc = RectMakeCenter(bullet.x, bullet.y,
 		bullet.img->getWidth(), bullet.img->getHeight());
-	bullet.fire = false;
+	bullet.fire = true;
 	bullet.count = 0;
 
 	_vBullet.push_back(bullet);
 }
 
-void ItemManager::throwItem(int position, float x, float y, float destX, float destY)
+void ItemManager::throwItem(int position, float destX, float destY)
 {
 	tagBullet bullet;
 	ZeroMemory(&bullet, sizeof(tagBullet));
-	bullet.x = bullet.initX = x;
-	bullet.y = bullet.initY = y;
+	bullet.x = bullet.initX = _player->getPoint().x;
+	bullet.y = bullet.initY = _player->getPoint().y;
 	bullet.destX = destX;
 	bullet.destY = destY;
-	bullet.angle = getAngle(x, y, destX, destY);
+	bullet.angle = atan2f(bullet.destY - bullet.y, bullet.destX - bullet.x);
 	bullet.speed = 7;
 	bullet.position = position;
 	for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); _viBag++)
@@ -1480,7 +1484,7 @@ void ItemManager::throwItem(int position, float x, float y, float destX, float d
 	}
 	bullet.rc = RectMakeCenter(bullet.x, bullet.y,
 		bullet.img->getWidth(), bullet.img->getHeight());
-	bullet.fire = false;
+	bullet.fire = true;
 	bullet.count = 0;
 
 	_vThrow.push_back(bullet);
@@ -1518,7 +1522,8 @@ void ItemManager::throwMove()
 			_viThrow->img->getWidth(), _viThrow->img->getHeight());
 
 		if (getDistance(_viThrow->initX, _viThrow->initY, _viThrow->x, _viThrow->y) >
-			getDistance(_viThrow->initX, _viThrow->initY, _viThrow->destX, _viThrow->destY))
+			getDistance(_viThrow->initX, _viThrow->initY, _viThrow->destX, _viThrow->destY)
+			|| (_map->getMap(0,0).terrain & ATTRIBUTE_UNGO) == ATTRIBUTE_UNGO))
 		{
 			for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); )
 			{
@@ -1527,15 +1532,15 @@ void ItemManager::throwMove()
 					setItemToField(_viBag->name, _viThrow->destX, _viThrow->destY,
 						_viBag->contentsHide, _viBag->isCursed, _viBag->upgrade,
 						_viBag->numOfItem);
-
+					
 					_viBag = _vBag.erase(_viBag);
-
+			
 					break;
-
+			
 				}
 				else ++_viBag;
 			}
-			_viThrow = _vBullet.erase(_viThrow);
+			_viThrow = _vThrow.erase(_viThrow);
 			break;
 		}
 		else ++_viThrow;
@@ -1570,4 +1575,29 @@ void ItemManager::liquidFire(void)
 void ItemManager::frozen(void)
 {
 
+}
+
+void ItemManager::keyControl()
+{
+	if (KEYMANAGER->isOnceKeyDown('T'))
+	{
+		for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+		{
+			if (_viBag->name == NAME_NORMAL)
+			{
+				fire(_viBag->throwImg, _ptMouse.x, _ptMouse.y);
+			}
+		}
+	}
+	if (KEYMANAGER->isOnceKeyDown('Y'))
+	{
+		for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+		{
+			if (_viBag->name == NAME_OLD_SHORT_SWORD)
+			{
+				throwItem(_viBag->position, _ptMouse.x, _ptMouse.y);
+				break;
+			}
+		}
+	}
 }

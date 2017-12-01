@@ -190,7 +190,7 @@ void UI::draw(POINT camera)
 
 		else if (PtInRect(&_Menu_selectRect, _ptMouse) && _selectInterface != INTERFACEMENU_MENU)
 		{
-			_selectInterface = INTERFACEMENU_STATUS;
+			_selectInterface = INTERFACEMENU_MENU;
 		}
 
 		else if (PtInRect(&_StatusRect, _ptMouse))
@@ -842,6 +842,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
+				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -854,6 +855,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
+				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -866,6 +868,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
+				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -878,6 +881,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
+				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -890,6 +894,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
+				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -907,6 +912,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					//_player->setStat(temp);
 				}
 
+				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -919,6 +925,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
+				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -931,6 +938,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
+				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -1008,6 +1016,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
+				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
@@ -1050,6 +1059,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 					_player->endTurn();
 				}
 
+				_player->setUsingUI(false);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 			}
