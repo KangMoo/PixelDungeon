@@ -140,7 +140,7 @@ HRESULT Rat::init(POINT point)
 	_currentFrameX = 0;							//프레임을 초기화 해줍니다.
 	if (_right == true)	_currentFrameY = 0;		
 	else				_currentFrameY = 1;
-	_image->setFrameX(_currentFrameY);			//이미지 프레임을 초기화 해줍니다.
+	_image->setFrameX(_currentFrameX);			//이미지 프레임을 초기화 해줍니다.
 	_image->setFrameY(_currentFrameY);			//이미지 프레임을 초기화 해줍니다.
 
 	_deadAlpha = 0;							//죽으면 감소시킬 알파값
@@ -162,6 +162,15 @@ void Rat::release()
 
 void Rat::update()
 {
+	//if (!_active)
+	//{
+	//	if (_map->getTile(_point.x, _point.y).tileview != TILEVIEW_NO)
+	//	{
+	//		_active = true;
+	//	}
+	//	_action = false;
+	//}
+
 	frameUpdate();
 
 	_attBox = RectMake(0, 0, 0, 0);
@@ -249,6 +258,8 @@ void Rat::update()
 
 	//턴을 무조건적으로 넘긴다.
 	_hitBox = RectMake(_point.x, _point.y, TILESIZE, TILESIZE);	//32로 고정을 해줍니다. 혹시 모르니까요.
+	_cog = RectMake((_point.x) - TILESIZE * 2, (_point.y) - TILESIZE * 2, 5 * TILESIZE, 5 * TILESIZE);//플레이어를 찾아낼 거리
+	attackRange = RectMake((_point.x) - TILESIZE, (_point.y) - TILESIZE, TILESIZE * 3, TILESIZE * 3);//플레이어를 공격할 거리
 
 }
 
@@ -283,34 +294,27 @@ void Rat::frameUpdate()
 		else									_right = false;
 	}
 
-	//==========================================*DIRECTION IMAGE CHANGE*========================================
-
 	if (_right)	_currentFrameY = 0;
 	else		_currentFrameY = 1;
 
 	//==============================================*STATE IMAGE CHANGE*========================================
+
 	//이동상태
 	if (_myState == ENEMYSTATE_MOVE)
 	{
-		
 		//흰 쥐
-	//_currentFrameX = 0;
-	if (_myColor == WHITE)		_image = IMAGEMANAGER->findImage("whiteMove");//이미지 변경
-	else if (_myColor == BROWN)	_image = IMAGEMANAGER->findImage("brownMove");
-
-		
+		//_currentFrameX = 0;
+		if (_myColor == WHITE)		_image = IMAGEMANAGER->findImage("whiteMove");//이미지 변경
+		else if (_myColor == BROWN)	_image = IMAGEMANAGER->findImage("brownMove");
 	}
 	//이동상태
 
 	//죽은상태
 	if (_myState == ENEMYSTATE_DEAD)
 	{
-		
-				//_currentFrameX = 0;
-	if (_myColor == WHITE)	_image = IMAGEMANAGER->findImage("whiteDead");
-	else if (_myColor == BROWN)	_image = IMAGEMANAGER->findImage("brownDead");
-
-		
+		//_currentFrameX = 0;
+		if (_myColor == WHITE)	_image = IMAGEMANAGER->findImage("whiteDead");
+		else if (_myColor == BROWN)	_image = IMAGEMANAGER->findImage("brownDead");
 	}
 	//죽은상태
 
@@ -365,7 +369,7 @@ void Rat::attack()
 	else if (_myColor == BROWN)
 	{
 		//공격력
-		_statistics.str = RND->getFromIntTo(2 + (_statistics.lv * 1), 5 + (_statistics.lv * 2));
+		_statistics.str = RND->getFromIntTo(2, 5);
 	}
 
 	//플레이어에게 공격 전달
@@ -411,13 +415,13 @@ void Rat::move()
 	_movePt = PointMake(aStar[aStar.size() - 1].destX, aStar[aStar.size() - 1].destY);
 
 	_myState = ENEMYSTATE_MOVE;
-
-	if (true)
+	_isMove = false;
+	if (_myState == ENEMYSTATE_MOVE)
 	{
-		int x = _movePt.x * TILESIZE + TILESIZE / 2;
-		int y = _movePt.y * TILESIZE + TILESIZE / 2;
+ 		int x = _movePt.x * TILESIZE;
+		int y = _movePt.y * TILESIZE;
 
-		if (PtInRect(&attackRange, _player->getPoint()))
+		if (PtInRect(&attackRange, PointMake(_player->getPoint().x - TILESIZE, _player->getPoint().y - TILESIZE)))
 		{
 			//턴을 종료하고 넘겨준다
 			_point.x = x;
@@ -425,51 +429,27 @@ void Rat::move()
 			_isMove = false;
 			//_myState = ENEMYSTATE_IDLE;
 			_action = false;
+			//aStar.erase(aStar.begin());
 		}
-		else
+		else if(true)
 		{
-			if (_point.x < x)
+			if (_point.x <= _player->getPoint().x)
 			{
 				//현재 좌표가 가려는 좌표의 중심보다 작으면 +
 				_right = true;
-				_point.x += TILESIZE/8;
+				_point.x += TILESIZE;
 			}
-			else if (_point.x > x)
+			else
 			{
 				_right = false;
-				_point.x -= TILESIZE / 8;
+				_point.x -= TILESIZE;
 			}
 
-			if (_point.y < y)
-			{
-				_point.y += TILESIZE / 8;
-			}
-			else if (_point.y > y)
-			{
-				_point.y -= TILESIZE / 8;
-			}
-			//_action = false;
+			if (_point.y <= _player->getPoint().y) _point.y += TILESIZE;
+			else _point.y -= TILESIZE;
+			_action = false;
 		}
-
-
-			//if (PtInRect(&_hitBox, _movePt))
-			//{
-			//	_point.x = aStar[aStar.size() - 1].destX*TILESIZE + TILESIZE / 2;
-			//	_point.y = aStar[aStar.size() - 1].destY*TILESIZE + TILESIZE / 2;
-			//
-			//	//턴을 종료하고 넘겨준다
-			//	_myState = ENEMYSTATE_IDLE;
-			//	_action = false;
-			//	aStar.erase(aStar.begin() + aStar.size() - 1);
-			//
-			//}
-			//if (_point.x < _movePt.x)_point.x += TILESIZE;
-			//else if (_point.x > _movePt.x)_point.x -= TILESIZE;
-			//if (_point.y < _movePt.y) _point.y += TILESIZE;
-			//else if (_point.y > _movePt.y) _point.y -= TILESIZE;
-		
 	}
-	//_action = false;
 }
 
 void Rat::getDamaged(int damage)
@@ -502,18 +482,21 @@ void Rat::draw(POINT camera)
 	{
 		RectangleMakeCenter(getMemDC(), i.destX*TILESIZE + TILESIZE / 2 + camera.x, i.destY * TILESIZE + TILESIZE / 2 + camera.y, 5, 5);
 	}
-
-	Rectangle(getMemDC(), _attBox.left + camera.x, _attBox.top + camera.y, _attBox.right + camera.x, _attBox.bottom + camera.y);
-	Rectangle(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _hitBox.right + camera.x, _hitBox.bottom + camera.y);
-
+	
+	//Rectangle(getMemDC(), _attBox.left + camera.x, _attBox.top + camera.y, _attBox.right + camera.x, _attBox.bottom + camera.y);
+	//Rectangle(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _hitBox.right + camera.x, _hitBox.bottom + camera.y);
+	Rectangle(getMemDC(), attackRange.left + camera.x, attackRange.top + camera.y, attackRange.right + camera.x, attackRange.bottom + camera.y);
 	//_image->frameRender(getMemDC(), _point.x + camera.x, _point.y + camera.y);
-	_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _currentFrameX, _currentFrameY, _deadAlpha);
+	if (_map->getTile(_point.x / TILESIZE, _point.y / TILESIZE).tileview == TILEVIEW_ALL)
+	{
+		_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _currentFrameX, _currentFrameY, _deadAlpha);
+	}
 	//_image->frameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _currentFrameX, _currentFrameY);
 
-	char str[128];
-
-	wsprintf(str, "%d", _action);
-	TextOut(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, str, strlen(str));
+	//char str[128];
+	//
+	//wsprintf(str, "%d", _action);
+	//TextOut(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, str, strlen(str));
 
 	//_hpBar->render();
 	//}
