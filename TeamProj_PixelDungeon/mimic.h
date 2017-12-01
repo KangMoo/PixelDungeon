@@ -9,6 +9,8 @@ private:
 
 	POINT _movePt;
 
+	vector<TILE> astar;
+
 public:
 	HRESULT init(POINT point, int cog);//인식범위 추기
 	void release();

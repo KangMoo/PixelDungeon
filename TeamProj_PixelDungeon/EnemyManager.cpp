@@ -18,7 +18,8 @@ HRESULT EnemyManager::init()
 	_enemyTurn = false;
 	_actionCount = 0;
 
-	setEnemy(PointMake(12, 12), 2);
+	//setEnemy(PointMake(12, 12), 2);
+	setEnemy(PointMake(13, 12), 0);
 	//setEnemy(PointMake(13, 13), 2);
 
 	return S_OK;
@@ -112,12 +113,31 @@ void EnemyManager::setEnemy(POINT point, int type)
 	{
 		case 0:
 		{
+
+			Rat* temp = new Rat;
+			temp->init(point);
+			temp->setPlayerAddressLink(_player);
+			temp->setItemManagerAddressLink(_im);
+			temp->setUiAddressLink(_ui);
+			temp->setMapAddressLink(_map);
+			_vEnemy.push_back(temp);
+			break;
+
 		//Áã, Rat
 
 		break;
 		}
 		case 1:
 		{
+
+			Mimic* temp = new Mimic;
+			temp->init(point,4);
+			temp->setPlayerAddressLink(_player);
+			temp->setItemManagerAddressLink(_im);
+			temp->setUiAddressLink(_ui);
+			temp->setMapAddressLink(_map);
+			_vEnemy.push_back(temp);
+
 			//¹Ì¹Í, Mimic
 			break;
 		}
@@ -130,7 +150,7 @@ void EnemyManager::setEnemy(POINT point, int type)
 			temp->setPlayerAddressLink(_player);
 			temp->setItemManagerAddressLink(_im);
 			temp->setUiAddressLink(_ui);
-			temp->setMaAddressLink(_map);
+			temp->setMapAddressLink(_map);
 			_vEnemy.push_back(temp);
 			break;
 		}
@@ -142,14 +162,22 @@ void EnemyManager::setEnemy(POINT point, int type)
 			temp->setPlayerAddressLink(_player);
 			temp->setItemManagerAddressLink(_im);
 			temp->setUiAddressLink(_ui);
-			temp->setMaAddressLink(_map);
+			temp->setMapAddressLink(_map);
 			_vEnemy.push_back(temp);
 			break;
 		}
 		case 4:
 		{
-			//
+
+			goo* temp = new goo;
+			temp->init(point,8);
+			temp->setPlayerAddressLink(_player);
+			temp->setItemManagerAddressLink(_im);
+			temp->setUiAddressLink(_ui);
+			temp->setMapAddressLink(_map);
+
 			break;
+
 		}
 		case 5:
 		{
@@ -173,6 +201,6 @@ void EnemyManager::setSwarm(POINT point, int hp)
 	temp->setPlayerAddressLink(_player);
 	temp->setItemManagerAddressLink(_im);
 	temp->setUiAddressLink(_ui);
-	temp->setMaAddressLink(_map);
+	temp->setMapAddressLink(_map);
 	_vEnemy.push_back(temp);
 }
