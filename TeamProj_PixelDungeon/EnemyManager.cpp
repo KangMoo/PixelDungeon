@@ -224,3 +224,11 @@ void EnemyManager::setSwarm()
 	temp->setMapAddressLink(_map);
 	_vEnemy.push_back(temp);
 }
+
+void EnemyManager::enemyClear()
+{
+	while (_vEnemy.empty()) 
+	{
+		_vEnemy.clear();
+	}
+}

@@ -54,6 +54,8 @@ public:
 	void setUiAddressLink(UI* ui) { _ui = ui; }
 	void setItemManagerAddressLink(ItemManager* im) { _im = im; }
 
+	void enemyClear();
+
 	void setEnemy(POINT point, int type);		//enemy 제작
 	void setSwarm();			//파리 전용
 	void setSwarmSpawn(POINT pt, int hp)
@@ -62,8 +64,6 @@ public:
 		_temp.hp = hp;
 		_isSwarmSpawn = true;
 	}
-
-	vector<Enemy*> getEnemy() { return _vEnemy; }
 
 	EnemyManager();
 	~EnemyManager();

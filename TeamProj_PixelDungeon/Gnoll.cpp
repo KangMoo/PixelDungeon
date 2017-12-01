@@ -124,14 +124,14 @@ void Gnoll::getDamaged(int damage)
 
 	int a = RND->getInt(100);
 
-	if (a < _statistics.avd_lck)
+	if (a < _statistics.avd_lck - _player->getStat().atk_lck)
 	{
 		return;
 	}
 	else
 	{
 		if(_currntHp > 0)
-			_currntHp -= damage;
+			_currntHp -= damage - _statistics.def;
 	}
 }
 
@@ -387,7 +387,10 @@ void Gnoll::action()
 				astarTest = _map->aStar(PointMake(_pointX, _pointY), _player->getPoint());
 				//움직일때 해당 좌표를 4,5 같은 식으로 주면 자동으로 4*TILESIZE + TILESIZE/2, 5*... 해줌
 				//_movePoint = PointMake(astarTest[astarTest.size() - 1].destX, astarTest[astarTest.size() - 1].destY);
-				_movePoint = PointMake(astarTest[astarTest.size() - 2].destX, astarTest[astarTest.size() - 2].destY);
+				if (astarTest.size() > 2)
+					_movePoint = PointMake(astarTest[astarTest.size() - 2].destX, astarTest[astarTest.size() - 2].destY);
+				else
+					_movePoint = _point;
 				_myState = ENEMYSTATE_MOVE;
 			}
 		}
@@ -422,21 +425,21 @@ void Gnoll::action()
 			{
 				//현재 좌표가 가려는 좌표의 중심보다 작으면 +
 				_right = true;
-				_pointX += TILESIZE / 8;
+				_pointX += TILESIZE / 4;
 			}
 			else if (_pointX > x)
 			{
 				_right = false;
-				_pointX -= TILESIZE / 8;
+				_pointX -= TILESIZE / 4;
 			}
 
 			if (_pointY < y)
 			{
-				_pointY += TILESIZE / 8;
+				_pointY += TILESIZE / 4;
 			}
 			else if (_pointY > y)
 			{
-				_pointY -= TILESIZE / 8;
+				_pointY -= TILESIZE / 4;
 			}
 			//_action = false;
 

@@ -359,21 +359,21 @@ void Swarm::action()
 			{
 				//현재 좌표가 가려는 좌표의 중심보다 작으면 +
 				_right = true;
-				_pointX += TILESIZE / 8;
+				_pointX += TILESIZE / 4;
 			}
 			else if (_pointX > x)
 			{
 				_right = false;
-				_pointX -= TILESIZE / 8;
+				_pointX -= TILESIZE / 4;
 			}
 
 			if (_pointY < y)
 			{
-				_pointY += TILESIZE / 8;
+				_pointY += TILESIZE / 4;
 			}
 			else if (_pointY > y)
 			{
-				_pointY -= TILESIZE / 8;
+				_pointY -= TILESIZE / 4;
 			}
 			//_action = false;
 			
@@ -451,7 +451,7 @@ void Swarm::getDamaged(int damage)
 	else
 	{
 		//높다면 뎀지받음
-		_currntHp -= damage;
+		_currntHp -= damage - _statistics.def;
 		if (_currntHp > 0)
 		{
 			//죽지 않았다면 분열을 해야한다
@@ -482,10 +482,10 @@ void Swarm::getDamaged(int damage)
 				//_em->setSwarm(PointMake(_point.x + x, _point.y + y), _currntHp);
 			if ((ATTRIBUTE_UNGO & _map->getMap(_point.x + x, _point.y + y).terrain) != ATTRIBUTE_UNGO)
 			{
-				for (int i = 0; i < _em->getEnemy().size(); i++)
+				for (int i = 0; i < _em->getEnemyVector().size(); i++)
 				{
-					if (_em->getEnemy()[i]->getTilePt().x == _point.x + x &&
-						_em->getEnemy()[i]->getTilePt().y == _point.y + y) return;
+					if (_em->getEnemyVector()[i]->getTilePt().x == _point.x + x &&
+						_em->getEnemyVector()[i]->getTilePt().y == _point.y + y) return;
 				}
 				_em->setSwarmSpawn(PointMake(_point.x + x, _point.y + y), _currntHp);
 			}
