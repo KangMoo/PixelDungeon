@@ -19,7 +19,8 @@ HRESULT EnemyManager::init()
 	_actionCount = 0;
 
 	//setEnemy(PointMake(12, 12), 2);
-	//setEnemy(PointMake(TILESIZE*14, TILESIZE*13), 0);
+
+	//setEnemy(PointMake(TILESIZE*13, TILESIZE*11), 0);
 	//setEnemy(PointMake(13, 13), 2);
 
 	return S_OK;
