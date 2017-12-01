@@ -20,7 +20,7 @@ HRESULT EnemyManager::init()
 
 	_isSwarmSpawn = false;
 
-	setEnemy(PointMake(12, 12), 2);
+	setEnemy(PointMake(12, 12), 5);
 
 	//setEnemy(PointMake(12, 12), 2);
 	//setEnemy(PointMake(TILESIZE*14, TILESIZE*13), 0);
@@ -202,7 +202,14 @@ void EnemyManager::setEnemy(POINT point, int type)
 		}
 		case 5:
 		{
-			//
+			//°Ô
+			Crap* temp = new Crap;
+			temp->init(point);
+			temp->setPlayerAddressLink(_player);
+			temp->setItemManagerAddressLink(_im);
+			temp->setUiAddressLink(_ui);
+			temp->setMapAddressLink(_map);
+			_vEnemy.push_back(temp);
 			break;
 		}
 		default:
