@@ -67,6 +67,11 @@ public:
 	int getHP() { return _statistics.hp; }
 	void setHP(int hp) { _statistics.hp = hp; }
 
+	//타일 좌표 받아오기
+	virtual POINT getTilePt() { return _point; }
+	//화면에 실제로 나타나는 좌표 받아오기
+	virtual POINT getRenderPt() { return PointMake(_pointX, _pointY); }
+
 	bool getLive() { return _isLive; }
 
 	//플레이어, ui랑 연결

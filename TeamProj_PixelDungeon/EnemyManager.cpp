@@ -42,6 +42,7 @@ void EnemyManager::update()
 		_viEnemy = _vEnemy.begin() + i;
 		if (!(*_viEnemy)->getLive())
 		{
+			(*_viEnemy)->release();
 			_vEnemy.erase(_viEnemy);
 			i--;
 			break;
@@ -226,6 +227,6 @@ void EnemyManager::setSwarm()
 		_vEnemy.push_back(temp);
 	}
 
-	for(;_swarmSpawn.empty() ;)
+	while(_swarmSpawn.empty())
 		_swarmSpawn.clear();
 }

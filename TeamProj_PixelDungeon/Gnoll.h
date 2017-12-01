@@ -20,6 +20,9 @@ public:
 	void getDamaged(int damage);
 	void update();
 
+	POINT getTilePt() { return _point; }
+	POINT getRenderPt() { return PointMake(_pointX, _pointY); }
+
 	void action();
 	void frameUpdate();
 	void draw(POINT camera);

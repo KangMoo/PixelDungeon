@@ -65,6 +65,8 @@ public:
 		_isSwarmSpawn = true;
 	}
 
+	vector<Enemy*> getEnemy() { return _vEnemy; }
+
 	EnemyManager();
 	~EnemyManager();
 };

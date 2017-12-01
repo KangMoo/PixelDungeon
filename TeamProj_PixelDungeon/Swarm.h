@@ -44,6 +44,9 @@ public:
 	HRESULT init(POINT point, int currntHp); //ºÐ¿­
 	void update();
 
+	POINT getTilePt() { return _point; }
+	POINT getRenderPt() { return PointMake(_pointX, _pointY); }
+
 	void getDamaged(int damage);
 
 	void action(); 

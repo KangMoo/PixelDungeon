@@ -154,7 +154,7 @@ void Swarm::action()
 		return;
 	}
 
-	//if (KEYMANAGER->isOnceKeyDown('E')) getDamaged(3);
+	if (KEYMANAGER->isOnceKeyDown('E')) getDamaged(3);
 
 	if (_myState == ENEMYSTATE_SLEEP)
 	{
@@ -441,7 +441,7 @@ void Swarm::getDamaged(int damage)
 	int a = RND->getInt(100);
 
 	//0~99 중에 나온 숫자가 회피율보다 낮다면 회피
-	if (a < _statistics.avd_lck)
+	if (a < _statistics.avd_lck - _player->getStat().atk_lck)
 	{
 		return;
 	}
@@ -476,9 +476,16 @@ void Swarm::getDamaged(int damage)
 			//	(_map->getMap(_point.x, _point.y - 1).terrain == TERRAIN_FLOOR ||
 			//		_map->getMap(_point.x, _point.y - 1).terrain == TERRAIN_GRASS))
 			//(ATTRIBUTE_UNGO & _map[v.x - 1][v.y].terrain) == ATTRIBUTE_UNGO
-			if ((ATTRIBUTE_UNGO & _map->getMap(_point.x + x, _point.y + y).terrain) != ATTRIBUTE_UNGO)
 				//_em->setSwarm(PointMake(_point.x + x, _point.y + y), _currntHp);
+			if ((ATTRIBUTE_UNGO & _map->getMap(_point.x + x, _point.y + y).terrain) != ATTRIBUTE_UNGO)
+			{
+				//for (int i = 0; i < _em->getEnemy().size(); i++)
+				//{
+				//	if (_em->getEnemy()[i]->getPoint().x == _point.x + x &&
+				//		_em->getEnemy()[i]->getPoint().y == _point.y + y) return;
+				//}
 				_em->setSwarmSpawn(PointMake(_point.x + x, _point.y + y), _currntHp);
+			}
 		}
 	}
 }
