@@ -8,6 +8,12 @@
 #include "mimic.h"
 #include "goo.h"
 
+struct tagSwarmSpawn
+{
+	POINT pt;
+	int hp;
+};
+
 class Player;
 class Map;
 class UI;
@@ -27,6 +33,8 @@ private:
 	bool _enemyTurn;
 	int _actionCount;	//몇번째 몬스터가 행동하고 있는지 확인하기 위한 int값
 
+	bool _isSwarmSpawn;
+	vector<tagSwarmSpawn> _swarmSpawn;
 public:
 	HRESULT init();
 	void release();
@@ -47,7 +55,17 @@ public:
 	void setItemManagerAddressLink(ItemManager* im) { _im = im; }
 
 	void setEnemy(POINT point, int type);		//enemy 제작
-	void setSwarm(POINT point, int hp);			//파리 전용
+	void setSwarm();			//파리 전용
+	void setSwarmSpawn(POINT pt, int hp)
+	{
+		tagSwarmSpawn temp;
+		temp.pt = pt;
+		temp.hp = hp;
+		_swarmSpawn.push_back(temp);
+		_isSwarmSpawn = true;
+	}
+
+	vector<Enemy*> getEnemy() { return _vEnemy; }
 
 	EnemyManager();
 	~EnemyManager();

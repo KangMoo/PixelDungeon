@@ -37,9 +37,15 @@ private:
 	vector<TILE> astarTest;
 	EnemyManager* _em;
 	
+	int _deadAlpha;
+
 public:
 	HRESULT init(POINT point); //초기 생성
 	HRESULT init(POINT point, int currntHp); //분열
+	void update();
+
+	POINT getTilePt() { return _point; }
+	POINT getRenderPt() { return PointMake(_pointX, _pointY); }
 
 	void getDamaged(int damage);
 
@@ -49,6 +55,7 @@ public:
 	void release();
 
 	void setEm(EnemyManager* em) { _em = em; }
+	bool getLive() { return _isLive; }
 
 	Swarm();
 	~Swarm();
