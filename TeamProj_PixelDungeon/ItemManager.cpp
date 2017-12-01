@@ -37,6 +37,8 @@ HRESULT ItemManager::init()
 	setItemToBag(NAME_EMERGENCY);
 	setItemToBag(NAME_OLD_SHORT_SWORD);
 	setItemToBag(NAME_NORMAL);
+	setItemToBag(NAME_FROZEN);
+	setItemToBag(NAME_HEAL);
 	return S_OK;
 }
 void ItemManager::release()
@@ -1634,8 +1636,10 @@ void ItemManager::removeFieldItem(int arrNum)
 
 void ItemManager::removeBagItem(int arrNum)
 {
+	int j = 0;
 	_vBag.erase(_vBag.begin() + arrNum);
-}
+	int a = 0;
+}	
 
 
 void ItemManager::liquidFire(float x, float y)
