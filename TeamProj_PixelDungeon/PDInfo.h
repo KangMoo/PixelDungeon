@@ -118,6 +118,7 @@ typedef struct tagPlayerStat {
 	int mindmg;		//최소데미지
 	int maxdmg;		//최대데미지
 }PLAYERSTAT;
+
 enum PLAYERSTATE {
 	PLAYERSTATE_IDLE,
 	PLAYERSTATE_MOVE,

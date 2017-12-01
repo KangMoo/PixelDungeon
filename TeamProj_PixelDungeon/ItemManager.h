@@ -20,7 +20,13 @@ struct tagBullet
 	int count;
 	int position;
 };
-
+struct tagEffect
+{
+	image* img; //이펙트 이미지;
+	RECT rc;	//이펙트 rc;
+	int size;	//이펙트 사이즈
+	int Trans;	//투명도 0~255;
+};
 
 class ItemManager :public gameNode
 {
@@ -54,7 +60,6 @@ private:
 
 	bool _potionIdentified[7];
 	bool _scrollIdentified[5];
-
 public:
 	HRESULT init();
 	void release();
@@ -65,8 +70,11 @@ public:
 	void setItem(tagItem* item, ITEMNAME name);
 	void swap();
 	void imgInit();
+	
+	//============== T E S T =================
+	void keyControl();
 
-
+	//============= I T E M ==================
 	void equipItem(int position);
 	void unequipItem(int position);
 	void useItem(int position);
@@ -74,30 +82,36 @@ public:
 	void useItem(int position, int target);
 
 	//=========== T H R O W ===============
-	void fire(image* img, float x, float y, float dextX, float destY);
-	void throwItem(int position, float x, float y, float destX, float destY);
+	void fire(image* img, float dextX, float destY);
+	void throwItem(int position, float destX, float destY);
 	void bulletMove();
 	void throwMove();
+
+	//=========== R E M O V E =============
 	void removeBullet(int arrNum);
 	void removeThrow(int arrNum);
 	void removeFieldItem(int arrNum);
 	void removeBagItem(int arrNum);
 	
-
+	//=========== A D D   M O V E ============
 	void setItemToBag(ITEMNAME name);
 	void setItemToField(ITEMNAME name, float x, float y);
 	void setItemToBag(ITEMNAME name, bool identify, bool isCursed, int upgrade, int numOfItem);
 	void setItemToField(ITEMNAME name, float x, float y, bool identify, bool isCursed, int upgrade, int numOfItem);
 
+	//=========== L I N K ===================
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }
 	void setMapAddressLink(Map* map) { _map = map; }
 	void setUiAddressLink(UI* ui) { _ui = ui; }
 	void setPlayerAddressLink(Player* player) { _player = player; }
 
-	void liquidFire(void);
-	void frozen(void);
+
+	void liquidFire(float x, float y);
+
+	void frozen(float x, float y);
 
 
+	//================= G E T T E R ================
 	vector<tagItem> getvItem() { return _vItem; }
 	vector<tagItem>::iterator getvItemIter() { return _viItem; }
 
@@ -109,7 +123,6 @@ public:
 
 	vector<tagBullet> getVThrow() { return _vThrow; }
 	vector<tagBullet>::iterator getVThrowIter() { return _viThrow; }
-
 
 	ItemManager();
 	~ItemManager();

@@ -248,8 +248,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			//몬스터가 있는타일 제외
 			for (auto i : _em->getEnemyVector())
 			{
-				if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y == i->getPoint().y / TILESIZE) &&
-					(v.x + 1 != goalPoint.x / TILESIZE && v.y != goalPoint.y / TILESIZE))
+				if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y == i->getPoint().y / TILESIZE))
 				{
 					addlist = false;
 				}
@@ -568,8 +567,6 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 				add_openlist(temp);
 				aU = true;
 			}
-
-
 		}
 		if ((_map[v.x][v.y + 1].terrain & ATTRIBUTE_UNGO) != ATTRIBUTE_UNGO && !search_closelist_exsist(v.x, v.y + 1))
 		{
@@ -780,22 +777,21 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 				add_openlist(temp);
 			}
 			//목적지일 경우는 openlist에 추가
-			for (int i = -1; i < 2; i++)
+		}
+		for (int i = -1; i < 2; i++)
+		{
+			for (int j = -1; j < 2; j++)
 			{
-				for (int j = -1; j < 2; j++)
+				if (v.x + i == goalPoint.x / TILESIZE && v.y + j == goalPoint.y / TILESIZE)
 				{
-					if (v.x + i == goalPoint.x / TILESIZE && v.y + j == goalPoint.y / TILESIZE)
-					{
-						vertex temp;
-						temp.x = v.x + i;
-						temp.y = v.y + j;
-						temp = calc_vertex(temp, v, goalPoint);
-						add_openlist(temp);
-					}
+					vertex temp;
+					temp.x = v.x + i;
+					temp.y = v.y + j;
+					temp = calc_vertex(temp, v, goalPoint);
+					add_openlist(temp);
 				}
 			}
 		}
-
 	}
 
 
