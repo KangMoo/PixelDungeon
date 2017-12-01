@@ -1,4 +1,4 @@
-#include "stdafx.h"
+Ôªø#include "stdafx.h"
 #include "ItemManager.h"
 #include "Player.h"
 #include "EnemyManager.h"
@@ -20,7 +20,7 @@ HRESULT ItemManager::init()
 	//================ F U N C T I O N =================
 	imgInit();	
 	swap();
-
+	
 	//================ I D E N T I F I E D ==================
 	for (int i = 0; i < 7; i++)
 	{
@@ -31,6 +31,7 @@ HRESULT ItemManager::init()
 	{
 		_scrollIdentified[i] = false;
 	}
+
 	//==================================================
 
 	setItemToBag(NAME_EMERGENCY);
@@ -528,9 +529,11 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 		item->currentCharge = item->maxCharge;
 		item->range = 4;
 		break;
-	case NAME_DART:						// ≈ı√¥ π´±‚ : ¥Ÿ∆Æ =========================================== 
+	case NAME_DART:						// Ìà¨Ï≤ô Î¨¥Í∏∞ : Îã§Ìä∏ =========================================== 
 		item->type = TYPE_THROW;
 		item->img = IMAGEMANAGER->findImage("dart");
+		item->throwImg = IMAGEMANAGER->findImage("magic_missile_beacon");
+
 		item->equip = false;
 		item->minPoint = 1;
 		item->maxPoint = 3;
@@ -540,6 +543,8 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 	case NAME_PARALYSIS_DART:
 		item->type = TYPE_THROW;
 		item->img = IMAGEMANAGER->findImage("dart");
+		item->throwImg = IMAGEMANAGER->findImage("magic_missile");
+
 		item->equip = false;
 		item->minPoint = 1;
 		item->maxPoint = 3;
@@ -549,6 +554,8 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 	case NAME_POISON_DART:
 		item->type = TYPE_THROW;
 		item->img = IMAGEMANAGER->findImage("dart");
+		item->throwImg = IMAGEMANAGER->findImage("magic_missile");
+
 		item->equip = false;
 		item->minPoint = 1;
 		item->maxPoint = 3;
@@ -624,7 +631,7 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 		item->contentsHide = false;
 		item->minPoint = 80;
 		break;
-	case NAME_IDENTIFY:			// ªÁøÎ æ∆¿Ã≈€ : ¡÷πÆº≠ ===========================================
+	case NAME_IDENTIFY:			// ÏÇ¨Ïö© ÏïÑÏù¥ÌÖú : Ï£ºÎ¨∏ÏÑú ===========================================
 		item->type = TYPE_SCROLL;
 		switch (_scroll[0])
 		{
@@ -720,7 +727,7 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 		if (!_scrollIdentified[4]) item->contentsHide = true;
 		else item->contentsHide = false;
 		break;
-	case NAME_BOTTLE:		// ===============∆˜º« ===================
+	case NAME_BOTTLE:		// ===============Ìè¨ÏÖò ===================
 		item->type = TYPE_POTION;
 		item->img = IMAGEMANAGER->findImage("potion_bottle");
 		item->equip = false;
@@ -889,7 +896,7 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 		if (!_potionIdentified[6]) item->contentsHide = true;
 		else item->contentsHide = false;
 		break;
-	case NAME_SEED_HEAL:	//============ ææ æ— ==========
+	case NAME_SEED_HEAL:	//============ Ïî® Ïïó ==========
 		item->type = TYPE_SEED;
 		item->img = IMAGEMANAGER->findImage("seed_heal");
 		item->equip = false;
@@ -1148,38 +1155,49 @@ void ItemManager::useItem(int position)
 				break;
 			case TYPE_POTION:
 			{
+				PLAYERSTAT temp = _player->getStat();
+
 				switch (_viBag->name)
 				{
-				case NAME_BOTTLE:  // «√∑π¿ÃæÓ √º∑¬*0.05 * currentCharge
+				case NAME_BOTTLE:  // ÌîåÎ†àÏù¥Ïñ¥ Ï≤¥Î†•*0.05 * currentCharge
 				{
 					if (_viBag->currentCharge != 0)
 					{
 						_viBag->currentCharge = 0;
+						_player->setHP((_player->getStat().maxhp *0.05)*_viBag->currentCharge);
 					}
 					else
 					{
-
+						//ÏïÑÎ¨¥Îü∞ Ìö®Í≥ºÍ∞Ä Î∞úÏÉùÌïòÏßÄ ÏïäÎäîÎã§.
 					}
 				}
 				break;
-				case NAME_HEAL: // «√∑π¿ÃæÓ¿« √º∑¬¿ª √÷¥Î »∏∫π.
+				case NAME_HEAL: // ÌîåÎ†àÏù¥Ïñ¥Ïùò Ï≤¥Î†•ÏùÑ ÏµúÎåÄ ÌöåÎ≥µ.
 				{
 					_potionIdentified[0] = true;
+					_player->setHP(_player->getStat().maxhp);
 					_viBag->numOfItem--;
 					if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
 
 				}
 				break;
-				case NAME_STR: // «√∑π¿ÃæÓ¿« »˚ +1
+				case NAME_STR: // ÌîåÎ†àÏù¥Ïñ¥Ïùò Ìûò +1
 				{
+					temp.str += 1;
+					_player->setStat(temp);
+	
 					_potionIdentified[1] = true;
 					_viBag->numOfItem--;
 					if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
 
 				}
 				break;
-				case NAME_EX: // «√∑π¿ÃæÓ¿« ∑π∫ß +1 , ∞Ê«Ëƒ° 0;§§
+				case NAME_EX: // ÌîåÎ†àÏù¥Ïñ¥Ïùò Î†àÎ≤® +1 , Í≤ΩÌóòÏπò 0;„Ñ¥
 				{
+					temp.lv += 1;
+					temp.exp = 0;
+					_player->setStat(temp);
+
 					_potionIdentified[2] = true;
 					
 					
@@ -1189,7 +1207,7 @@ void ItemManager::useItem(int position)
 
 				}
 				break;
-				case NAME_INVISIBLE: // «√∑π¿ÃæÓ ≈ı∏Ì»≠ πˆ«¡
+				case NAME_INVISIBLE: // ÌîåÎ†àÏù¥Ïñ¥ Ìà¨Î™ÖÌôî Î≤ÑÌîÑ
 				{
 					_potionIdentified[3] = true;
 					_viBag->numOfItem--;
@@ -1197,7 +1215,7 @@ void ItemManager::useItem(int position)
 
 				}
 				break;
-				case NAME_LEVITATION: // «√∑π¿ÃæÓ ∞¯¡ﬂ∫ŒæÁ πˆ«¡
+				case NAME_LEVITATION: // ÌîåÎ†àÏù¥Ïñ¥ Í≥µÏ§ëÎ∂ÄÏñë Î≤ÑÌîÑ
 				{
 					_potionIdentified[4] = true;
 					_viBag->numOfItem--;
@@ -1205,19 +1223,19 @@ void ItemManager::useItem(int position)
 
 				}
 				break;
-				case NAME_FROZEN:	// «√∑π¿ÃæÓ »§¿∫ ¥¯¡¯¿Âº“ ¡ﬂΩ… x 5*5 º≠∏Æµπˆ«¡
+				case NAME_FROZEN:	// ÌîåÎ†àÏù¥Ïñ¥ ÌòπÏùÄ ÎçòÏßÑÏû•ÏÜå Ï§ëÏã¨ x 5*5 ÏÑúÎ¶¨ÎîîÎ≤ÑÌîÑ
 				{
 					_potionIdentified[5] = true;
-					frozen();
+					frozen(_player->getPoint().x, _player->getPoint().y);
 					_viBag->numOfItem--;
 					if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
 
 				}
 				break;
-				case NAME_LIQUID_FIRE: // «√∑π¿ÃæÓ »§¿∫ ¥¯¬°¿Âº“ ¡ﬂΩ… 3*3 »≠ø∞
+				case NAME_LIQUID_FIRE: // ÌîåÎ†àÏù¥Ïñ¥ ÌòπÏùÄ ÎçòÏßïÏû•ÏÜå Ï§ëÏã¨ 3*3 ÌôîÏóº
 				{
 					_potionIdentified[6] = true;
-					liquidFire();
+					liquidFire(_player->getPoint().x, _player->getPoint().y);
 					_viBag->numOfItem--;
 					if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
 				}
@@ -1229,24 +1247,35 @@ void ItemManager::useItem(int position)
 			{
 				switch (_viBag->name)
 				{
-					case NAME_IDENTIFY:
+					case NAME_IDENTIFY: // ÏÇ¨Ïö© x
 					{
 
 					}
 					break;
-					case NAME_UPGRADE:
+					case NAME_UPGRADE: // ÏÇ¨Ïö© x
 					{
 
 					}
 					break;
-					case NAME_PURIFY:
+					case NAME_PURIFY: // ÏÇ¨Ïö© x
 					{
 
 					}
 					break;
-					case NAME_MAP:
+					case NAME_MAP: // ÎßµÏùò ÏãúÏïºÎ•º Î∞ùÌòÄÏ£ºÎäîÏö© 
 					{
-
+						for (int i = 0; i < 100; i++)
+						{
+							for (int j = 0; j < 100; j++)
+							{
+								TILE temp = _map->getTile(i, j);
+								if (temp.tileview == TILEVIEW_NO)
+								{
+									temp.tileview = TILEVIEW_HALF;
+									_map->setTile(temp, i, j);
+								}
+							}
+						}
 					}
 					break;
 					case NAME_RECHARGE:
@@ -1256,7 +1285,7 @@ void ItemManager::useItem(int position)
 							if (_viBag->type == TYPE_WAND)
 							{
 								_viBag->currentCharge = _viBag->maxCharge;
-							}
+							}continue;
 						}
 					}
 					break;
@@ -1317,47 +1346,99 @@ void ItemManager::useItem(int position, float x, float y)
 				{
 					case NAME_BOTTLE:
 					{
+						setItemToField(NAME_BOTTLE, x, y);
 					}
 					break;
-					case NAME_HEAL:
+					case NAME_HEAL: // ÏïÑÎ¨¥Îü∞ Ìö®Í≥ºÍ∞Ä Î∞úÏÉùÌïòÏßÄ ÏïäÎäîÎã§ ( ÏïÑÏù¥ÌÖú ÏãùÎ≥Ñ Î∂àÍ∞Ä )
 					{
-						_potionIdentified[0] = true;
+						fire(_viBag->throwImg, x, y);
+						_viBag->numOfItem--;
+						if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
 					}
 					break;
-					case NAME_STR:
+					case NAME_STR: // ÏïÑÎ¨¥Îü∞ Ìö®Í≥ºÍ∞Ä Î∞úÏÉùÌïòÏßÄ ÏïäÎäîÎã§ ( ÏïÑÏù¥ÌÖú ÏãùÎ≥Ñ Î∂àÍ∞Ä )
 					{
-						_potionIdentified[1] = true;
+						fire(_viBag->img, x, y);
+						_viBag->numOfItem--;
+						if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
 					}
 					break;
-					case NAME_EX:
+					case NAME_EX:// ÏïÑÎ¨¥Îü∞ Ìö®Í≥ºÍ∞Ä Î∞úÏÉùÌïòÏßÄ ÏïäÎäîÎã§ ( ÏïÑÏù¥ÌÖú ÏãùÎ≥Ñ Î∂àÍ∞Ä )
 					{
-						_potionIdentified[2] = true;
+						fire(_viBag->img, x, y);
+						_viBag->numOfItem--;
+						if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
 					}
 					break;
-					case NAME_INVISIBLE:
+					case NAME_INVISIBLE:// ÏïÑÎ¨¥Îü∞ Ìö®Í≥ºÍ∞Ä Î∞úÏÉùÌïòÏßÄ ÏïäÎäîÎã§ ( ÏïÑÏù¥ÌÖú ÏãùÎ≥Ñ Î∂àÍ∞Ä )
 					{
-						_potionIdentified[3] = true;
+						fire(_viBag->img, x, y);
+						_viBag->numOfItem--;
+						if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
 					}
 					break;
-					case NAME_LEVITATION:
+					case NAME_LEVITATION:// ÏïÑÎ¨¥Îü∞ Ìö®Í≥ºÍ∞Ä Î∞úÏÉùÌïòÏßÄ ÏïäÎäîÎã§ ( ÏïÑÏù¥ÌÖú ÏãùÎ≥Ñ Î∂àÍ∞Ä )
 					{
-						_potionIdentified[4] = true;
+						fire(_viBag->img, x, y);
+						_viBag->numOfItem--;
+						if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
 					}
 					break;
 					case NAME_FROZEN:
 					{
 						_potionIdentified[5] = true;
+						frozen(x, y);
+						_viBag->numOfItem--;
+						if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
 					}
 					break;
 					case NAME_LIQUID_FIRE:
 					{
 						_potionIdentified[6] = true;
+						liquidFire(x, y);
+						_viBag->numOfItem--;
+						if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
 					}
 					break;
 				}
 			}
 			break;
+			case TYPE_THROW:
+				switch (_viBag->name)
+				{
+					case NAME_DART:
+					{
+						fire(_viBag->throwImg, x, y);
+						_viBag->numOfItem--;
+						if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
 
+					}
+					break;
+
+					case NAME_PARALYSIS_DART:
+					{
+						fire(_viBag->throwImg, x, y);
+						_viBag->numOfItem--;
+						if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
+					}
+					break;
+
+					case NAME_POISON_DART :
+					{
+						fire(_viBag->throwImg, x, y);
+						_viBag->numOfItem--;
+						if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
+					}
+					break;
+
+
+					default:
+					break;
+
+				}
+
+
+				break;
 			default:
 				break;
 			}
@@ -1425,16 +1506,6 @@ void ItemManager::useItem(int position, int target)
 				}
 				break;
 
-			case TYPE_THROW:
-				switch (_viBag->name)
-				{
-				default:
-					break;
-
-				}
-
-
-				break;
 				default:
 				break;
 			}
@@ -1569,13 +1640,96 @@ void ItemManager::removeBagItem(int arrNum)
 	_vBag.erase(_vBag.begin() + arrNum);
 }
 
-void ItemManager::liquidFire(void)
+
+void ItemManager::liquidFire(float x, float y)
 {
+	int TileX[3];
+	int TileY[3];
+	for (int i = 0; i < 3; i++)
+	{
+		TileX[i] = x - (TILESIZE * 2) / TILESIZE + i;
+		if (TileX[i] <= 0) TileY[i] = 0;
+		TileY[i] = y - (TILESIZE * 2) / TILESIZE + i;
+		if (TileY[i] <= 0) TileY[i] = 0;
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			if (_player->getPoint().x / TILESIZE == TileX[i] && _player->getPoint().y / TILESIZE == TileY[j])
+			{
+				for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+				{
+					if (_viBag->name == NAME_UNKNOWN_MEAT)
+					{
+						int temp = _viBag->numOfItem;
+						_viBag->numOfItem = 0;
+						_viBag = _vBag.erase(_viBag);
+
+						for (int i = 0; i < temp; i++)
+						{
+							setItemToBag(NAME_FROZEN_MEAT);
+						}
+					}
+				}
+				//ÔøΩÔøΩÔøΩÔøΩ& ÔøΩÔøΩÔøΩÔøΩÔøΩ  ÔøΩﬂ∞ÔøΩ
+			}
+			for (auto k : _em->getEnemyVector())
+			{
+				if (k->getPoint().x / TILESIZE == TileX[i] && k->getPoint().y / TILESIZE == TileY[j])
+				{
+					//ÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩﬂ∞ÔøΩ
+
+				}
+			}
+		}
+	}
 
 }
-void ItemManager::frozen(void)
-{
 
+void ItemManager::frozen(float x, float y)
+{
+	int TileX[5];
+	int TileY[5];
+	for (int i = 0; i < 5; i++)
+	{
+		TileX[i] = x - (TILESIZE * 2) / TILESIZE + i;
+		TileY[i] = y - (TILESIZE * 2) / TILESIZE + i;
+	}
+
+	for (int i = 0; i < 5; i++)
+	{
+		for (int j = 0; j < 5; j++)
+		{
+			if (_player->getPoint().x / TILESIZE == TileX[i] && _player->getPoint().y / TILESIZE == TileY[j])
+			{
+				for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+				{
+					if (_viBag->name == NAME_UNKNOWN_MEAT)
+					{
+						int temp = _viBag->numOfItem;
+						_viBag->numOfItem = 0;
+						_viBag = _vBag.erase(_viBag);
+
+						for (int i = 0; i < temp; i++)
+						{
+							setItemToBag(NAME_FROZEN_MEAT);
+						}
+					}
+				}
+				//ÔøΩÔøΩÔøΩÔøΩ& ÔøΩÔøΩÔøΩÔøΩÔøΩ  ÔøΩﬂ∞ÔøΩ
+			}
+			for (auto k : _em->getEnemyVector())
+			{
+				if (k->getPoint().x / TILESIZE == TileX[i] && k->getPoint().y / TILESIZE == TileY[j])
+				{
+					//ÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩÔøΩ ÔøΩﬂ∞ÔøΩ
+
+				}
+			}
+		}
+	}
 }
 
 void ItemManager::keyControl()
@@ -1597,7 +1751,6 @@ void ItemManager::keyControl()
 			if (_viBag->name == NAME_OLD_SHORT_SWORD)
 			{
 				throwItem(_viBag->position, _ptMouse.x, _ptMouse.y);
-				break;
 			}
 		}
 	}

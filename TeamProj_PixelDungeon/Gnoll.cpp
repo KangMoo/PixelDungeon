@@ -116,6 +116,10 @@ void Gnoll::release()
 
 void Gnoll::getDamaged(int damage)
 {
+	if (_myState == ENEMYSTATE_SLEEP)
+		_myState = ENEMYSTATE_IDLE;
+	_findPlayer = true;
+
 	int a = RND->getInt(100);
 
 	if (a < _statistics.avd_lck)
@@ -136,7 +140,8 @@ void Gnoll::draw(POINT camera)
 {
 	//_hpBar->setGauge(_currntHp, _statistics.hp);
 
-	_image->frameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y);
+	if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
+		_image->frameRender(getMemDC(), _hitBox.left, _hitBox.top);
 
 	//_hpBar->setX(_point.x - 25 + camera.x);
 	//_hpBar->setY(_pointY + _image->getFrameHeight() / 2 + 10 + camera.y);
@@ -147,7 +152,7 @@ void Gnoll::draw(POINT camera)
 
 void Gnoll::frameUpdate()
 {
-	_frameCount++;
+	//_frameCount++;
 
 	if (_findPlayer)
 	{
@@ -156,8 +161,9 @@ void Gnoll::frameUpdate()
 	}
 	if (_right) _currntFrameY = 0;
 	else _currntFrameY = 1;
-
-	if (_frameCount >= 3)
+	
+	if(true)
+	//if (_frameCount >= 3)
 	{
 		_frameCount = 0;
 		switch (_myState)
@@ -202,11 +208,20 @@ void Gnoll::frameUpdate()
 
 void Gnoll::action()
 {
+	if (!_active)
+	{
+		if (_map->getTile(_point.x, _point.y).tileview != TILEVIEW_NO)
+		{
+			_active = true;
+		}
+		_action = false;
+		return;
+	}
 	if (_myState == ENEMYSTATE_SLEEP)
 	{
-		float dis = getDistance(_player->getPoint().x, _player->getPoint().y, _point.x, _point.y);
+		float dis = getDistance(_player->getPoint().x / TILESIZE, _player->getPoint().y / TILESIZE, _point.x, _point.y);
 
-		if (dis < 2)
+		if (dis < 4)
 		{
 			_myState = ENEMYSTATE_IDLE;
 			_findPlayer = true;
@@ -221,9 +236,9 @@ void Gnoll::action()
 		{
 			//적을 발견하지 않았으면 랜덤행동
 
-			float dis = getDistance(_player->getPoint().x, _player->getPoint().y, _point.x, _point.y);
+			float dis = getDistance(_player->getPoint().x / TILESIZE, _player->getPoint().y / TILESIZE, _point.x, _point.y);
 
-			if (dis < 2)
+			if (dis < 4)
 			{
 				//거리가 일정 범위 이내로 적이 들어왔으면 인식
 				//인식한 턴은 그냥 자동으로 넘겨줌
@@ -239,6 +254,7 @@ void Gnoll::action()
 					//0부터 시계방향으로, 8은 대기
 					//해당 방향의 타일을 검사한 후에, 갈 수 있다면 그쪽으로 이동
 					int a = RND->getInt(50);
+					_movePoint = _point;
 					_myState = ENEMYSTATE_MOVE;
 					switch (a)
 					{
@@ -380,14 +396,20 @@ void Gnoll::action()
 		}
 		else
 		{
+			//_point.x += cosf(getAngle(_point.x, _point.y, _movePoint.x, _movePoint.y)) * 3;
+			//_point.y -= sinf(getAngle(_point.x, _point.y, _movePoint.x, _movePoint.y)) * 3;
+			//_action = false;
+			
 			//도달하지 않았으면 이동한다
 			if (_pointX < x)
 			{
 				//현재 좌표가 가려는 좌표의 중심보다 작으면 +
+				_right = true;
 				_pointX += TILESIZE / 8;
 			}
 			else if (_pointX > x)
 			{
+				_right = false;
 				_pointX -= TILESIZE / 8;
 			}
 
@@ -399,7 +421,7 @@ void Gnoll::action()
 			{
 				_pointY -= TILESIZE / 8;
 			}
-
+			_action = false;
 		}
 	}
 

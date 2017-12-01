@@ -108,6 +108,7 @@ enum BUTTONOPTION
 typedef struct tagPlayerStat {
 	int lv;			//레벨
 	int hp;			//체력
+	int maxhp;		//최대체력
 	int str;		//힘
 	int exp;		//경험치
 	int def;		//방어력

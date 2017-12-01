@@ -20,7 +20,13 @@ struct tagBullet
 	int count;
 	int position;
 };
-
+struct tagEffect
+{
+	image* img; //이펙트 이미지;
+	RECT rc;	//이펙트 rc;
+	int size;	//이펙트 사이즈
+	int Trans;	//투명도 0~255;
+};
 
 class ItemManager :public gameNode
 {
@@ -54,7 +60,6 @@ private:
 
 	bool _potionIdentified[7];
 	bool _scrollIdentified[5];
-
 public:
 	HRESULT init();
 	void release();
@@ -99,10 +104,12 @@ public:
 	void setMapAddressLink(Map* map) { _map = map; }
 	void setUiAddressLink(UI* ui) { _ui = ui; }
 	void setPlayerAddressLink(Player* player) { _player = player; }
-	
-	//=============== E F F E C T ================
-	void liquidFire(void);
-	void frozen(void);
+
+
+	void liquidFire(float x, float y);
+
+	void frozen(float x, float y);
+
 
 	//================= G E T T E R ================
 	vector<tagItem> getvItem() { return _vItem; }

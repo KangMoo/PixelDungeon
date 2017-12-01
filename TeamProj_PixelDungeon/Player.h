@@ -30,6 +30,7 @@ private:
 	PLAYERSTATE _playerState;
 	vector<tagDebuff> _vdebuff;
 	vector<tagDebuff> _vbuff;
+	RECT _clickAllowedRC;
 	int _frameUpdateTimer;
 	float _frameTimer;
 	TILE _goalTile;
