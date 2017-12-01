@@ -68,38 +68,6 @@ void Map::update()
 
 	int playerX = _player->getPoint().x / TILESIZE;
 	int playerY = _player->getPoint().y / TILESIZE;
-	
-	//오브젝트 상호작용 test
-	for (int i = 0; i < _vObj.size(); i++) {
-		if (playerX == _vObj[i].destX && playerY == _vObj[i].destY && _vObj[i].floor == _curStageNum) {
-			if (_vObj[i].obj == OBJ_STAIR_END) {
-				if (_curStageNum == 0)
-				{
-					changeFloor(1, false);
-					break;
-				}
-				else if (_curStageNum == 1){
-					changeFloor(0, false);
-					break;
-				}
-			}
-
-			if (_vObj[i].obj == OBJ_CHEST) {
-				setObj_OpenChest(i);
-				break;
-			}
-
-			if ((_vObj[i].obj & ATTRIBUTE_WELL) == ATTRIBUTE_WELL && (_vObj[i].obj & ATTRIBUTE_ACTIVE) == ATTRIBUTE_ACTIVE) {
-				setObj_UseWell(i);
-				break;				
-			}
-
-			if ((_vObj[i].obj & ATTRIBUTE_TRAP) == ATTRIBUTE_TRAP && (_vObj[i].obj & ATTRIBUTE_ACTIVE) == ATTRIBUTE_ACTIVE) { 
-				setObj_ActivTrap(i);
-				break;
-			}
-		}
-	}
 
 	// 타일 상태변화 test
 	if (KEYMANAGER->isOnceKeyDown('A')) {
@@ -147,11 +115,6 @@ void Map::update()
 		}
 	}
 
-	if ((_map[playerX][playerY].terrain & ATTRIBUTE_GRASS) == ATTRIBUTE_GRASS &&
-		(_map[playerX][playerY].terrain & ATTRIBUTE_UNSIGHT) == ATTRIBUTE_UNSIGHT) {
-		setTile_GrassCut(playerX, playerY);
-	}
-
 
 	// test
 	_camera = _ui->getCamera();
@@ -174,7 +137,7 @@ void Map::draw(POINT camera)
 	if (KEYMANAGER->isStayKeyDown(VK_LEFT)) temp--;
 
 
-	//뒷배경 검은색
+//	뒷배경 검은색
 	RECT bg = RectMake(0, 0, WINSIZEX, WINSIZEY);
 	HBRUSH b = CreateSolidBrush(RGB(0, 0, 0));
 	FillRect(getMemDC(), &bg, b);
@@ -595,4 +558,53 @@ void Map::drawTileShadow(TILE tile)
 	{
 		IMAGEMANAGER->render("blackTile", getMemDC(), tile.destX * TILESIZE + _camera.x, tile.destY* TILESIZE + _camera.y);
 	}
+}
+
+
+void Map::playerTurnEnd() {
+
+
+
+	int playerX = _player->getPoint().x / TILESIZE;
+	int playerY = _player->getPoint().y / TILESIZE;
+	bool isMoving =	_player->getIsPlayerMoving();
+
+	//오브젝트 상호작용 test
+	for (int i = 0; i < _vObj.size(); i++) {
+		if (playerX == _vObj[i].destX && playerY == _vObj[i].destY && _vObj[i].floor == _curStageNum) {
+			if (_vObj[i].obj == OBJ_STAIR_END && !isMoving) {
+				if (_curStageNum == 0)
+				{
+					changeFloor(1, false);
+					break;
+				}
+				else if (_curStageNum == 1) {
+					changeFloor(0, false);
+					break;
+				}
+			}
+
+			if (_vObj[i].obj == OBJ_CHEST && !isMoving) {
+				setObj_OpenChest(i);
+				break;
+			}
+
+			if ((_vObj[i].obj & ATTRIBUTE_WELL) == ATTRIBUTE_WELL && (_vObj[i].obj & ATTRIBUTE_ACTIVE) == ATTRIBUTE_ACTIVE && !isMoving) {
+				setObj_UseWell(i);
+				break;
+			}
+
+			if ((_vObj[i].obj & ATTRIBUTE_TRAP) == ATTRIBUTE_TRAP && (_vObj[i].obj & ATTRIBUTE_ACTIVE) == ATTRIBUTE_ACTIVE) {
+				setObj_ActivTrap(i);
+				break;
+			}
+		}
+	}
+
+	if ((_map[playerX][playerY].terrain & ATTRIBUTE_GRASS) == ATTRIBUTE_GRASS &&
+		(_map[playerX][playerY].terrain & ATTRIBUTE_UNSIGHT) == ATTRIBUTE_UNSIGHT) {
+		setTile_GrassCut(playerX, playerY);
+	}
+
+
 }
