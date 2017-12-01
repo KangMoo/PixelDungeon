@@ -83,6 +83,7 @@ public:
 	void action_Scroll();
 	void action_Eat();
 	void endTurn();
+	void expUp(int exp);
 
 	//멈추는 함수
 	void stopMoving();

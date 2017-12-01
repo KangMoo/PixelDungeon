@@ -632,6 +632,17 @@ void Player::endTurn()
 	effectDebuff();
 	effectBuff();
 	_playerStat.hunger--;
+
+	//¹è°íÇÄ Ã³¸®
+	if (_playerStat.hunger < 50)
+	{
+		_playerStat.hp--;
+	}
+	else if (_playerStat.hunger > 100)
+	{
+		_playerStat.hp++;
+	}
+
 	//ÅÏ Á¾·á
 	_action = false;
 	//Àû Â÷·Ê
@@ -647,6 +658,21 @@ void Player::endTurn()
 	}
 	//¸Ê¿¡ ÅÏ ³¡³µ´Ù´Â Á¤º¸ ³Ñ°ÜÁÜ
 	_map->playerTurnEnd();
+}
+
+void Player::expUp(int exp)
+{
+	_playerStat.exp += exp;
+	if(_playerStat.exp >= 100)
+	{
+		_playerStat.lv++;
+		_playerStat.exp = 0;
+
+		_playerStat.maxhp += 15;
+		//È¸ÇÇ & ¸íÁß·ü up
+		//_playerStat.atk_lck += 0.1;
+		//_playerStat.avd_lck += 0.1;
+	}	
 }
 
 void Player::effectDebuff()
