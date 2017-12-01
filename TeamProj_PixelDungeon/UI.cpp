@@ -64,8 +64,8 @@ HRESULT UI::init()
 	IMAGEMANAGER->addImage("select_menu_bar2", "Img/UI/select_menu_bar2.bmp", 260, 129, true, RGB(255, 0, 255));
 
 	_backPackRect = RectMake(437, WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight(), 72, (WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight()));
-	_SearchOptionRect = RectMake(509, WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight(), 58.5, (WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight()));
-	_TurnSkipRect = RectMake(567.5, WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight(), 567.5, (WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight()));
+	_SearchOptionRect = RectMake(567.5, WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight(), 567.5, (WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight()));
+	_TurnSkipRect = RectMake(509, WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight(), 58.5, (WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight()));
 
 	_Monster_DisplyRect = RectMake(WINSIZEX - IMAGEMANAGER->findImage("Monster_Display")->getFrameWidth(), 40, IMAGEMANAGER->findImage("Monster_Display")->getFrameWidth(), IMAGEMANAGER->findImage("Monster_Display")->getFrameHeight());
 	_Special_ButtonRect = RectMake(WINSIZEX - IMAGEMANAGER->findImage("Special_Button")->getFrameWidth(), 380, IMAGEMANAGER->findImage("Special_Button")->getFrameWidth(), IMAGEMANAGER->findImage("Special_Button")->getFrameHeight());
@@ -273,11 +273,13 @@ void UI::main_menu()
 	case GAMEMENU_MAIN:
 		_selectInterface = INTERFACEMENU_END;
 		_selectMenu = GAMEMENU_END;
+		SCENEMANAGER->changeScene("메인메뉴씬");
 		break;
 
 	case GAMEMENU_EXIT:
 		_selectInterface = INTERFACEMENU_END;
 		_selectMenu = GAMEMENU_END;
+		exit(0);
 		break;
 
 	case GAMEMENU_BACK:
@@ -336,10 +338,16 @@ void UI::usingui()
 
 void UI::ResetInventory()
 {
-	for (size_t i = 0; i < _im->getvBag().size(); i++)
+	for (size_t i = 0; i < 24; i++)
 	{
-		if (_im->getvBag()[i].equip == false)
-			_inventory[i + 4].itemNumber = _im->getvBag()[i].name;
+		if (i < _im->getvBag().size())
+		{
+			if (_im->getvBag()[i].equip == false)
+				_inventory[i + 4].itemNumber = _im->getvBag()[i].name;
+
+			else
+				_inventory[i + 4].itemNumber = NAME_END;
+		}
 
 		else
 		{
@@ -879,6 +887,8 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 		{
 			_im->getvBag()[itemCheck].img->render(getMemDC(), ((WINSIZEX / 2) - (fream_window_sizeX * IMAGEMANAGER->findImage("fream_window1")->getFrameHeight()) / 2) + 30, ((WINSIZEY / 2) - (fream_window_sizeY * IMAGEMANAGER->findImage("fream_window1")->getFrameHeight()) / 2) + 30);
 
+			int a = 0;
+
 			if (button_option_value[buttonNumber].number == optioCheck)
 			{
 				IMAGEMANAGER->frameRender("select_menu_bar", getMemDC(),
@@ -904,9 +914,23 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 				}
 
 				_player->setUsingUI(false);
+				_im->setItemToField((ITEMNAME)itemName, (LONG)_player->getPoint().x, (LONG)_player->getPoint().y);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 				usingui();
+
+				int equipnumber = 0;
+
+				for (int check = 0; check < (_itemPosition - 3); check++)
+				{
+					if (_im->getvBag()[check].equip == true)
+					{
+						equipnumber++;
+					}
+				}
+
+				_inventory[_itemPosition].itemNumber = NAME_END;
+				_im->removeBagItem(((_itemPosition - 4) + equipnumber));
 			}
 
 			//마신다
@@ -918,9 +942,23 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 				}
 
 				_player->setUsingUI(false);
+				_im->useItem(_itemPosition - 4);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 				usingui();
+
+				int equipnumber = 0;
+
+				for (int check = 0; check < (_itemPosition - 3); check++)
+				{
+					if (_im->getvBag()[check].equip == true)
+					{
+						equipnumber++;
+					}
+				}
+
+				_inventory[_itemPosition].itemNumber = NAME_END;
+				_im->removeBagItem(((_itemPosition - 4) + equipnumber));
 			}
 
 			//던진다
@@ -932,9 +970,23 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 				}
 
 				_player->setUsingUI(false);
+				//_im->throwItem((ITEMNAME)itemName, _ptMouse.x, _ptMouse.y);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 				usingui();
+
+				int equipnumber = 0;
+
+				for (int check = 0; check < (_itemPosition - 3); check++)
+				{
+					if (_im->getvBag()[check].equip == true)
+					{
+						equipnumber++;
+					}
+				}
+
+				_inventory[_itemPosition].itemNumber = NAME_END;
+				_im->removeBagItem(((_itemPosition - 4) + equipnumber));
 			}
 
 			//읽는다
@@ -946,6 +998,17 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 				}
 
 				_player->setUsingUI(false);
+
+				if (itemName == NAME_IDENTIFY || itemName == NAME_UPGRADE || itemName == NAME_PURIFY)
+				{
+					//_im->useItem((ITEMNAME)itemName, 강화할 좌표);
+				}
+
+				else
+				{
+					_im->useItem(_itemPosition - 4);
+				}
+
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 				usingui();
@@ -960,9 +1023,23 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 				}
 
 				_player->setUsingUI(false);
+				//_im->fire();
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 				usingui();
+
+				int equipnumber = 0;
+
+				for (int check = 0; check < (_itemPosition - 3); check++)
+				{
+					if (_im->getvBag()[check].equip == true)
+					{
+						equipnumber++;
+					}
+				}
+
+				_inventory[_itemPosition].itemNumber = NAME_END;
+				_im->removeBagItem(((_itemPosition - 4) + equipnumber));
 			}
 
 			//먹는다
@@ -979,9 +1056,23 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 				}
 
 				_player->setUsingUI(false);
+				_im->useItem(_itemPosition - 4);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 				usingui();
+
+				int equipnumber = 0;
+
+				for (int check = 0; check < (_itemPosition - 3); check++)
+				{
+					if (_im->getvBag()[check].equip == true)
+					{
+						equipnumber++;
+					}
+				}
+
+				_inventory[_itemPosition].itemNumber = NAME_END;
+				_im->removeBagItem(((_itemPosition - 4) + equipnumber));
 			}
 
 			//심는다
@@ -993,9 +1084,23 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 				}
 
 				_player->setUsingUI(false);
+				_im->useItem(_itemPosition - 4);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 				usingui();
+
+				int equipnumber = 0;
+
+				for (int check = 0; check < (_itemPosition - 3); check++)
+				{
+					if (_im->getvBag()[check].equip == true)
+					{
+						equipnumber++;
+					}
+				}
+
+				_inventory[_itemPosition].itemNumber = NAME_END;
+				_im->removeBagItem(((_itemPosition - 4) + equipnumber));
 			}
 
 			//기억한다
@@ -1307,13 +1412,13 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
 
 		char explanation[] = "이 평범해 보이는 막대는 순수한 마법 에너지를 발사합니다.";
-		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+		PrintFont(explanation, namehFont, nameoldFont, 210, 280, 15, 255, 255, 255);
 
-		char explanationLine2[] = "다른 막대에 비해서 강하지는 않지만, 그에 비해 더 많은";
-		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+		char explanationLine2[] = "다른 막대에 비해서 강하지는 않지만, 그에 비해 더 많은 충";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 210, 300, 15, 255, 255, 255);
 
-		char explanationLine3[] = "충전량을 가집니다.";
-		PrintFont(explanationLine3, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+		char explanationLine3[] = "전량을 가집니다.";
+		PrintFont(explanationLine3, namehFont, nameoldFont, 210, 320, 15, 255, 255, 255);
 	}
 
 	if (itemName == NAME_POISON)
@@ -1713,8 +1818,6 @@ void UI::cameraSet()
 
 void UI::LbuttonClickEvnet()
 {
-	int a = 0;
-	//selectInterface == INTERFACEMENU_END
 	if (_selectInterface == INTERFACEMENU_END)
 	{
 		//배낭
@@ -1725,30 +1828,34 @@ void UI::LbuttonClickEvnet()
 
 			ResetInventory(); 
 
-			for (int i = 0; i < 10; i++)
+			for (int i = 0; i < 24; i++)
 			{
 				SortInventory();
 			}
 
 		}
-		//탐색
-		else if (PtInRect(&_SearchOptionRect, _ptMouse))
+
+		//턴 스킵
+		if (PtInRect(&_TurnSkipRect, _ptMouse))
 		{
 			if (_player->getAction() == true)
 			{
 				_player->endTurn();
 			}
 		}
-		//턴 스킵
-		else if (PtInRect(&_SearchOptionRect, _ptMouse))
+
+		//탐색
+		if (PtInRect(&_SearchOptionRect, _ptMouse))
 		{
 			_selectInterface = INTERFACEMENU_SEARCH;
 		}
+
 		//스테이터스
-		else if (PtInRect(&_StatusRect, _ptMouse))
+		if (PtInRect(&_StatusRect, _ptMouse))
 		{
 			_selectInterface = INTERFACEMENU_STATUS;
 		}
+
 	}
 	else if (_selectInterface != INTERFACEMENU_END)
 	{
@@ -1775,7 +1882,7 @@ void UI::LbuttonClickEvnet()
 		//BackPack();
 		for (size_t Line = 0; Line < ARRSIZE; Line++)
 		{
-			if (PtInRect(&_inventory[Line].inventoryRect, _ptMouse) && _selectItem == NAME_END)
+			if (PtInRect(&_inventory[Line].inventoryRect, _ptMouse) && _selectItem == NAME_END && _selectInterface == INTERFACEMENU_BACKPACK)
 			{
 				for (int itemNumber = 0; itemNumber < _im->getvBag().size(); itemNumber++)
 				{
@@ -1783,6 +1890,7 @@ void UI::LbuttonClickEvnet()
 					{
 						_selectItem = _im->getvBag()[itemNumber].name;
 						_itemPosition = Line;
+						break;
 					}
 				}
 				_interface_button_timer2 = TIMEMANAGER->getWorldTime();

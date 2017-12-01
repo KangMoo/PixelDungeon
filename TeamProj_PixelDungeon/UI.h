@@ -142,5 +142,7 @@ private:
 
 	HFONT namehFont;
 	HFONT nameoldFont;
+
+	//int itemposition = 0;
 };
 

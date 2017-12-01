@@ -1703,8 +1703,10 @@ void ItemManager::removeFieldItem(int arrNum)
 
 void ItemManager::removeBagItem(int arrNum)
 {
+	int j = 0;
 	_vBag.erase(_vBag.begin() + arrNum);
-}
+	int a = 0;
+}	
 
 
 void ItemManager::liquidFire(float x, float y)
