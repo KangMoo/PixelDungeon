@@ -1,160 +1,160 @@
 #include "stdafx.h"
-#include "Swarm.h"
+#include "Crap.h"
 #include "Player.h"
-#include "EnemyManager.h"
-#include "UI.h"
 #include "Map.h"
+#include "UI.h"
 
-Swarm::Swarm()
+
+Crap::Crap()
 {
 }
 
 
-Swarm::~Swarm()
+Crap::~Crap()
 {
 }
 
-HRESULT Swarm::init(POINT point)
+HRESULT Crap::init(POINT point)
 {
+	//입력받은 좌표를 초기 위치로
 	_point = point;
 
+	//각 이미지 개별할당(MANAGER는 다 똑같아져버림)
+	_stay = new image;
+	_stay->init("Img//Enemy//crap_stay.bmp", 90, 52, 3, 2, true, RGB(255, 0, 255));
 	_move = new image;
-	_move->init("Img//Enemy//swarm_stay.bmp", 264, 56, 11, 2, true, RGB(255, 0, 255));
+	_move->init("Img//Enemy//crap_move.bmp", 112, 52, 4, 2, true, RGB(255, 0, 255));
+	_attack = new image;
+	_attack->init("Img//Enemy//crap_attack.bmp", 96, 64, 3, 2, true, RGB(255, 0, 255));
 	_dead = new image;
-	_dead->init("Img//Enemy//swarm_dead.bmp", 96, 60, 4, 2, true, RGB(255, 0, 255));
+	_dead->init("Img//Enemy//crap_dead.bmp", 128, 52, 4, 2, true, RGB(255, 0, 255));
 
-	_image = _move;
+	//초기 설정은 stay
+	_image = _stay;
 
+	//실제 그려줄 위치는 해당 타일 중심을 기준
 	_pointX = _point.x * TILESIZE + TILESIZE / 2;
 	_pointY = _point.y * TILESIZE + TILESIZE / 2;
 
+	//타일 중심으로 이미지 크기만큼 렉트, 이걸로 그림그림
 	_hitBox = RectMakeCenter(_pointX, _pointY, _image->getFrameWidth(), _image->getFrameHeight());
 	_attBox = RectMakeCenter(_pointX, _pointY, 0, 0);
+
+	//살아있음
 	_isLive = true;
+	//플레이어 발견 못함
 	_findPlayer = false;
+
+	//초기 방향은 랜덤으로
 	int a = RND->getInt(2);
 	if (a == 0) _right = true;
 	else _right = false;
 
+	//최초 프레임은 0, 오른쪽 보면 y=0, 왼쪽이면 y=1
 	_currntFrameX = 0;
 	if (_right) _currntFrameY = 0;
 	else _currntFrameY = 1;
 
+	//프레임 적용
 	_image->setFrameX(_currntFrameX);
 	_image->setFrameY(_currntFrameY);
 
+	//내 턴 아님, 안움직임
 	_action = false;
 	_isMove = false;
-	_active = false;
 
+	//스탯 설정
 	_statistics.lv = 1;
-	_statistics.maxLv = 10;
-	_statistics.exp = 1;
-	_statistics.hp = 80;
-	_currntHp = 80;
-	_statistics.avd_lck = 5;
-	_statistics.def = 0;
-	a = RND->getFromIntTo(1, 4);
+	_statistics.maxLv = 9;
+	_statistics.exp = 3;
+	_statistics.hp = 15;
+	_currntHp = 15;
+	_statistics.avd_lck = 4;
+	_statistics.def = 2;
+	a = RND->getFromIntTo(3, 6);
 	_statistics.str = a;
 	_statistics.atk_lck = 12;
-	
+
+	//깨어있을지 자고있을지 랜덤 설정
 	a = RND->getInt(2);
 	if (a == 0) _myState = ENEMYSTATE_SLEEP;
 	else _myState = ENEMYSTATE_IDLE;
-	_myState = ENEMYSTATE_IDLE;
 
+	//초기값 설정
 	_movePoint = PointMake(0, 0);
 	_frameCount = 0;
 	_deadAlpha = 0;
-
-	/*ENEMYSTATE_SLEEP,	//플레이어를 찾지 못한상태/수면상태
-	ENEMYSTATE_IDLE,	//플레이어를 찾은 상태에서의 기본
-	ENEMYSTATE_MOVE,
-	ENEMYSTATE_ATTACK,
-	ENEMYSTATE_END*/
-	//_hpBar = new progressBar;
-	//_hpBar->init(_pointX - 25, _pointY + _image->getFrameHeight() / 2 + 10, 30, 10);
-
-	return S_OK;
-}
-HRESULT Swarm::init(POINT point, int currntHp)
-{
-	//분열했다!
-	_point = point;
-
 	_active = false;
-	_move = new image;
-	_move->init("Img\\Enemy\\swarm_stay.bmp", 264, 56, 11, 2, true, RGB(255, 0, 255));
-	_dead = new image;
-	_dead->init("Img\\Enemy\\swarm_dead.bmp", 96, 60, 4, 2, true, RGB(255, 0, 255));
-
-	_image = _move;
-
-	_pointX = _point.x * TILESIZE + TILESIZE / 2;
-	_pointY = _point.y * TILESIZE + TILESIZE / 2;
-
-	_hitBox = RectMakeCenter(_pointX, _pointY, _image->getFrameWidth(), _image->getFrameHeight());
-	_attBox = RectMakeCenter(_pointX, _pointY, 0, 0);
-	_isLive = true;
-	//공격당해 분열당한거니 이미 발견한 상태
-	_findPlayer = true;
-	int a = RND->getInt(2);
-	if (a == 0) _right = true;
-	else _right = false;
-
-	_currntFrameX = 0;
-	if (_right) _currntFrameY = 0;
-	else _currntFrameY = 1;
-
-	_image->setFrameX(_currntFrameX);
-	_image->setFrameY(_currntFrameY);
-
-	_action = false;
-	_isMove = false;
-
-	_statistics.lv = 1;
-	_statistics.maxLv = 10;
-	_statistics.exp = 1;
-	_statistics.hp = 80;
-	_currntHp = currntHp;
-	_statistics.avd_lck = 5;
-	_statistics.def = 0;
-	a = RND->getFromIntTo(1, 4);
-	_statistics.str = a;
-	_statistics.atk_lck = 12;
-	
-	//이미 공격당했으니 상태는 무조건 발각한 상태
-	_myState = ENEMYSTATE_IDLE;
-
-
-	_movePoint = PointMake(0, 0);
-	_frameCount = 0;
-	_deadAlpha = 0;
+	_turnCount = 0;
 
 	/*ENEMYSTATE_SLEEP,	//플레이어를 찾지 못한상태/수면상태
 	ENEMYSTATE_IDLE,	//플레이어를 찾은 상태에서의 기본
 	ENEMYSTATE_MOVE,
 	ENEMYSTATE_ATTACK,
 	ENEMYSTATE_END*/
+
 	//_hpBar = new progressBar;
 	//_hpBar->init(_pointX - 25, _pointY + _image->getFrameHeight() / 2 + 10, 30, 10);
 
 	return S_OK;
-}
 
-void Swarm::action()
+}
+void Crap::getDamaged(int damage)
 {
-	//if (KEYMANAGER->isOnceKeyDown('E')) getDamaged(3);
+
+	if (_myState == ENEMYSTATE_SLEEP)
+		_myState = ENEMYSTATE_IDLE;
+	_findPlayer = true;
+
+	int a = RND->getInt(100);
+
+	if (a < _statistics.avd_lck - _player->getStat().atk_lck)
+	{
+		return;
+	}
+	else
+	{
+		if (_currntHp > 0)
+			_currntHp -= damage - _statistics.def;
+	}
+}
+void Crap::update()				 
+{
+	if (_currntHp <= 0)
+	{
+		_turnCount = 0;
+		_deadAlpha += 25;
+		_action = false;
+		if (_deadAlpha >= 255)
+		{
+			_deadAlpha = 255;
+			_isLive = false;
+			_action = false;
+		}
+	}
+
+	if (_turnCount >= 2)
+	{
+		_action = false;
+		_turnCount = 0;
+	}
+
+	if (_action && _currntHp > 0 && _isLive) action();
+}
+void Crap::action()				 
+{
 	if (!_active)
 	{
-		if (_map->getTile(_point.x, _point. y).tileview != TILEVIEW_NO)
+		if (_map->getTile(_point.x, _point.y).tileview != TILEVIEW_NO)
 		{
+			_turnCount = 0;
 			_active = true;
 		}
 		_action = false;
 		return;
 	}
 
+	//if (KEYMANAGER->isOnceKeyDown('E')) getDamaged(3);
 
 	if (_myState == ENEMYSTATE_SLEEP)
 	{
@@ -202,7 +202,7 @@ void Swarm::action()
 						//if (_map->getMap(_point.x, _point.y - 1).obj == OBJ_NONE &&
 						//	(_map->getMap(_point.x, _point.y - 1).terrain == TERRAIN_FLOOR ||
 						//		_map->getMap(_point.x, _point.y - 1).terrain == TERRAIN_GRASS))
-						if((ATTRIBUTE_UNGO & _map->getMap(_point.x, _point.y - 1).terrain) != ATTRIBUTE_UNGO)
+						if ((ATTRIBUTE_UNGO & _map->getMap(_point.x, _point.y - 1).terrain) != ATTRIBUTE_UNGO)
 						{
 							_isMove = true;
 							_movePoint = PointMake(_point.x, _point.y - 1);
@@ -308,11 +308,13 @@ void Swarm::action()
 			int x = _point.x - _player->getPoint().x / TILESIZE;
 			int y = _point.y - _player->getPoint().y / TILESIZE;
 			//둘의 x, y값 차이의 절대값이 각각 1 이하인 경우 공격 가능
-			if ((x <= 1 && x>= -1) && (y <= 1 && y >= -1))
+			if ((x <= 1 && x >= -1) && (y <= 1 && y >= -1))
 			{
 				_myState = ENEMYSTATE_ATTACK;
 				_currntFrameX = 0;
 				_player->getDamaged(_statistics.str);
+
+				_turnCount = 0;
 				//_action = false;
 			}
 			else
@@ -346,14 +348,16 @@ void Swarm::action()
 			_pointY = y;
 			_isMove = false;
 			_myState = ENEMYSTATE_IDLE;
-			_action = false;
+			//_action = false;
+
+			_turnCount++;
 		}
 		else
 		{
 			//_point.x += cosf(getAngle(_point.x, _point.y, _movePoint.x, _movePoint.y)) * 3;
 			//_point.y -= sinf(getAngle(_point.x, _point.y, _movePoint.x, _movePoint.y)) * 3;
 			//_action = false;
-			
+
 			//도달하지 않았으면 이동한다
 			if (_pointX < x)
 			{
@@ -376,14 +380,14 @@ void Swarm::action()
 				_pointY -= TILESIZE / 4;
 			}
 			//_action = false;
-			
+
 		}
 	}
 
+
 	frameUpdate();
 }
-
-void Swarm::frameUpdate()
+void Crap::frameUpdate()		 
 {
 	//_frameCount++;
 
@@ -394,19 +398,25 @@ void Swarm::frameUpdate()
 	}
 	if (_right) _currntFrameY = 0;
 	else _currntFrameY = 1;
-	
-	if(true)
-	//if (_frameCount >= 10)
+
+	if (true)
+		//if (_frameCount >= 3)
 	{
 		_frameCount = 0;
 		switch (_myState)
 		{
-		case ENEMYSTATE_SLEEP:	case ENEMYSTATE_IDLE:
-			_image = _move;
+		case ENEMYSTATE_SLEEP:
+			_image = _stay;
 			_currntFrameX = 0;
 			_image->setFrameX(_currntFrameX);
 			_image->setFrameY(_currntFrameY);
-
+			break;
+		case ENEMYSTATE_IDLE:
+			_image = _stay;
+			_currntFrameX++;
+			if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = 0;
+			_image->setFrameX(_currntFrameX);
+			_image->setFrameY(_currntFrameY);
 			break;
 		case ENEMYSTATE_MOVE:
 			_image = _move;
@@ -416,13 +426,13 @@ void Swarm::frameUpdate()
 			_image->setFrameY(_currntFrameY);
 			break;
 		case ENEMYSTATE_ATTACK:
-			//공격시에는 끝나면 턴 넘겨주게
-			_image = _move;
+			_image = _attack;
 			_currntFrameX++;
 			if (_currntFrameX > _image->getMaxFrameX())
 			{
 				_currntFrameX = 0;
 				_myState = ENEMYSTATE_IDLE;
+				_image = _stay;
 				_action = false;
 			}
 			_image->setFrameX(_currntFrameX);
@@ -433,68 +443,9 @@ void Swarm::frameUpdate()
 
 	_hitBox = RectMakeCenter(_pointX, _pointY, _image->getFrameWidth(), _image->getFrameHeight());
 }
-
-void Swarm::getDamaged(int damage)
+void Crap::draw(POINT camera)	 
 {
-	if (_myState == ENEMYSTATE_SLEEP)
-		_myState = ENEMYSTATE_IDLE;
-	_findPlayer = true;
 
-	int a = RND->getInt(100);
-
-	//0~99 중에 나온 숫자가 회피율보다 낮다면 회피
-	if (a < _statistics.avd_lck - _player->getStat().atk_lck)
-	{
-		return;
-	}
-	else
-	{
-		//높다면 뎀지받음
-		_currntHp -= damage - _statistics.def;
-		if (_currntHp > 0)
-		{
-			//죽지 않았다면 분열을 해야한다
-			//이걸 어떻게 하지?->ENEMYMANAGER에서 처리하자
-			//ENEMY에 swarm을 구별할 수 있는 무언가를 추가해주고 나머진 false, 얘만 true로 해줘서
-			//그게 true면 분열, 아님 냅두게
-
-			int x = 0;
-			int y = 0;
-			if (_player->getPoint().x / TILESIZE > _point.x)
-				x = -1;
-			else if (_player->getPoint().x / TILESIZE == _point.x)
-				x = 0;
-			else
-				x = 1;
-
-			if (_player->getPoint().y / TILESIZE > _point.y)
-				y = -1;
-			else if (_player->getPoint().y / TILESIZE == _point.y)
-				y = 0;
-			else
-				y = 1;
-
-			//if (_map->getMap(_point.x, _point.y - 1).obj == OBJ_NONE &&
-			//	(_map->getMap(_point.x, _point.y - 1).terrain == TERRAIN_FLOOR ||
-			//		_map->getMap(_point.x, _point.y - 1).terrain == TERRAIN_GRASS))
-			//(ATTRIBUTE_UNGO & _map[v.x - 1][v.y].terrain) == ATTRIBUTE_UNGO
-				//_em->setSwarm(PointMake(_point.x + x, _point.y + y), _currntHp);
-			if ((ATTRIBUTE_UNGO & _map->getMap(_point.x + x, _point.y + y).terrain) != ATTRIBUTE_UNGO)
-			{
-				for (int i = 0; i < _em->getEnemyVector().size(); i++)
-				{
-					if (_em->getEnemyVector()[i]->getTilePt().x == _point.x + x &&
-						_em->getEnemyVector()[i]->getTilePt().y == _point.y + y) return;
-				}
-				_em->setSwarmSpawn(PointMake(_point.x + x, _point.y + y), _currntHp);
-			}
-		}
-	}
-}
-
-
-void Swarm::draw(POINT camera)
-{
 	//_hpBar->setGauge(_currntHp, _statistics.hp);
 	//시야에 보일때만 출력하게
 	if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
@@ -507,32 +458,20 @@ void Swarm::draw(POINT camera)
 	//if (_currntHp < _statistics.hp)
 	//	_hpBar->render();
 }
-
-void Swarm::release()
+void Crap::release()			 
 {
 	SAFE_RELEASE(_image);
 	SAFE_DELETE(_image);
 
+	SAFE_RELEASE(_stay);
+	SAFE_DELETE(_stay);
+
 	SAFE_RELEASE(_move);
 	SAFE_DELETE(_move);
-	
+
+	SAFE_RELEASE(_attack);
+	SAFE_DELETE(_attack);
+
 	SAFE_RELEASE(_dead);
 	SAFE_DELETE(_dead);
-}
-
-void Swarm::update()
-{
-	if (_currntHp <= 0)
-	{
-		_deadAlpha += 25;
-		_action = false;
-		if (_deadAlpha >= 255)
-		{
-			_deadAlpha = 255;
-			_isLive = false;
-			_action = false;
-		}
-	}
-
-	if (_action && _currntHp > 0 && _isLive) action();
 }

@@ -7,6 +7,7 @@
 #include "Rat.h"
 #include "mimic.h"
 #include "goo.h"
+#include "Crap.h"
 
 struct tagSwarmSpawn
 {
