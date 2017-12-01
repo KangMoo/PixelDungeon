@@ -345,7 +345,7 @@ void UI::ResetInventory()
 			if (_im->getvBag()[i].equip == false)
 				_inventory[i + 4].itemNumber = _im->getvBag()[i].name;
 
-			else
+			if (_im->getvBag()[i].equip == true)
 				_inventory[i + 4].itemNumber = NAME_END;
 		}
 
@@ -942,7 +942,6 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 				}
 
 				_player->setUsingUI(false);
-				_im->useItem(_itemPosition - 4);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 				usingui();
@@ -958,7 +957,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 				}
 
 				_inventory[_itemPosition].itemNumber = NAME_END;
-				_im->removeBagItem(((_itemPosition - 4) + equipnumber));
+				_im->useItem((_itemPosition - 4) + equipnumber);
 			}
 
 			//던진다
@@ -975,18 +974,18 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 				_selectInterface = INTERFACEMENU_END;
 				usingui();
 
-				int equipnumber = 0;
+				//int equipnumber = 0;
 
-				for (int check = 0; check < (_itemPosition - 3); check++)
-				{
-					if (_im->getvBag()[check].equip == true)
-					{
-						equipnumber++;
-					}
-				}
+				//for (int check = 0; check < (_itemPosition - 3); check++)
+				//{
+				//	if (_im->getvBag()[check].equip == true)
+				//	{
+				//		equipnumber++;
+				//	}
+				//}
 
-				_inventory[_itemPosition].itemNumber = NAME_END;
-				_im->removeBagItem(((_itemPosition - 4) + equipnumber));
+				//_inventory[_itemPosition].itemNumber = NAME_END;
+				//_im->removeBagItem(((_itemPosition - 4) + equipnumber));
 			}
 
 			//읽는다
@@ -1028,18 +1027,18 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 				_selectInterface = INTERFACEMENU_END;
 				usingui();
 
-				int equipnumber = 0;
+				//int equipnumber = 0;
 
-				for (int check = 0; check < (_itemPosition - 3); check++)
-				{
-					if (_im->getvBag()[check].equip == true)
-					{
-						equipnumber++;
-					}
-				}
+				//for (int check = 0; check < (_itemPosition - 3); check++)
+				//{
+				//	if (_im->getvBag()[check].equip == true)
+				//	{
+				//		equipnumber++;
+				//	}
+				//}
 
-				_inventory[_itemPosition].itemNumber = NAME_END;
-				_im->removeBagItem(((_itemPosition - 4) + equipnumber));
+				//_inventory[_itemPosition].itemNumber = NAME_END;
+				//_im->removeBagItem(((_itemPosition - 4) + equipnumber));
 			}
 
 			//먹는다
@@ -1056,7 +1055,6 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 				}
 
 				_player->setUsingUI(false);
-				_im->useItem(_itemPosition - 4);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 				usingui();
@@ -1072,7 +1070,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 				}
 
 				_inventory[_itemPosition].itemNumber = NAME_END;
-				_im->removeBagItem(((_itemPosition - 4) + equipnumber));
+				_im->useItem((_itemPosition - 4) + equipnumber);
 			}
 
 			//심는다
@@ -1084,7 +1082,6 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 				}
 
 				_player->setUsingUI(false);
-				_im->useItem(_itemPosition - 4);
 				_selectItem = NAME_END;
 				_selectInterface = INTERFACEMENU_END;
 				usingui();
@@ -1100,7 +1097,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 				}
 
 				_inventory[_itemPosition].itemNumber = NAME_END;
-				_im->removeBagItem(((_itemPosition - 4) + equipnumber));
+				_im->useItem((_itemPosition - 4) + equipnumber);
 			}
 
 			//기억한다
