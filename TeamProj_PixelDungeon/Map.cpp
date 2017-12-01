@@ -68,38 +68,6 @@ void Map::update()
 
 	int playerX = _player->getPoint().x / TILESIZE;
 	int playerY = _player->getPoint().y / TILESIZE;
-	
-	//오브젝트 상호작용 test
-	for (int i = 0; i < _vObj.size(); i++) {
-		if (playerX == _vObj[i].destX && playerY == _vObj[i].destY && _vObj[i].floor == _curStageNum) {
-			if (_vObj[i].obj == OBJ_STAIR_END) {
-				if (_curStageNum == 0)
-				{
-					changeFloor(1, false);
-					break;
-				}
-				else if (_curStageNum == 1){
-					changeFloor(0, false);
-					break;
-				}
-			}
-
-			if (_vObj[i].obj == OBJ_CHEST) {
-				setObj_OpenChest(i);
-				break;
-			}
-
-			if ((_vObj[i].obj & ATTRIBUTE_WELL) == ATTRIBUTE_WELL && (_vObj[i].obj & ATTRIBUTE_ACTIVE) == ATTRIBUTE_ACTIVE) {
-				setObj_UseWell(i);
-				break;				
-			}
-
-			if ((_vObj[i].obj & ATTRIBUTE_TRAP) == ATTRIBUTE_TRAP && (_vObj[i].obj & ATTRIBUTE_ACTIVE) == ATTRIBUTE_ACTIVE) { 
-				setObj_ActivTrap(i);
-				break;
-			}
-		}
-	}
 
 	// 타일 상태변화 test
 	if (KEYMANAGER->isOnceKeyDown('A')) {
@@ -147,11 +115,18 @@ void Map::update()
 		}
 	}
 
-	if ((_map[playerX][playerY].terrain & ATTRIBUTE_GRASS) == ATTRIBUTE_GRASS &&
-		(_map[playerX][playerY].terrain & ATTRIBUTE_UNSIGHT) == ATTRIBUTE_UNSIGHT) {
-		setTile_GrassCut(playerX, playerY);
-	}
 
+	if (KEYMANAGER->isOnceKeyDown('W')) {
+
+		for (int i = -1; i <= 1; i++) {
+			for (int j = -1; j <= 1; j++) {
+				if ((_map[playerX + i][playerY + j].terrain & ATTRIBUTE_HIDDEN) == ATTRIBUTE_HIDDEN)
+				{
+					setTile_SearchHidden(playerX + i, playerY + j);
+				}
+			}
+		}
+	}
 
 	// test
 	_camera = _ui->getCamera();
@@ -174,7 +149,7 @@ void Map::draw(POINT camera)
 	if (KEYMANAGER->isStayKeyDown(VK_LEFT)) temp--;
 
 
-	//뒷배경 검은색
+//	뒷배경 검은색
 	RECT bg = RectMake(0, 0, WINSIZEX, WINSIZEY);
 	HBRUSH b = CreateSolidBrush(RGB(0, 0, 0));
 	FillRect(getMemDC(), &bg, b);
@@ -307,6 +282,18 @@ void Map::load(int stageNum) {
 		tile.obj = (OBJ)pTileListElement->FirstChildElement("obj")->IntText();
 		tile.terrain = (TERRAIN)pTileListElement->FirstChildElement("terrain")->IntText();
 		tile.floor = stageNum;
+		tile.tileview = TILEVIEW_NO;
+		
+		if (tile.terrain == TERRAIN_DOOR_CLOSED) {
+			TILE* newTile = _spareTile.find("HiddenDoor")->second;
+
+			tile.sourX = newTile->sourX;
+			tile.sourY = newTile->sourY;
+			tile.terrain = newTile->terrain;
+
+		}
+
+
 		_vMapTile.push_back(tile);
 
 		pTileListElement = pTileListElement->NextSiblingElement("tile");
@@ -364,6 +351,11 @@ void Map::load(int stageNum) {
 		for (int i = 0; i < _vMapTile.size(); i++){
 			if (_vMapTile[i].destX == obj.destX && _vMapTile[i].destY == obj.destY) {
 				_vMapTile[i].terrain = (TERRAIN)((long)_vMapTile[i].terrain | ATTRIBUTE_OBJECT);
+				if (obj.obj == OBJ_STAIR_START) {
+					POINT startPoint = PointMake(obj.destX * TILESIZE, obj.destY * TILESIZE);
+					_player->setPoint(startPoint);
+				}
+
 				if (obj.obj == OBJ_POT) {
 					_vMapTile[i].terrain = (TERRAIN)((long)_vMapTile[i].terrain | ATTRIBUTE_UNGO);
 				}
@@ -445,6 +437,22 @@ void Map::spareTileSetup() {
 	unlockDoor->terrain = TERRAIN_DOOR_CLOSED;
 
 	_spareTile.insert(make_pair("ClosedDoor", unlockDoor));
+
+	TILE* openDoor = new TILE;
+	openDoor->img = IMAGEMANAGER->findImage("mapTiles");
+	openDoor->sourX = 1;
+	openDoor->sourY = 5;
+	openDoor->terrain = TERRAIN_DOOR_OPEN;
+
+	_spareTile.insert(make_pair("OpenDoor", openDoor));
+
+	TILE* hiddenDoor = new TILE;
+	hiddenDoor->img = IMAGEMANAGER->findImage("mapTiles");
+	hiddenDoor->sourX = 0;
+	hiddenDoor->sourY = 4;
+	hiddenDoor->terrain = TERRAIN_DOOR_HIDDEN;
+
+	_spareTile.insert(make_pair("HiddenDoor", hiddenDoor));
 }
 
 void Map::spareObjSetup() {
@@ -484,47 +492,87 @@ void Map::setTile_GrassCut(int i, int j) {
 		_im->setItemToField(NAME_DEW, i * TILESIZE + TILESIZE * 0.5, j * TILESIZE + TILESIZE * 0.5);
 }
 
+void Map::setTile_CloseDoor(int i, int j) {
+	if (_map[i][j].terrain == TERRAIN_DOOR_OPEN) {
+		TILE* newTile = _spareTile.find("ClosedDoor")->second;
 
-void Map::setTile_UnlockDoor(int i, int j) {
-	TILE* newTile = _spareTile.find("ClosedDoor")->second;
+		_map[i][j].sourX = newTile->sourX;
+		_map[i][j].sourY = newTile->sourY;
+		_map[i][j].terrain = newTile->terrain;
+	}
 
-	_map[i][j].sourX = newTile->sourX;
-	_map[i][j].sourY = newTile->sourY;
-	_map[i][j].terrain = newTile->terrain;
+}
+void Map::setTile_OpenDoor(int i, int j) {
+	if (_map[i][j].terrain == TERRAIN_DOOR_CLOSED) {
+		TILE* newTile = _spareTile.find("OpenDoor")->second;
+
+		_map[i][j].sourX = newTile->sourX;
+		_map[i][j].sourY = newTile->sourY;
+		_map[i][j].terrain = newTile->terrain;
+	}
 }
 
+void Map::setTile_UnlockDoor(int i, int j) {
+
+	if (_map[i][j].terrain == TERRAIN_DOOR_LOCKED) {
+		TILE* newTile = _spareTile.find("ClosedDoor")->second;
+
+		_map[i][j].sourX = newTile->sourX;
+		_map[i][j].sourY = newTile->sourY;
+		_map[i][j].terrain = newTile->terrain;
+	}
+}
+
+void Map::setTile_SearchHidden(int i, int j) {
+	if ((_map[i][j].terrain & ATTRIBUTE_HIDDEN) == ATTRIBUTE_HIDDEN) {
+		_map[i][j].terrain = (TERRAIN)((long)_map[i][j].terrain ^ ATTRIBUTE_HIDDEN);
+
+		if ((_map[i][j].terrain & ATTRIBUTE_DOOR) == ATTRIBUTE_DOOR) {
+			TILE* newTile = _spareTile.find("ClosedDoor")->second;
+
+			_map[i][j].sourX = newTile->sourX;
+			_map[i][j].sourY = newTile->sourY;
+			_map[i][j].terrain = newTile->terrain;
+		}
+	}
+}
 
 void Map::setObj_OpenChest(int i) {
-	_vObj[i].obj = OBJ_NONE;
-	
-	int dropRate = RND->getFromIntTo(1, 5);
-	if (dropRate == 1) { 
-		ITEMNAME drop = (ITEMNAME)((int)NAME_BOTTLE + RND->getFromIntTo(0, 7));
-		_im->setItemToField(drop, _vObj[i].destX * TILESIZE + TILESIZE * 0.5, _vObj[i].destY * TILESIZE + TILESIZE * 0.5);
-	}
-	else if (dropRate == 2) {
-		_im->setItemToField(NAME_PASTY,	_vObj[i].destX * TILESIZE + TILESIZE * 0.5, _vObj[i].destY * TILESIZE + TILESIZE * 0.5);
-	}
-	else if (dropRate == 3) {
-		_im->setItemToField(NAME_BOTTLE, _vObj[i].destX * TILESIZE + TILESIZE * 0.5, _vObj[i].destY * TILESIZE + TILESIZE * 0.5);
-	}
-	else if (dropRate == 4) {
-		ITEMNAME drop = (ITEMNAME)((int)NAME_IDENTIFY + RND->getFromIntTo(0, 4));
-		_im->setItemToField(drop, _vObj[i].destX * TILESIZE + TILESIZE * 0.5, _vObj[i].destY * TILESIZE + TILESIZE * 0.5);
-	}
-	else { // 미믹용(임시)
-		_im->setItemToField(NAME_BOTTLE, _vObj[i].destX * TILESIZE + TILESIZE * 0.5, _vObj[i].destY * TILESIZE + TILESIZE * 0.5);
+	if ((_vObj[i].obj & ATTRIBUTE_CHEST) == ATTRIBUTE_CHEST && (_vObj[i].obj & ATTRIBUTE_LOCKED) != ATTRIBUTE_LOCKED) {
+		_vObj[i].obj = OBJ_NONE;
+
+		int dropRate = RND->getFromIntTo(1, 5);
+		if (dropRate == 1) {
+			ITEMNAME drop = (ITEMNAME)((int)NAME_BOTTLE + RND->getFromIntTo(0, 7));
+			_im->setItemToField(drop, _vObj[i].destX * TILESIZE + TILESIZE * 0.5, _vObj[i].destY * TILESIZE + TILESIZE * 0.5);
+		}
+		else if (dropRate == 2) {
+			_im->setItemToField(NAME_PASTY, _vObj[i].destX * TILESIZE + TILESIZE * 0.5, _vObj[i].destY * TILESIZE + TILESIZE * 0.5);
+		}
+		else if (dropRate == 3) {
+			_im->setItemToField(NAME_BOTTLE, _vObj[i].destX * TILESIZE + TILESIZE * 0.5, _vObj[i].destY * TILESIZE + TILESIZE * 0.5);
+		}
+		else if (dropRate == 4) {
+			ITEMNAME drop = (ITEMNAME)((int)NAME_IDENTIFY + RND->getFromIntTo(0, 4));
+			_im->setItemToField(drop, _vObj[i].destX * TILESIZE + TILESIZE * 0.5, _vObj[i].destY * TILESIZE + TILESIZE * 0.5);
+		}
+		else { // 미믹용(임시)
+			_im->setItemToField(NAME_BOTTLE, _vObj[i].destX * TILESIZE + TILESIZE * 0.5, _vObj[i].destY * TILESIZE + TILESIZE * 0.5);
+		}
 	}
 }
 
 
 void Map::setObj_UseWell(int i) {
-	GAMEOBJECT* newObj = _spareObj.find("EmptyWell")->second;
-	
-	_vObj[i].sourX = newObj->sourX;
-	_vObj[i].sourY = newObj->sourY;
+	if ((_vObj[i].obj & ATTRIBUTE_WELL) == ATTRIBUTE_WELL)
+	{
+		GAMEOBJECT* newObj = _spareObj.find("EmptyWell")->second;
 
-	_vObj[i].obj = (OBJ)((long)_vObj[i].obj ^ ATTRIBUTE_ACTIVE);
+		_vObj[i].sourX = newObj->sourX;
+		_vObj[i].sourY = newObj->sourY;
+
+		_vObj[i].obj = (OBJ)((long)_vObj[i].obj ^ ATTRIBUTE_ACTIVE);
+	}
 }
 
 void Map::setObj_ActivTrap(int i) {
@@ -547,6 +595,7 @@ void Map::changeFloor(int floor, bool firstTime){
 				_vMapTile[i].sourY = _map[_vMapTile[i].destX][_vMapTile[i].destY].sourY;
 
 				_vMapTile[i].terrain = _map[_vMapTile[i].destX][_vMapTile[i].destY].terrain;
+				_vMapTile[i].tileview = _map[_vMapTile[i].destX][_vMapTile[i].destY].tileview;
 			}
 		}
 	}
@@ -570,7 +619,7 @@ void Map::changeFloor(int floor, bool firstTime){
 			_map[_vMapTile[i].destX][_vMapTile[i].destY].sourY = _vMapTile[i].sourY;
 			_map[_vMapTile[i].destX][_vMapTile[i].destY].obj = _vMapTile[i].obj;
 			_map[_vMapTile[i].destX][_vMapTile[i].destY].terrain = _vMapTile[i].terrain;
-			_map[_vMapTile[i].destX][_vMapTile[i].destY].tileview = TILEVIEW_NO;
+			_map[_vMapTile[i].destX][_vMapTile[i].destY].tileview = _vMapTile[i].tileview;
 		}
 	}
 	for (int i = 0; i < _vObj.size(); i++) {
@@ -595,4 +644,55 @@ void Map::drawTileShadow(TILE tile)
 	{
 		IMAGEMANAGER->render("blackTile", getMemDC(), tile.destX * TILESIZE + _camera.x, tile.destY* TILESIZE + _camera.y);
 	}
+}
+
+
+void Map::playerTurnEnd() {
+
+	int playerX = _player->getPoint().x / TILESIZE;
+	int playerY = _player->getPoint().y / TILESIZE;
+	bool isMoving =	_player->getIsPlayerMoving();
+
+	//오브젝트 상호작용 test
+	for (int i = 0; i < _vObj.size(); i++) {
+		if (playerX == _vObj[i].destX && playerY == _vObj[i].destY && _vObj[i].floor == _curStageNum) {
+			if (_vObj[i].obj == OBJ_STAIR_END && !isMoving) {
+				if (_curStageNum == 0)
+				{
+					changeFloor(1, false);
+					break;
+				}
+				else if (_curStageNum == 1) {
+					changeFloor(0, false);
+					break;
+				}
+			}
+
+			if (_vObj[i].obj == OBJ_CHEST && !isMoving) {
+				setObj_OpenChest(i);
+				break;
+			}
+
+			if ((_vObj[i].obj & ATTRIBUTE_WELL) == ATTRIBUTE_WELL && (_vObj[i].obj & ATTRIBUTE_ACTIVE) == ATTRIBUTE_ACTIVE && !isMoving) {
+				setObj_UseWell(i);
+				break;
+			}
+
+			if ((_vObj[i].obj & ATTRIBUTE_TRAP) == ATTRIBUTE_TRAP && (_vObj[i].obj & ATTRIBUTE_ACTIVE) == ATTRIBUTE_ACTIVE) {
+				setObj_ActivTrap(i);
+				break;
+			}
+		}
+	}
+
+	if ((_map[playerX][playerY].terrain & ATTRIBUTE_GRASS) == ATTRIBUTE_GRASS &&
+		(_map[playerX][playerY].terrain & ATTRIBUTE_UNSIGHT) == ATTRIBUTE_UNSIGHT) {
+		setTile_GrassCut(playerX, playerY);
+	}
+	
+	if ((_map[playerX][playerY].terrain == TERRAIN_DOOR_CLOSED)) {
+		setTile_OpenDoor(playerX, playerY);
+	}
+
+
 }

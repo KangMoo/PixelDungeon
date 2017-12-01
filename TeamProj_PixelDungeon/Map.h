@@ -87,6 +87,7 @@ public:
 	void setTile_OpenDoor(int i, int j);
 	void setTile_CloseDoor(int i, int j);
 	void setTile_UnlockDoor(int i, int j);
+	void setTile_SearchHidden(int i, int j);
 	
 	void setObj_OpenChest(int i);
 	void setObj_UseWell(int i);
@@ -113,7 +114,7 @@ public:
 	void add_eightway(vertex v, POINT goalPoint);					//8방향 탐색 후 추가
 	bool check_goal();												//목적지 탐색
 
-	void playerTurnEnd() {};
+	void playerTurnEnd();
 
 	//~A*
 

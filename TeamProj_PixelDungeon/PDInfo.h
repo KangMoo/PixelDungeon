@@ -111,6 +111,7 @@ typedef struct tagPlayerStat {
 	int maxhp;		//최대체력
 	int str;		//힘
 	int exp;		//경험치
+	int def;
 	int mindef;		//방어력
 	int maxdef;
 	float atk_lck;	//명중률
