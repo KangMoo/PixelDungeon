@@ -66,17 +66,21 @@ private:
 	RECT _selectRangeRect;
 	POINT _selectRangePoint;
 
+	vGrid _vMapSelected; //선택한 맵 그리드
+	viGrid _viMapSelected;
+	GRID _mapRect[GRIDNUM]; //맵 전체 그리드 rect
+
 	vTile _vMapTile; // 맵에 깔아놓은 타일
 	viTile _viMapTile;
+
 	vTile _vDecoTile; // 이미지 겹치기 위한 장식용 타일
 	viTile _viDecoTile;
-
-	vGrid _vMapSelected; //선택한 맵 그리드
-	viGrid _viMapSelected; 
-	GRID _mapRect[GRIDNUM]; //맵 전체 그리드 rect
-	
+		
 	vObj _vObj;  // 오브젝트 리스트 (상자, 계단, 항아리 등)
 	viObj _viObj; 
+
+	vTile _vItem; // 아이템 세팅을 위한 리스트
+	viTile _viItem;
 	
 	vTile _vPaletTile; // 팔레트에 깔아놓은 타일
 	viTile _viPaletTile;
@@ -132,6 +136,7 @@ public:
 	void save();
 	void load();
 
+	void setItem(tagItem* item, ITEMNAME name);
 	MapToolScene();
 	~MapToolScene();
 };

@@ -80,11 +80,77 @@ void MapToolScene::release()
 }
 
 void MapToolScene::imageSetup() {
-	
+
+	//==== TILE ====
 	_imgNameList.push_back("mapTiles");
 	_imgNameList.push_back("chest");
 	_imgNameList.push_back("water");
 	_imgNameList.push_back("trap");
+
+	//==== ITEM ====
+	_imgNameList.push_back("old_short_sword");
+	_imgNameList.push_back("short_sword");
+	_imgNameList.push_back("sword");
+	_imgNameList.push_back("spear");
+	_imgNameList.push_back("hammer");
+	_imgNameList.push_back("battle_axe");
+	_imgNameList.push_back("scimitar");
+
+	_imgNameList.push_back("cloth");
+	_imgNameList.push_back("leather");
+	_imgNameList.push_back("mail");
+
+	_imgNameList.push_back("potion_black");
+	_imgNameList.push_back("potion_green");
+	_imgNameList.push_back("potion_magenta");
+	_imgNameList.push_back("potion_orange");
+
+	_imgNameList.push_back("potion_purple");
+	_imgNameList.push_back("potion_red");
+	_imgNameList.push_back("potion_yellow");
+	_imgNameList.push_back("potion_bottle");
+
+	_imgNameList.push_back("scroll_berkanan");
+
+	_imgNameList.push_back("seed_fire");
+	_imgNameList.push_back("seed_frost");
+	_imgNameList.push_back("seed_heal");
+	_imgNameList.push_back("seed_snake");
+
+	_imgNameList.push_back("meat_unknown");
+	_imgNameList.push_back("meat_cooked");
+	_imgNameList.push_back("meat_frozen");
+	_imgNameList.push_back("emergency_food");
+	_imgNameList.push_back("pasty");
+
+	_imgNameList.push_back("ring_blue");
+	_imgNameList.push_back("ring_red");
+	_imgNameList.push_back("acc_wand");
+
+	_imgNameList.push_back("dart");
+	_imgNameList.push_back("dart_effect");
+	_imgNameList.push_back("wand_normal");
+	_imgNameList.push_back("wand_lightning");
+	_imgNameList.push_back("wand_poison");
+	_imgNameList.push_back("dew");
+	_imgNameList.push_back("money");
+
+	_imgNameList.push_back("magic_missile");
+	_imgNameList.push_back("magic_missile_lightning");
+	_imgNameList.push_back("magic_missile_poison");
+	_imgNameList.push_back("magic_missile_beacon");
+
+	_imgNameList.push_back("flower_fire");
+	_imgNameList.push_back("flower_frost");
+	_imgNameList.push_back("flower_heal");
+	_imgNameList.push_back("flower_snake");
+
+	_imgNameList.push_back("key_iron");
+	_imgNameList.push_back("key_silver");
+	_imgNameList.push_back("key_gold");
+
+	//==== MONSTER ====
+
 
 	for (int i = 0; i < _imgNameList.size(); i++) {
 		image* image1 = IMAGEMANAGER->findImage(_imgNameList[i]);
@@ -383,10 +449,34 @@ void MapToolScene::render()
 		if (_inputMode == MODE_VIEWING_TILE)																		alpha = 255;
 
 
-		_vObj[i].img->alphaFrameRender(getMemDC(), destX, destY, _vObj[i].sourX, _vObj[i].sourY, alpha);
-
-		
+		_vObj[i].img->alphaFrameRender(getMemDC(), destX, destY, _vObj[i].sourX, _vObj[i].sourY, alpha);		
 	}
+
+
+
+	for (int i = 0; i < _vItem.size(); i++) {
+		if (_vItem[i].destX - _cameraX < 0 || _vItem[i].destY - _cameraY < 0 ||
+			_vItem[i].destX - _cameraX >= GRIDX || _vItem[i].destY - _cameraY >= GRIDY) continue;
+		int index = _vItem[i].destX - _cameraX + (_vItem[i].destY - _cameraY) * GRIDX;
+
+		int destX = _mapRect[index].rc.left;
+		int destY = _mapRect[index].rc.top;
+
+		int alpha;
+		if (_inputLayer == LAYER_ITEM) {
+			alpha = 0;
+		}
+		else if (_inputLayer < LAYER_ITEM)																			alpha = 255;
+		else if (_inputLayer > LAYER_ITEM)																			alpha = 150;
+
+
+		if (_inputMode == MODE_VIEWING)																				alpha = 0;
+		if (_inputMode == MODE_VIEWING_TILE)																		alpha = 255;
+
+
+		_vItem[i].img->alphaFrameRender(getMemDC(), destX, destY, _vItem[i].sourX, _vItem[i].sourY, alpha);
+	}
+
 
 
 	if (_showTile && !(KEYMANAGER->isStayKeyDown(VK_RBUTTON))) {
@@ -654,7 +744,6 @@ void MapToolScene::save()
 	pObjElementSize->SetText(_vObj.size());
 	pMapElement_Obj->InsertEndChild(pObjElementSize);
 
-
 	for (int i = 0; i < _vObj.size(); i++) {
 		XMLElement * pListElementT = xmlDoc.NewElement("obj");
 
@@ -692,6 +781,39 @@ void MapToolScene::save()
 	pRoot->InsertEndChild(pMapElement_Obj);
 
 
+
+	XMLElement * pMapElement_Item = xmlDoc.NewElement("ItemList");
+
+	XMLElement * pItemElementSize = xmlDoc.NewElement("size");
+	pItemElementSize->SetText(_vItem.size());
+	pMapElement_Item->InsertEndChild(pItemElementSize);
+
+	for (int i = 0; i < _vItem.size(); i++) {
+		XMLElement * pListElementT = xmlDoc.NewElement("item");
+
+		XMLElement * pListElement1 = xmlDoc.NewElement("destX");
+		pListElement1->SetText(_vItem[i].destX);
+		XMLElement * pListElement2 = xmlDoc.NewElement("destY");
+		pListElement2->SetText(_vItem[i].destY);
+		XMLElement * pListElement6 = xmlDoc.NewElement("imgNum");
+		for (int j = 0; j < _imgNameList.size(); j++) {
+			if (_vItem[i].img == IMAGEMANAGER->findImage(_imgNameList[j]))
+			{
+				pListElement6->SetText(j);
+				break;
+			}
+			if (j == _imgNameList.size() - 1)
+				pListElement6->SetText(0);
+		}
+
+		pListElementT->InsertEndChild(pListElement1);
+		pListElementT->InsertEndChild(pListElement2);
+		pListElementT->InsertEndChild(pListElement6);
+
+
+		pMapElement_Item->InsertEndChild(pListElementT);
+	}
+	pRoot->InsertEndChild(pMapElement_Item);
 
 
 	//XMLError eResult = xmlDoc.SaveFile("SavedData.xml");

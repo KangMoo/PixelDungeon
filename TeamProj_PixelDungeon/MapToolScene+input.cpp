@@ -218,6 +218,14 @@ void MapToolScene::input_AddTile() {
 						}
 						break;
 					case LAYER_ITEM:
+						for (_viItem = _vItem.begin(); _viItem != _vItem.end();) {
+							if (_viItem->destX == indexX && _viItem->destY == indexY) {
+								_viItem = _vItem.erase(_viItem);
+								return;
+							}
+							else
+								_viItem++;
+						}
 
 						break;
 
@@ -368,6 +376,33 @@ void MapToolScene::input_AddTile() {
 								_vObj.push_back(inputObj);
 							}
 						}
+
+						//타일 추가 모드
+						else if (_inputLayer == LAYER_ITEM) {
+							for (int j = 0; j < _vMapSelected.size(); j++) {
+								int indexX = _vMapSelected[j].index % GRIDX + _cameraX;
+								int indexY = _vMapSelected[j].index / GRIDX + _cameraY;
+								for (_viItem = _vItem.begin(); _viItem != _vItem.end();) {
+									if (_viItem->destX == indexX && _viItem->destY == indexY) {
+										_viItem = _vItem.erase(_viItem);
+									}
+									else _viItem++;
+								}
+							}
+
+							for (int j = 0; j < _vMapSelected.size(); j++) {
+								int indexX = _vMapSelected[j].index % GRIDX + _cameraX;
+								int indexY = _vMapSelected[j].index / GRIDX + _cameraY;
+
+								TILE inputTile;
+								ZeroMemory(&inputTile, sizeof(TILE));
+								inputTile.img = _vPaletTile[paletIndex].img;
+								inputTile.destX = indexX;
+								inputTile.destY = indexY;
+
+								_vItem.push_back(inputTile);
+							}
+						}
 					}
 
 					else {
@@ -463,6 +498,27 @@ void MapToolScene::input_AddTile() {
 							}
 							_vObj.push_back(inputObj);
 						}
+
+
+						// 타일 추가 모드
+						else if (_inputLayer == LAYER_ITEM) {
+							//이미 타일이 있는 경우 지운다
+							for (_viItem = _vItem.begin(); _viItem != _vItem.end();) {
+								if (_viItem->destX == indexX && _viItem->destY == indexY) {
+									_viItem = _vItem.erase(_viItem);
+								}
+								else
+									_viItem++;
+							}
+
+							TILE inputTile;
+							ZeroMemory(&inputTile, sizeof(TILE));
+							inputTile.img = _vPaletTile[paletIndex].img;
+							inputTile.destX = indexX;
+							inputTile.destY = indexY;
+
+							_vItem.push_back(inputTile);
+						}
 					}
 				}
 				//_vMapSelected.clear();
@@ -550,3 +606,289 @@ void MapToolScene::input_ClickButton() {
 		else if (_buttonRect[i].isClicked) _buttonRect[i].isClicked = false;
 	}
 };
+
+
+
+
+void MapToolScene::setItem(tagItem* item, ITEMNAME name)
+{
+	item->name = name;
+
+	switch (name)
+	{
+	case NAME_OLD_SHORT_SWORD:
+		item->type = TYPE_WEAPON;
+		item->img = IMAGEMANAGER->findImage("old_short_sword");
+		item->equip = false;
+		item->isCursed = false;
+		item->contentsHide = true;
+		item->range = 1;
+		item->minPoint = 1 + item->upgrade;
+		item->maxPoint = 10 + item->upgrade * 2;
+		item->tier = 1;
+		item->Power = 10;
+		break;
+	case NAME_SHORT_SWORD:
+		item->type = TYPE_WEAPON;
+		item->img = IMAGEMANAGER->findImage("short_sword");
+		item->equip = false;
+		item->isCursed = false;
+		item->contentsHide = true;
+		item->minPoint = 2 + item->upgrade;
+		item->maxPoint = 15 + item->upgrade * 3;
+		item->tier = 2;
+		item->Power = 12;
+		item->range = 1;
+		break;
+	case NAME_SWORD:
+		item->type = TYPE_WEAPON;
+		item->img = IMAGEMANAGER->findImage("sword");
+		item->equip = false;
+		item->isCursed = false;
+		item->contentsHide = true;
+		item->minPoint = 3 + item->upgrade;
+		item->maxPoint = 20 + item->upgrade * 4;
+		item->tier = 3;
+		item->Power = 14;
+		item->range = 1;
+		break;
+	case NAME_SPEAR:
+		item->type = TYPE_WEAPON;
+		item->img = IMAGEMANAGER->findImage("spear");
+		item->equip = false;
+		item->isCursed = false;
+		item->contentsHide = true;
+		item->minPoint = 2 + item->upgrade;
+		item->maxPoint = 20 + item->upgrade * 3;
+		item->tier = 2;
+		item->Power = 12;
+		item->range = 2;
+		break;
+	case NAME_BATTLE_AXE:
+		item->type = TYPE_WEAPON;
+		item->img = IMAGEMANAGER->findImage("battle_axe");
+		item->equip = false;
+		item->isCursed = false;
+		item->contentsHide = true;
+		item->minPoint = 4 + item->upgrade;
+		item->maxPoint = 20 + item->upgrade * 9;
+		item->tier = 4;
+		item->Power = 16;
+		item->range = 1;
+		item->stat.atk_lck = 5;
+		break;
+	case NAME_CLOTH:
+		item->type = TYPE_ARMOR;
+		item->img = IMAGEMANAGER->findImage("cloth");
+		item->equip = false;
+		item->isCursed = false;
+		item->contentsHide = true;
+		item->minPoint = 0 + item->upgrade;
+		item->maxPoint = 2 + item->upgrade;
+		item->tier = 1;
+		item->Power = 10;
+		break;
+	case NAME_LEATHER:
+		item->type = TYPE_ARMOR;
+		item->img = IMAGEMANAGER->findImage("leather");
+		item->equip = false;
+		item->isCursed = false;
+		item->contentsHide = true;
+		item->minPoint = 0 + item->upgrade;
+		item->maxPoint = 4 + item->upgrade * 2;
+		item->tier = 2;
+		item->Power = 12;
+		break;
+	case NAME_MAIL:
+		item->type = TYPE_ARMOR;
+		item->img = IMAGEMANAGER->findImage("mail");
+		item->equip = false;
+		item->isCursed = false;
+		item->contentsHide = true;
+		item->minPoint = 0 + item->upgrade;
+		item->maxPoint = 6 + item->upgrade * 3;
+		item->tier = 3;
+		item->Power = 14;
+		break;
+	case NAME_LIOYDS_BEACON:
+		item->type = TYPE_ACC;
+		item->img = IMAGEMANAGER->findImage("acc_wand");
+		item->throwImg = IMAGEMANAGER->findImage("magic_missile_beacon");
+		item->equip = false;
+		item->isCursed = false;
+		item->contentsHide = true;
+		item->maxCharge = 3 + item->upgrade;
+		item->currentCharge = item->maxCharge;
+		item->range = 4;
+		break;
+	case NAME_DART:						// 투척 무기 : 다트 =========================================== 
+		item->type = TYPE_THROW;
+		item->img = IMAGEMANAGER->findImage("dart");
+		item->throwImg = IMAGEMANAGER->findImage("magic_missile_beacon");
+
+		item->equip = false;
+		item->minPoint = 1;
+		item->maxPoint = 3;
+		item->tier = 1;
+		item->Power = 10;
+		break;
+	case NAME_PARALYSIS_DART:
+		item->type = TYPE_THROW;
+		item->img = IMAGEMANAGER->findImage("dart");
+		item->throwImg = IMAGEMANAGER->findImage("magic_missile");
+
+		item->equip = false;
+		item->minPoint = 1;
+		item->maxPoint = 3;
+		item->tier = 2;
+		item->Power = 12;
+		break;
+	case NAME_POISON_DART:
+		item->type = TYPE_THROW;
+		item->img = IMAGEMANAGER->findImage("dart");
+		item->throwImg = IMAGEMANAGER->findImage("magic_missile");
+
+		item->equip = false;
+		item->minPoint = 1;
+		item->maxPoint = 3;
+		item->tier = 2;
+		item->Power = 12;
+		break;
+	case NAME_LIGHTNING:
+		item->type = TYPE_WAND;
+		item->img = IMAGEMANAGER->findImage("wand_lightning");
+		item->throwImg = IMAGEMANAGER->findImage("magic_missile_lightning");
+		item->equip = false;
+		item->isCursed = false;
+		item->contentsHide = true;
+		item->minPoint = 4 + item->upgrade * 2;
+		item->maxPoint = 10 + item->upgrade * 2;
+		item->maxCharge = 3 + item->upgrade;
+		item->currentCharge = item->maxCharge;
+		item->range = 4;
+		break;
+	case NAME_NORMAL:
+		item->type = TYPE_WAND;
+		item->img = IMAGEMANAGER->findImage("wand_normal");
+		item->throwImg = IMAGEMANAGER->findImage("magic_missile");
+		item->equip = false;
+		item->isCursed = false;
+		item->contentsHide = true;
+		item->minPoint = 4 + item->upgrade * 2;
+		item->maxPoint = 6 + item->upgrade * 2;
+		item->maxCharge = 4 + item->upgrade;
+		item->currentCharge = item->maxCharge;
+		item->range = 4;
+		break;
+	case NAME_POISON:
+		item->type = TYPE_WAND;
+		item->img = IMAGEMANAGER->findImage("wand_poison");
+		item->throwImg = IMAGEMANAGER->findImage("magic_missile_poison");
+		item->equip = false;
+		item->isCursed = false;
+		item->contentsHide = true;
+		item->minPoint = 4 + item->upgrade * 2;
+		item->maxPoint = 6 + item->upgrade * 2;
+		item->maxCharge = 3 + item->upgrade;
+		item->currentCharge = item->maxCharge;
+		item->range = 4;
+		break;
+	case NAME_EMERGENCY:
+		item->type = TYPE_FOOD;
+		item->img = IMAGEMANAGER->findImage("emergency_food");
+		item->contentsHide = false;
+		item->minPoint = 220;
+		break;
+	case NAME_PASTY:
+		item->type = TYPE_FOOD;
+		item->img = IMAGEMANAGER->findImage("pasty");
+		item->contentsHide = false;
+		item->minPoint = 300;
+		break;
+	case NAME_UNKNOWN_MEAT:
+		item->type = TYPE_FOOD;
+		item->img = IMAGEMANAGER->findImage("meat_unknown");
+		item->contentsHide = false;
+		item->minPoint = 80;
+		break;
+	case NAME_COOKED_MEAT:
+		item->type = TYPE_FOOD;
+		item->img = IMAGEMANAGER->findImage("meat_cooked");
+		item->contentsHide = false;
+		item->minPoint = 80;
+		break;
+	case NAME_FROZEN_MEAT:
+		item->type = TYPE_FOOD;
+		item->img = IMAGEMANAGER->findImage("meat_frozen");
+		item->contentsHide = false;
+		item->minPoint = 80;
+		break;
+	case NAME_BOTTLE:		// ===============포션 ===================
+		item->type = TYPE_POTION;
+		item->img = IMAGEMANAGER->findImage("potion_bottle");
+		item->equip = false;
+		item->contentsHide = false;
+		item->maxCharge = 20;
+		item->currentCharge = 0;
+		break;
+	case NAME_SEED_HEAL:	//============ 씨 앗 ==========
+		item->type = TYPE_SEED;
+		item->img = IMAGEMANAGER->findImage("seed_heal");
+		item->equip = false;
+		break;
+	case NAME_SEED_FIRE:
+		item->type = TYPE_SEED;
+		item->img = IMAGEMANAGER->findImage("seed_fire");
+		item->equip = false;
+		break;
+	case NAME_SEED_SNAKE:
+		item->type = TYPE_SEED;
+		item->img = IMAGEMANAGER->findImage("seed_snake");
+		item->equip = false;
+		break;
+	case NAME_SEED_FROST:
+		item->type = TYPE_SEED;
+		item->img = IMAGEMANAGER->findImage("seed_frost");
+		item->equip = false;
+		break;
+	case NAME_DEW:
+		item->type = TYPE_SPECIAL;
+		item->img = IMAGEMANAGER->findImage("dew");
+		break;
+	case NAME_MONEY:
+		item->type = TYPE_SPECIAL;
+		item->img = IMAGEMANAGER->findImage("money");
+		break;
+	case NAME_KEY_IRON:
+		item->type = TYPE_SPECIAL;
+		item->img = IMAGEMANAGER->findImage("key_iron");
+		break;
+	case NAME_KEY_SILVER:
+		item->type = TYPE_SPECIAL;
+		item->img = IMAGEMANAGER->findImage("key_silver");
+		break;
+	case NAME_KEY_GOLD:
+		item->type = TYPE_SPECIAL;
+		item->img = IMAGEMANAGER->findImage("key_gold");
+		break;
+	case NAME_FLOWER_HEAL:
+		item->type = TYPE_SPECIAL;
+		item->img = IMAGEMANAGER->findImage("flower_heal");
+		break;
+	case NAME_FLOWER_FIRE:
+		item->type = TYPE_SPECIAL;
+		item->img = IMAGEMANAGER->findImage("flower_fire");
+		break;
+	case NAME_FLOWER_FROST:
+		item->type = TYPE_SPECIAL;
+		item->img = IMAGEMANAGER->findImage("flower_frost");
+		break;
+	case NAME_FLOWER_SNAKE:
+		item->type = TYPE_SPECIAL;
+		item->img = IMAGEMANAGER->findImage("flower_snake");
+		break;
+	case NAME_END:
+		break;
+	}
+
+}
