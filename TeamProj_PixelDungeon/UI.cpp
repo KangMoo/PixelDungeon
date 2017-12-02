@@ -63,6 +63,9 @@ HRESULT UI::init()
 	//메인메뉴바
 	IMAGEMANAGER->addImage("select_menu_bar2", "Img/UI/select_menu_bar2.bmp", 260, 129, true, RGB(255, 0, 255));
 
+	//폰트
+	IMAGEMANAGER->addImage("font", "Img/UI/font1.bmp", 2048, 32, true, RGB(255, 0, 255));
+
 	_backPackRect = RectMake(437, WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight(), 72, (WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight()));
 	_SearchOptionRect = RectMake(567.5, WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight(), 567.5, (WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight()));
 	_TurnSkipRect = RectMake(509, WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight(), 58.5, (WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight()));
@@ -115,6 +118,8 @@ void UI::draw(POINT camera)
 
 	IMAGEMANAGER->render("status_pane", getMemDC(), 0, 0);
 	IMAGEMANAGER->render("hp_bar", getMemDC(), 90, 9);
+
+	IMAGEMANAGER->render("font", getMemDC(), WINSIZEX / 2, WINSIZEY / 2);
 
 	IMAGEMANAGER->render("toolbar", getMemDC(), WINSIZEX / 2 - (IMAGEMANAGER->findImage("toolbar")->getFrameWidth() / 2), WINSIZEY - (IMAGEMANAGER->findImage("toolbar")->getFrameHeight()));
 

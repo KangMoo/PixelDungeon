@@ -192,7 +192,7 @@ void EnemyManager::setEnemy(POINT point, int type)
 		{
 
 			goo* temp = new goo;
-			temp->init(point,8);
+			temp->init(point);
 			temp->setPlayerAddressLink(_player);
 			temp->setItemManagerAddressLink(_im);
 			temp->setUiAddressLink(_ui);
