@@ -26,7 +26,8 @@ class EnemyManager : public gameNode
 private:
 	vector<Enemy*> _vEnemy;
 	vector<Enemy*>::iterator _viEnemy;
-
+	
+	bool _finish;
 
 	Player* _player;
 	Boss* _boss;

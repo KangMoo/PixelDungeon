@@ -393,7 +393,7 @@ void Gnoll::action()
 			else
 			{
 				//아니라면 astar로 이동한다
-				astarTest = _map->aStar(PointMake(_pointX, _pointY), _player->getPoint());
+				astarTest = aStar(PointMake(_pointX, _pointY), _player->getPoint());
 				//움직일때 해당 좌표를 4,5 같은 식으로 주면 자동으로 4*TILESIZE + TILESIZE/2, 5*... 해줌
 				//_movePoint = PointMake(astarTest[astarTest.size() - 1].destX, astarTest[astarTest.size() - 1].destY);
 				if (astarTest.size() > 2)

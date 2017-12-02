@@ -6,6 +6,8 @@
 class Player;
 class UI;
 class ItemManager;
+class EnemyManager;
+
 class Enemy : public gameNode
 {
 protected:
@@ -13,6 +15,7 @@ protected:
 	UI* _ui;				//ui
 	Map* _map;				//적 인식용 맵정보
 	ItemManager* _im;
+	EnemyManager* _em;
 	//progressBar* _hpBar;	//체력바
 
 	ENEMYSTAT _statistics;	//몬스터 스텟
@@ -42,6 +45,10 @@ protected:
 	int _deadAlpha;			//죽으면 사라져야함니다
 	bool _deleteForeEm;		//알파가 0이 되어 안보이면 사라집니다.
 
+	//A*~
+	vector<vertex> _openlist;
+	vector<vertex> _closelist;
+	//~A*
 
 public:
 	virtual HRESULT init();
@@ -86,6 +93,29 @@ public:
 	void setUiAddressLink(UI* ui)							{ _ui = ui; }
 	void setItemManagerAddressLink(ItemManager* itemManager) { _im = itemManager; }
 	void setMapAddressLink(Map* map)							{ _map = map; }
+	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }
+
+
+	//A*~
+	vector<TILE> aStar(POINT currentPoint, POINT goalPoint);	//Astar실행함수
+	void add_openlist(vertex v);					//openlist에 추가
+	vertex pop_openlist();							//openlist에서 pop
+	vertex pop_openlist(int x, int y);				//openlist에서 pop
+	vertex search_openlist(int x, int y);			//openlist탐색
+	bool search_openlist_exsist(int x, int y);		//closelist에 있는지 여부 확인
+	void add_closelist(vertex v);					//closelist에 추가
+	vertex pop_closelist(int x, int y);				//closelist에서 pop
+	bool search_closelist_exsist(int x, int y);		//closelist에 있는지 여부 확인
+
+	vertex calc_vertex(vertex v, vertex p, POINT goalPoint);		//F,G,H값 계산
+	void add_eightway(vertex v, POINT goalPoint);					//8방향 탐색 후 추가
+	bool check_goal();												//목적지 탐색
+
+	//~A*
+
+
+
+
 
 	Enemy();
 	~Enemy();

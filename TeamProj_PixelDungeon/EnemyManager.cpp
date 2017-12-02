@@ -36,6 +36,9 @@ HRESULT EnemyManager::init()
 	//setEnemy(PointMake(13, 13), 2);
 
 	return S_OK;
+
+	_finish = true;
+
 }
 
 void EnemyManager::release()
@@ -72,7 +75,7 @@ void EnemyManager::update()
 	if (_enemyTurn && _vEnemy.size() > 0)
 	{
 		//몬스터 행동
-		action();
+		action();		
 	}
 	//그냥 차례만 넘겨받은 경우
 	else if (_enemyTurn)
@@ -85,22 +88,6 @@ void EnemyManager::update()
 }
 void EnemyManager::action()
 {
-
-	if (_actionCount == 0)
-	{
-		//첫번째 몬스터에게 턴 넘김
-			_vEnemy[_actionCount]->setAction(true);
-			//다음차례 몬스터 번호 저장
-			_actionCount++;
-	}
-	else if (_vEnemy[_actionCount - 1]->getAction() == false && _actionCount < _vEnemy.size())	//전 차례의 몬스터 행동이 끝났으면
-	{
-		//다음차례 몬스터에게 턴 넘김
-			_vEnemy[_actionCount]->setAction(true);
-			//다음차례 몬스터 번호 저장
-			_actionCount++;
-	}
-
 	bool allEnemyTurnOver = true;	//모든 적이 행동 마쳤는지 확인하기 위한 함수
 	for (auto i : _vEnemy)
 	{
@@ -116,7 +103,32 @@ void EnemyManager::action()
 		_actionCount = 0;
 		//플레이어 차례 true 대입
 		_player->activeTurn();
+		_finish = true;
 	}
+
+	if (!_finish) return;
+
+	_finish = false;
+
+	//if (_actionCount == 0)
+	//{
+	//	//첫번째 몬스터에게 턴 넘김
+	//		_vEnemy[_actionCount]->setAction(true);
+	//		//다음차례 몬스터 번호 저장
+	//		_actionCount++;
+	//}
+	//else if (_vEnemy[_actionCount - 1]->getAction() == false && _actionCount < _vEnemy.size())	//전 차례의 몬스터 행동이 끝났으면
+	//{
+	//	//다음차례 몬스터에게 턴 넘김
+	//		_vEnemy[_actionCount]->setAction(true);
+	//		//다음차례 몬스터 번호 저장
+	//		_actionCount++;
+	//}
+
+	for (auto i : _vEnemy) {
+		i->setAction(true);
+	}
+
 }
 void EnemyManager::render()
 {
