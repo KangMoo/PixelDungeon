@@ -136,23 +136,23 @@ void Rat::release()
 	SAFE_RELEASE(_image);
 	SAFE_DELETE(_image);
 
-	SAFE_RELEASE(bIdle);
-	SAFE_DELETE(bIdle);
-	SAFE_RELEASE(bAttack);
-	SAFE_DELETE(bAttack);
-	SAFE_RELEASE(bMove);
-	SAFE_DELETE(bMove);
-	SAFE_RELEASE(bDead);
-	SAFE_DELETE(bDead);
-
-	SAFE_RELEASE(wIdle);
-	SAFE_DELETE(wIdle);
-	SAFE_RELEASE(wAttack);
-	SAFE_DELETE(wAttack);
-	SAFE_RELEASE(wMove);
-	SAFE_DELETE(wMove);
-	SAFE_RELEASE(wDead);
-	SAFE_DELETE(wDead);
+	//SAFE_RELEASE(bIdle);
+	//SAFE_DELETE(bIdle);
+	//SAFE_RELEASE(bAttack);
+	//SAFE_DELETE(bAttack);
+	//SAFE_RELEASE(bMove);
+	//SAFE_DELETE(bMove);
+	//SAFE_RELEASE(bDead);
+	//SAFE_DELETE(bDead);
+	//
+	//SAFE_RELEASE(wIdle);
+	//SAFE_DELETE(wIdle);
+	//SAFE_RELEASE(wAttack);
+	//SAFE_DELETE(wAttack);
+	//SAFE_RELEASE(wMove);
+	//SAFE_DELETE(wMove);
+	//SAFE_RELEASE(wDead);
+	//SAFE_DELETE(wDead);
 }
 
 
@@ -273,8 +273,8 @@ void Rat::frameUpdate()
 			{
 				_currntFrameX = 0;
 				_myState = ENEMYSTATE_IDLE;
-				if (_myColor == BROWN)	_image = bIdle;
-				else if (_myColor == WHITE)_image = wIdle;
+				if (_myColor == BROWN)	_image = bDead;
+				else if (_myColor == WHITE)_image = wDead;
 				_action = false;
 			}
 			_image->setFrameX(_currntFrameX);
@@ -282,8 +282,8 @@ void Rat::frameUpdate()
 			break;
 		case ENEMYSTATE_DEAD:
 
-			if (_myColor == BROWN)	_image = bAttack;
-			else if (_myColor == WHITE)_image = wAttack;
+			if (_myColor == BROWN)	_image = bDead;
+			else if (_myColor == WHITE)_image = wDead;
 
 			break;
 		}
@@ -304,7 +304,7 @@ void Rat::action()
 		return;
 	}
 
-	//if (KEYMANAGER->isOnceKeyDown('E')) getDamaged(3);
+	if (KEYMANAGER->isOnceKeyDown('E')) getDamaged(3);
 
 	if (_myState == ENEMYSTATE_SLEEP)
 	{

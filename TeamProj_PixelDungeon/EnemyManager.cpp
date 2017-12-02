@@ -20,7 +20,7 @@ HRESULT EnemyManager::init()
 
 	_isSwarmSpawn = false;
 
-	setEnemy(PointMake(12, 12), 3);
+	setEnemy(PointMake(12, 12), 1);
 
 	//setEnemy(PointMake(12, 12), 2);
 	//setEnemy(PointMake(TILESIZE*14, TILESIZE*13), 0);
@@ -153,7 +153,7 @@ void EnemyManager::setEnemy(POINT point, int type)
 		{
 
 			Mimic* temp = new Mimic;
-			temp->init(point,4);
+			temp->init(point);
 			temp->setPlayerAddressLink(_player);
 			temp->setItemManagerAddressLink(_im);
 			temp->setUiAddressLink(_ui);

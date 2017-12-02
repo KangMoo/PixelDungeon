@@ -5,27 +5,28 @@ class Mimic : public Enemy
 private:
 
 	bool _playerChack; //플레이어가 건드렸는지 여부
+	bool _isMove;
 	int money;
 
-	POINT _movePt;
+	POINT _movePoint;
 
 	vector<TILE> astar;
 
+	//뭐지 스테이가 공격인가? 뭐지?
+	//2017-02-02, 디스에이블 이미지는 무의미할것으로 판단하여 삭제함
+	image *move, *stay, *dead;
+
 public:
-	HRESULT init(POINT point, int cog);//인식범위 추기
+	virtual HRESULT init(POINT point);//인식범위 추기
 	void release();
 	void update();
-	void render(POINT camera);
 	void draw(POINT camera);
 	void action();
 
-	void attack();
-	void move();
 	void frameUpdate();
-
-	void itemDrop();
 	//데미지 받았을 때, 회피율 계산하여 함수 만들기
 	void getDamaged(int damage);
+
 
 	Mimic();
 	~Mimic();
