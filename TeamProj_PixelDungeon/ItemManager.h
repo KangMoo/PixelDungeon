@@ -23,7 +23,8 @@ struct tagBullet
 struct tagEffect
 {
 	image* img; //이펙트 이미지;
-	RECT rc;	//이펙트 rc;
+	POINT point;	//이펙트 포인트;
+	RECT rc;
 	int size;	//이펙트 사이즈
 	int Trans;	//투명도 0~255;
 	bool isSee; // 완전 투명해짐?
@@ -52,8 +53,8 @@ private:
 	UI* _ui;
 	Player* _player;
 	Item* _item;
-	tagEffect frozenE[20];
-	tagEffect fireE[20];
+	tagEffect frozenE[300];
+	tagEffect fireE[300];
 
 
 private:
