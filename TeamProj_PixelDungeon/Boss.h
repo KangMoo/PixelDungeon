@@ -2,7 +2,7 @@
 #include "gameNode.h"
 #include "Map.h"
 #include "UI.h"
-//#include "progressBar.h"
+#include "progressBar.h"
 #include "PDInfo.h"
 
 class Player;
@@ -16,7 +16,8 @@ protected:
 	UI* _ui;				//ui
 	Map* _map;				//적 인식용 맵정보
 	ItemManager* _im;		//아이템매니저
-	
+	//progressBar* _hpBar;	//체력바
+
 	ENEMYSTAT _statistics;	//몬스터 스텟
 	POINT _point;			//좌표
 	image* _image;			//그려줄 이미지~
@@ -37,6 +38,8 @@ protected:
 	int	_frameTime;						//프레임의 속도를 제한하기 위한 작은 코드
 	int _currentFrameY, _currentFrameX;	//현재 프레임
 
+	int _floor;
+
 	RECT _cog;				//최초 인식범위	렉트형태
 	int	 _deadAlpha;			//죽으면 사라져야함니다
 	bool _deleteForeEm;		//알파가 0이 되어 안보이면 사라집니다.
@@ -44,7 +47,7 @@ protected:
 
 public:
 	virtual HRESULT init(POINT _point); //포인트 추가
-	virtual HRESULT init(POINT point, int cog);//인식범위 추기
+	virtual HRESULT init(POINT point, int floor);//인식범위 추기
 	virtual void release();
 	virtual void update();
 	virtual void render(POINT camera);
@@ -67,6 +70,11 @@ public:
 	int getHP() { return _statistics.hp; }
 	void setHP(int hp) { _statistics.hp = hp; }
 
+	//hp바 용
+	int getCurrentHp() { return _currntHp; }
+
+	bool getLive() { return _isLive; }
+	
 	//플레이어, ui랑 연결
 	void setPlayerAddressLink(Player* player) { _player = player; }
 	void setUiAddressLink(UI* ui) { _ui = ui; }

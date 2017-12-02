@@ -13,7 +13,7 @@ goo::~goo()
 {
 }
 
-HRESULT goo::init(POINT point)
+HRESULT goo::init(POINT point, int floor)//인식범위 추기
 {
 	//입력받은 좌표를 초기 위치로
 	_point = point;
@@ -23,9 +23,9 @@ HRESULT goo::init(POINT point)
 	_move = new image;
 	_dead = new image;
 
-	_stay->init("Img//Enemy//goo//goo_stay.bmp", 44, 60, 2, 2, true, RGB(255, 0, 255));
-	_move->init("Img//Enemy//goo//goo_move.bmp", 88, 60, 4, 2, true, RGB(255, 0, 255));
-	_dead->init("Img//Enemy//goo//goo_dead.bmp", 84, 52, 3, 2, true, RGB(255, 0, 255));
+	_stay->init("Img//Enemy//goo//goo_stay.bmp", 192, 64, 6, 2, true, RGB(255, 0, 255));
+	_move->init("Img//Enemy//goo//goo_move.bmp", 64, 64, 2, 2, true, RGB(255, 0, 255));
+	_dead->init("Img//Enemy//goo//goo_dead.bmp", 96, 64, 3, 2, true, RGB(255, 0, 255));
 
 	//초기 설정은 stay
 	_image = _stay;
@@ -88,6 +88,12 @@ HRESULT goo::init(POINT point)
 	_PumpedUP = false;
 	_trunCount = 0;
 
+	_floor = floor;
+
+	_hpBar = new progressBar;
+	_hpBar->init(WINSIZEX/2 - (124 * 2 / 2), WINSIZEY / 2 - 275, 124*2,28*2);
+	_hpBar->setGauge(_statistics.hp, _currntHp);
+
 	return S_OK;
 }
 
@@ -100,12 +106,10 @@ void goo::release()
 
 void goo::getDamaged(int damage)
 {
-	int a = RND->getInt(100);
+	int a = RND->getInt(_player->getStat().atk_lck);
 
-	if (a < _statistics.avd_lck - _player->getStat().atk_lck)
-	{
-		return;
-	}
+	//ui에 회피 했다고 전달했으면 좋겠는데
+	if (a < _statistics.avd_lck - _player->getStat().atk_lck) return;
 	else
 	{
 		if (_currntHp > 0)
@@ -115,9 +119,15 @@ void goo::getDamaged(int damage)
 
 void goo::draw(POINT camera)
 {
-	//시야에 보일때만 출력하게
-	if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
-		_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
+	if (_map->getCurStageNum() == _floor)
+	{
+		//시야에 보일때만 출력하게
+		if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
+			_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
+
+	}
+	_hpBar->render(camera);
+
 }
 
 void goo::frameUpdate()
@@ -142,14 +152,18 @@ void goo::frameUpdate()
 			if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = 0;
 			_image->setFrameX(_currntFrameX);
 			_image->setFrameY(_currntFrameY);
+			if (_PumpedUP == true) _trunCount++;
 			break;
+
 		case ENEMYSTATE_MOVE:
 			_image = _move;
 			_currntFrameX++;
 			if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = 0;
 			_image->setFrameX(_currntFrameX);
 			_image->setFrameY(_currntFrameY);
+			if (_PumpedUP == true) _trunCount++;
 			break;
+
 		case ENEMYSTATE_ATTACK:
 			_image = _stay;
 			_currntFrameX++;
@@ -162,6 +176,8 @@ void goo::frameUpdate()
 			}
 			_image->setFrameX(_currntFrameX);
 			_image->setFrameY(_currntFrameY);
+			if (_PumpedUP == true) _trunCount++;
+
 			break;
 		}
 	}
@@ -319,9 +335,15 @@ void goo::action()
 				_player->getDamaged(_statistics.str);
 				_player->addDebuff(DEBUFF_BLEEDING, 2000, 1);
 			}
-			else if (true)
+			else if ((x <= 2 && x >= -2) && (y <= 2 && y >= -2) && _PumpedUP == true && _trunCount == 2)
 			{
+				_myState = ENEMYSTATE_ATTACK;
+				_currntFrameX = 0;
+				_player->getDamaged(_statistics.str);
+				_player->addDebuff(DEBUFF_BLEEDING, 2000, 1);
 
+				_PumpedUP = false;
+				_trunCount = 0;
 			}
 			else
 			{
@@ -394,18 +416,26 @@ void goo::action()
 
 void goo::update()
 {
-
-	if (_currntHp <= 0)
+	if (_map->getCurStageNum() == _floor)
 	{
-		_deadAlpha += 25;
-		_action = false;
-		if (_deadAlpha >= 255)
+		if (_currntHp <= 0)
 		{
-			_deadAlpha = 255;
-			_isLive = false;
+			_deadAlpha += 25;
 			_action = false;
+			if (_deadAlpha >= 255)
+			{
+				_deadAlpha = 255;
+				_isLive = false;
+				_action = false;
+			}
 		}
-	}
 
-	if (_action && _currntHp > 0 && _isLive) action();
+		if (_action && _currntHp > 0 && _isLive) action();
+
+		_hpBar->setGauge(_statistics.hp, _currntHp);
+		_hpBar->update();
+
+	}
+	else _action = false;
+
 }

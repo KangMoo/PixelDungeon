@@ -118,12 +118,10 @@ void Mimic::getDamaged(int damage)
 	//미믹의 경우 맵에서 일정 확률에 의하여 상자에서 나오기 때문에
 	//이미 들킨 상태이기에 ENEMYSTATE_SLEEP 상태가 존재하지 않는다.
 
-	int a = RND->getInt(100);
+	int a = RND->getInt(_player->getStat().atk_lck);
 
-	if (a < _statistics.avd_lck - _player->getStat().atk_lck)
-	{
-		return;
-	}
+	//ui에 회피 했다고 전달했으면 좋겠는데
+	if (a < _statistics.avd_lck - _player->getStat().atk_lck) return;
 	else
 	{
 		money = RND->getFromIntTo(1, 99999);
@@ -140,8 +138,6 @@ void Mimic::getDamaged(int damage)
 
 void Mimic::draw(POINT camera)
 {
-	
-
 	//_hpBar->setGauge(_currntHp, _statistics.hp);
 	//시야에 보일때만 출력하게
 	if (_map->getCurStageNum() == _floor)
