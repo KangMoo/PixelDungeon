@@ -48,12 +48,30 @@ HRESULT ItemManager::init()
 	//==================================================
 
 	setItemToBag(NAME_EMERGENCY);
-	setItemToBag(NAME_OLD_SHORT_SWORD);
+	setItemToBag(NAME_OLD_SHORT_SWORD, false, false, 9, 1);
+	setItemToBag(NAME_CLOTH);
 	setItemToBag(NAME_NORMAL);
+	setItemToBag(NAME_BATTLE_AXE);
+	setItemToBag(NAME_LIOYDS_BEACON);
 
 	setItemToBag(NAME_FROZEN);
+	setItemToBag(NAME_FROZEN);
+	setItemToBag(NAME_FROZEN);
+	setItemToBag(NAME_FROZEN);
+	setItemToBag(NAME_FROZEN);
+	setItemToBag(NAME_FROZEN);
+
 	setItemToBag(NAME_LIQUID_FIRE);
 	setItemToBag(NAME_UNKNOWN_MEAT);
+
+	setItemToBag(NAME_IDENTIFY);
+	setItemToBag(NAME_UPGRADE);
+	setItemToBag(NAME_PURIFY);
+
+	setItemToBag(NAME_SEED_HEAL);
+	setItemToBag(NAME_SEED_FIRE);
+	setItemToBag(NAME_SEED_SNAKE);
+
 	return S_OK;
 }
 void ItemManager::release()
@@ -73,42 +91,42 @@ void ItemManager::update()
 		case NAME_OLD_SHORT_SWORD:
 			_viBag->minPoint = 1 + _viBag->upgrade;
 			_viBag->maxPoint = 10 + _viBag->upgrade * 2;
-			_viBag->Power = 10 - (_viBag->upgrade / 3) + 1;
+			_viBag->Power = 10 - (_viBag->upgrade / 3) - 1;
 			break;
 		case NAME_SHORT_SWORD:
 			_viBag->minPoint = 2 + _viBag->upgrade;
 			_viBag->maxPoint = 15 + _viBag->upgrade * 3;
-			_viBag->Power = 12 - (_viBag->upgrade / 3) + 1;
+			_viBag->Power = 12 - (_viBag->upgrade / 3) - 1;
 			break;
 		case NAME_SWORD:
 			_viBag->minPoint = 3 + _viBag->upgrade;
 			_viBag->maxPoint = 20 + _viBag->upgrade * 4;
-			_viBag->Power = 14 - (_viBag->upgrade / 3) + 1;
+			_viBag->Power = 14 - (_viBag->upgrade / 3) - 1;
 			break;
 		case NAME_SPEAR:
 			_viBag->minPoint = 2 + _viBag->upgrade;
 			_viBag->maxPoint = 20 + _viBag->upgrade * 3;
-			_viBag->Power = 12 - (_viBag->upgrade / 3) + 1;
+			_viBag->Power = 12 - (_viBag->upgrade / 3) - 1;
 			break;
 		case NAME_BATTLE_AXE:
 			_viBag->minPoint = 4 + _viBag->upgrade;
 			_viBag->maxPoint = 20 + _viBag->upgrade * 9;
-			_viBag->Power = 16 - (_viBag->upgrade / 3) + 1;
+			_viBag->Power = 16 - (_viBag->upgrade / 3) - 1;
 			break;
 		case NAME_CLOTH:
 			_viBag->minPoint = 0 + _viBag->upgrade;
 			_viBag->maxPoint = 2 + _viBag->upgrade;
-			_viBag->Power = 10 - (_viBag->upgrade / 3) + 1;
+			_viBag->Power = 10 - (_viBag->upgrade / 3) - 1;
 			break;
 		case NAME_LEATHER:
 			_viBag->minPoint = 0 + _viBag->upgrade;
 			_viBag->maxPoint = 4 + _viBag->upgrade * 2;
-			_viBag->Power = 12 - (_viBag->upgrade / 3) + 1;
+			_viBag->Power = 12 - (_viBag->upgrade / 3) - 1;
 			break;
 		case NAME_MAIL:
 			_viBag->minPoint = 0 + _viBag->upgrade;
 			_viBag->maxPoint = 6 + _viBag->upgrade * 3;
-			_viBag->Power = 14 - (_viBag->upgrade / 3) + 1;
+			_viBag->Power = 14 - (_viBag->upgrade / 3) - 1;
 			break;
 		case NAME_RING_POWER:
 			_viBag->stat.str = 1 + _viBag->upgrade;
@@ -323,10 +341,10 @@ void ItemManager::setItemToBag(ITEMNAME name, bool identify, bool isCursed, int 
 
 	ZeroMemory(&item, sizeof(tagItem));
 
-	item.upgrade = upgrade;
 
 	setItem(&item, name);
 
+	item.upgrade = upgrade;
 	item.numOfItem = numOfItem;
 	item.contentsHide = identify;
 	item.isCursed = isCursed;
@@ -1484,6 +1502,7 @@ void ItemManager::useItem(int position, float x, float y)
 			default:
 				break;
 			}
+			break;
 		}
 		else  ++_viBag;
 	}
@@ -1518,7 +1537,7 @@ void ItemManager::useItem(int position, int target)
 							{
 								_viBag->upgrade++;
 								_scrollIdentified[1] = true;
-								_viBag->numOfItem--;
+								//_viBag->numOfItem--;
 							}
 							goto stop;
 						}
@@ -1566,6 +1585,7 @@ void ItemManager::useItem(int position, int target)
 				default:
 				break;
 			}
+			break;
 
 		}
 
