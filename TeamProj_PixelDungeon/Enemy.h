@@ -55,7 +55,7 @@ public:
 	virtual void move();
 	virtual void frameUpdate();
 	//데미지 받았을 때, 회피율 계산하여 함수 만들기
-	void getDamaged(int damage);
+	virtual void getDamaged(int damage);
 
 	//게터세터~
 	bool getAction() { return _action; }

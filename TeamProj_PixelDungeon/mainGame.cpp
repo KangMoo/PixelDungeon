@@ -20,6 +20,8 @@ HRESULT mainGame::init(void)
 	IMAGEMANAGER->addFrameImage("chest", "Img/Map/chest.bmp", 0, 0, 32, 32, 1, 1, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("water", "Img/Map/water0.bmp", 0, 0, 32, 32, 1, 1, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("trap", "Img/Map/trap.bmp", 0, 0, 512, 256, 16, 8, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("well_health", "Img/Map/well.bmp", 0, 0, 1696, 32, 53, 1, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addFrameImage("pot", "Img/Map/pot.bmp", 0, 0, 1600, 32, 50, 1, true, RGB(255, 0, 255));
 
 
 	//=========================== W E A P O N ===========================

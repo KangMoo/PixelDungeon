@@ -64,6 +64,9 @@ private:
 	//
 
 	int _tileNum;
+
+	int _aniCount;
+
 public:
 	HRESULT init();
 	void release();
