@@ -131,7 +131,7 @@ void Mimic::getDamaged(int damage)
 		int hitGift = RND->getInt(2);
 		if (hitGift == 1)
 		{
-			_im->setItemToField(NAME_MONEY, _pointX, _pointY, false, false, 0, 1);
+			_im->setItemToField(NAME_MONEY, _pointX, _pointY, false, false, 0, money,_map->getCurStageNum());
 		}
 	}
 }
@@ -517,78 +517,78 @@ void Mimic::dropitem()
 		//무기
 	case NAME_OLD_SHORT_SWORD:
 		//아이템 이름			위치X		위치Y	확인여부 저주여부 업그레이드 개수
-		_im->setItemToField(NAME_OLD_SHORT_SWORD, _pointX, _pointY, identify, isCursed, upgrade, 1);
+		_im->setItemToField(NAME_OLD_SHORT_SWORD, _pointX, _pointY, identify, isCursed, upgrade,money, _map->getCurStageNum());
 		break;
 
 	case NAME_SHORT_SWORD:
-		_im->setItemToField(NAME_SHORT_SWORD, _pointX, _pointY, identify, isCursed, upgrade, 1);
+		_im->setItemToField(NAME_SHORT_SWORD, _pointX, _pointY, identify, isCursed, upgrade, money, _map->getCurStageNum());
 		break;
 
 	case NAME_SWORD:
-		_im->setItemToField(NAME_SWORD, _pointX, _pointY, identify, isCursed, upgrade, 1);
+		_im->setItemToField(NAME_SWORD, _pointX, _pointY, identify, isCursed, upgrade, money, _map->getCurStageNum());
 
 		break;
 	case NAME_SPEAR:
-		_im->setItemToField(NAME_SPEAR, _pointX, _pointY, identify, isCursed, upgrade, 1);
+		_im->setItemToField(NAME_SPEAR, _pointX, _pointY, identify, isCursed, upgrade, money, _map->getCurStageNum());
 
 		break;
 	case NAME_BATTLE_AXE:
-		_im->setItemToField(NAME_BATTLE_AXE, _pointX, _pointY, identify, isCursed, upgrade, 1);
+		_im->setItemToField(NAME_BATTLE_AXE, _pointX, _pointY, identify, isCursed, upgrade, money, _map->getCurStageNum());
 
 		break;
 
 		//방어구
 	case NAME_CLOTH:
-		_im->setItemToField(NAME_CLOTH, _pointX, _pointY, identify, isCursed, upgrade, 1);
+		_im->setItemToField(NAME_CLOTH, _pointX, _pointY, identify, isCursed, upgrade, money, _map->getCurStageNum());
 
 		break;
 	case NAME_LEATHER:
-		_im->setItemToField(NAME_LEATHER, _pointX, _pointY, identify, isCursed, upgrade, 1);
+		_im->setItemToField(NAME_LEATHER, _pointX, _pointY, identify, isCursed, upgrade, money, _map->getCurStageNum());
 
 		break;
 	case NAME_MAIL:
-		_im->setItemToField(NAME_MAIL, _pointX, _pointY, identify, isCursed, upgrade, 1);
+		_im->setItemToField(NAME_MAIL, _pointX, _pointY, identify, isCursed, upgrade, money, _map->getCurStageNum());
 
 		break;
 
 		//악세사리
 	case NAME_RING_POWER:
-		_im->setItemToField(NAME_RING_POWER, _pointX, _pointY, identify, isCursed, upgrade, 1);
+		_im->setItemToField(NAME_RING_POWER, _pointX, _pointY, identify, isCursed, upgrade, money, _map->getCurStageNum());
 
 		break;
 	case NAME_RING_RECHARGE:
-		_im->setItemToField(NAME_RING_RECHARGE, _pointX, _pointY, identify, isCursed, upgrade, 1);
+		_im->setItemToField(NAME_RING_RECHARGE, _pointX, _pointY, identify, isCursed, upgrade, money, _map->getCurStageNum());
 
 		break;
 	case NAME_LIOYDS_BEACON:
-		_im->setItemToField(NAME_LIOYDS_BEACON, _pointX, _pointY, identify, isCursed, upgrade, 1);
+		_im->setItemToField(NAME_LIOYDS_BEACON, _pointX, _pointY, identify, isCursed, upgrade, money, _map->getCurStageNum());
 
 		break;
 
 		//투척
 	case NAME_DART:
-		_im->setItemToField(NAME_DART, _pointX, _pointY, identify, isCursed, upgrade, 1);
+		_im->setItemToField(NAME_DART, _pointX, _pointY, identify, isCursed, upgrade, money, _map->getCurStageNum());
 
 		break;
 	case NAME_PARALYSIS_DART:
-		_im->setItemToField(NAME_PARALYSIS_DART, _pointX, _pointY, identify, isCursed, upgrade, 1);
+		_im->setItemToField(NAME_PARALYSIS_DART, _pointX, _pointY, identify, isCursed, upgrade, money, _map->getCurStageNum());
 
 		break;
 	case NAME_POISON_DART:
-		_im->setItemToField(NAME_POISON_DART, _pointX, _pointY, identify, isCursed, upgrade, 1);
+		_im->setItemToField(NAME_POISON_DART, _pointX, _pointY, identify, isCursed, upgrade, money, _map->getCurStageNum());
 
 		break;
 		//완드
 	case NAME_LIGHTNING:
-		_im->setItemToField(NAME_LIGHTNING, _pointX, _pointY, identify, isCursed, upgrade, 1);
+		_im->setItemToField(NAME_LIGHTNING, _pointX, _pointY, identify, isCursed, upgrade, money, _map->getCurStageNum());
 
 		break;
 	case NAME_NORMAL:
-		_im->setItemToField(NAME_NORMAL, _pointX, _pointY, identify, isCursed, upgrade, 1);
+		_im->setItemToField(NAME_NORMAL, _pointX, _pointY, identify, isCursed, upgrade, money, _map->getCurStageNum());
 
 		break;
 	case NAME_POISON:
-		_im->setItemToField(NAME_POISON, _pointX, _pointY, identify, isCursed, upgrade, 1);
+		_im->setItemToField(NAME_POISON, _pointX, _pointY, identify, isCursed, upgrade, money, _map->getCurStageNum());
 
 		break;
 
@@ -693,7 +693,7 @@ void Mimic::dropitem()
 
 		//돈은 머니 랜덤변수를 이용합니다
 	case NAME_MONEY:
-		_im->setItemToField(NAME_MONEY, _pointX, _pointY, false, false, 0, money);
+		_im->setItemToField(NAME_MONEY, _pointX, _pointY, false, false, 0, money, _map->getCurStageNum());
 
 		break;
 	}
