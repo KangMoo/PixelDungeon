@@ -65,8 +65,8 @@ HRESULT goo::init(POINT point, int floor)//인식범위 추기
 	_statistics.lv = 1;
 	_statistics.maxLv = 8;
 	_statistics.exp = 2;
-	_statistics.hp = 12;
-	_currntHp = 12;
+	_statistics.hp = 900;
+	_currntHp = _statistics.hp;
 	_statistics.avd_lck = 4;
 	_statistics.def = 2;
 	a = RND->getFromIntTo(2, 5);
@@ -91,8 +91,8 @@ HRESULT goo::init(POINT point, int floor)//인식범위 추기
 	_floor = floor;
 
 	_hpBar = new progressBar;
-	_hpBar->init(WINSIZEX/2 - (124 * 2 / 2), WINSIZEY / 2 - 275, 124*2,28*2);
-	_hpBar->setGauge(_statistics.hp, _currntHp);
+	_hpBar->init(WINSIZEX/2 - (124 * 2 / 2), WINSIZEY / 2 - 275, 248,56);
+	_hpBar->setGauge(_currntHp, _statistics.hp);
 
 	return S_OK;
 }
@@ -101,20 +101,38 @@ void goo::release()
 {
 	SAFE_RELEASE(_image);
 	SAFE_DELETE(_image);
+
+	SAFE_RELEASE(_hpBar);
+	SAFE_DELETE(_hpBar);
+
+	SAFE_RELEASE(_move);
+	SAFE_DELETE(_move);
+
+	SAFE_RELEASE(_dead);
+	SAFE_DELETE(_dead);
+
+	SAFE_RELEASE(_stay);
+	SAFE_DELETE(_stay);
+
+
 }
 
 
 void goo::getDamaged(int damage)
 {
-	int a = RND->getInt(_player->getStat().atk_lck);
+	_currntHp -= damage*10;
 
-	//ui에 회피 했다고 전달했으면 좋겠는데
-	if (a < _statistics.avd_lck - _player->getStat().atk_lck) return;
-	else
-	{
-		if (_currntHp > 0)
-			_currntHp -= damage - _statistics.def;
-	}
+	//_player->getStat().atk_lck 가 0 이상이면 데미지를 입는다
+
+	//int a = RND->getInt(_player->getStat().atk_lck + 1);
+	//
+	////ui에 회피 했다고 전달했으면 좋겠는데
+	//if (a < _statistics.avd_lck - _player->getStat().atk_lck) return;
+	//else
+	//{
+	//	if (_currntHp > 0)
+	//		_currntHp -= damage - _statistics.def;
+	//}
 }
 
 void goo::draw(POINT camera)
@@ -124,9 +142,13 @@ void goo::draw(POINT camera)
 		//시야에 보일때만 출력하게
 		if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
 			_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
+		_hpBar->render();
+
 
 	}
-	_hpBar->render(camera);
+	char string[128];
+	sprintf_s(string, "%d", _currntHp);
+	TextOut(getMemDC(), 300, 300, string, strlen(string));
 
 }
 
@@ -432,7 +454,7 @@ void goo::update()
 
 		if (_action && _currntHp > 0 && _isLive) action();
 
-		_hpBar->setGauge(_statistics.hp, _currntHp);
+		_hpBar->setGauge(_currntHp, _statistics.hp);
 		_hpBar->update();
 
 	}
