@@ -11,11 +11,17 @@ private:
 	image* _progressBarTop;
 	image* _progressBarBottom;
 
+	image* _bossHpBarTop;
+	image* _bossHpBarBottom;
+
 public:
 	HRESULT init(int x, int y, int width, int height);
+	HRESULT bossinit(int x, int y, int width, int height);
+
 	void release();
 	void update();
 	void render();
+	void render(POINT camera);
 
 	void setGauge(float currentGauge, float maxGauge);
 

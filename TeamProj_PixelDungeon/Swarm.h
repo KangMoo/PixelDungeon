@@ -33,6 +33,7 @@ private:
 	POINT _movePoint;
 
 	int _frameCount;
+	int _itemDrop;
 
 	vector<TILE> astarTest;
 	EnemyManager* _em;
@@ -40,8 +41,8 @@ private:
 	int _deadAlpha;
 
 public:
-	HRESULT init(POINT point); //초기 생성
-	HRESULT init(POINT point, int currntHp); //분열
+	HRESULT init(POINT point, int floor); //초기 생성
+	HRESULT init(POINT point, int currntHp, int floor, int drop); //분열
 	void update();
 
 	POINT getTilePt() { return _point; }

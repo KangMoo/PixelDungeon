@@ -16,7 +16,7 @@ private:
 	vector<TILE> astarTest;
 
 public:
-	HRESULT init(POINT point); //段奄 持失
+	HRESULT init(POINT point, int floor); //段奄 持失
 	void getDamaged(int damage);
 	void update();
 

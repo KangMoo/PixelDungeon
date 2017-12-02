@@ -474,7 +474,7 @@ void Player::action_Attack()
 	{
 
 		// 데미지 주기 (임시)
-		_TargetEnemy->getDamaged(RND->getFromIntTo(100,100));
+		_TargetEnemy->getDamaged(RND->getFromIntTo(3,3));
 		
 		//_TargetEnemy->setHP(_TargetEnemy->getHP() -RND->getFromIntTo(_playerStat.mindmg,_playerStat.maxdmg));
 		_isEnemyTargeted = false;
@@ -555,7 +555,7 @@ void Player::mouseClickEvent()
 	{
 		//몬스터를 클릭했다면?
 		if ((ptMouse.x / TILESIZE == i->getPoint().x / TILESIZE && ptMouse.y / TILESIZE == i->getPoint().y / TILESIZE) &&
-			_map->getTile(ptMouse.x / TILESIZE, ptMouse.y / TILESIZE).tileview != TILEVIEW_NO)
+			_map->getTile(ptMouse.x / TILESIZE, ptMouse.y / TILESIZE).tileview != TILEVIEW_NO && i->getCHP() > 0 && _map->getCurStageNum() == i->getFloor())
 		{
 			//목표 저장
 			_isEnemyTargeted = true;

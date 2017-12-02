@@ -14,7 +14,7 @@ Mimic::~Mimic()
 {
 }
 
-HRESULT Mimic::init(POINT point)
+HRESULT Mimic::init(POINT point, int floor)
 {
 	//입력받은 좌표를 초기 위치로
 	_point = point;
@@ -84,6 +84,9 @@ HRESULT Mimic::init(POINT point)
 	_deadAlpha = 0;
 	_active = false;
 	_playerChack = true;
+
+	_floor = floor;
+
 	/*ENEMYSTATE_SLEEP,	//플레이어를 찾지 못한상태/수면상태
 	ENEMYSTATE_IDLE,	//플레이어를 찾은 상태에서의 기본
 	ENEMYSTATE_MOVE,
@@ -115,12 +118,10 @@ void Mimic::getDamaged(int damage)
 	//미믹의 경우 맵에서 일정 확률에 의하여 상자에서 나오기 때문에
 	//이미 들킨 상태이기에 ENEMYSTATE_SLEEP 상태가 존재하지 않는다.
 
-	int a = RND->getInt(100);
+	int a = RND->getInt(_player->getStat().atk_lck);
 
-	if (a < _statistics.avd_lck - _player->getStat().atk_lck)
-	{
-		return;
-	}
+	//ui에 회피 했다고 전달했으면 좋겠는데
+	if (a < _statistics.avd_lck - _player->getStat().atk_lck) return;
 	else
 	{
 		money = RND->getFromIntTo(1, 99999);
@@ -128,9 +129,9 @@ void Mimic::getDamaged(int damage)
 		if (_currntHp > 0)
 			_currntHp -= damage - _statistics.def;
 		int hitGift = RND->getInt(2);
-		if (hitGift == 2)
+		if (hitGift == 1)
 		{
-			_im->setItemToField(NAME_MONEY, _pointX, _pointY, false, false, 0, money);
+			_im->setItemToField(NAME_MONEY, _pointX, _pointY, false, false, 0, 1);
 		}
 	}
 }
@@ -139,8 +140,11 @@ void Mimic::draw(POINT camera)
 {
 	//_hpBar->setGauge(_currntHp, _statistics.hp);
 	//시야에 보일때만 출력하게
-	if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
-		_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
+	if (_map->getCurStageNum() == _floor)
+	{
+		if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
+			_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
+	}
 	//RectangleMakeCenter(getMemDC(), _pointX + camera.x, _pointY + camera.y, _currntHp, _currntHp);
 	//if(_findPlayer)
 
@@ -466,24 +470,27 @@ void Mimic::action()
 
 void Mimic::update()
 {
-
-	if (_currntHp <= 0)
+	if (_map->getCurStageNum() == _floor)
 	{
-		_myState = ENEMYSTATE_DEAD;
-
-		_deadAlpha += 15;
-		_action = false;
-		if (_deadAlpha >= 255)
+		if (_currntHp <= 0)
 		{
-			_deadAlpha = 255;
-			_isLive = false;
+			_myState = ENEMYSTATE_DEAD;
+
+			_deadAlpha += 15;
 			_action = false;
-			dropitem();
+			if (_deadAlpha >= 255)
+			{
+				_deadAlpha = 255;
+				_isLive = false;
+				_action = false;
+				dropitem();
+			}
+
 		}
 
+		if (_action && _currntHp > 0 && _isLive) action();
 	}
-
-	if (_action && _currntHp > 0 && _isLive) action();
+	else _action = false;
 }
 void Mimic::dropitem()
 {

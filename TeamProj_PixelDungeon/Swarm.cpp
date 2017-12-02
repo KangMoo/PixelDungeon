@@ -2,6 +2,7 @@
 #include "Swarm.h"
 #include "Player.h"
 #include "EnemyManager.h"
+#include "ItemManager.h"
 #include "UI.h"
 #include "Map.h"
 
@@ -14,9 +15,10 @@ Swarm::~Swarm()
 {
 }
 
-HRESULT Swarm::init(POINT point)
+HRESULT Swarm::init(POINT point, int floor)
 {
 	_point = point;
+	_floor = floor;
 
 	_move = new image;
 	_move->init("Img//Enemy//swarm_stay.bmp", 264, 56, 11, 2, true, RGB(255, 0, 255));
@@ -50,8 +52,8 @@ HRESULT Swarm::init(POINT point)
 	_statistics.lv = 1;
 	_statistics.maxLv = 10;
 	_statistics.exp = 1;
-	_statistics.hp = 80;
-	_currntHp = 80;
+	_statistics.hp = 8;
+	_currntHp = 8;
 	_statistics.avd_lck = 5;
 	_statistics.def = 0;
 	a = RND->getFromIntTo(1, 4);
@@ -66,6 +68,7 @@ HRESULT Swarm::init(POINT point)
 	_movePoint = PointMake(0, 0);
 	_frameCount = 0;
 	_deadAlpha = 0;
+	_itemDrop = 20;
 
 	/*ENEMYSTATE_SLEEP,	//플레이어를 찾지 못한상태/수면상태
 	ENEMYSTATE_IDLE,	//플레이어를 찾은 상태에서의 기본
@@ -77,7 +80,7 @@ HRESULT Swarm::init(POINT point)
 
 	return S_OK;
 }
-HRESULT Swarm::init(POINT point, int currntHp)
+HRESULT Swarm::init(POINT point, int currntHp, int floor, int drop)
 {
 	//분열했다!
 	_point = point;
@@ -115,7 +118,7 @@ HRESULT Swarm::init(POINT point, int currntHp)
 	_statistics.lv = 1;
 	_statistics.maxLv = 10;
 	_statistics.exp = 1;
-	_statistics.hp = 80;
+	_statistics.hp = 8;
 	_currntHp = currntHp;
 	_statistics.avd_lck = 5;
 	_statistics.def = 0;
@@ -126,10 +129,12 @@ HRESULT Swarm::init(POINT point, int currntHp)
 	//이미 공격당했으니 상태는 무조건 발각한 상태
 	_myState = ENEMYSTATE_IDLE;
 
+	_floor = floor;
 
 	_movePoint = PointMake(0, 0);
 	_frameCount = 0;
 	_deadAlpha = 0;
+	_itemDrop = drop;
 
 	/*ENEMYSTATE_SLEEP,	//플레이어를 찾지 못한상태/수면상태
 	ENEMYSTATE_IDLE,	//플레이어를 찾은 상태에서의 기본
@@ -450,7 +455,10 @@ void Swarm::getDamaged(int damage)
 	else
 	{
 		//높다면 뎀지받음
-		_currntHp -= damage - _statistics.def;
+		int dam = damage - _statistics.def;
+		if (dam < 1) dam = 1;
+		_currntHp -= dam;
+
 		if (_currntHp > 0)
 		{
 			//죽지 않았다면 분열을 해야한다
@@ -486,7 +494,7 @@ void Swarm::getDamaged(int damage)
 					if (_em->getEnemyVector()[i]->getTilePt().x == _point.x + x &&
 						_em->getEnemyVector()[i]->getTilePt().y == _point.y + y) return;
 				}
-				_em->setSwarmSpawn(PointMake(_point.x + x, _point.y + y), _currntHp);
+				_em->setSwarmSpawn(PointMake(_point.x + x, _point.y + y), _currntHp, _floor, _itemDrop/2);
 			}
 		}
 	}
@@ -497,8 +505,14 @@ void Swarm::draw(POINT camera)
 {
 	//_hpBar->setGauge(_currntHp, _statistics.hp);
 	//시야에 보일때만 출력하게
-	if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
-		_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
+	if (_floor == _map->getCurStageNum())
+	{
+		if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
+			_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
+		char string[128];
+		sprintf_s(string, "%d", _statistics.hp);
+		TextOut(getMemDC(), 300, 300, string, strlen(string));
+	}
 	//RectangleMakeCenter(getMemDC(), _pointX + camera.x, _pointY + camera.y, _currntHp, _currntHp);
 	//if(_findPlayer)
 
@@ -522,17 +536,29 @@ void Swarm::release()
 
 void Swarm::update()
 {
-	if (_currntHp <= 0)
+	if (_floor == _map->getCurStageNum())
 	{
-		_deadAlpha += 25;
-		_action = false;
-		if (_deadAlpha >= 255)
+		if (_currntHp <= 0)
 		{
-			_deadAlpha = 255;
-			_isLive = false;
+			_deadAlpha += 25;
 			_action = false;
+			if (_deadAlpha >= 255)
+			{
+				_deadAlpha = 255;
+				if (_isLive)
+				{
+					int a = RND->getInt(100);
+					if (a < _itemDrop)
+					{
+						_im->setItemToField(NAME_HEAL, _pointX, _pointY, false, false, 0, 1);
+					}
+				}
+				_isLive = false;
+				_action = false;
+			}
 		}
-	}
 
-	if (_action && _currntHp > 0 && _isLive) action();
+		if (_action && _currntHp > 0 && _isLive) action();
+	}
+	else _action = false;
 }

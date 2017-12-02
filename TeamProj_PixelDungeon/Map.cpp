@@ -594,7 +594,7 @@ void Map::setObj_OpenChest(int i) {
 			_im->setItemToField(drop, _vObj[i].destX * TILESIZE + TILESIZE * 0.5, _vObj[i].destY * TILESIZE + TILESIZE * 0.5);
 		}
 		else { // ╧л╧м©К(юс╫ц)
-			_em->setEnemy(PointMake(_vObj[i].destX, _vObj[i].destY), 1);
+			_em->setEnemy(PointMake(_vObj[i].destX, _vObj[i].destY), 1, 0);
 		}
 	}
 }

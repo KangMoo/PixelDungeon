@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Gnoll.h"
 #include "Player.h"
+#include "ItemManager.h"
 #include "Map.h"
 #include "UI.h"
 
@@ -13,7 +14,7 @@ Gnoll::~Gnoll()
 {
 }
 
-HRESULT Gnoll::init(POINT point)
+HRESULT Gnoll::init(POINT point, int floor)
 {
 	//입력받은 좌표를 초기 위치로
 	_point = point;
@@ -61,6 +62,7 @@ HRESULT Gnoll::init(POINT point)
 	//내 턴 아님, 안움직임
 	_action = false;
 	_isMove = false;
+	_floor = floor;
 
 	//스탯 설정
 	_statistics.lv = 1;
@@ -130,8 +132,12 @@ void Gnoll::getDamaged(int damage)
 	}
 	else
 	{
-		if(_currntHp > 0)
-			_currntHp -= damage - _statistics.def;
+		if (_currntHp > 0)
+		{
+			int dam = damage - _statistics.def;
+			if (dam < 1) dam = 1;
+			_currntHp -= dam;
+		}
 	}
 }
 
@@ -139,8 +145,11 @@ void Gnoll::draw(POINT camera)
 {
 	//_hpBar->setGauge(_currntHp, _statistics.hp);
 	//시야에 보일때만 출력하게
-	if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
-		_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
+	if (_floor == _map->getCurStageNum())
+	{
+		if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
+			_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
+	}
 	//RectangleMakeCenter(getMemDC(), _pointX + camera.x, _pointY + camera.y, _currntHp, _currntHp);
 	//if(_findPlayer)
 
@@ -452,18 +461,27 @@ void Gnoll::action()
 
 void Gnoll::update()
 {
-
-	if (_currntHp <= 0)
+	if (_floor == _map->getCurStageNum())
 	{
-		_deadAlpha += 25;
-		_action = false;
-		if (_deadAlpha >= 255)
+		if (_currntHp <= 0)
 		{
-			_deadAlpha = 255;
-			_isLive = false;
+			_deadAlpha += 25;
 			_action = false;
+			if (_deadAlpha >= 255)
+			{
+				_deadAlpha = 255;
+				if (_isLive)
+				{
+					int a = RND->getInt(100);
+					if(a < 50)
+						_im->setItemToField(NAME_MONEY, _pointX, _pointY, false, false, 0, RND->getInt(100));
+				}
+				_isLive = false;
+				_action = false;
+			}
 		}
-	}
 
-	if (_action && _currntHp > 0 && _isLive) action();
+		if (_action && _currntHp > 0 && _isLive) action();
+	}
+	else _action = false;
 }

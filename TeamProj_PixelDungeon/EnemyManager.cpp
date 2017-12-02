@@ -21,7 +21,16 @@ HRESULT EnemyManager::init()
 	_isSwarmSpawn = false;
 
 
-	setEnemy(PointMake(12, 12), 1);
+	//setEnemy(PointMake(6, 6), 2,0);
+	//setEnemy(PointMake(5, 5), 2, 0);
+	setEnemy(PointMake(5, 5), 3, 0);
+	setEnemy(PointMake(6, 6), 5, 0);
+	setEnemy(PointMake(5, 5), 3, 0);
+	setEnemy(PointMake(4, 5), 5, 0);
+	//setEnemy(PointMake(6, 6), 5, 0);
+	//setEnemy(PointMake(12, 12), 1,1);
+	setEnemy(PointMake(12, 12), 4, 1);
+
 	//setEnemy(PointMake(TILESIZE*14, TILESIZE*13), 0);
 	//setEnemy(PointMake(TILESIZE*13, TILESIZE*11), 0);
 	//setEnemy(PointMake(13, 13), 2);
@@ -128,101 +137,102 @@ void EnemyManager::draw(POINT camera)
 
 }
 
-void EnemyManager::setEnemy(POINT point, int type)
+void EnemyManager::setEnemy(POINT point, int type, int floor)
 {
 	switch (type)
 	{
-		case 0:
-		{
-			Rat* temp = new Rat;
-			temp->init(point);
-			temp->setPlayerAddressLink(_player);
-			temp->setItemManagerAddressLink(_im);
-			temp->setUiAddressLink(_ui);
-			temp->setMapAddressLink(_map);
-			_vEnemy.push_back(temp);
-			break;
+	case 0:
+	{
+		Rat* temp = new Rat;
+		temp->init(point, floor);
+		temp->setPlayerAddressLink(_player);
+		temp->setItemManagerAddressLink(_im);
+		temp->setUiAddressLink(_ui);
+		temp->setMapAddressLink(_map);
+		_vEnemy.push_back(temp);
+		break;
 
 		//Áã, Rat
 
 		break;
-		}
-		case 1:
-		{
+	}
+	case 1:
+	{
 
-			Mimic* temp = new Mimic;
-			temp->init(point);
-			temp->setPlayerAddressLink(_player);
-			temp->setItemManagerAddressLink(_im);
-			temp->setUiAddressLink(_ui);
-			temp->setMapAddressLink(_map);
-			_vEnemy.push_back(temp);
+		Mimic* temp = new Mimic;
+		temp->init(point, floor);
+		temp->setPlayerAddressLink(_player);
+		temp->setItemManagerAddressLink(_im);
+		temp->setUiAddressLink(_ui);
+		temp->setMapAddressLink(_map);
+		_vEnemy.push_back(temp);
 
-			//¹Ì¹Í, Mimic
-			break;
-		}
-		case 2:
-		{
-			//ÆÄ¸®, Swarm
-			Swarm* temp = new Swarm;
-			temp->init(point);
-			temp->setEm(this);
-			temp->setPlayerAddressLink(_player);
-			temp->setItemManagerAddressLink(_im);
-			temp->setUiAddressLink(_ui);
-			temp->setMapAddressLink(_map);
-			_vEnemy.push_back(temp);
-			break;
-		}
-		case 3:
-		{
-			//³î, Gnoll
-			Gnoll* temp = new Gnoll;
-			temp->init(point);
-			temp->setPlayerAddressLink(_player);
-			temp->setItemManagerAddressLink(_im);
-			temp->setUiAddressLink(_ui);
-			temp->setMapAddressLink(_map);
-			_vEnemy.push_back(temp);
-			break;
-		}
-		case 4:
-		{
+		//¹Ì¹Í, Mimic
+		break;
+	}
+	case 2:
+	{
+		//ÆÄ¸®, Swarm
+		Swarm* temp = new Swarm;
+		temp->init(point, floor);
+		temp->setEm(this);
+		temp->setPlayerAddressLink(_player);
+		temp->setItemManagerAddressLink(_im);
+		temp->setUiAddressLink(_ui);
+		temp->setMapAddressLink(_map);
+		_vEnemy.push_back(temp);
+		break;
+	}
+	case 3:
+	{
+		//³î, Gnoll
+		Gnoll* temp = new Gnoll;
+		temp->init(point, floor);
+		temp->setPlayerAddressLink(_player);
+		temp->setItemManagerAddressLink(_im);
+		temp->setUiAddressLink(_ui);
+		temp->setMapAddressLink(_map);
+		_vEnemy.push_back(temp);
+		break;
+	}
+	case 4:
+	{
 
-			goo* temp = new goo;
-			temp->init(point);
-			temp->setPlayerAddressLink(_player);
-			temp->setItemManagerAddressLink(_im);
-			temp->setUiAddressLink(_ui);
-			temp->setMapAddressLink(_map);
+		goo* temp = new goo;
+		temp->init(point, floor);
+		temp->setPlayerAddressLink(_player);
+		temp->setItemManagerAddressLink(_im);
+		temp->setUiAddressLink(_ui);
+		temp->setMapAddressLink(_map);
+		_vEnemy.push_back(temp);
+		break;
 
-			break;
-
-		}
-		case 5:
-		{
-			//°Ô
-			Crap* temp = new Crap;
-			temp->init(point);
-			temp->setPlayerAddressLink(_player);
-			temp->setItemManagerAddressLink(_im);
-			temp->setUiAddressLink(_ui);
-			temp->setMapAddressLink(_map);
-			_vEnemy.push_back(temp);
-			break;
-		}
-		default:
-		{
-			//
-			break;
-		}
+	}
+	case 5:
+	{
+		//°Ô
+		Crap* temp = new Crap;
+		temp->init(point, floor);
+		temp->setPlayerAddressLink(_player);
+		temp->setItemManagerAddressLink(_im);
+		temp->setUiAddressLink(_ui);
+		temp->setMapAddressLink(_map);
+		_vEnemy.push_back(temp);
+		break;
+	}
+	default:
+	{
+		//
+		break;
+	}
 	}
 }
+
 
 void EnemyManager::setSwarm()
 {
 	Swarm* temp = new Swarm;
-	temp->init(_temp.pt, _temp.hp);
+	temp->init(_temp.pt, _temp.hp, _temp.floor, _temp.drop);
 	temp->setEm(this);
 	temp->setPlayerAddressLink(_player);
 	temp->setItemManagerAddressLink(_im);
