@@ -2013,7 +2013,7 @@ void UI::LbuttonClickEvnet()
 		if (PtInRect(&_backPackRect, _ptMouse) || PtInRect(&_SearchOptionRect, _ptMouse) || PtInRect(&_TurnSkipRect, _ptMouse) || PtInRect(&_Menu_selectRect, _ptMouse) || PtInRect(&_StatusRect, _ptMouse))
 		{
 			_selectInterface = INTERFACEMENU_END;
-			//_player->setUsingUI(false);
+			_player->setUsingUI(false);
 			usingui();
 		}
 	}
