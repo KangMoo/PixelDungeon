@@ -474,7 +474,7 @@ void Player::action_Attack()
 	{
 
 		// 데미지 주기 (임시)
-		_TargetEnemy->getDamaged(RND->getFromIntTo(10,10));
+		_TargetEnemy->getDamaged(RND->getFromIntTo(3,3));
 		
 		//_TargetEnemy->setHP(_TargetEnemy->getHP() -RND->getFromIntTo(_playerStat.mindmg,_playerStat.maxdmg));
 		_isEnemyTargeted = false;

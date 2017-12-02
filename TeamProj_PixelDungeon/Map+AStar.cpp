@@ -42,13 +42,9 @@ vector<TILE> Map::aStar(POINT currentPoint, POINT goalPoint)
 	vertex curV;
 	bool findWay;
 	while (true)
-	{
-		curV = pop_openlist();
-		add_closelist(curV);
-
-		add_eightway(curV, goalPoint);
-
+	{		
 		//openlist가 비었거나(길이없거나) 목적지를 찾은 경우
+		// YJW : pop_openlist openlist size가 0일때는 실행하지 않도록 수정
 		if (_openlist.size() == 0)
 		{
 			findWay = false;
@@ -59,6 +55,12 @@ vector<TILE> Map::aStar(POINT currentPoint, POINT goalPoint)
 			findWay = true;
 			break;
 		}
+		curV = pop_openlist();
+		add_closelist(curV);
+
+		add_eightway(curV, goalPoint);
+
+
 	}
 
 

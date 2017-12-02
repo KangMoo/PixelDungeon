@@ -1,3 +1,15 @@
+
+
+
+// YJW : map에서 하나로 처리할 경우 list를 공유해서 터지는 문제가 발생
+//		몬스터 각각이 list를 갖고 A*를 실행하도록 이쪽으로 옮김
+//
+//
+//
+//
+//
+
+
 #include "stdafx.h"
 #include "Enemy.h"
 #include "EnemyManager.h"
@@ -115,12 +127,8 @@ vector<TILE> Enemy::aStar(POINT currentPoint, POINT goalPoint)
 	bool findWay;
 	while (true)
 	{
-		curV = pop_openlist();
-		add_closelist(curV);
-
-		add_eightway(curV, goalPoint);
-
 		//openlist가 비었거나(길이없거나) 목적지를 찾은 경우
+		// YJW : pop_openlist openlist size가 0일때는 실행하지 않도록 수정
 		if (_openlist.size() == 0)
 		{
 			findWay = false;
@@ -131,6 +139,12 @@ vector<TILE> Enemy::aStar(POINT currentPoint, POINT goalPoint)
 			findWay = true;
 			break;
 		}
+
+		curV = pop_openlist();
+		add_closelist(curV);
+
+		add_eightway(curV, goalPoint);
+
 	}
 
 
@@ -293,13 +307,13 @@ void Enemy::add_eightway(vertex v, POINT goalPoint)
 		{
 			bool addlist = true;
 			////몬스터가 있는타일 제외
-			//for (auto i : _em->getEnemyVector())
-			//{
-			//	if ((v.x - 1 == i->getPoint().x / TILESIZE && v.y == i->getPoint().y / TILESIZE))
-			//	{
-			//		addlist = false;
-			//	}
-			//}
+			for (auto i : _em->getEnemyVector())
+			{
+				if ((v.x - 1 == i->getPoint().x / TILESIZE && v.y == i->getPoint().y / TILESIZE))
+				{
+					addlist = false;
+				}
+			}
 			//플레이어가 있는 타일 제외
 			if ((v.x - 1 == _player->getPoint().x / TILESIZE && v.y == _player->getPoint().y / TILESIZE))
 			{
@@ -318,13 +332,13 @@ void Enemy::add_eightway(vertex v, POINT goalPoint)
 		{
 			bool addlist = true;
 			//몬스터가 있는타일 제외
-			//for (auto i : _em->getEnemyVector())
-			//{
-			//	if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y == i->getPoint().y / TILESIZE))
-			//	{
-			//		addlist = false;
-			//	}
-			//}
+			for (auto i : _em->getEnemyVector())
+			{
+				if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y == i->getPoint().y / TILESIZE))
+				{
+					addlist = false;
+				}
+			}
 			//플레이어가 있는 타일 제외
 			if ((v.x + 1 == _player->getPoint().x / TILESIZE && v.y == _player->getPoint().y / TILESIZE))
 			{
@@ -344,13 +358,13 @@ void Enemy::add_eightway(vertex v, POINT goalPoint)
 		{
 			bool addlist = true;
 			//몬스터가 있는타일 제외
-			//for (auto i : _em->getEnemyVector())
-			//{
-			//	if ((v.x == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE))
-			//	{
-			//		addlist = false;
-			//	}
-			//}
+			for (auto i : _em->getEnemyVector())
+			{
+				if ((v.x == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE))
+				{
+					addlist = false;
+				}
+			}
 			//플레이어가 있는 타일 제외
 			if ((v.x == _player->getPoint().x / TILESIZE && v.y - 1 == _player->getPoint().y / TILESIZE))
 			{
@@ -370,13 +384,13 @@ void Enemy::add_eightway(vertex v, POINT goalPoint)
 		{
 			bool addlist = true;
 			//몬스터가 있는타일 제외
-			//for (auto i : _em->getEnemyVector())
-			//{
-			//	if ((v.x == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE))
-			//	{
-			//		addlist = false;
-			//	}
-			//}
+			for (auto i : _em->getEnemyVector())
+			{
+				if ((v.x == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE))
+				{
+					addlist = false;
+				}
+			}
 			//플레이어가 있는 타일 제외
 			if ((v.x == _player->getPoint().x / TILESIZE && v.y + 1 == _player->getPoint().y / TILESIZE))
 			{
@@ -398,13 +412,13 @@ void Enemy::add_eightway(vertex v, POINT goalPoint)
 		{
 			bool addlist = true;
 			//몬스터가 있는타일 제외
-			//for (auto i : _em->getEnemyVector())
-			//{
-			//	if ((v.x - 1 == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE))
-			//	{
-			//		addlist = false;
-			//	}
-			//}
+			for (auto i : _em->getEnemyVector())
+			{
+				if ((v.x - 1 == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE))
+				{
+					addlist = false;
+				}
+			}
 			//플레이어가 있는 타일 제외
 			if ((v.x - 1 == _player->getPoint().x / TILESIZE && v.y - 1 == _player->getPoint().y / TILESIZE))
 			{
@@ -423,13 +437,13 @@ void Enemy::add_eightway(vertex v, POINT goalPoint)
 		{
 			bool addlist = true;
 			//몬스터가 있는타일 제외
-			//for (auto i : _em->getEnemyVector())
-			//{
-			//	if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE))
-			//	{
-			//		addlist = false;
-			//	}
-			//}
+			for (auto i : _em->getEnemyVector())
+			{
+				if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE))
+				{
+					addlist = false;
+				}
+			}
 			//플레이어가 있는 타일 제외
 			if ((v.x + 1 == _player->getPoint().x / TILESIZE && v.y - 1 == _player->getPoint().y / TILESIZE))
 			{
@@ -448,13 +462,13 @@ void Enemy::add_eightway(vertex v, POINT goalPoint)
 		{
 			bool addlist = true;
 			//몬스터가 있는타일 제외
-			//for (auto i : _em->getEnemyVector())
-			//{
-			//	if ((v.x - 1 == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE))
-			//	{
-			//		addlist = false;
-			//	}
-			//}
+			for (auto i : _em->getEnemyVector())
+			{
+				if ((v.x - 1 == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE))
+				{
+					addlist = false;
+				}
+			}
 			//플레이어가 있는 타일 제외
 			if ((v.x - 1 == _player->getPoint().x / TILESIZE && v.y + 1 == _player->getPoint().y / TILESIZE))
 			{
@@ -472,13 +486,13 @@ void Enemy::add_eightway(vertex v, POINT goalPoint)
 		{
 			bool addlist = true;
 			//몬스터가 있는타일 제외
-			//for (auto i : _em->getEnemyVector())
-			//{
-			//	if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE))
-			//	{
-			//		addlist = false;
-			//	}
-			//}
+			for (auto i : _em->getEnemyVector())
+			{
+				if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE))
+				{
+					addlist = false;
+				}
+			}
 			//플레이어가 있는 타일 제외
 			if ((v.x + 1 == _player->getPoint().x / TILESIZE && v.y + 1 == _player->getPoint().y / TILESIZE))
 			{
@@ -520,13 +534,13 @@ void Enemy::add_eightway(vertex v, POINT goalPoint)
 
 			bool addlist = true;
 			//몬스터가 있는타일 제외
-			//for (auto i : _em->getEnemyVector())
-			//{
-			//	if ((v.x - 1 == i->getPoint().x / TILESIZE && v.y == i->getPoint().y / TILESIZE))
-			//	{
-			//		addlist = false;
-			//	}
-			//}
+			for (auto i : _em->getEnemyVector())
+			{
+				if ((v.x - 1 == i->getPoint().x / TILESIZE && v.y == i->getPoint().y / TILESIZE))
+				{
+					addlist = false;
+				}
+			}
 			//플레이어가 있는 타일 제외
 			if ((v.x - 1 == _player->getPoint().x / TILESIZE && v.y == _player->getPoint().y / TILESIZE))
 			{
@@ -563,13 +577,13 @@ void Enemy::add_eightway(vertex v, POINT goalPoint)
 		{
 			bool addlist = true;
 			//몬스터가 있는타일 제외
-			//for (auto i : _em->getEnemyVector())
-			//{
-			//	if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y == i->getPoint().y / TILESIZE))
-			//	{
-			//		addlist = false;
-			//	}
-			//}
+			for (auto i : _em->getEnemyVector())
+			{
+				if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y == i->getPoint().y / TILESIZE))
+				{
+					addlist = false;
+				}
+			}
 			//플레이어가 있는 타일 제외
 			if ((v.x + 1 == _player->getPoint().x / TILESIZE && v.y == _player->getPoint().y / TILESIZE))
 			{
@@ -604,13 +618,13 @@ void Enemy::add_eightway(vertex v, POINT goalPoint)
 		{
 			bool addlist = true;
 			//몬스터가 있는타일 제외
-			//for (auto i : _em->getEnemyVector())
-			//{
-			//	if ((v.x == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE))
-			//	{
-			//		addlist = false;
-			//	}
-			//}
+			for (auto i : _em->getEnemyVector())
+			{
+				if ((v.x == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE))
+				{
+					addlist = false;
+				}
+			}
 			//플레이어가 있는 타일 제외
 			if ((v.x == _player->getPoint().x / TILESIZE && v.y - 1 == _player->getPoint().y / TILESIZE))
 			{
@@ -645,13 +659,13 @@ void Enemy::add_eightway(vertex v, POINT goalPoint)
 		{
 			bool addlist = true;
 			//몬스터가 있는타일 제외
-			//for (auto i : _em->getEnemyVector())
-			//{
-			//	if ((v.x == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE))
-			//	{
-			//		addlist = false;
-			//	}
-			//}
+			for (auto i : _em->getEnemyVector())
+			{
+				if ((v.x == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE))
+				{
+					addlist = false;
+				}
+			}
 			//플레이어가 있는 타일 제외
 			if ((v.x == _player->getPoint().x / TILESIZE && v.y + 1 == _player->getPoint().y / TILESIZE))
 			{
@@ -689,13 +703,13 @@ void Enemy::add_eightway(vertex v, POINT goalPoint)
 		{
 			bool addlist = true;
 			//몬스터가 있는타일 제외
-			//for (auto i : _em->getEnemyVector())
-			//{
-			//	if ((v.x - 1 == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE))
-			//	{
-			//		addlist = false;
-			//	}
-			//}
+			for (auto i : _em->getEnemyVector())
+			{
+				if ((v.x - 1 == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE))
+				{
+					addlist = false;
+				}
+			}
 			//플레이어가 있는 타일 제외
 			if ((v.x - 1 == _player->getPoint().x / TILESIZE && v.y - 1 == _player->getPoint().y / TILESIZE))
 			{
@@ -730,13 +744,13 @@ void Enemy::add_eightway(vertex v, POINT goalPoint)
 		{
 			bool addlist = true;
 			//몬스터가 있는타일 제외
-			//for (auto i : _em->getEnemyVector())
-			//{
-			//	if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE))
-			//	{
-			//		addlist = false;
-			//	}
-			//}
+			for (auto i : _em->getEnemyVector())
+			{
+				if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE))
+				{
+					addlist = false;
+				}
+			}
 			//플레이어가 있는 타일 제외
 			if ((v.x + 1 == _player->getPoint().x / TILESIZE && v.y - 1 == _player->getPoint().y / TILESIZE))
 			{
@@ -771,13 +785,13 @@ void Enemy::add_eightway(vertex v, POINT goalPoint)
 		{
 			bool addlist = true;
 			//몬스터가 있는타일 제외
-		//	for (auto i : _em->getEnemyVector())
-		//	{
-		//		if ((v.x - 1 == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE))
-		//		{
-		//			addlist = false;
-		//		}
-		//	}
+			for (auto i : _em->getEnemyVector())
+			{
+				if ((v.x - 1 == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE))
+				{
+					addlist = false;
+				}
+			}
 			//플레이어가 있는 타일 제외
 			if ((v.x - 1 == _player->getPoint().x / TILESIZE && v.y + 1 == _player->getPoint().y / TILESIZE))
 			{
@@ -813,13 +827,13 @@ void Enemy::add_eightway(vertex v, POINT goalPoint)
 		{
 			bool addlist = true;
 			//몬스터가 있는타일 제외
-		//	for (auto i : _em->getEnemyVector())
-		//	{
-		//		if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE))
-		//		{
-		//			addlist = false;
-		//		}
-		//	}
+			for (auto i : _em->getEnemyVector())
+			{
+				if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE))
+				{
+					addlist = false;
+				}
+			}
 			//플레이어가 있는 타일 제외
 			if ((v.x + 1 == _player->getPoint().x / TILESIZE && v.y + 1 == _player->getPoint().y / TILESIZE))
 			{

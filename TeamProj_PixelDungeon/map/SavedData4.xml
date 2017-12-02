@@ -2326,125 +2326,20 @@
         <size>0</size>
     </ItemList>
     <MonsterList>
-        <size>68</size>
-        <monster>
-            <destX>11</destX>
-            <destY>9</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>11</destX>
-            <destY>10</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>6</destX>
-            <destY>9</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>5</destX>
-            <destY>8</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>7</destX>
-            <destY>5</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>9</destX>
-            <destY>6</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>5</destX>
-            <destY>4</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>8</destX>
-            <destY>3</destY>
-            <name>gnoll</name>
-        </monster>
+        <size>14</size>
         <monster>
             <destX>10</destX>
             <destY>4</destY>
             <name>gnoll</name>
         </monster>
         <monster>
-            <destX>12</destX>
-            <destY>6</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>11</destX>
-            <destY>7</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>8</destX>
-            <destY>7</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>4</destX>
-            <destY>4</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
             <destX>7</destX>
             <destY>3</destY>
             <name>gnoll</name>
         </monster>
         <monster>
-            <destX>8</destX>
-            <destY>5</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>9</destX>
-            <destY>11</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>8</destX>
-            <destY>13</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>7</destX>
-            <destY>14</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>4</destX>
-            <destY>14</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>1</destX>
-            <destY>13</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
             <destX>1</destX>
             <destY>3</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>3</destX>
-            <destY>4</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>8</destX>
-            <destY>9</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>5</destX>
-            <destY>6</destY>
             <name>gnoll</name>
         </monster>
         <monster>
@@ -2458,136 +2353,6 @@
             <name>gnoll</name>
         </monster>
         <monster>
-            <destX>3</destX>
-            <destY>5</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>5</destX>
-            <destY>7</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>6</destX>
-            <destY>8</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>10</destX>
-            <destY>10</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>7</destX>
-            <destY>9</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>9</destX>
-            <destY>7</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>9</destX>
-            <destY>8</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>10</destX>
-            <destY>8</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>10</destX>
-            <destY>9</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>9</destX>
-            <destY>10</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>7</destX>
-            <destY>10</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>4</destX>
-            <destY>9</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>4</destX>
-            <destY>8</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>4</destX>
-            <destY>7</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>7</destX>
-            <destY>7</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>8</destX>
-            <destY>8</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>8</destX>
-            <destY>10</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>8</destX>
-            <destY>11</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>8</destX>
-            <destY>12</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>7</destX>
-            <destY>12</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>6</destX>
-            <destY>11</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>6</destX>
-            <destY>10</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>5</destX>
-            <destY>9</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>4</destX>
-            <destY>6</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>4</destX>
-            <destY>5</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>5</destX>
-            <destY>5</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
             <destX>11</destX>
             <destY>5</destY>
             <name>gnoll</name>
@@ -2598,74 +2363,39 @@
             <name>gnoll</name>
         </monster>
         <monster>
-            <destX>14</destX>
-            <destY>9</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>12</destX>
-            <destY>10</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>9</destX>
-            <destY>9</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>7</destX>
-            <destY>8</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>6</destX>
-            <destY>7</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>6</destX>
-            <destY>6</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>7</destX>
-            <destY>4</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>8</destX>
-            <destY>4</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>9</destX>
-            <destY>5</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>8</destX>
-            <destY>6</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>7</destX>
-            <destY>6</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>6</destX>
-            <destY>5</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>6</destX>
-            <destY>4</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
             <destX>6</destX>
             <destY>3</destY>
             <name>gnoll</name>
+        </monster>
+        <monster>
+            <destX>14</destX>
+            <destY>9</destY>
+            <name>swarm</name>
+        </monster>
+        <monster>
+            <destX>12</destX>
+            <destY>6</destY>
+            <name>swarm</name>
+        </monster>
+        <monster>
+            <destX>10</destX>
+            <destY>7</destY>
+            <name>swarm</name>
+        </monster>
+        <monster>
+            <destX>8</destX>
+            <destY>9</destY>
+            <name>swarm</name>
+        </monster>
+        <monster>
+            <destX>8</destX>
+            <destY>10</destY>
+            <name>swarm</name>
+        </monster>
+        <monster>
+            <destX>8</destX>
+            <destY>13</destY>
+            <name>swarm</name>
         </monster>
     </MonsterList>
 </map>

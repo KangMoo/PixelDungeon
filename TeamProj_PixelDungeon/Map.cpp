@@ -402,7 +402,10 @@ void Map::load(int stageNum) {
 		if (name == "gnoll") {
 			_em->setEnemy(PointMake(destX, destY), 3, stageNum);
 		}
-
+		else if (name == "swarm") {
+			_em->setEnemy(PointMake(destX, destY), 2, stageNum);
+		}
+	
 
 		pMonListElement = pMonListElement->NextSiblingElement("monster");
 	}
