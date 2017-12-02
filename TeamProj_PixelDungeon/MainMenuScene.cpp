@@ -13,6 +13,11 @@ MainMenuScene::~MainMenuScene()
 
 HRESULT MainMenuScene::init()
 {
+	gameStart = RectMakeCenter(250,470, 100, 100);
+	mapTool = RectMakeCenter(550,470,100,100);
+	IMAGEMANAGER->addImage("maneMenuBg", "Img//Etc//mainbg.bmp", 800, 600,true,RGB(255,0,255));
+	IMAGEMANAGER->addImage("gamestartButton", "Img//Etc//gamestart.bmp", gameStart.right - gameStart.left, gameStart.bottom - gameStart.top, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("mapToolButton", "Img//Etc//mt.bmp", mapTool.right - mapTool.left, mapTool.bottom - mapTool.top, true, RGB(255, 0, 255));
 
 
 	return S_OK;
@@ -24,15 +29,14 @@ void MainMenuScene::release()
 void MainMenuScene::update() 
 {
 	//test~
-	RECT temp1 = RectMake(50, 50, 100, 100);
-	RECT temp2 = RectMake(160, 50, 100, 100);
+
 	if (KEYMANAGER->isOnceKeyDown(VK_LBUTTON))
 	{
-		if (PtInRect(&temp1, _ptMouse))
+		if (PtInRect(&gameStart, _ptMouse))
 		{
 			SCENEMANAGER->changeScene("°ÔÀÓ¾À");
 		}
-		else if (PtInRect(&temp2, _ptMouse))
+		else if (PtInRect(&mapTool, _ptMouse))
 		{
 			SCENEMANAGER->changeScene("¸ÊÅø¾À");
 		}
@@ -41,8 +45,7 @@ void MainMenuScene::update()
 }
 void MainMenuScene::render() 
 {
-	//test~
-	Rectangle(getMemDC(), 50, 50, 150, 150);
-	Rectangle(getMemDC(), 160, 50, 260, 150);
-	//~test
+	IMAGEMANAGER->render("maneMenuBg",getMemDC(),0,0);
+	IMAGEMANAGER->alphaRender("gamestartButton", getMemDC(), gameStart.left, gameStart.top,255);
+	IMAGEMANAGER->alphaRender("mapToolButton", getMemDC(), mapTool.left, mapTool.top,255);
 }

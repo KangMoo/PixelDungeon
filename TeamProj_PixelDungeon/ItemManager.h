@@ -26,6 +26,7 @@ struct tagEffect
 	RECT rc;	//이펙트 rc;
 	int size;	//이펙트 사이즈
 	int Trans;	//투명도 0~255;
+	bool isSee; // 완전 투명해짐?
 };
 
 class ItemManager :public gameNode
@@ -51,6 +52,9 @@ private:
 	UI* _ui;
 	Player* _player;
 	Item* _item;
+	tagEffect frozenE[20];
+	tagEffect fireE[20];
+
 
 private:
 	int _potion[7];
@@ -60,6 +64,8 @@ private:
 
 	bool _potionIdentified[7];
 	bool _scrollIdentified[5];
+	bool _fire;
+	bool _frozen;
 public:
 	HRESULT init();
 	void release();
@@ -93,7 +99,7 @@ public:
 	void removeFieldItem(int arrNum);
 	void removeBagItem(int arrNum);
 	
-	//=========== A D D   M O V E ============
+	//=========== A D D   I T E M  ============
 	void setItemToBag(ITEMNAME name);
 	void setItemToField(ITEMNAME name, float x, float y);
 	void setItemToBag(ITEMNAME name, bool identify, bool isCursed, int upgrade, int numOfItem);
@@ -107,9 +113,9 @@ public:
 
 
 	void liquidFire(float x, float y);
-
+	void liquidFireEffect(float x, float y);
 	void frozen(float x, float y);
-
+	void frozenEffect(float x, float y);
 
 	//================= G E T T E R ================
 	vector<tagItem> getvItem() { return _vItem; }

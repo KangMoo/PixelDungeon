@@ -95,6 +95,8 @@ public:
 	bool getTurn() { return _action; }
 	void setTurn(bool turn) { _action = turn; }
 
+	void activeTurn();
+
 	PLAYERSTAT getStat() { return _playerStat; }
 	void setStat(PLAYERSTAT stat) { _playerStat = stat; }
 	POINT getPoint() { return _playerPoint; }

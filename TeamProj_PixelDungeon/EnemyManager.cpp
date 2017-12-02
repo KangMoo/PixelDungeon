@@ -20,11 +20,10 @@ HRESULT EnemyManager::init()
 
 	_isSwarmSpawn = false;
 
+
 	//setEnemy(PointMake(12, 12), 2);
-
-	setEnemy(PointMake(12, 12), 3);
-
-	setEnemy(PointMake(5, 5), 0);
+	//setEnemy(PointMake(TILESIZE*14, TILESIZE*13), 0);
+	//setEnemy(PointMake(TILESIZE*13, TILESIZE*11), 0);
 	//setEnemy(PointMake(13, 13), 2);
 
 	return S_OK;
@@ -107,7 +106,7 @@ void EnemyManager::action()
 		_enemyTurn = false;
 		_actionCount = 0;
 		//플레이어 차례 true 대입
-		_player->setTurn(true);
+		_player->activeTurn();
 	}
 }
 void EnemyManager::render()
@@ -153,7 +152,7 @@ void EnemyManager::setEnemy(POINT point, int type)
 		{
 
 			Mimic* temp = new Mimic;
-			temp->init(point,4);
+			temp->init(point);
 			temp->setPlayerAddressLink(_player);
 			temp->setItemManagerAddressLink(_im);
 			temp->setUiAddressLink(_ui);
@@ -192,7 +191,7 @@ void EnemyManager::setEnemy(POINT point, int type)
 		{
 
 			goo* temp = new goo;
-			temp->init(point,8);
+			temp->init(point);
 			temp->setPlayerAddressLink(_player);
 			temp->setItemManagerAddressLink(_im);
 			temp->setUiAddressLink(_ui);
