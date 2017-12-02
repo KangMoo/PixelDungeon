@@ -13,8 +13,8 @@ MainMenuScene::~MainMenuScene()
 
 HRESULT MainMenuScene::init()
 {
-	gameStart = RectMakeCenter(250,470, 100, 100);
-	mapTool = RectMakeCenter(550,470,100,100);
+	gameStart = RectMakeCenter(250,470, 96, 96);
+	mapTool = RectMakeCenter(550,470,96,96);
 	IMAGEMANAGER->addImage("maneMenuBg", "Img//Etc//mainbg.bmp", 800, 600,true,RGB(255,0,255));
 	IMAGEMANAGER->addImage("gamestartButton", "Img//Etc//gamestart.bmp", gameStart.right - gameStart.left, gameStart.bottom - gameStart.top, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("mapToolButton", "Img//Etc//mt.bmp", mapTool.right - mapTool.left, mapTool.bottom - mapTool.top, true, RGB(255, 0, 255));

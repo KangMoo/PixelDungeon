@@ -77,8 +77,8 @@ void Player::update()
 	}
 	else if (_isEnemyTargeted)
 	{
-		_isEnemyTargeted = false;
 		action_Attack();
+		_isEnemyTargeted = false;
 		endTurn();
 	}
 	else
@@ -472,7 +472,11 @@ void Player::action_Attack()
 	//목표 몬스터 공격
 	if (_isEnemyTargeted)
 	{
-		_TargetEnemy->setHP(_TargetEnemy->getHP() -RND->getFromIntTo(_playerStat.mindmg,_playerStat.maxdmg));
+
+		// 데미지 주기 (임시)
+		_TargetEnemy->getDamaged(RND->getFromIntTo(100,100));
+		
+		//_TargetEnemy->setHP(_TargetEnemy->getHP() -RND->getFromIntTo(_playerStat.mindmg,_playerStat.maxdmg));
 		_isEnemyTargeted = false;
 	}
 }

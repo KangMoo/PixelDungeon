@@ -42,7 +42,11 @@ HRESULT Map::init()
 	IMAGEMANAGER->addImage("blackLineVertical", "Img//Map//blackdot.bmp", 1, 32, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("blackLineHorizontal", "Img//Map//blackdot.bmp", 32, 1, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("blackTile", "Img//Map//blackdot.bmp", 32, 32, true, RGB(255, 0, 255));
+	
+	_aniCount = 0;
+
 	return S_OK;
+
 }
 
 
@@ -143,11 +147,7 @@ void Map::render(POINT camera)
 }
 void Map::draw(POINT camera)
 {
-
-	int temp = 7;
-	if (KEYMANAGER->isStayKeyDown(VK_RIGHT)) temp++;
-	if (KEYMANAGER->isStayKeyDown(VK_LEFT)) temp--;
-
+	
 
 //	뒷배경 검은색
 	RECT bg = RectMake(0, 0, WINSIZEX, WINSIZEY);
@@ -159,6 +159,9 @@ void Map::draw(POINT camera)
 	_renderStartX = ((int)(-camera.x / TILESIZE) - 5 > 0) ? (int)(-_camera.x / TILESIZE) - 5 : 0;
 	_renderStartY = ((int)(-camera.y / TILESIZE) - 5 > 0) ? (int)(-_camera.y / TILESIZE) - 5 : 0;
 
+
+	_aniCount += 1;
+	if (_aniCount > 1000) { _aniCount = 0; }
 
 	// 타일 그리기
 	for (int i = _renderStartX; i < _renderStartX + _renderSizeX; i++) {
@@ -196,7 +199,17 @@ void Map::draw(POINT camera)
 
 		if (_viObj->obj != OBJ_NONE && _viObj->floor == _curStageNum) {
 			if (_map[_viObj->destX][_viObj->destY].tileview == TILEVIEW_ALL)
-				_viObj->img->frameRender(getMemDC(), _viObj->destX * TILESIZE + camera.x, _viObj->destY * TILESIZE + camera.y, _viObj->sourX, _viObj->sourY);
+				if (_viObj->obj == OBJ_WELL|| _viObj->obj == OBJ_POT)
+				{
+					_viObj->img->frameRender(getMemDC(), _viObj->destX * TILESIZE + camera.x, _viObj->destY * TILESIZE + camera.y, _viObj->img->getFrameX(), _viObj->img->getFrameY());
+					if (_aniCount % 5 == 0) {
+						_viObj->img->setFrameX(_viObj->img->getFrameX() + 1);
+						if (_viObj->img->getFrameX() >= _viObj->img->getMaxFrameX()) _viObj->img->setFrameX(0);
+					}
+				}
+				else {
+					_viObj->img->frameRender(getMemDC(), _viObj->destX * TILESIZE + camera.x, _viObj->destY * TILESIZE + camera.y, _viObj->sourX, _viObj->sourY);
+				}
 		}
 	}
 }
@@ -341,6 +354,18 @@ void Map::load(int stageNum) {
 		if (obj.obj == OBJ_TRAP)
 		{
 			obj.obj = OBJ_TRAP_ACTIVE;
+		}
+		if (obj.obj == OBJ_WELL)
+		{
+			obj.img = IMAGEMANAGER->findImage("well_health");	
+			obj.img->setFrameX(0);
+			obj.img->setFrameY(0);
+		}
+		if (obj.obj == OBJ_POT)
+		{
+			obj.img = IMAGEMANAGER->findImage("pot");
+			obj.img->setFrameX(0);
+			obj.img->setFrameY(0);
 		}
 
 		_vObj.push_back(obj);
@@ -541,7 +566,7 @@ void Map::setObj_OpenChest(int i) {
 	if ((_vObj[i].obj & ATTRIBUTE_CHEST) == ATTRIBUTE_CHEST && (_vObj[i].obj & ATTRIBUTE_LOCKED) != ATTRIBUTE_LOCKED) {
 		_vObj[i].obj = OBJ_NONE;
 
-		int dropRate = RND->getFromIntTo(1, 5);
+		int dropRate = RND->getFromIntTo(1,7);
 		if (dropRate == 1) {
 			ITEMNAME drop = (ITEMNAME)((int)NAME_BOTTLE + RND->getFromIntTo(0, 7));
 			_im->setItemToField(drop, _vObj[i].destX * TILESIZE + TILESIZE * 0.5, _vObj[i].destY * TILESIZE + TILESIZE * 0.5);
@@ -557,7 +582,7 @@ void Map::setObj_OpenChest(int i) {
 			_im->setItemToField(drop, _vObj[i].destX * TILESIZE + TILESIZE * 0.5, _vObj[i].destY * TILESIZE + TILESIZE * 0.5);
 		}
 		else { // 미믹용(임시)
-			_im->setItemToField(NAME_BOTTLE, _vObj[i].destX * TILESIZE + TILESIZE * 0.5, _vObj[i].destY * TILESIZE + TILESIZE * 0.5);
+			_em->setEnemy(PointMake(_vObj[i].destX, _vObj[i].destY), 1);
 		}
 	}
 }
@@ -568,6 +593,7 @@ void Map::setObj_UseWell(int i) {
 	{
 		GAMEOBJECT* newObj = _spareObj.find("EmptyWell")->second;
 
+		_vObj[i].img = newObj->img;
 		_vObj[i].sourX = newObj->sourX;
 		_vObj[i].sourY = newObj->sourY;
 
