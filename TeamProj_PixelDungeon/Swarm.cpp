@@ -14,9 +14,10 @@ Swarm::~Swarm()
 {
 }
 
-HRESULT Swarm::init(POINT point)
+HRESULT Swarm::init(POINT point, int floor)
 {
 	_point = point;
+	_floor = floor;
 
 	_move = new image;
 	_move->init("Img//Enemy//swarm_stay.bmp", 264, 56, 11, 2, true, RGB(255, 0, 255));
@@ -77,7 +78,7 @@ HRESULT Swarm::init(POINT point)
 
 	return S_OK;
 }
-HRESULT Swarm::init(POINT point, int currntHp)
+HRESULT Swarm::init(POINT point, int currntHp, int floor)
 {
 	//분열했다!
 	_point = point;
@@ -126,6 +127,7 @@ HRESULT Swarm::init(POINT point, int currntHp)
 	//이미 공격당했으니 상태는 무조건 발각한 상태
 	_myState = ENEMYSTATE_IDLE;
 
+	_floor = floor;
 
 	_movePoint = PointMake(0, 0);
 	_frameCount = 0;
@@ -486,7 +488,7 @@ void Swarm::getDamaged(int damage)
 					if (_em->getEnemyVector()[i]->getTilePt().x == _point.x + x &&
 						_em->getEnemyVector()[i]->getTilePt().y == _point.y + y) return;
 				}
-				_em->setSwarmSpawn(PointMake(_point.x + x, _point.y + y), _currntHp);
+				_em->setSwarmSpawn(PointMake(_point.x + x, _point.y + y), _currntHp, _floor);
 			}
 		}
 	}
@@ -497,8 +499,14 @@ void Swarm::draw(POINT camera)
 {
 	//_hpBar->setGauge(_currntHp, _statistics.hp);
 	//시야에 보일때만 출력하게
-	if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
-		_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
+	if (_floor == _map->getCurStageNum())
+	{
+		if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
+			_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
+		char string[128];
+		sprintf_s(string, "%d", _statistics.hp);
+		TextOut(getMemDC(), 300, 300, string, strlen(string));
+	}
 	//RectangleMakeCenter(getMemDC(), _pointX + camera.x, _pointY + camera.y, _currntHp, _currntHp);
 	//if(_findPlayer)
 
@@ -522,17 +530,21 @@ void Swarm::release()
 
 void Swarm::update()
 {
-	if (_currntHp <= 0)
+	if (_floor == _map->getCurStageNum())
 	{
-		_deadAlpha += 25;
-		_action = false;
-		if (_deadAlpha >= 255)
+		if (_currntHp <= 0)
 		{
-			_deadAlpha = 255;
-			_isLive = false;
+			_deadAlpha += 25;
 			_action = false;
+			if (_deadAlpha >= 255)
+			{
+				_deadAlpha = 255;
+				_isLive = false;
+				_action = false;
+			}
 		}
-	}
 
-	if (_action && _currntHp > 0 && _isLive) action();
+		if (_action && _currntHp > 0 && _isLive) action();
+	}
+	else _action = false;
 }

@@ -22,6 +22,9 @@ HRESULT EnemyManager::init()
 
 
 	setEnemy(PointMake(12, 12), 1,1);
+	setEnemy(PointMake(5, 5), 2, 0);
+	setEnemy(PointMake(5, 5), 3, 1);
+	//setEnemy(PointMake(6, 6), 5, 0);
 	//setEnemy(PointMake(TILESIZE*14, TILESIZE*13), 0);
 	//setEnemy(PointMake(TILESIZE*13, TILESIZE*11), 0);
 	//setEnemy(PointMake(13, 13), 2);
@@ -165,7 +168,7 @@ void EnemyManager::setEnemy(POINT point, int type, int floor)
 	{
 		//ÆÄ¸®, Swarm
 		Swarm* temp = new Swarm;
-		temp->init(point);
+		temp->init(point, floor);
 		temp->setEm(this);
 		temp->setPlayerAddressLink(_player);
 		temp->setItemManagerAddressLink(_im);
@@ -178,7 +181,7 @@ void EnemyManager::setEnemy(POINT point, int type, int floor)
 	{
 		//³î, Gnoll
 		Gnoll* temp = new Gnoll;
-		temp->init(point);
+		temp->init(point, floor);
 		temp->setPlayerAddressLink(_player);
 		temp->setItemManagerAddressLink(_im);
 		temp->setUiAddressLink(_ui);
@@ -203,7 +206,7 @@ void EnemyManager::setEnemy(POINT point, int type, int floor)
 	{
 		//°Ô
 		Crap* temp = new Crap;
-		temp->init(point);
+		temp->init(point, floor);
 		temp->setPlayerAddressLink(_player);
 		temp->setItemManagerAddressLink(_im);
 		temp->setUiAddressLink(_ui);
@@ -223,7 +226,7 @@ void EnemyManager::setEnemy(POINT point, int type, int floor)
 void EnemyManager::setSwarm()
 {
 	Swarm* temp = new Swarm;
-	temp->init(_temp.pt, _temp.hp);
+	temp->init(_temp.pt, _temp.hp, _temp.floor);
 	temp->setEm(this);
 	temp->setPlayerAddressLink(_player);
 	temp->setItemManagerAddressLink(_im);

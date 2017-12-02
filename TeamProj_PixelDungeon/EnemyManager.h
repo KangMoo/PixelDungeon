@@ -13,6 +13,7 @@ struct tagSwarmSpawn
 {
 	POINT pt;
 	int hp;
+	int floor;
 };
 
 class Player;
@@ -61,10 +62,11 @@ public:
 	void setEnemy(POINT point, int type,int floor);		//enemy 제작
 
 	void setSwarm();			//파리 전용
-	void setSwarmSpawn(POINT pt, int hp)
+	void setSwarmSpawn(POINT pt, int hp, int floor)
 	{
 		_temp.pt = pt;
 		_temp.hp = hp;
+		_temp.floor = floor;
 		_isSwarmSpawn = true;
 	}
 

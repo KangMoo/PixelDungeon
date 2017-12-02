@@ -14,7 +14,7 @@ Crap::~Crap()
 {
 }
 
-HRESULT Crap::init(POINT point)
+HRESULT Crap::init(POINT point, int floor)
 {
 	//입력받은 좌표를 초기 위치로
 	_point = point;
@@ -62,6 +62,7 @@ HRESULT Crap::init(POINT point)
 	//내 턴 아님, 안움직임
 	_action = false;
 	_isMove = false;
+	_floor = floor;
 
 	//스탯 설정
 	_statistics.lv = 1;
@@ -120,26 +121,30 @@ void Crap::getDamaged(int damage)
 }
 void Crap::update()				 
 {
-	if (_currntHp <= 0)
+	if (_floor == _map->getCurStageNum())
 	{
-		_turnCount = 0;
-		_deadAlpha += 25;
-		_action = false;
-		if (_deadAlpha >= 255)
+		if (_currntHp <= 0)
 		{
-			_deadAlpha = 255;
-			_isLive = false;
+			_turnCount = 0;
+			_deadAlpha += 25;
 			_action = false;
+			if (_deadAlpha >= 255)
+			{
+				_deadAlpha = 255;
+				_isLive = false;
+				_action = false;
+			}
 		}
-	}
 
-	if (_turnCount >= 2)
-	{
-		_action = false;
-		_turnCount = 0;
-	}
+		if (_turnCount >= 2)
+		{
+			_action = false;
+			_turnCount = 0;
+		}
 
-	if (_action && _currntHp > 0 && _isLive) action();
+		if (_action && _currntHp > 0 && _isLive) action();
+	}
+	else _action = false;
 }
 void Crap::action()				 
 {
@@ -448,8 +453,11 @@ void Crap::draw(POINT camera)
 
 	//_hpBar->setGauge(_currntHp, _statistics.hp);
 	//시야에 보일때만 출력하게
-	if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
-		_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
+	if (_map->getCurStageNum() == _floor)
+	{
+		if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
+			_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
+	}
 	//RectangleMakeCenter(getMemDC(), _pointX + camera.x, _pointY + camera.y, _currntHp, _currntHp);
 	//if(_findPlayer)
 
