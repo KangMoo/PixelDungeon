@@ -18,7 +18,7 @@ HRESULT progressBar::init(int x, int y, int width, int height)
 
 	_rcProgress = RectMake(x, y, width, height);
 
-	_progressBarTop = IMAGEMANAGER->addImage("frontBar", "Img//Enemy//boss_hp_top_bar.bmp", x, y, width, height, true, RGB(255, 0, 255));
+	_progressBarTop = IMAGEMANAGER->addImage("frontBar", "Img//Enemy//boss_hp_top_bar2.bmp", x , y, width - 60 , height-40, true, RGB(255, 0, 255));
 	_progressBarBottom = IMAGEMANAGER->addImage("backBar", "Img//Enemy//boss_hp_bottom.bmp", x, y, width, height, true, RGB(255, 0, 255));
 
 	_width = _progressBarTop->getWidth();
@@ -59,10 +59,10 @@ void progressBar::render()
 		_progressBarBottom->getWidth(), _progressBarBottom->getHeight());
 
 	IMAGEMANAGER->render("frontBar", getMemDC(),
-		_x,
-		_y + _progressBarBottom->getHeight() / 2,
+		_x + 28*2,
+		_y + _progressBarBottom->getHeight() / 2+ 20,
 		0, 0,
-		_width, _progressBarBottom->getHeight());
+		_width, _progressBarTop->getHeight());
 }
 
 void progressBar::render(POINT camera)
@@ -79,5 +79,5 @@ void progressBar::render(POINT camera)
 
 void progressBar::setGauge(float currentGauge, float maxGauge)
 {
-	_width = (currentGauge / maxGauge) * _progressBarBottom->getWidth();
+	_width = (currentGauge / maxGauge) * _progressBarTop->getWidth();
 }
