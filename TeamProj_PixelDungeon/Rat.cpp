@@ -1,3 +1,11 @@
+/*	================= NOTICE =================
+	*모든 스테이터스는 위키를 기반으로 하고 있습니다.
+	*http://pixeldungeon.wikia.com/wiki/Marsupial_rat
+	*생성되는 층 1~4층
+	*모든 행동은 1턴당 1번입니다.
+	*알비노 쥐(흰색 쥐)는 출혈 디버프를 줍니다.
+
+*/
 #include "stdafx.h"
 #include "Rat.h"
 #include "Player.h"
@@ -18,60 +26,74 @@ HRESULT Rat::init(POINT point)
 	//입력받은 좌표를 초기 위치로
 	_point = point;
 
+	//================ colorSetting =================
+	// 0~3 까지 컬러 인자를 가져옵니다.
 	_color = RND->getInt(3);
 
+	// 만약 컬러인자가 0이면 흰색, 1,2,3이면 갈색으로 설정합니다.
 	_myColor = _color == 0 ? WHITE : BROWN;
 
+	//이미지 및 스테이터스를 설정합니다.
+	/*갈색쥐와 흰 쥐는 스테이터스가 각각 다릅니다*/
 	if (_myColor == BROWN)
 	{
-		bIdle = new image;
-		bMove = new image;
+
+		bIdle	= new image;
+		bMove	= new image;
 		bAttack = new image;
-		bDead = new image;
+		bDead	= new image;
 
-		bIdle->init("img//Enemy//rat//brownIdle.bmp", 64, 64, 2, 2, true, RGB(255, 0, 255));
-		bMove->init("img//Enemy//rat//brownMove.bmp", 192, 64, 6, 2, true, RGB(255, 0, 255));
-		bAttack->init("img//Enemy//rat//brownAttack.bmp", 96, 64, 3, 2, true, RGB(255, 0, 255));
-		bDead->init("img//Enemy//rat//brownDead.bmp", 128, 64, 4, 2, true, RGB(255, 0, 255));
+		//이미지 설정
+		bIdle->init("img//Enemy//rat//brownIdle.bmp",		64, 64, 2, 2,	true, RGB(255, 0, 255));
+		bMove->init("img//Enemy//rat//brownMove.bmp",		192, 64, 6, 2,	true, RGB(255, 0, 255));
+		bAttack->init("img//Enemy//rat//brownAttack.bmp",	96, 64, 3, 2,	true, RGB(255, 0, 255));
+		bDead->init("img//Enemy//rat//brownDead.bmp",		128, 64, 4, 2,	true, RGB(255, 0, 255));
 
+		//초기 이미지
 		_image = bIdle;
 
-		_statistics.lv = 1;
-		_statistics.maxLv = 5;
-		_statistics.exp = 1;
-		_statistics.hp = 7;
-		_currntHp = 7;
-		_statistics.avd_lck = 7;
-		_statistics.def = 2;
-		int a = RND->getFromIntTo(1, 4);
-		_statistics.str = a;
-		_statistics.atk_lck = 12;
+		_statistics.lv		= 1;			//레벨
+		_statistics.maxLv	= 5;			//최대레벨
+		_statistics.exp		= 1;			//제공할 경험치
+		_statistics.hp		= 8;			//최대 체력
+		_currntHp			= _statistics.hp;//현재 체력
+
+		_statistics.avd_lck = 4;			//회피율
+		_statistics.atk_lck = 11;			//명중률
+
+		_statistics.def		= 3;			//방어력
+		int a = RND->getFromIntTo(1, 4);	//랜덤 기초 공격력
+		_statistics.str		= a;			//공격력
+
 
 	}
 	else if(_myColor == WHITE)
 	{
-		wIdle = new image;
-		wMove = new image;
-		wAttack = new image;
-		wDead = new image;
 
-		wIdle->init("img//Enemy//rat//whiteIdle.bmp", 64, 64, 2, 2, true, RGB(255, 0, 255));
-		wMove->init("img//Enemy//rat//whiteMove.bmp", 192, 64, 6, 2, true, RGB(255, 0, 255));
-		wAttack->init("img//Enemy//rat//whiteAttack.bmp", 96, 64, 3, 2, true, RGB(255, 0, 255));
-		wDead->init("img//Enemy//rat//whiteDead.bmp", 128, 64, 4, 2, true, RGB(255, 0, 255));
+		wIdle	= new image;
+		wMove	= new image;
+		wAttack = new image;
+		wDead	= new image;
+
+		wIdle->init("img//Enemy//rat//whiteIdle.bmp",		64, 64, 2, 2,	true, RGB(255, 0, 255));
+		wMove->init("img//Enemy//rat//whiteMove.bmp",		192, 64, 6, 2,	true, RGB(255, 0, 255));
+		wAttack->init("img//Enemy//rat//whiteAttack.bmp",	96, 64, 3, 2,	true, RGB(255, 0, 255));
+		wDead->init("img//Enemy//rat//whiteDead.bmp",		128, 64, 4, 2,	true, RGB(255, 0, 255));
 
 		_image = wIdle;
 
-		_statistics.lv = 1;
-		_statistics.maxLv = 5;
-		_statistics.exp = 1;
-		_statistics.hp = 7;
-		_currntHp = 7;
-		_statistics.avd_lck = 7;
-		_statistics.def = 2;
-		int a = RND->getFromIntTo(1, 4);
-		_statistics.str = a;
-		_statistics.atk_lck = 12;
+		_statistics.lv		= 1;			 //레벨
+		_statistics.maxLv	= 5;			 //최대레벨
+		_statistics.exp		= 1;			 //제공할 경험치
+		_statistics.hp		= 15;			 //최대 체력
+		_currntHp			= _statistics.hp;//현재 체력
+
+		_statistics.avd_lck = 4;			//회피율
+		_statistics.atk_lck = 11;			//명중률
+
+		_statistics.def		= 3;			 //방어력
+		int a = RND->getFromIntTo(1, 4);	//랜덤 기초 공격력
+		_statistics.str		= a;			 //공격력
 
 	}
 
@@ -85,19 +107,19 @@ HRESULT Rat::init(POINT point)
 	_attBox = RectMakeCenter(_pointX, _pointY, 0, 0);
 
 	//살아있음
-	_isLive = true;
+	_isLive		= true;
 	//플레이어 발견 못함
 	_findPlayer = false;
 
 	//초기 방향은 랜덤으로
-	int a = RND->getInt(2);
-	if (a == 0) _right = true;
-	else _right = false;
+	int a				= RND->getInt(2);
+	if (a == 0) _right	= true;
+	else _right			= false;
 
 	//최초 프레임은 0, 오른쪽 보면 y=0, 왼쪽이면 y=1
-	_currntFrameX = 0;
-	if (_right) _currntFrameY = 0;
-	else _currntFrameY = 1;
+	_currntFrameX				= 0;
+	if (_right) _currntFrameY	= 0;
+	else _currntFrameY			= 1;
 
 	//프레임 적용
 	_image->setFrameX(_currntFrameX);
@@ -110,20 +132,14 @@ HRESULT Rat::init(POINT point)
 	//깨어있을지 자고있을지 랜덤 설정
 	a = RND->getInt(2);
 	if (a == 0) _myState = ENEMYSTATE_SLEEP;
-	else _myState = ENEMYSTATE_IDLE;
+	else		_myState = ENEMYSTATE_IDLE;
 
 	//초기값 설정
-	_movePoint = PointMake(0, 0);
-	_frameFPS = 10;
-	_frameTime = 0;
-	_deadAlpha = 0;
-	_active = false;
-
-	/*ENEMYSTATE_SLEEP,	//플레이어를 찾지 못한상태/수면상태
-	ENEMYSTATE_IDLE,	//플레이어를 찾은 상태에서의 기본
-	ENEMYSTATE_MOVE,
-	ENEMYSTATE_ATTACK,
-	ENEMYSTATE_END*/
+	_movePoint	= PointMake(0, 0);
+	_frameFPS	= 10;
+	_frameTime	= 0;
+	_deadAlpha	= 0;
+	_active		= false;
 
 	//_hpBar = new progressBar;
 	//_hpBar->init(_pointX - 25, _pointY + _image->getFrameHeight() / 2 + 10, 30, 10);
@@ -135,54 +151,35 @@ void Rat::release()
 {
 	SAFE_RELEASE(_image);
 	SAFE_DELETE(_image);
-
-	//SAFE_RELEASE(bIdle);
-	//SAFE_DELETE(bIdle);
-	//SAFE_RELEASE(bAttack);
-	//SAFE_DELETE(bAttack);
-	//SAFE_RELEASE(bMove);
-	//SAFE_DELETE(bMove);
-	//SAFE_RELEASE(bDead);
-	//SAFE_DELETE(bDead);
-	//
-	//SAFE_RELEASE(wIdle);
-	//SAFE_DELETE(wIdle);
-	//SAFE_RELEASE(wAttack);
-	//SAFE_DELETE(wAttack);
-	//SAFE_RELEASE(wMove);
-	//SAFE_DELETE(wMove);
-	//SAFE_RELEASE(wDead);
-	//SAFE_DELETE(wDead);
 }
 
 
 void Rat::getDamaged(int damage)
 {
-	if (_myState == ENEMYSTATE_SLEEP)
-		_myState = ENEMYSTATE_IDLE;
+	//자고 있을때 데미지를 입으면 깨어나고 플레이어를 찾은상태로 변경이 됩니다.
+	if (_myState == ENEMYSTATE_SLEEP) _myState = ENEMYSTATE_IDLE;
 	_findPlayer = true;
+	/*
+	 *플레이어 명중률 랜덤하게 돌린후
+	 *그 값이 자신의 회피율 - 플레이어 명중률 보다 크면
+	 *공격 성공
+	*/
+	int a = RND->getInt(_player->getStat().atk_lck);
 
-	int a = RND->getInt(100);
-
-	if (a < _statistics.avd_lck - _player->getStat().atk_lck)
-	{
-		return;
-	}
+	//ui에 회피 했다고 전달했으면 좋겠는데
+	if (a < _statistics.avd_lck - _player->getStat().atk_lck) return;
 	else
 	{
-		if (_currntHp > 0)
-			_currntHp -= damage - _statistics.def;
+		//체력이 0보다 크면 방어력을 뺀 데미지를 입음
+		if (_currntHp > 0) _currntHp -= damage - _statistics.def;
 	}
 }
 
 void Rat::draw(POINT camera)
 {
-	//_hpBar->setGauge(_currntHp, _statistics.hp);
 	//시야에 보일때만 출력하게
 	if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
 		_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
-	//RectangleMakeCenter(getMemDC(), _pointX + camera.x, _pointY + camera.y, _currntHp, _currntHp);
-	//if(_findPlayer)
 
 	//_hpBar->setX(_point.x - 25 + camera.x);
 	//_hpBar->setY(_pointY + _image->getFrameHeight() / 2 + 10 + camera.y);
@@ -193,19 +190,21 @@ void Rat::draw(POINT camera)
 
 void Rat::frameUpdate()
 {
-	//_frameCount++;
-
+	//방향 설정
 	if (_findPlayer)
 	{
-		if (_player->getPoint().x >= _pointX) _right = true;
-		else _right = false;
+		//플레이어 포인트와 자신의 포인트를 비교한다.
+		if (_player->getPoint().x >= _pointX)	_right = true;
+		else									_right = false;
 	}
 
+	//프레임 위치 설정을 해준다.
 	if (_right) _currntFrameY = 0;
 	else _currntFrameY = 1;
+	//방향 설정
+
 
 	if (true)
-		//if (_frameCount >= 3)
 	{
 		switch (_myState)
 		{
@@ -225,6 +224,7 @@ void Rat::frameUpdate()
 				_image->setFrameY(_currntFrameY);
 			}
 			break;
+
 		case ENEMYSTATE_IDLE:
 			if (_myColor == BROWN)
 			{
@@ -245,6 +245,7 @@ void Rat::frameUpdate()
 			}
 
 			break;
+
 		case ENEMYSTATE_MOVE:
 			if (_myColor == BROWN)
 			{
@@ -264,6 +265,7 @@ void Rat::frameUpdate()
 				_image->setFrameY(_currntFrameY);
 			}
 			break;
+
 		case ENEMYSTATE_ATTACK:
 			if (_myColor == BROWN)	_image = bAttack;
 			else if (_myColor == WHITE)_image = wAttack;
@@ -280,16 +282,17 @@ void Rat::frameUpdate()
 			_image->setFrameX(_currntFrameX);
 			_image->setFrameY(_currntFrameY);
 			break;
+
 		case ENEMYSTATE_DEAD:
 
 			if (_myColor == BROWN)	_image = bDead;
 			else if (_myColor == WHITE)_image = wDead;
+
 			_currntFrameX++;
 			if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = _image->getMaxFrameX();
 
 			_image->setFrameX(_currntFrameX);
 			_image->setFrameY(_currntFrameY);
-
 			break;
 		}
 	}
@@ -309,7 +312,7 @@ void Rat::action()
 		return;
 	}
 
-	if (KEYMANAGER->isOnceKeyDown('E')) getDamaged(3);
+	if (KEYMANAGER->isOnceKeyDown('E')) getDamaged(500);
 
 	if (_myState == ENEMYSTATE_SLEEP)
 	{
@@ -467,7 +470,17 @@ void Rat::action()
 			{
 				_myState = ENEMYSTATE_ATTACK;
 				_currntFrameX = 0;
-				_player->getDamaged(_statistics.str);
+				if (_myColor == BROWN)
+				{
+					_statistics.str = RND->getFromIntTo(3, 5);		//공격력
+					_player->getDamaged(_statistics.str);
+				}
+				else if (_myColor == WHITE)
+				{
+					_statistics.str = RND->getFromIntTo(3, 5);		//공격력
+					if (_statistics.str >= 4) _player->addDebuff(DEBUFF_BLEEDING, 2000, 5);
+					_player->getDamaged(_statistics.str);
+				}
 				//_action = false;
 			}
 			else

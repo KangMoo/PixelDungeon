@@ -4,25 +4,26 @@ class goo : public Boss
 {
 private:
 
-	bool _pumpIt;	//5*5 범위 범위공격? 단일공격? 사정거리2칸? 뭐지 뭐하는거지?
+	bool _pumpIt;	//자신 중심 5*5 단일공격
+	bool _isMove;
 	int trunCount;
-	POINT _movePt;
+	POINT _movePoint;	//움직이기 위한 포인트
+
+	RECT skillRange;
+	vector<TILE> aStar;
+
+	image* _stay, *_move, *_dead;
 
 public:
-	HRESULT init(POINT point, int cog);//인식범위 추기
+	HRESULT init(POINT point);//인식범위 추기
 	void release();
 	void update();
-	void render(POINT camera);
 	void draw(POINT camera);
 	void action();
 
-	void attack();
-	//void pumpIt();
-	void move();
 	void frameUpdate();
 	//데미지 받았을 때, 회피율 계산하여 함수 만들기
 	void getDamaged(int damage);
-
 
 	goo();
 	~goo();
