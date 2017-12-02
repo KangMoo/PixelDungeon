@@ -17,6 +17,7 @@ UI::~UI()
 
 HRESULT UI::init()
 {
+
 	_camera = _player->getPoint();
 
 	IMAGEMANAGER->addImage("status_pane", "Img/UI/status_pane.bmp", 384, 192, true, RGB(255, 0, 255));
@@ -69,7 +70,7 @@ HRESULT UI::init()
 	//폰트
 	IMAGEMANAGER->addFrameImage("font", "Img/UI/numberfont.bmp", 130, 19, 10, 1, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("font_green", "Img/UI/numberfontgreen.bmp", 130, 19, 10, 1, true, RGB(255, 0, 255)); //그린
-	IMAGEMANAGER->addFrameImage("special_font", "Img/UI/specialfont.bmp", 24, 19, 2, 1, true, RGB(255, 0, 255)); //특수문자
+	IMAGEMANAGER->addFrameImage("special_font", "Img/UI/specialfont.bmp", 36, 19, 3, 1, true, RGB(255, 0, 255)); //특수문자
 
 	_backPackRect = RectMake(437, WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight(), 72, (WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight()));
 	_SearchOptionRect = RectMake(567.5, WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight(), 567.5, (WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight()));
@@ -566,6 +567,35 @@ void UI::BackPack()
 				if (_im->getvBag()[i].numOfItem > 1 && _im->getvBag()[i].type != TYPE_WEAPON && _im->getvBag()[i].type != TYPE_ARMOR && _im->getvBag()[i].type != TYPE_ACC && _im->getvBag()[i].type != TYPE_WAND)
 				{
 					IMAGEMANAGER->frameRender("font", getMemDC(), (_ix + (_im->getvBag()[i].img->getFrameWidth() / 2)) - 10, (_iy + (_im->getvBag()[i].img->getFrameHeight() / 2)) - 10, _im->getvBag()[i].numOfItem, 0);
+				}
+
+				if (_im->getvBag()[i].name == NAME_BOTTLE)
+				{
+					if (_im->getvBag()[i].currentCharge < 10)
+					{
+						IMAGEMANAGER->frameRender("special_font", getMemDC(), (_ix + (_im->getvBag()[i].img->getFrameWidth() / 2)) + 2, (_iy + (_im->getvBag()[i].img->getFrameHeight() / 2)) + 50, 2, 0);
+						IMAGEMANAGER->frameRender("font", getMemDC(), (_ix + (_im->getvBag()[i].img->getFrameWidth() / 2)) - 10, (_iy + (_im->getvBag()[i].img->getFrameHeight() / 2)) + 50, _im->getvBag()[i].currentCharge, 0);
+						IMAGEMANAGER->frameRender("font", getMemDC(), (_ix + (_im->getvBag()[i].img->getFrameWidth() / 2)) + 14, (_iy + (_im->getvBag()[i].img->getFrameHeight() / 2)) + 50, 2, 0);
+						IMAGEMANAGER->frameRender("font", getMemDC(), (_ix + (_im->getvBag()[i].img->getFrameWidth() / 2)) + 26, (_iy + (_im->getvBag()[i].img->getFrameHeight() / 2)) + 50, 0, 0);
+					}
+
+					if (_im->getvBag()[i].currentCharge >= 10 && _im->getvBag()[i].currentCharge < 20)
+					{
+						IMAGEMANAGER->frameRender("special_font", getMemDC(), (_ix + (_im->getvBag()[i].img->getFrameWidth() / 2)) + 14, (_iy + (_im->getvBag()[i].img->getFrameHeight() / 2)) + 50, 2, 0);
+						IMAGEMANAGER->frameRender("font", getMemDC(), (_ix + (_im->getvBag()[i].img->getFrameWidth() / 2)) - 10, (_iy + (_im->getvBag()[i].img->getFrameHeight() / 2)) + 50, 1, 0);
+						IMAGEMANAGER->frameRender("font", getMemDC(), (_ix + (_im->getvBag()[i].img->getFrameWidth() / 2)) + 2, (_iy + (_im->getvBag()[i].img->getFrameHeight() / 2)) + 50, _im->getvBag()[i].currentCharge - 10, 0);
+						IMAGEMANAGER->frameRender("font", getMemDC(), (_ix + (_im->getvBag()[i].img->getFrameWidth() / 2)) + 26, (_iy + (_im->getvBag()[i].img->getFrameHeight() / 2)) + 50, 2, 0);
+						IMAGEMANAGER->frameRender("font", getMemDC(), (_ix + (_im->getvBag()[i].img->getFrameWidth() / 2)) + 38, (_iy + (_im->getvBag()[i].img->getFrameHeight() / 2)) + 50, 0, 0);
+					}
+
+					if (_im->getvBag()[i].currentCharge == 20)
+					{
+						IMAGEMANAGER->frameRender("special_font", getMemDC(), (_ix + (_im->getvBag()[i].img->getFrameWidth() / 2)) + 14, (_iy + (_im->getvBag()[i].img->getFrameHeight() / 2)) + 50, 2, 0);
+						IMAGEMANAGER->frameRender("font", getMemDC(), (_ix + (_im->getvBag()[i].img->getFrameWidth() / 2)) - 10, (_iy + (_im->getvBag()[i].img->getFrameHeight() / 2)) + 50, 2, 0);
+						IMAGEMANAGER->frameRender("font", getMemDC(), (_ix + (_im->getvBag()[i].img->getFrameWidth() / 2)) + 2, (_iy + (_im->getvBag()[i].img->getFrameHeight() / 2)) + 50, 0, 0);
+						IMAGEMANAGER->frameRender("font", getMemDC(), (_ix + (_im->getvBag()[i].img->getFrameWidth() / 2)) + 26, (_iy + (_im->getvBag()[i].img->getFrameHeight() / 2)) + 50, 2, 0);
+						IMAGEMANAGER->frameRender("font", getMemDC(), (_ix + (_im->getvBag()[i].img->getFrameWidth() / 2)) + 38, (_iy + (_im->getvBag()[i].img->getFrameHeight() / 2)) + 50, 0, 0);
+					}
 				}
 
 				if (_im->getvBag()[i].type == TYPE_WEAPON || _im->getvBag()[i].type == TYPE_ARMOR || _im->getvBag()[i].type == TYPE_ACC || _im->getvBag()[i].type == TYPE_WAND)
@@ -2013,7 +2043,7 @@ void UI::LbuttonClickEvnet()
 		if (PtInRect(&_backPackRect, _ptMouse) || PtInRect(&_SearchOptionRect, _ptMouse) || PtInRect(&_TurnSkipRect, _ptMouse) || PtInRect(&_Menu_selectRect, _ptMouse) || PtInRect(&_StatusRect, _ptMouse))
 		{
 			_selectInterface = INTERFACEMENU_END;
-			//_player->setUsingUI(false);
+			_player->setUsingUI(false);
 			usingui();
 		}
 	}

@@ -48,7 +48,6 @@ HRESULT ItemManager::init()
 	
 
 	//==================================================
-
 	setItemToBag(NAME_EMERGENCY);
 	setItemToBag(NAME_OLD_SHORT_SWORD, false, false, 9, 1);
 	setItemToBag(NAME_CLOTH,false,false,6,1);
@@ -73,6 +72,8 @@ HRESULT ItemManager::init()
 	setItemToBag(NAME_SEED_HEAL);
 	setItemToBag(NAME_SEED_FIRE);
 	setItemToBag(NAME_SEED_SNAKE);
+
+	setItemToBag(NAME_BOTTLE);
 
 	return S_OK;
 }
