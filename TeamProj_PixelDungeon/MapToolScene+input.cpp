@@ -167,9 +167,6 @@ void MapToolScene::input_ModeChange() {
 	}
 
 	if (KEYMANAGER->isOnceKeyDown('E')) _inputMode = MODE_DELET;
-
-
-
 	
 }
 
@@ -606,7 +603,6 @@ void MapToolScene::input_ClickButton() {
 		else if (_buttonRect[i].isClicked) _buttonRect[i].isClicked = false;
 	}
 };
-
 
 
 
