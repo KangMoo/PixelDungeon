@@ -25,7 +25,7 @@ HRESULT Player::init(POINT point)
 	_playerStat.avd_lck = 0;
 	_playerStat.def = 0;
 	_playerStat.exp = 0;
-	_playerStat.hp = 50;
+	_playerStat.hp = 1000000;
 	_playerStat.hunger = 300;
 	_playerStat.lv = 1;
 	_playerStat.str = 10;
@@ -474,7 +474,7 @@ void Player::action_Attack()
 	{
 
 		// 데미지 주기 (임시)
-		_TargetEnemy->getDamaged(RND->getFromIntTo(3,3));
+		_TargetEnemy->getDamaged(RND->getFromIntTo(10,10));
 		
 		//_TargetEnemy->setHP(_TargetEnemy->getHP() -RND->getFromIntTo(_playerStat.mindmg,_playerStat.maxdmg));
 		_isEnemyTargeted = false;

@@ -225,6 +225,17 @@ void MapToolScene::input_AddTile() {
 						}
 
 						break;
+					case LAYER_MONSTER:
+						for (_viMon = _vMon.begin(); _viMon != _vMon.end();) {
+							if (_viMon->destX == indexX && _viMon->destY == indexY) {
+								_viMon = _vMon.erase(_viMon);
+								return;
+							}
+							else
+								_viMon++;
+						}
+
+						break;
 
 					}
 				}

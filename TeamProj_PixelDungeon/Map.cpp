@@ -21,7 +21,7 @@ HRESULT Map::init()
 	spareTileSetup();
 	spareObjSetup();
 
-	_stageDataList.push_back("map/SavedData.xml");
+	_stageDataList.push_back("map/SavedData4.xml");
 	_stageDataList.push_back("map/SavedData2.xml");
 
 
@@ -394,15 +394,17 @@ void Map::load(int stageNum) {
 
 	XMLElement * pMonElement = pRoot->FirstChildElement("MonsterList");
 	XMLElement * pMonListElement = pMonElement->FirstChildElement("monster");
+
 	while (pMonListElement != nullptr) {
 		string name = pMonListElement->FirstChildElement("name")->GetText();
 		int destX = pMonListElement->FirstChildElement("destX")->IntText();
 		int destY = pMonListElement->FirstChildElement("destY")->IntText();
 		if (name == "gnoll") {
-			_em->setEnemy(PointMake(destX, destY), 3);
+			_em->setEnemy(PointMake(destX, destY), 3, stageNum);
 		}
 
 
+		pMonListElement = pMonListElement->NextSiblingElement("monster");
 	}
 
 

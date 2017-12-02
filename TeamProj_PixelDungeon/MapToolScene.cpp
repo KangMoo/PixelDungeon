@@ -961,6 +961,28 @@ void MapToolScene::load()
 
 		pObjListElement = pObjListElement->NextSiblingElement("obj");
 	}
+	
+
+	XMLElement * pMonElement = pRoot->FirstChildElement("MonsterList");
+	XMLElement * pMonListElement = pMonElement->FirstChildElement("monster");
+
+	while (pMonListElement != nullptr) {
+		
+		string name = pMonListElement->FirstChildElement("name")->GetText();
+		int destX = pMonListElement->FirstChildElement("destX")->IntText();
+		int destY = pMonListElement->FirstChildElement("destY")->IntText();
+
+		TILE inputTile;
+		ZeroMemory(&inputTile, sizeof(TILE));
+		inputTile.img = IMAGEMANAGER->findImage(name);
+		inputTile.destX = destX;
+		inputTile.destY = destY;
+
+		_vMon.push_back(inputTile);
+
+		pMonListElement = pMonListElement->NextSiblingElement("monster");
+	}
+
 	//임시로 만들었던거
 
 	/*

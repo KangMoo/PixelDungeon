@@ -7786,4 +7786,10 @@
             <imgNum>1</imgNum>
         </obj>
     </ObjList>
+    <ItemList>
+        <size>0</size>
+    </ItemList>
+    <MonsterList>
+        <size>0</size>
+    </MonsterList>
 </map>
