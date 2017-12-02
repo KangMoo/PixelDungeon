@@ -50,17 +50,29 @@ HRESULT ItemManager::init()
 	//==================================================
 
 	setItemToBag(NAME_EMERGENCY);
-	setItemToBag(NAME_OLD_SHORT_SWORD);
-	setItemToBag(NAME_NORMAL);
+	setItemToBag(NAME_OLD_SHORT_SWORD, false, false, 9, 1);
+	setItemToBag(NAME_CLOTH,false,false,6,1);
+	setItemToBag(NAME_NORMAL, false, false, 3, 1);
+	setItemToBag(NAME_BATTLE_AXE, false, false, 5, 1);
+	setItemToBag(NAME_LIOYDS_BEACON, false, false, 2, 1);
 
 	setItemToBag(NAME_FROZEN);
+	setItemToBag(NAME_FROZEN);
+	setItemToBag(NAME_FROZEN);
+	setItemToBag(NAME_FROZEN);
+	setItemToBag(NAME_FROZEN);
+	setItemToBag(NAME_FROZEN);
+
 	setItemToBag(NAME_LIQUID_FIRE);
 	setItemToBag(NAME_UNKNOWN_MEAT);
+
+	setItemToBag(NAME_IDENTIFY);
+	setItemToBag(NAME_UPGRADE,false,false,0,100);
+	setItemToBag(NAME_PURIFY);
+
+	setItemToBag(NAME_SEED_HEAL);
 	setItemToBag(NAME_SEED_FIRE);
-	setItemToField(NAME_MONEY, 100, 100, false, false, 0, 100, 0);
-
-	useItem(6, _player->getPoint().x, _player->getPoint().y);
-
+	setItemToBag(NAME_SEED_SNAKE);
 
 	return S_OK;
 }
@@ -331,10 +343,10 @@ void ItemManager::setItemToBag(ITEMNAME name, bool identify, bool isCursed, int 
 
 	ZeroMemory(&item, sizeof(tagItem));
 
-	item.upgrade = upgrade;
 
 	setItem(&item, name);
 
+	item.upgrade = upgrade;
 	item.numOfItem = numOfItem;
 	item.contentsHide = identify;
 	item.isCursed = isCursed;
@@ -1523,11 +1535,11 @@ void ItemManager::useItem(int position, int target)
 					case NAME_UPGRADE:
 						for (int i = 0; i < _vBag.size(); i++)
 						{
-							if (_vBag[i].position == target && _vBag[i].type == TYPE_WEAPON
-								|| _vBag[i].type == TYPE_ARMOR || _vBag[i].type == TYPE_WAND)
+							if (_vBag[i].position == target)
 							{
 								_vBag[i].upgrade++;	
 								_scrollIdentified[1] = true;
+								break;
 							}
 						}
 					break;
@@ -1573,6 +1585,7 @@ void ItemManager::useItem(int position, int target)
 								_vBag[i].contentsHide = false;
 								_scrollIdentified[0] = true;
 							}
+							break;
 						}
 					break;
 
@@ -1589,12 +1602,14 @@ void ItemManager::useItem(int position, int target)
 									_scrollIdentified[2] = true;
 								}
 							}
+							break;
 						}
 					break;
 				}
 				break;
 			}
 			_viBag->numOfItem--;
+
 		}
 
 	}

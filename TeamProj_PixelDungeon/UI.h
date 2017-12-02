@@ -32,6 +32,8 @@ public:
 	void status_window();
 	void search();
 	void usingui();
+	void throw_interface();
+	void read_interface();
 
 	void BackPack();
 	void PrintFont(char name[], HFONT hFont, HFONT oldFont, int x, int y, int size, char r = 0, char g = 0, char b = 0);
@@ -61,11 +63,18 @@ public:
 	float _uitimer;
 
 private:
-
-
 	float timer = 0;
 
-	bool testbool = false;
+	bool throwcheck = false;
+	bool isthrow = false;
+	bool islaunch = false;
+
+	bool isscroll = false;
+	bool isUpgrad = false;
+	bool isidentity = false;
+	bool ispurify = false;
+
+	int saveline = 0;
 
 	//RECT _inventory[4][6];
 
