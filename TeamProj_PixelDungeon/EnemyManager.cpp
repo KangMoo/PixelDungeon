@@ -21,9 +21,12 @@ HRESULT EnemyManager::init()
 	_isSwarmSpawn = false;
 
 
-	setEnemy(PointMake(6, 6), 1,0);
+	//setEnemy(PointMake(6, 6), 2,0);
 	//setEnemy(PointMake(5, 5), 2, 0);
-	setEnemy(PointMake(5, 5), 3, 1);
+	setEnemy(PointMake(5, 5), 3, 0);
+	setEnemy(PointMake(6, 6), 5, 0);
+	setEnemy(PointMake(5, 5), 3, 0);
+	setEnemy(PointMake(4, 5), 5, 0);
 	//setEnemy(PointMake(6, 6), 5, 0);
 	//setEnemy(PointMake(TILESIZE*14, TILESIZE*13), 0);
 	//setEnemy(PointMake(TILESIZE*13, TILESIZE*11), 0);
@@ -226,7 +229,7 @@ void EnemyManager::setEnemy(POINT point, int type, int floor)
 void EnemyManager::setSwarm()
 {
 	Swarm* temp = new Swarm;
-	temp->init(_temp.pt, _temp.hp, _temp.floor);
+	temp->init(_temp.pt, _temp.hp, _temp.floor, _temp.drop);
 	temp->setEm(this);
 	temp->setPlayerAddressLink(_player);
 	temp->setItemManagerAddressLink(_im);

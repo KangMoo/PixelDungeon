@@ -2,6 +2,7 @@
 #include "Swarm.h"
 #include "Player.h"
 #include "EnemyManager.h"
+#include "ItemManager.h"
 #include "UI.h"
 #include "Map.h"
 
@@ -51,8 +52,8 @@ HRESULT Swarm::init(POINT point, int floor)
 	_statistics.lv = 1;
 	_statistics.maxLv = 10;
 	_statistics.exp = 1;
-	_statistics.hp = 80;
-	_currntHp = 80;
+	_statistics.hp = 8;
+	_currntHp = 8;
 	_statistics.avd_lck = 5;
 	_statistics.def = 0;
 	a = RND->getFromIntTo(1, 4);
@@ -67,6 +68,7 @@ HRESULT Swarm::init(POINT point, int floor)
 	_movePoint = PointMake(0, 0);
 	_frameCount = 0;
 	_deadAlpha = 0;
+	_itemDrop = 20;
 
 	/*ENEMYSTATE_SLEEP,	//플레이어를 찾지 못한상태/수면상태
 	ENEMYSTATE_IDLE,	//플레이어를 찾은 상태에서의 기본
@@ -78,7 +80,7 @@ HRESULT Swarm::init(POINT point, int floor)
 
 	return S_OK;
 }
-HRESULT Swarm::init(POINT point, int currntHp, int floor)
+HRESULT Swarm::init(POINT point, int currntHp, int floor, int drop)
 {
 	//분열했다!
 	_point = point;
@@ -116,7 +118,7 @@ HRESULT Swarm::init(POINT point, int currntHp, int floor)
 	_statistics.lv = 1;
 	_statistics.maxLv = 10;
 	_statistics.exp = 1;
-	_statistics.hp = 80;
+	_statistics.hp = 8;
 	_currntHp = currntHp;
 	_statistics.avd_lck = 5;
 	_statistics.def = 0;
@@ -132,6 +134,7 @@ HRESULT Swarm::init(POINT point, int currntHp, int floor)
 	_movePoint = PointMake(0, 0);
 	_frameCount = 0;
 	_deadAlpha = 0;
+	_itemDrop = drop;
 
 	/*ENEMYSTATE_SLEEP,	//플레이어를 찾지 못한상태/수면상태
 	ENEMYSTATE_IDLE,	//플레이어를 찾은 상태에서의 기본
@@ -452,7 +455,10 @@ void Swarm::getDamaged(int damage)
 	else
 	{
 		//높다면 뎀지받음
-		_currntHp -= damage - _statistics.def;
+		int dam = damage - _statistics.def;
+		if (dam < 1) dam = 1;
+		_currntHp -= dam;
+
 		if (_currntHp > 0)
 		{
 			//죽지 않았다면 분열을 해야한다
@@ -488,7 +494,7 @@ void Swarm::getDamaged(int damage)
 					if (_em->getEnemyVector()[i]->getTilePt().x == _point.x + x &&
 						_em->getEnemyVector()[i]->getTilePt().y == _point.y + y) return;
 				}
-				_em->setSwarmSpawn(PointMake(_point.x + x, _point.y + y), _currntHp, _floor);
+				_em->setSwarmSpawn(PointMake(_point.x + x, _point.y + y), _currntHp, _floor, _itemDrop/2);
 			}
 		}
 	}
@@ -539,6 +545,14 @@ void Swarm::update()
 			if (_deadAlpha >= 255)
 			{
 				_deadAlpha = 255;
+				if (_isLive)
+				{
+					int a = RND->getInt(100);
+					if (a < _itemDrop)
+					{
+						_im->setItemToField(NAME_HEAL, _pointX, _pointY, false, false, 0, 1);
+					}
+				}
 				_isLive = false;
 				_action = false;
 			}

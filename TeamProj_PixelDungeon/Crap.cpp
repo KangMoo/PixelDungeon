@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Crap.h"
 #include "Player.h"
+#include "ItemManager.h"
 #include "Map.h"
 #include "UI.h"
 
@@ -115,8 +116,14 @@ void Crap::getDamaged(int damage)
 	}
 	else
 	{
+
 		if (_currntHp > 0)
-			_currntHp -= damage - _statistics.def;
+		{
+			int dam = damage - _statistics.def;
+			if (dam < 1) dam = 1;
+			_currntHp -= dam;
+
+		}
 	}
 }
 void Crap::update()				 
@@ -131,6 +138,12 @@ void Crap::update()
 			if (_deadAlpha >= 255)
 			{
 				_deadAlpha = 255;
+				if (_isLive)
+				{
+					int a = RND->getInt(100);
+					if(a < 33)
+						_im->setItemToField(NAME_UNKNOWN_MEAT, _pointX, _pointY, false, false, 0, 1);
+				}
 				_isLive = false;
 				_action = false;
 			}

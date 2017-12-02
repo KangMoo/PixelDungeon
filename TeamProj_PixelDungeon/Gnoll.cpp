@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Gnoll.h"
 #include "Player.h"
+#include "ItemManager.h"
 #include "Map.h"
 #include "UI.h"
 
@@ -131,8 +132,12 @@ void Gnoll::getDamaged(int damage)
 	}
 	else
 	{
-		if(_currntHp > 0)
-			_currntHp -= damage - _statistics.def;
+		if (_currntHp > 0)
+		{
+			int dam = damage - _statistics.def;
+			if (dam < 1) dam = 1;
+			_currntHp -= dam;
+		}
 	}
 }
 
@@ -465,6 +470,12 @@ void Gnoll::update()
 			if (_deadAlpha >= 255)
 			{
 				_deadAlpha = 255;
+				if (_isLive)
+				{
+					int a = RND->getInt(100);
+					if(a < 50)
+						_im->setItemToField(NAME_MONEY, _pointX, _pointY, false, false, 0, RND->getInt(100));
+				}
 				_isLive = false;
 				_action = false;
 			}
