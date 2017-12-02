@@ -21,7 +21,7 @@ Rat::~Rat()
 {
 }
 
-HRESULT Rat::init(POINT point)
+HRESULT Rat::init(POINT point, int floor)
 {
 	//입력받은 좌표를 초기 위치로
 	_point = point;
@@ -141,6 +141,8 @@ HRESULT Rat::init(POINT point)
 	_deadAlpha	= 0;
 	_active		= false;
 
+	_floor = floor;
+
 	//_hpBar = new progressBar;
 	//_hpBar->init(_pointX - 25, _pointY + _image->getFrameHeight() / 2 + 10, 30, 10);
 
@@ -177,14 +179,17 @@ void Rat::getDamaged(int damage)
 
 void Rat::draw(POINT camera)
 {
-	//시야에 보일때만 출력하게
-	if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
-		_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
+	if (_map->getCurStageNum() == _floor)
+	{
+		//시야에 보일때만 출력하게
+		if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
+			_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
 
-	//_hpBar->setX(_point.x - 25 + camera.x);
-	//_hpBar->setY(_pointY + _image->getFrameHeight() / 2 + 10 + camera.y);
-	//if (_currntHp < _statistics.hp)
-	//	_hpBar->render();
+		//_hpBar->setX(_point.x - 25 + camera.x);
+		//_hpBar->setY(_pointY + _image->getFrameHeight() / 2 + 10 + camera.y);
+		//if (_currntHp < _statistics.hp)
+		//	_hpBar->render();
+	}
 }
 
 
@@ -554,20 +559,24 @@ void Rat::action()
 
 void Rat::update()
 {
-
-	if (_currntHp <= 0)
+	if (_map->getCurStageNum() == _floor)
 	{
-		_myState = ENEMYSTATE_DEAD;
-
-		_deadAlpha += 15;
-		_action = false;
-		if (_deadAlpha >= 255)
+		if (_currntHp <= 0)
 		{
-			_deadAlpha = 255;
-			_isLive = false;
-			_action = false;
-		}
-	}
+			_myState = ENEMYSTATE_DEAD;
 
-	if (_action && _currntHp > 0 && _isLive) action();
+			_deadAlpha += 15;
+			_action = false;
+			if (_deadAlpha >= 255)
+			{
+				_deadAlpha = 255;
+				_isLive = false;
+				_action = false;
+			}
+		}
+
+		if (_action && _currntHp > 0 && _isLive) action();
+	}
+	else _action = false;
+
 }

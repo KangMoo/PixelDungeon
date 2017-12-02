@@ -1,6 +1,8 @@
 #pragma once
-#include "Boss.h"
-class goo : public Boss
+#include "Enemy.h"
+#include "progressBar.h"
+
+class goo : public Enemy
 {
 private:
 
@@ -9,13 +11,14 @@ private:
 	int _trunCount;
 	POINT _movePoint;	//움직이기 위한 포인트
 
+
 	RECT skillRange;
 	vector<TILE> aStar;
 
 	image* _stay, *_move, *_dead;
 
 public:
-	HRESULT init(POINT point);//인식범위 추기
+	HRESULT init(POINT point, int floor);//인식범위 추기
 	void release();
 	void update();
 	void draw(POINT camera);
@@ -24,6 +27,8 @@ public:
 	void frameUpdate();
 	//데미지 받았을 때, 회피율 계산하여 함수 만들기
 	void getDamaged(int damage);
+
+	progressBar* _hpBar;	//체력바
 
 	goo();
 	~goo();
