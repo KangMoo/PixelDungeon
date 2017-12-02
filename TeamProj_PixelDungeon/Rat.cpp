@@ -284,6 +284,11 @@ void Rat::frameUpdate()
 
 			if (_myColor == BROWN)	_image = bDead;
 			else if (_myColor == WHITE)_image = wDead;
+			_currntFrameX++;
+			if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = _image->getMaxFrameX();
+
+			_image->setFrameX(_currntFrameX);
+			_image->setFrameY(_currntFrameY);
 
 			break;
 		}
@@ -541,7 +546,7 @@ void Rat::update()
 	{
 		_myState = ENEMYSTATE_DEAD;
 
-		_deadAlpha += 25;
+		_deadAlpha += 15;
 		_action = false;
 		if (_deadAlpha >= 255)
 		{

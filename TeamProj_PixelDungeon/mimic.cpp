@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "Map.h"
 #include "UI.h"
+#include "ItemManager.h"
 
 Mimic::Mimic()
 {
@@ -122,8 +123,15 @@ void Mimic::getDamaged(int damage)
 	}
 	else
 	{
+		money = RND->getFromIntTo(1, 99999);
+
 		if (_currntHp > 0)
 			_currntHp -= damage - _statistics.def;
+		int hitGift = RND->getInt(2);
+		if (hitGift == 2)
+		{
+			_im->setItemToField(NAME_MONEY, _pointX, _pointY, false, false, 0, money);
+		}
 	}
 }
 
@@ -193,6 +201,21 @@ void Mimic::frameUpdate()
 			_image->setFrameX(_currntFrameX);
 			_image->setFrameY(_currntFrameY);
 			break;
+		case ENEMYSTATE_DEAD:
+
+			_image = dead;
+			_currntFrameX++;
+			if (_currntFrameX >= _image->getMaxFrameX())
+			{
+				_currntFrameX = _image->getMaxFrameX();
+			}
+
+			_image->setFrameX(_currntFrameX);
+			_image->setFrameY(_currntFrameY);
+
+
+			break;
+
 		}
 	}
 
@@ -211,7 +234,7 @@ void Mimic::action()
 		return;
 	}
 
-	if (KEYMANAGER->isOnceKeyDown('E')) getDamaged(3);
+	if (KEYMANAGER->isOnceKeyDown('E')) getDamaged(500);
 
 	//if (_myState == ENEMYSTATE_SLEEP)
 	//{
@@ -446,7 +469,9 @@ void Mimic::update()
 
 	if (_currntHp <= 0)
 	{
-		_deadAlpha += 25;
+		_myState = ENEMYSTATE_DEAD;
+
+		_deadAlpha += 15;
 		_action = false;
 		if (_deadAlpha >= 255)
 		{
@@ -454,7 +479,216 @@ void Mimic::update()
 			_isLive = false;
 			_action = false;
 		}
+
+		dropitem();
 	}
 
 	if (_action && _currntHp > 0 && _isLive) action();
+}
+void Mimic::dropitem()
+{
+	money = RND->getFromIntTo(1, 99999);
+
+	int item = RND->getFromIntTo(NAME_OLD_SHORT_SWORD, NAME_MONEY);//랜덤하게 아이템을 뱉는다
+	//int item = RND->getFromIntTo(NAME_OLD_SHORT_SWORD, NAME_OLD_SHORT_SWORD);//랜덤하게 아이템을 뱉는다
+
+	int identifyPercent = RND->getInt(1);//50% 확률로 확인된 아이템
+	bool identify;
+
+	if (identifyPercent == 0)identify = false;
+	else identify = true;
+
+	int isCursedPercent = RND->getInt(1);//50% 확률로 저주받음
+	bool isCursed;
+	if (isCursedPercent == 0)isCursed = false;
+	else isCursed = true;
+
+	int upgrade = RND->getInt(2);//업그레이드 수치
+
+	switch (item)
+	{
+		//무기
+	case NAME_OLD_SHORT_SWORD:
+		//아이템 이름			위치X		위치Y	확인여부 저주여부 업그레이드 개수
+		_im->setItemToField(NAME_OLD_SHORT_SWORD, _pointX, _pointY, identify, isCursed, upgrade, 1);
+		break;
+
+	case NAME_SHORT_SWORD:
+		_im->setItemToField(NAME_SHORT_SWORD, _pointX, _pointY, identify, isCursed, upgrade, 1);
+		break;
+
+	case NAME_SWORD:
+		_im->setItemToField(NAME_SWORD, _pointX, _pointY, identify, isCursed, upgrade, 1);
+
+		break;
+	case NAME_SPEAR:
+		_im->setItemToField(NAME_SPEAR, _pointX, _pointY, identify, isCursed, upgrade, 1);
+
+		break;
+	case NAME_BATTLE_AXE:
+		_im->setItemToField(NAME_BATTLE_AXE, _pointX, _pointY, identify, isCursed, upgrade, 1);
+
+		break;
+
+		//방어구
+	case NAME_CLOTH:
+		_im->setItemToField(NAME_CLOTH, _pointX, _pointY, identify, isCursed, upgrade, 1);
+
+		break;
+	case NAME_LEATHER:
+		_im->setItemToField(NAME_LEATHER, _pointX, _pointY, identify, isCursed, upgrade, 1);
+
+		break;
+	case NAME_MAIL:
+		_im->setItemToField(NAME_MAIL, _pointX, _pointY, identify, isCursed, upgrade, 1);
+
+		break;
+
+		//악세사리
+	case NAME_RING_POWER:
+		_im->setItemToField(NAME_RING_POWER, _pointX, _pointY, identify, isCursed, upgrade, 1);
+
+		break;
+	case NAME_RING_RECHARGE:
+		_im->setItemToField(NAME_RING_RECHARGE, _pointX, _pointY, identify, isCursed, upgrade, 1);
+
+		break;
+	case NAME_LIOYDS_BEACON:
+		_im->setItemToField(NAME_LIOYDS_BEACON, _pointX, _pointY, identify, isCursed, upgrade, 1);
+
+		break;
+
+		//투척
+	case NAME_DART:
+		_im->setItemToField(NAME_DART, _pointX, _pointY, identify, isCursed, upgrade, 1);
+
+		break;
+	case NAME_PARALYSIS_DART:
+		_im->setItemToField(NAME_PARALYSIS_DART, _pointX, _pointY, identify, isCursed, upgrade, 1);
+
+		break;
+	case NAME_POISON_DART:
+		_im->setItemToField(NAME_POISON_DART, _pointX, _pointY, identify, isCursed, upgrade, 1);
+
+		break;
+		//완드
+	case NAME_LIGHTNING:
+		_im->setItemToField(NAME_LIGHTNING, _pointX, _pointY, identify, isCursed, upgrade, 1);
+
+		break;
+	case NAME_NORMAL:
+		_im->setItemToField(NAME_NORMAL, _pointX, _pointY, identify, isCursed, upgrade, 1);
+
+		break;
+	case NAME_POISON:
+		_im->setItemToField(NAME_POISON, _pointX, _pointY, identify, isCursed, upgrade, 1);
+
+		break;
+
+		//음식
+		//음식등의 아이템류는 위치만 지정해 줍니다. 저주받은 파스타 따위가 나올리가 없죠 물론 주문서와 물약도 동일합니다.
+	case NAME_EMERGENCY:
+		_im->setItemToField(NAME_EMERGENCY, _pointX, _pointY);
+
+		break;
+	case NAME_PASTY:
+		_im->setItemToField(NAME_PASTY, _pointX, _pointY);
+
+		break;
+	case NAME_UNKNOWN_MEAT:
+		_im->setItemToField(NAME_UNKNOWN_MEAT, _pointX, _pointY);
+
+		break;
+	case NAME_COOKED_MEAT:
+		_im->setItemToField(NAME_COOKED_MEAT, _pointX, _pointY);
+
+		break;
+	case NAME_FROZEN_MEAT:
+		_im->setItemToField(NAME_FROZEN_MEAT, _pointX, _pointY);
+
+		break;
+
+		//주문서
+	case NAME_IDENTIFY:
+		_im->setItemToField(NAME_IDENTIFY, _pointX, _pointY);
+
+		break;
+	case NAME_UPGRADE:
+		_im->setItemToField(NAME_UPGRADE, _pointX, _pointY);
+
+		break;
+	case NAME_PURIFY:
+		_im->setItemToField(NAME_PURIFY, _pointX, _pointY);
+
+		break;
+	case NAME_MAP:
+		_im->setItemToField(NAME_MAP, _pointX, _pointY);
+
+		break;
+
+		//물약
+	case NAME_RECHARGE:
+		_im->setItemToField(NAME_RECHARGE, _pointX, _pointY);
+
+		break;
+	case NAME_BOTTLE:
+		_im->setItemToField(NAME_BOTTLE, _pointX, _pointY);
+
+		break;
+	case NAME_HEAL:
+		_im->setItemToField(NAME_HEAL, _pointX, _pointY);
+
+		break;
+	case NAME_STR:
+		_im->setItemToField(NAME_STR, _pointX, _pointY);
+
+		break;
+	case NAME_EX:
+		_im->setItemToField(NAME_EX, _pointX, _pointY);
+
+		break;
+	case NAME_INVISIBLE:
+		_im->setItemToField(NAME_INVISIBLE, _pointX, _pointY);
+
+		break;
+	case NAME_LEVITATION:
+		_im->setItemToField(NAME_LEVITATION, _pointX, _pointY);
+
+		break;
+	case NAME_FROZEN:
+		_im->setItemToField(NAME_FROZEN, _pointX, _pointY);
+
+		break;
+	case NAME_LIQUID_FIRE:
+		_im->setItemToField(NAME_LIQUID_FIRE, _pointX, _pointY);
+
+		break;
+	case NAME_SEED_HEAL:
+		_im->setItemToField(NAME_SEED_HEAL, _pointX, _pointY);
+
+		break;
+	case NAME_SEED_FIRE:
+		_im->setItemToField(NAME_SEED_FIRE, _pointX, _pointY);
+
+		break;
+	case NAME_SEED_SNAKE:
+		_im->setItemToField(NAME_SEED_SNAKE, _pointX, _pointY);
+
+		break;
+	case NAME_SEED_FROST:
+		_im->setItemToField(NAME_SEED_FROST, _pointX, _pointY);
+
+		break;
+	case NAME_DEW:
+		_im->setItemToField(NAME_DEW, _pointX, _pointY);
+
+		break;
+
+		//돈은 머니 랜덤변수를 이용합니다
+	case NAME_MONEY:
+		_im->setItemToField(NAME_MONEY, _pointX, _pointY, false, false, 0, money);
+
+		break;
+	}
+
 }

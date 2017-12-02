@@ -6,7 +6,7 @@ private:
 
 	bool _playerChack; //플레이어가 건드렸는지 여부
 	bool _isMove;
-	int money;
+	int money; //떨어트릴 돈
 
 	POINT _movePoint;
 
@@ -22,6 +22,9 @@ public:
 	void update();
 	void draw(POINT camera);
 	void action();
+
+	//아이템을 떨어트린다
+	void dropitem();
 
 	void frameUpdate();
 	//데미지 받았을 때, 회피율 계산하여 함수 만들기
