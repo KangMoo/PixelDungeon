@@ -4,9 +4,9 @@ class goo : public Boss
 {
 private:
 
-	bool _pumpIt;	//자신 중심 5*5 단일공격
+	bool _PumpedUP;	//자신 중심 5*5 단일공격
 	bool _isMove;
-	int trunCount;
+	int _trunCount;
 	POINT _movePoint;	//움직이기 위한 포인트
 
 	RECT skillRange;

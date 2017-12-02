@@ -17,7 +17,7 @@ private:
 	image *move, *stay, *dead;
 
 public:
-	virtual HRESULT init(POINT point);//인식범위 추기
+	virtual HRESULT init(POINT point , int floor);//인식범위 추기
 	void release();
 	void update();
 	void draw(POINT camera);

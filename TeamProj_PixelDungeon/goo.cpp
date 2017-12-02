@@ -85,6 +85,9 @@ HRESULT goo::init(POINT point)
 	//_hpBar = new progressBar;
 	//_hpBar->init(_pointX - 25, _pointY + _image->getFrameHeight() / 2 + 10, 30, 10);
 
+	_PumpedUP = false;
+	_trunCount = 0;
+
 	return S_OK;
 }
 
@@ -311,18 +314,14 @@ void goo::action()
 			//둘의 x, y값 차이의 절대값이 각각 1 이하인 경우 공격 가능
 			if ((x <= 1 && x >= -1) && (y <= 1 && y >= -1))
 			{
-				if (true)
-				{
+				_myState = ENEMYSTATE_ATTACK;
+				_currntFrameX = 0;
+				_player->getDamaged(_statistics.str);
+				_player->addDebuff(DEBUFF_BLEEDING, 2000, 1);
+			}
+			else if (true)
+			{
 
-				}
-				//평타
-				else if (true)
-				{
-					_myState = ENEMYSTATE_ATTACK;
-					_currntFrameX = 0;
-					_player->getDamaged(_statistics.str);
-					_player->addDebuff(DEBUFF_BLEEDING, 2000, 1);
-				}
 			}
 			else
 			{

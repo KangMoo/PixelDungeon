@@ -14,7 +14,7 @@ Mimic::~Mimic()
 {
 }
 
-HRESULT Mimic::init(POINT point)
+HRESULT Mimic::init(POINT point, int floor)
 {
 	//입력받은 좌표를 초기 위치로
 	_point = point;
@@ -84,6 +84,9 @@ HRESULT Mimic::init(POINT point)
 	_deadAlpha = 0;
 	_active = false;
 	_playerChack = true;
+
+	_floor = floor;
+
 	/*ENEMYSTATE_SLEEP,	//플레이어를 찾지 못한상태/수면상태
 	ENEMYSTATE_IDLE,	//플레이어를 찾은 상태에서의 기본
 	ENEMYSTATE_MOVE,
@@ -127,8 +130,8 @@ void Mimic::getDamaged(int damage)
 
 		if (_currntHp > 0)
 			_currntHp -= damage - _statistics.def;
-		int hitGift = RND->getInt(2);
-		if (hitGift == 2)
+		int hitGift = RND->getInt(1);
+		if (hitGift == 1)
 		{
 			_im->setItemToField(NAME_MONEY, _pointX, _pointY, false, false, 0, money);
 		}
@@ -137,6 +140,8 @@ void Mimic::getDamaged(int damage)
 
 void Mimic::draw(POINT camera)
 {
+
+
 	//_hpBar->setGauge(_currntHp, _statistics.hp);
 	//시야에 보일때만 출력하게
 	if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)

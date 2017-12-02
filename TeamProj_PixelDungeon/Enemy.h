@@ -36,6 +36,8 @@ protected:
 	int	_frameTime;
 	int _currentFrameY, _currentFrameX;
 
+	int _floor;
+
 	RECT _cog;				//최초 인식범위	렉트형태
 	int _deadAlpha;			//죽으면 사라져야함니다
 	bool _deleteForeEm;		//알파가 0이 되어 안보이면 사라집니다.
@@ -44,7 +46,10 @@ protected:
 public:
 	virtual HRESULT init();
 	virtual HRESULT init(POINT _point); //포인트 추가
-	virtual HRESULT init(POINT point, int cog);//인식범위 추기
+	virtual HRESULT init(POINT _point, int _floor); //층수 
+
+	//virtual HRESULT init(POINT point, int cog);//인식범위 추기
+
 	virtual void release();
 	virtual void update();
 	virtual void render(POINT camera);
