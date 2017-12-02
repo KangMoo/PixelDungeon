@@ -478,9 +478,9 @@ void Mimic::update()
 			_deadAlpha = 255;
 			_isLive = false;
 			_action = false;
+			dropitem();
 		}
 
-		dropitem();
 	}
 
 	if (_action && _currntHp > 0 && _isLive) action();
