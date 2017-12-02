@@ -21,8 +21,8 @@ HRESULT EnemyManager::init()
 	_isSwarmSpawn = false;
 
 
-	setEnemy(PointMake(12, 12), 1,1);
-	setEnemy(PointMake(5, 5), 2, 0);
+	setEnemy(PointMake(6, 6), 1,0);
+	//setEnemy(PointMake(5, 5), 2, 0);
 	setEnemy(PointMake(5, 5), 3, 1);
 	//setEnemy(PointMake(6, 6), 5, 0);
 	//setEnemy(PointMake(TILESIZE*14, TILESIZE*13), 0);

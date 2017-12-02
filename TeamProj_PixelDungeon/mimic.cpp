@@ -130,10 +130,10 @@ void Mimic::getDamaged(int damage)
 
 		if (_currntHp > 0)
 			_currntHp -= damage - _statistics.def;
-		int hitGift = RND->getInt(1);
+		int hitGift = RND->getInt(2);
 		if (hitGift == 1)
 		{
-			_im->setItemToField(NAME_MONEY, _pointX, _pointY, false, false, 0, money);
+			_im->setItemToField(NAME_MONEY, _pointX, _pointY, false, false, 0, 1);
 		}
 	}
 }
