@@ -62,6 +62,8 @@ private:
 
 	vector<string> _imgNameList;
 	vector<image*> _imgList;
+	vector<string> _imgNameList_monster;
+	vector<image*> _imgList_monster;
 
 	RECT _selectRangeRect;
 	POINT _selectRangePoint;
@@ -81,6 +83,9 @@ private:
 
 	vTile _vItem; // 아이템 세팅을 위한 리스트
 	viTile _viItem;
+
+	vTile _vMon; // 몬스터 세팅을 위한 리스트
+	viTile _viMon;
 	
 	vTile _vPaletTile; // 팔레트에 깔아놓은 타일
 	viTile _viPaletTile;

@@ -389,10 +389,22 @@ void Map::load(int stageNum) {
 				}
 			}
 		}
-		
+	}
+
+
+	XMLElement * pMonElement = pRoot->FirstChildElement("MonsterList");
+	XMLElement * pMonListElement = pMonElement->FirstChildElement("monster");
+	while (pMonListElement != nullptr) {
+		string name = pMonListElement->FirstChildElement("name")->GetText();
+		int destX = pMonListElement->FirstChildElement("destX")->IntText();
+		int destY = pMonListElement->FirstChildElement("destY")->IntText();
+		if (name == "gnoll") {
+			_em->setEnemy(PointMake(destX, destY), 3);
+		}
 
 
 	}
+
 
 	//XMLElement * pDecoElement = pRoot->FirstChildElement("DecoList");
 	//XMLElement * pDecoListElement = pDecoElement->FirstChildElement("tile");

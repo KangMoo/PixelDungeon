@@ -7990,4 +7990,20 @@
             <imgNum>3</imgNum>
         </obj>
     </ObjList>
+    <ItemList>
+        <size>0</size>
+    </ItemList>
+    <MonsterList>
+        <size>2</size>
+        <monster>
+            <destX>7</destX>
+            <destY>5</destY>
+            <name>gnoll</name>
+        </monster>
+        <monster>
+            <destX>7</destX>
+            <destY>4</destY>
+            <name>gnoll</name>
+        </monster>
+    </MonsterList>
 </map>

@@ -87,74 +87,30 @@ void MapToolScene::imageSetup() {
 	_imgNameList.push_back("water");
 	_imgNameList.push_back("trap");
 
-	//==== ITEM ====
-	_imgNameList.push_back("old_short_sword");
-	_imgNameList.push_back("short_sword");
-	_imgNameList.push_back("sword");
-	_imgNameList.push_back("spear");
-	_imgNameList.push_back("hammer");
-	_imgNameList.push_back("battle_axe");
-	_imgNameList.push_back("scimitar");
-
-	_imgNameList.push_back("cloth");
-	_imgNameList.push_back("leather");
-	_imgNameList.push_back("mail");
-
-	_imgNameList.push_back("potion_black");
-	_imgNameList.push_back("potion_green");
-	_imgNameList.push_back("potion_magenta");
-	_imgNameList.push_back("potion_orange");
-
-	_imgNameList.push_back("potion_purple");
-	_imgNameList.push_back("potion_red");
-	_imgNameList.push_back("potion_yellow");
-	_imgNameList.push_back("potion_bottle");
-
-	_imgNameList.push_back("scroll_berkanan");
-
-	_imgNameList.push_back("seed_fire");
-	_imgNameList.push_back("seed_frost");
-	_imgNameList.push_back("seed_heal");
-	_imgNameList.push_back("seed_snake");
-
-	_imgNameList.push_back("meat_unknown");
-	_imgNameList.push_back("meat_cooked");
-	_imgNameList.push_back("meat_frozen");
-	_imgNameList.push_back("emergency_food");
-	_imgNameList.push_back("pasty");
-
-	_imgNameList.push_back("ring_blue");
-	_imgNameList.push_back("ring_red");
-	_imgNameList.push_back("acc_wand");
-
-	_imgNameList.push_back("dart");
-	_imgNameList.push_back("dart_effect");
-	_imgNameList.push_back("wand_normal");
-	_imgNameList.push_back("wand_lightning");
-	_imgNameList.push_back("wand_poison");
-	_imgNameList.push_back("dew");
-	_imgNameList.push_back("money");
-
-	_imgNameList.push_back("magic_missile");
-	_imgNameList.push_back("magic_missile_lightning");
-	_imgNameList.push_back("magic_missile_poison");
-	_imgNameList.push_back("magic_missile_beacon");
-
-	_imgNameList.push_back("flower_fire");
-	_imgNameList.push_back("flower_frost");
-	_imgNameList.push_back("flower_heal");
-	_imgNameList.push_back("flower_snake");
-
-	_imgNameList.push_back("key_iron");
-	_imgNameList.push_back("key_silver");
-	_imgNameList.push_back("key_gold");
-
 	//==== MONSTER ====
+
+	_imgNameList_monster.push_back("rat");
+	_imgNameList_monster.push_back("gnoll");
+	_imgNameList_monster.push_back("crap");
+	_imgNameList_monster.push_back("swarm");
+	_imgNameList_monster.push_back("goo");
+
+	image* rat = IMAGEMANAGER->addFrameImage("rat", "Img/Enemy/rat/blackAttack.bmp", 96, 64, 3, 2, true, RGB(255, 0, 255));
+	image* gnoll = IMAGEMANAGER->addFrameImage("gnoll", "Img/Enemy/gnoll_attack.bmp", 48, 60, 2, 2, true, RGB(255, 0, 255));
+	image* crap = IMAGEMANAGER->addFrameImage("crap", "Img/Enemy/crap_attack.bmp", 96, 64, 3, 2, true, RGB(255, 0, 255));
+	image* swarm = IMAGEMANAGER->addFrameImage("swarm", "Img/Enemy/swarm_stay.bmp", 264, 56, 11, 2, true, RGB(255, 0, 255));
+	image* goo = IMAGEMANAGER->addFrameImage("goo", "Img/Enemy/goo/goo_dead.bmp", 96, 64, 3, 2, true, RGB(255, 0, 255));
+
 
 
 	for (int i = 0; i < _imgNameList.size(); i++) {
 		image* image1 = IMAGEMANAGER->findImage(_imgNameList[i]);
 		_imgList.push_back(image1);		
+	}
+
+	for (int i = 0; i < _imgNameList_monster.size(); i++) {
+		image* image1 = IMAGEMANAGER->findImage(_imgNameList_monster[i]);
+		_imgList_monster.push_back(image1);
 	}
 }
 
@@ -179,6 +135,21 @@ void MapToolScene::paletteSetup()
 				index++;
 			}
 		}
+	}
+
+	for (auto img : _imgList_monster) {
+		TILE palTile;
+		ZeroMemory(&palTile, sizeof(TILE));
+		palTile.img = img;
+		palTile.sourX = 0;
+		palTile.sourY = 0;
+
+		palTile.destX = index % PALETTEX;
+		palTile.destY = index / PALETTEX;
+
+		_vPaletTile.push_back(palTile);
+
+		index++;
 	}
 }
 
@@ -475,6 +446,29 @@ void MapToolScene::render()
 
 
 		_vItem[i].img->alphaFrameRender(getMemDC(), destX, destY, _vItem[i].sourX, _vItem[i].sourY, alpha);
+	}
+
+	for (int i = 0; i < _vMon.size(); i++) {
+		if (_vMon[i].destX - _cameraX < 0 || _vMon[i].destY - _cameraY < 0 ||
+			_vMon[i].destX - _cameraX >= GRIDX || _vMon[i].destY - _cameraY >= GRIDY) continue;
+		int index = _vMon[i].destX - _cameraX + (_vMon[i].destY - _cameraY) * GRIDX;
+
+		int destX = _mapRect[index].rc.left;
+		int destY = _mapRect[index].rc.top;
+
+		int alpha;
+		if (_inputLayer == LAYER_MONSTER) {
+			alpha = 0;
+		}
+		else if (_inputLayer < LAYER_MONSTER)																			alpha = 255;
+		else if (_inputLayer > LAYER_MONSTER)																			alpha = 150;
+
+
+		if (_inputMode == MODE_VIEWING)																				alpha = 0;
+		if (_inputMode == MODE_VIEWING_TILE)																		alpha = 255;
+
+
+		_vMon[i].img->alphaFrameRender(getMemDC(), destX, destY, 0,0, alpha);
 	}
 
 
@@ -814,6 +808,40 @@ void MapToolScene::save()
 		pMapElement_Item->InsertEndChild(pListElementT);
 	}
 	pRoot->InsertEndChild(pMapElement_Item);
+
+
+	XMLElement * pMapElement_Mon = xmlDoc.NewElement("MonsterList");
+
+	XMLElement * pMonElementSize = xmlDoc.NewElement("size");
+	pMonElementSize->SetText(_vMon.size());
+	pMapElement_Mon->InsertEndChild(pMonElementSize);
+
+	for (int i = 0; i < _vMon.size(); i++) {
+		XMLElement * pListElementT = xmlDoc.NewElement("monster");
+
+		XMLElement * pListElement1 = xmlDoc.NewElement("destX");
+		pListElement1->SetText(_vMon[i].destX);
+		XMLElement * pListElement2 = xmlDoc.NewElement("destY");
+		pListElement2->SetText(_vMon[i].destY);
+		XMLElement * pListElement6 = xmlDoc.NewElement("name");
+		for (int j = 0; j < _imgNameList.size(); j++) {
+			if (_vMon[i].img == IMAGEMANAGER->findImage(_imgNameList_monster[j]))
+			{
+				pListElement6->SetText(_imgNameList_monster[j].c_str());
+				break;
+			}
+			if (j == _imgNameList.size() - 1)
+				pListElement6->SetText(0);
+		}
+
+		pListElementT->InsertEndChild(pListElement1);
+		pListElementT->InsertEndChild(pListElement2);
+		pListElementT->InsertEndChild(pListElement6);
+
+
+		pMapElement_Mon->InsertEndChild(pListElementT);
+	}
+	pRoot->InsertEndChild(pMapElement_Mon);
 
 
 	//XMLError eResult = xmlDoc.SaveFile("SavedData.xml");

@@ -89,11 +89,11 @@ void MapToolScene::input_SelectMapGrid() {
 }
 
 void MapToolScene::input_ModeChange() {
-	if (KEYMANAGER->isOnceKeyDown(VK_F1)) { _inputLayer = LAYER_TILE;		_inputMode = MODE_FLOOR; }
-	if (KEYMANAGER->isOnceKeyDown(VK_F2)) { _inputLayer = LAYER_DECO;		_inputMode = MODE_NULL; }
-	if (KEYMANAGER->isOnceKeyDown(VK_F3)) { _inputLayer = LAYER_OBJ;		_inputMode = MODE_CHEST; }
-	if (KEYMANAGER->isOnceKeyDown(VK_F4)) { _inputLayer = LAYER_ITEM;		_inputMode = MODE_NULL; }
-	if (KEYMANAGER->isOnceKeyDown(VK_F5)) { _inputLayer = LAYER_MONSTER;	_inputMode = MODE_NULL; }
+	if (KEYMANAGER->isOnceKeyDown(VK_F1)) { _inputLayer = LAYER_TILE;		_inputMode = MODE_FLOOR; _paletSelected.clear(); }
+	if (KEYMANAGER->isOnceKeyDown(VK_F2)) { _inputLayer = LAYER_DECO;		_inputMode = MODE_NULL; _paletSelected.clear();}
+	if (KEYMANAGER->isOnceKeyDown(VK_F3)) { _inputLayer = LAYER_OBJ;		_inputMode = MODE_CHEST; _paletSelected.clear();	}
+	if (KEYMANAGER->isOnceKeyDown(VK_F4)) { _inputLayer = LAYER_ITEM;		_inputMode = MODE_NULL; _paletSelected.clear();	}
+	if (KEYMANAGER->isOnceKeyDown(VK_F5)) { _inputLayer = LAYER_MONSTER;	_inputMode = MODE_NULL; _paletSelected.clear();	}
 
 	switch (_inputLayer) {
 	case LAYER_TILE:
@@ -497,7 +497,7 @@ void MapToolScene::input_AddTile() {
 						}
 
 
-						// 타일 추가 모드
+						// 아이템 추가 모드
 						else if (_inputLayer == LAYER_ITEM) {
 							//이미 타일이 있는 경우 지운다
 							for (_viItem = _vItem.begin(); _viItem != _vItem.end();) {
@@ -515,6 +515,26 @@ void MapToolScene::input_AddTile() {
 							inputTile.destY = indexY;
 
 							_vItem.push_back(inputTile);
+						}
+
+						// 몬스터 추가 모드
+						else if (_inputLayer == LAYER_MONSTER) {
+							//이미 타일이 있는 경우 지운다
+							for (_viMon = _vMon.begin(); _viMon != _vMon.end();) {
+								if (_viMon->destX == indexX && _viMon->destY == indexY) {
+									_viMon = _vMon.erase(_viMon);
+								}
+								else
+									_viMon++;
+							}
+
+							TILE inputTile;
+							ZeroMemory(&inputTile, sizeof(TILE));
+							inputTile.img = _vPaletTile[paletIndex].img;
+							inputTile.destX = indexX;
+							inputTile.destY = indexY;
+
+							_vMon.push_back(inputTile);
 						}
 					}
 				}

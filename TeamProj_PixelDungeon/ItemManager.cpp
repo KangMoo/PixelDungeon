@@ -142,6 +142,8 @@ void ItemManager::update()
 	{
 		_viItem->rc = RectMakeCenter(_viItem->point.x, _viItem->point.y,
 			_viItem->img->getWidth(), _viItem->img->getHeight());
+
+		
 	}
 	//================== I T E M   D R O P =========================
 	for ( _viItem = _vItem.begin(); _viItem != _vItem.end(); ++_viItem)
