@@ -140,12 +140,15 @@ void Mimic::getDamaged(int damage)
 
 void Mimic::draw(POINT camera)
 {
-
+	
 
 	//_hpBar->setGauge(_currntHp, _statistics.hp);
 	//시야에 보일때만 출력하게
-	if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
-		_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
+	if (_map->getCurStageNum() == _floor)
+	{
+		if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
+			_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
+	}
 	//RectangleMakeCenter(getMemDC(), _pointX + camera.x, _pointY + camera.y, _currntHp, _currntHp);
 	//if(_findPlayer)
 
@@ -471,24 +474,27 @@ void Mimic::action()
 
 void Mimic::update()
 {
-
-	if (_currntHp <= 0)
+	if (_map->getCurStageNum() == _floor)
 	{
-		_myState = ENEMYSTATE_DEAD;
-
-		_deadAlpha += 15;
-		_action = false;
-		if (_deadAlpha >= 255)
+		if (_currntHp <= 0)
 		{
-			_deadAlpha = 255;
-			_isLive = false;
+			_myState = ENEMYSTATE_DEAD;
+
+			_deadAlpha += 15;
 			_action = false;
-			dropitem();
+			if (_deadAlpha >= 255)
+			{
+				_deadAlpha = 255;
+				_isLive = false;
+				_action = false;
+				dropitem();
+			}
+
 		}
 
+		if (_action && _currntHp > 0 && _isLive) action();
 	}
-
-	if (_action && _currntHp > 0 && _isLive) action();
+	else _action = false;
 }
 void Mimic::dropitem()
 {
