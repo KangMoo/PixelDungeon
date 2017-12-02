@@ -1297,7 +1297,7 @@ void ItemManager::useItem(int position)
 				{
 					_potionIdentified[5] = true;
 					_viBag->numOfItem--;
-					frozen(_player->getPoint().x, _player->getPoint().y);
+					frozen(_player->getPoint().x+16, _player->getPoint().y + 16);
 					goto stop;
 				}
 				break;
@@ -1305,7 +1305,7 @@ void ItemManager::useItem(int position)
 				{
 					_potionIdentified[6] = true;
 					_viBag->numOfItem--;
-					liquidFire(_player->getPoint().x, _player->getPoint().y);
+					liquidFire(_player->getPoint().x + 16, _player->getPoint().y + 16);
 					
 					goto stop;
 				}
@@ -1760,8 +1760,8 @@ void ItemManager::liquidFire(float x, float y)
 
 	for (int i = 0; i < 3; i++)
 	{
-		TileX[i] = x / TILESIZE - 2 + i;
-		TileY[i] = y / TILESIZE - 2 + i;
+		TileX[i] = x / TILESIZE - 1 + i;
+		TileY[i] = y / TILESIZE - 1 + i;
 	}
 	for (int i = 0; i < 3; i++)
 	{
@@ -1796,8 +1796,13 @@ void ItemManager::liquidFire(float x, float y)
 
 				}
 			}
-			liquidFireEffect(TileX[i], TileY[i]);
+			if (_map->getTile(TileX[i]-1, TileY[j]-1).terrain & ATTRIBUTE_FLAMMABLE)
+			{
+				_map->setTile_Flame(TileX[i]-1, TileY[j]-1);
+			}
+			liquidFireEffect(TileX[i]-1.5, TileY[j]-1.5);
 			_fire = true;
+
 		}
 	}
 
@@ -1847,7 +1852,7 @@ void ItemManager::frozen(float x, float y)
 
 				}
 			}
-			frozenEffect(TileX[i]-2, TileY[i]-2);
+			frozenEffect(TileX[i]-2, TileY[j]-2);
 			_frozen = true;
 		}
 	}
@@ -1928,7 +1933,7 @@ void ItemManager::keyControl()
 		{
 			if (_viBag->name == NAME_FROZEN)
 			{
-				useItem(_viBag->position);
+				useItem(_viBag->position,_ptMouse.x, _ptMouse.y);
 				break;
 			}
 			else ++_viBag;
