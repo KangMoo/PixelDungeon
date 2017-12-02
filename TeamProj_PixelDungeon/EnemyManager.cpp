@@ -21,7 +21,7 @@ HRESULT EnemyManager::init()
 	_isSwarmSpawn = false;
 
 
-	//setEnemy(PointMake(12, 12), 2);
+	setEnemy(PointMake(12, 12), 1);
 	//setEnemy(PointMake(TILESIZE*14, TILESIZE*13), 0);
 	//setEnemy(PointMake(TILESIZE*13, TILESIZE*11), 0);
 	//setEnemy(PointMake(13, 13), 2);
@@ -134,7 +134,6 @@ void EnemyManager::setEnemy(POINT point, int type)
 	{
 		case 0:
 		{
-			point = PointMake(point.x * TILESIZE, point.y * TILESIZE);
 			Rat* temp = new Rat;
 			temp->init(point);
 			temp->setPlayerAddressLink(_player);
