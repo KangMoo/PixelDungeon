@@ -103,7 +103,7 @@ public:
 	void setItemToBag(ITEMNAME name);
 	void setItemToField(ITEMNAME name, float x, float y);
 	void setItemToBag(ITEMNAME name, bool identify, bool isCursed, int upgrade, int numOfItem);
-	void setItemToField(ITEMNAME name, float x, float y, bool identify, bool isCursed, int upgrade, int numOfItem);
+	void setItemToField(ITEMNAME name, float x, float y, bool identify, bool isCursed, int upgrade, int numOfItem, int floor);
 
 	//=========== L I N K ===================
 	void setEnemyManagerAddressLink(EnemyManager* em) { _em = em; }

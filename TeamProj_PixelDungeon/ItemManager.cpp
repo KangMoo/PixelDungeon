@@ -45,6 +45,8 @@ HRESULT ItemManager::init()
 		fireE[i].isSee = true;
 
 	}
+	
+
 	//==================================================
 
 	setItemToBag(NAME_EMERGENCY);
@@ -54,6 +56,12 @@ HRESULT ItemManager::init()
 	setItemToBag(NAME_FROZEN);
 	setItemToBag(NAME_LIQUID_FIRE);
 	setItemToBag(NAME_UNKNOWN_MEAT);
+	setItemToBag(NAME_SEED_FIRE);
+	setItemToField(NAME_MONEY, 100, 100, false, false, 0, 100, 0);
+
+	useItem(6, _player->getPoint().x, _player->getPoint().y);
+
+
 	return S_OK;
 }
 void ItemManager::release()
@@ -73,42 +81,42 @@ void ItemManager::update()
 		case NAME_OLD_SHORT_SWORD:
 			_viBag->minPoint = 1 + _viBag->upgrade;
 			_viBag->maxPoint = 10 + _viBag->upgrade * 2;
-			_viBag->Power = 10 - (_viBag->upgrade / 3) + 1;
+			_viBag->Power = 10 - ((_viBag->upgrade / 3) + 1);
 			break;
 		case NAME_SHORT_SWORD:
 			_viBag->minPoint = 2 + _viBag->upgrade;
 			_viBag->maxPoint = 15 + _viBag->upgrade * 3;
-			_viBag->Power = 12 - (_viBag->upgrade / 3) + 1;
+			_viBag->Power = 12 - ((_viBag->upgrade / 3) + 1);
 			break;
 		case NAME_SWORD:
 			_viBag->minPoint = 3 + _viBag->upgrade;
 			_viBag->maxPoint = 20 + _viBag->upgrade * 4;
-			_viBag->Power = 14 - (_viBag->upgrade / 3) + 1;
+			_viBag->Power = 14 - ((_viBag->upgrade / 3) + 1);
 			break;
 		case NAME_SPEAR:
 			_viBag->minPoint = 2 + _viBag->upgrade;
 			_viBag->maxPoint = 20 + _viBag->upgrade * 3;
-			_viBag->Power = 12 - (_viBag->upgrade / 3) + 1;
+			_viBag->Power = 12 - ((_viBag->upgrade / 3) + 1);
 			break;
 		case NAME_BATTLE_AXE:
 			_viBag->minPoint = 4 + _viBag->upgrade;
 			_viBag->maxPoint = 20 + _viBag->upgrade * 9;
-			_viBag->Power = 16 - (_viBag->upgrade / 3) + 1;
+			_viBag->Power = 16 - ((_viBag->upgrade / 3) + 1);
 			break;
 		case NAME_CLOTH:
 			_viBag->minPoint = 0 + _viBag->upgrade;
 			_viBag->maxPoint = 2 + _viBag->upgrade;
-			_viBag->Power = 10 - (_viBag->upgrade / 3) + 1;
+			_viBag->Power = 10 - (_viBag->upgrade / 3) - 1;
 			break;
 		case NAME_LEATHER:
 			_viBag->minPoint = 0 + _viBag->upgrade;
 			_viBag->maxPoint = 4 + _viBag->upgrade * 2;
-			_viBag->Power = 12 - (_viBag->upgrade / 3) + 1;
+			_viBag->Power = 12 - (_viBag->upgrade / 3) - 1;
 			break;
 		case NAME_MAIL:
 			_viBag->minPoint = 0 + _viBag->upgrade;
 			_viBag->maxPoint = 6 + _viBag->upgrade * 3;
-			_viBag->Power = 14 - (_viBag->upgrade / 3) + 1;
+			_viBag->Power = 14 - (_viBag->upgrade / 3) - 1;
 			break;
 		case NAME_RING_POWER:
 			_viBag->stat.str = 1 + _viBag->upgrade;
@@ -398,7 +406,7 @@ void ItemManager::setItemToBag(ITEMNAME name, bool identify, bool isCursed, int 
 
 }
 
-void ItemManager::setItemToField(ITEMNAME name, float x, float y, bool identify, bool isCursed, int upgrade, int numOfItem)
+void ItemManager::setItemToField(ITEMNAME name, float x, float y, bool identify, bool isCursed, int upgrade, int numOfItem, int floor)
 {
 	bool overlap = false;
 	tagItem item;
@@ -407,7 +415,7 @@ void ItemManager::setItemToField(ITEMNAME name, float x, float y, bool identify,
 
 	item.drop = false;
 	item.upgrade = upgrade;
-	item.floor = _map->getCurStageNum();
+	item.floor = floor;
 	setItem(&item, name);
 
 	item.contentsHide = identify;
@@ -1117,7 +1125,7 @@ void ItemManager::unequipItem(int position)
 
 void ItemManager::equipItem(int position)
 {
-	for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+	for ( _viBag = _vBag.begin(); _viBag != _vBag.end();)
 	{
 		if (_viBag->position == position)
 		{
@@ -1156,10 +1164,10 @@ void ItemManager::equipItem(int position)
 			case TYPE_ACC:
 				_viBag->equip = true;
 				break;
-			default:
-				break;
 			}
+			break;
 		}
+		else ++_viBag;
 
 	}
 }
@@ -1333,7 +1341,9 @@ void ItemManager::useItem(int position)
 			default:
 				break;
 			}
+			break;
 		}
+
 		else  ++_viBag;
 
 	}
@@ -1484,6 +1494,7 @@ void ItemManager::useItem(int position, float x, float y)
 			default:
 				break;
 			}
+			break;
 		}
 		else  ++_viBag;
 	}
@@ -1510,72 +1521,89 @@ void ItemManager::useItem(int position, int target)
 				switch (_viBag->name)
 				{
 					case NAME_UPGRADE:
-					for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
-					{
-						if (_viBag->position == target)
+						for (int i = 0; i < _vBag.size(); i++)
 						{
-							if (_viBag->type == TYPE_ACC || _viBag->type == TYPE_ARMOR || _viBag->type == TYPE_WEAPON)
+							if (_vBag[i].position == target && _vBag[i].type == TYPE_WEAPON
+								|| _vBag[i].type == TYPE_ARMOR || _vBag[i].type == TYPE_WAND)
 							{
-								_viBag->upgrade++;
+								_vBag[i].upgrade++;	
 								_scrollIdentified[1] = true;
-								_viBag->numOfItem--;
 							}
-							goto stop;
 						}
-					}
 					break;
 
 					case NAME_IDENTIFY:
-					for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
-					{
-						if (_viBag->position == target)
+						for (int i = 0; i < _vBag.size(); i++)
 						{
-							if (_viBag->contentsHide == true)
+							if (_vBag[i].position == target)
 							{
-								_viBag->contentsHide = false;
+								switch (_vBag[i].name)
+								{
+								case NAME_UPGRADE:
+									_scrollIdentified[1] = true;
+									break;
+								case NAME_PURIFY:
+									_scrollIdentified[2] = true;
+									break;
+								case NAME_MAP:
+									_scrollIdentified[3] = true;
+									break;
+								case NAME_HEAL:
+									_potionIdentified[0] = true;
+									break;
+								case NAME_STR:
+									_potionIdentified[1] = true;
+									break;
+								case NAME_EX:
+									_potionIdentified[2] = true;
+									break;
+								case NAME_INVISIBLE:
+									_potionIdentified[3] = true;
+									break;
+								case NAME_LEVITATION:
+									_potionIdentified[4] = true;
+									break;
+								case NAME_FROZEN:
+									_potionIdentified[5] = true;
+									break;
+								case NAME_LIQUID_FIRE:
+									_potionIdentified[6] = true;
+									break;
+								}
+								_vBag[i].contentsHide = false;
 								_scrollIdentified[0] = true;
-								_viBag->numOfItem--;
 							}
-							goto stop;
 						}
-					}
 					break;
 
 					case NAME_PURIFY:
-					for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
-					{
-						if (_viBag->position == target)
+
+						for (int i = 0; i < _vBag.size(); i++)
 						{
-							if (_viBag->type == TYPE_ACC || _viBag->type == TYPE_ARMOR || _viBag->type == TYPE_WEAPON)
+							if (_vBag[i].position == target)
 							{
-								_viBag->isCursed = false;
-								_scrollIdentified[2] = true;
-								_viBag->numOfItem--;
+								if (_vBag[i].type == TYPE_ACC || _vBag[i].type == TYPE_WEAPON
+									|| _vBag[i].type == TYPE_ARMOR || _vBag[i].type == TYPE_WAND)
+								{
+									_vBag[i].isCursed = false;
+									_scrollIdentified[2] = true;
+								}
 							}
-							goto stop;
 						}
-					}
-					break;
-
-
-					default:
 					break;
 				}
 				break;
-
-				default:
-				break;
 			}
-
+			_viBag->numOfItem--;
 		}
 
 	}
-stop:
 	for (_viBag = _vBag.begin(); _viBag != _vBag.end();)
 	{
 		if (_viBag->numOfItem <= 0)
 		{
 			_viBag = _vBag.erase(_viBag);
+			break;
 		}
 		else ++_viBag;
 	}
@@ -1587,8 +1615,8 @@ void ItemManager::fire(image* img, float destX, float destY)
 	ZeroMemory(&bullet, sizeof(tagBullet));
 	bullet.x = bullet.initX = _player->getPoint().x;
 	bullet.y = bullet.initY = _player->getPoint().y;
-	bullet.destX = destX;
-	bullet.destY = destY;
+	bullet.destX = destX - _ui->getCamera().x;
+	bullet.destY = destY - _ui->getCamera().y;
 	bullet.angle = atan2f(bullet.destY - bullet.y, bullet.destX - bullet.x);
 	bullet.speed = 7;
 	bullet.img = img;
@@ -1606,8 +1634,8 @@ void ItemManager::throwItem(int position, float destX, float destY)
 	ZeroMemory(&bullet, sizeof(tagBullet));
 	bullet.x = bullet.initX = _player->getPoint().x;
 	bullet.y = bullet.initY = _player->getPoint().y;
-	bullet.destX = destX;
-	bullet.destY = destY;
+	bullet.destX = destX - _ui->getCamera().x;
+	bullet.destY = destY - _ui->getCamera().y;
 	bullet.angle = atan2f(bullet.destY - bullet.y, bullet.destX - bullet.x);
 	bullet.speed = 7;
 	bullet.position = position;
@@ -1669,7 +1697,7 @@ void ItemManager::throwMove()
 					setItemToField(_viBag->name, _viThrow->x - cosf(_viThrow->angle)*TILESIZE, 
 						_viThrow->y - sinf(_viThrow->angle)*TILESIZE,
 						_viBag->contentsHide, _viBag->isCursed, _viBag->upgrade,
-						_viBag->numOfItem);
+						_viBag->numOfItem, _map->getCurStageNum());
 					
 					_viBag = _vBag.erase(_viBag);
 			
@@ -1856,7 +1884,7 @@ void ItemManager::keyControl()
 		{
 			if (_viBag->name == NAME_NORMAL)
 			{
-				fire(_viBag->throwImg, _ptMouse.x, _ptMouse.y);
+				fire(_viBag->throwImg, _ptMouse.x, _ptMouse.y );
 			}
 		}
 	}
