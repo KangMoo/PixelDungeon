@@ -41,6 +41,8 @@ HRESULT Player::init(POINT point)
 	_keepMove = false;
 	_isUsingUI = false;
 	_isEnemyTargeted = false;
+
+
 	return S_OK;
 }
 void Player::release()
@@ -53,7 +55,7 @@ void Player::update()
 	frameUpdate();
 	
 
-
+	if (_playerState == PLAYERSTATE_DEAD) return;
 
 	//자기 차례가 아니면 이하 실행X
 	if (!_action) return;
@@ -72,6 +74,12 @@ void Player::update()
 	if (_keepMove == true && !_isUsingUI)
 	{
 		move();
+	}
+	else if (_isEnemyTargeted)
+	{
+		_isEnemyTargeted = false;
+		action_Attack();
+		endTurn();
 	}
 	else
 	{
@@ -122,18 +130,10 @@ void Player::draw(POINT camera)
 	//	LineTo(getMemDC(), _playerPoint.x + cosf(i.eangle) * 100, _playerPoint.y - sinf(i.eangle) * 100);
 	//	LineTo(getMemDC(), _playerPoint.x, _playerPoint.y);
 	//}
-
 	for (auto i : astar)
 	{
-		RectangleMakeCenter(getMemDC(), i.destX*TILESIZE + TILESIZE / 2 + camera.x, i.destY * TILESIZE + TILESIZE / 2+camera.y,5,5);
+		RectangleMakeCenter(getMemDC(), i.destX * 32 + 16 + camera.x, i.destY * 32 + 16 + camera.y, 5, 5);
 	}
-	char str[] = "폰트테스트";
-	HFONT hFont = CreateFont(50, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("궁서"));
-	HFONT oldFont = (HFONT)SelectObject(getMemDC(), hFont);
-	//TextOut(getMemDC(), 300, 300, str, strlen(str));
-	SelectObject(getMemDC(), oldFont);
-	DeleteObject(hFont);
-
 	//~test
 	_image->alphaFrameRender(getMemDC(), _playerPoint.x - _image->getFrameWidth() / 2 + camera.x, _playerPoint.y - _image->getFrameHeight() / 2 + camera.y, _currentFrameX, _currentFrameY, 0);
 	//IMAGEMANAGER->render("blactkTile", getMemDC(), 50, 50, 0, 0, 100, 100);
@@ -473,6 +473,7 @@ void Player::action_Attack()
 	if (_isEnemyTargeted)
 	{
 		_TargetEnemy->setHP(_TargetEnemy->getHP() -RND->getFromIntTo(_playerStat.mindmg,_playerStat.maxdmg));
+		_isEnemyTargeted = false;
 	}
 }
 void Player::action_Scroll()
@@ -506,31 +507,6 @@ void Player::move()
 		//목표지점 수정
 		astar.erase(astar.begin() + astar.size() - 1);
 
-		//몬스터를 추격중이라면 길 재설정
-		if (_isEnemyTargeted)
-		{
-			//목표까지 길 재설정
-			astar = _map->aStar(_playerPoint, PointMake(_TargetEnemy->getPoint().x / TILESIZE, _TargetEnemy->getPoint().y / TILESIZE));
-
-			//길이 있는지 여부 판단
-			if (astar.size() > 0)
-			{
-				//현재 위치는 뺌
-				astar.erase(astar.begin() + astar.size() - 1);
-			}
-			//길이 있는지 여부 판단
-			if (astar.size() > 0)
-			{
-				//몬스터의 타일 빼줌
-				astar.pop_back();
-			}
-			//타일 두개를 빼고 아직 길이 없다면 (몬스터 바로 앞이라면)
-			if (astar.size() <= 0)
-			{
-				action_Attack();
-			}
-		}
-
 		//턴 넘기기
 		endTurn();
 	}
@@ -540,7 +516,6 @@ void Player::getDamaged(int damage)
 	if (RND->getFloat(1.0)<_playerStat.atk_lck)
 	{
 		//빗나감
-
 	}
 	else
 	{
@@ -555,7 +530,6 @@ void Player::getDamaged(int damage)
 
 		}
 	}
-	stopMoving();
 }
 void Player::mouseClickEvent()
 {
@@ -582,12 +556,22 @@ void Player::mouseClickEvent()
 			//목표 저장
 			_isEnemyTargeted = true;
 			_TargetEnemy = i;
+			astar = _map->aStar(_playerPoint, ptMouse);
+			int a = 0;
 			//길이 있는지 여부 판단
 			if (astar.size() > 0)
 			{
 				//현재 위치는 뺌
+				astar.erase(astar.begin() + 0);
+			}
+
+			if (astar.size() > 0)
+			{
+				//몬스터위치 뺌
 				astar.erase(astar.begin() + astar.size() - 1);
 			}
+
+			break;
 		}
 	}
 
@@ -616,12 +600,13 @@ void Player::mouseClickEvent()
 
 	if (!_keepMove)
 	{
-		RECT temp = RectMakeCenter(_playerPoint.x, _playerPoint.y, TILESIZE * 2, TILESIZE * 2);
+		RECT temp = RectMakeCenter(_playerPoint.x, _playerPoint.y, TILESIZE * 3, TILESIZE * 3);
 		if (PtInRect(&temp, ptMouse))
 		{
 			//열쇠를 가지고 있으면
 			//if()~~~~~
 			_map->setTile_UnlockDoor(ptMouse.x / TILESIZE, ptMouse.y / TILESIZE);
+			
 		}
 	}
 }
@@ -754,4 +739,10 @@ void Player::stopMoving()
 		astar.push_back(temp);
 		return;
 	}
+}
+
+void Player::activeTurn()
+{
+	_action = true;
+
 }

@@ -18,8 +18,13 @@ HRESULT EnemyManager::init()
 	_enemyTurn = false;
 	_actionCount = 0;
 
+	_isSwarmSpawn = false;
+
+	setEnemy(PointMake(12, 12), 1);
+
 	//setEnemy(PointMake(12, 12), 2);
 	//setEnemy(PointMake(TILESIZE*14, TILESIZE*13), 0);
+	//setEnemy(PointMake(TILESIZE*13, TILESIZE*11), 0);
 	//setEnemy(PointMake(13, 13), 2);
 
 	return S_OK;
@@ -37,6 +42,23 @@ void EnemyManager::update()
 		i->update();
 	}
 
+	for (_viEnemy = _vEnemy.begin(); _viEnemy != _vEnemy.end();)
+	{
+		if (!(*_viEnemy)->getLive())
+		{
+			(*_viEnemy)->release();
+			_viEnemy = _vEnemy.erase(_viEnemy);
+			_actionCount--;
+			continue;
+		}
+		else ++_viEnemy;
+	}
+
+	if (_isSwarmSpawn)
+	{
+		setSwarm();
+		_isSwarmSpawn = false;
+	}
 
 	//차례가 몬스터에게 넘겨질 경우 && 몬스터의 수가 하나 이상 있을 경우
 	if (_enemyTurn && _vEnemy.size() > 0)
@@ -59,16 +81,16 @@ void EnemyManager::action()
 	if (_actionCount == 0)
 	{
 		//첫번째 몬스터에게 턴 넘김
-		_vEnemy[_actionCount]->setAction(true);
-		//다음차례 몬스터 번호 저장
-		_actionCount++;
+			_vEnemy[_actionCount]->setAction(true);
+			//다음차례 몬스터 번호 저장
+			_actionCount++;
 	}
 	else if (_vEnemy[_actionCount - 1]->getAction() == false && _actionCount < _vEnemy.size())	//전 차례의 몬스터 행동이 끝났으면
 	{
 		//다음차례 몬스터에게 턴 넘김
-		_vEnemy[_actionCount]->setAction(true);
-		//다음차례 몬스터 번호 저장
-		_actionCount++;
+			_vEnemy[_actionCount]->setAction(true);
+			//다음차례 몬스터 번호 저장
+			_actionCount++;
 	}
 
 	bool allEnemyTurnOver = true;	//모든 적이 행동 마쳤는지 확인하기 위한 함수
@@ -85,7 +107,7 @@ void EnemyManager::action()
 		_enemyTurn = false;
 		_actionCount = 0;
 		//플레이어 차례 true 대입
-		_player->setTurn(true);
+		_player->activeTurn();
 	}
 }
 void EnemyManager::render()
@@ -131,7 +153,7 @@ void EnemyManager::setEnemy(POINT point, int type)
 		{
 
 			Mimic* temp = new Mimic;
-			temp->init(point,4);
+			temp->init(point);
 			temp->setPlayerAddressLink(_player);
 			temp->setItemManagerAddressLink(_im);
 			temp->setUiAddressLink(_ui);
@@ -181,7 +203,14 @@ void EnemyManager::setEnemy(POINT point, int type)
 		}
 		case 5:
 		{
-			//
+			//게
+			Crap* temp = new Crap;
+			temp->init(point);
+			temp->setPlayerAddressLink(_player);
+			temp->setItemManagerAddressLink(_im);
+			temp->setUiAddressLink(_ui);
+			temp->setMapAddressLink(_map);
+			_vEnemy.push_back(temp);
 			break;
 		}
 		default:
@@ -192,15 +221,22 @@ void EnemyManager::setEnemy(POINT point, int type)
 	}
 }
 
-void EnemyManager::setSwarm(POINT point, int hp)
+void EnemyManager::setSwarm()
 {
-	//파리, Swarm
 	Swarm* temp = new Swarm;
-	temp->init(point, hp);
+	temp->init(_temp.pt, _temp.hp);
 	temp->setEm(this);
 	temp->setPlayerAddressLink(_player);
 	temp->setItemManagerAddressLink(_im);
 	temp->setUiAddressLink(_ui);
 	temp->setMapAddressLink(_map);
 	_vEnemy.push_back(temp);
+}
+
+void EnemyManager::enemyClear()
+{
+	while (_vEnemy.empty()) 
+	{
+		_vEnemy.clear();
+	}
 }

@@ -1,6 +1,6 @@
 #pragma once
 #include "Enemy.h"
-class Gnoll :
+class Crap :
 	public Enemy
 {
 private:
@@ -11,6 +11,8 @@ private:
 
 	bool _isMove;
 	POINT _movePoint;
+
+	int _turnCount;
 
 	int _frameCount;
 	vector<TILE> astarTest;
@@ -29,7 +31,7 @@ public:
 	void draw(POINT camera);
 	void release();
 
-	Gnoll();
-	~Gnoll();
+	Crap();
+	~Crap();
 };
 

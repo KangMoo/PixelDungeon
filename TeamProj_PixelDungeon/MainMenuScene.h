@@ -3,7 +3,8 @@
 class MainMenuScene : public gameNode
 {
 private:
-
+	RECT gameStart;
+	RECT mapTool;
 public:
 	HRESULT init();
 	void release();
