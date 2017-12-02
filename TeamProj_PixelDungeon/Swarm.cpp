@@ -550,7 +550,7 @@ void Swarm::update()
 					int a = RND->getInt(100);
 					if (a < _itemDrop)
 					{
-						_im->setItemToField(NAME_HEAL, _pointX, _pointY, false, false, 0, 1);
+						_im->setItemToField(NAME_HEAL, _pointX, _pointY, false, false, 0, 1,_map->getCurStageNum());
 					}
 				}
 				_isLive = false;

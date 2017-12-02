@@ -142,7 +142,7 @@ void Crap::update()
 				{
 					int a = RND->getInt(100);
 					if(a < 33)
-						_im->setItemToField(NAME_UNKNOWN_MEAT, _pointX, _pointY, false, false, 0, 1);
+						_im->setItemToField(NAME_UNKNOWN_MEAT, _pointX, _pointY, false, false, 0, 1,_map->getCurStageNum());
 				}
 				_isLive = false;
 				_action = false;

@@ -84,10 +84,69 @@ void ItemManager::release()
 void ItemManager::update()
 {
 	
-	keyControl();
-	getItem();
 
-	for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
+	//================== I T E M   D R O P =========================
+	for ( _viItem = _vItem.begin(); _viItem != _vItem.end(); ++_viItem)
+	{
+		if (!_viItem->drop)
+		{
+			_viItem->point.y-=1;
+			if (_viItem->point.y < _viItem->initPoint.y -10)
+				_viItem->drop = true;
+		}
+		else
+		{
+			_viItem->point.y+=1;
+			if (_viItem->point.y > _viItem->initPoint.y)
+				_viItem->point.y = _viItem->initPoint.y;
+		}
+
+	}
+
+
+	//================== F U N C T I O N =========================
+	getItem();
+	itemState();
+	bulletMove();
+	throwMove();
+	keyControl();
+
+
+
+
+}
+void ItemManager::render(POINT camera)
+{
+	draw(camera);
+}
+void ItemManager::draw(POINT camera)
+{
+	for ( _viBullet = _vBullet.begin(); _viBullet < _vBullet.end(); ++_viBullet)
+	{
+		_viBullet->img->render(getMemDC(), _viBullet->x + camera.x, _viBullet->y + camera.y);
+	}
+	for ( _viThrow = _vThrow.begin(); _viThrow != _vThrow.end(); ++_viThrow)
+	{
+		_viThrow->img->render(getMemDC(), _viThrow->x + camera.x, _viThrow->y + camera.y);
+	}
+	for ( _viItem = _vItem.begin(); _viItem != _vItem.end(); ++_viItem)
+	{
+		if (_viItem->floor == _map->getCurStageNum() && _map->getTile(_viItem->point.x / TILESIZE, _viItem->point.y / TILESIZE).tileview == TILEVIEW_ALL)
+		_viItem->img->render(getMemDC(), _viItem->rc.left + camera.x, _viItem->rc.top + camera.y);
+	}
+		for (int i = 0; i < 20; i++)
+		{
+			Rectangle(getMemDC(), frozenE[i].rc.left+camera.x, frozenE[i].rc.top + camera.y, frozenE[i].rc.right + camera.x, frozenE[i].rc.bottom + camera.y);
+		}
+	if (_fire)
+	{
+	}
+}
+
+void ItemManager::itemState()
+{
+
+	for (_viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
 	{
 
 		switch (_viBag->name)
@@ -160,64 +219,14 @@ void ItemManager::update()
 	{
 		_vBag[i].position = i;
 	}
-	for ( _viItem = _vItem.begin(); _viItem != _vItem.end(); ++_viItem)
+	for (_viItem = _vItem.begin(); _viItem != _vItem.end(); ++_viItem)
 	{
 		_viItem->rc = RectMakeCenter(_viItem->point.x, _viItem->point.y,
 			_viItem->img->getWidth(), _viItem->img->getHeight());
 
-		
-	}
-	//================== I T E M   D R O P =========================
-	for ( _viItem = _vItem.begin(); _viItem != _vItem.end(); ++_viItem)
-	{
-		if (!_viItem->drop)
-		{
-			_viItem->point.y-=1;
-			if (_viItem->point.y < _viItem->initPoint.y -10)
-				_viItem->drop = true;
-		}
-		else
-		{
-			_viItem->point.y+=1;
-			if (_viItem->point.y > _viItem->initPoint.y)
-				_viItem->point.y = _viItem->initPoint.y;
-		}
 
 	}
 
-	bulletMove();
-	throwMove();
-
-
-
-
-}
-void ItemManager::render(POINT camera)
-{
-	draw(camera);
-}
-void ItemManager::draw(POINT camera)
-{
-	for ( _viBullet = _vBullet.begin(); _viBullet < _vBullet.end(); ++_viBullet)
-	{
-		_viBullet->img->render(getMemDC(), _viBullet->x + camera.x, _viBullet->y + camera.y);
-	}
-	for ( _viThrow = _vThrow.begin(); _viThrow != _vThrow.end(); ++_viThrow)
-	{
-		_viThrow->img->render(getMemDC(), _viThrow->x + camera.x, _viThrow->y + camera.y);
-	}
-	for ( _viItem = _vItem.begin(); _viItem != _vItem.end(); ++_viItem)
-	{
-		if (_viItem->floor == _map->getCurStageNum() && _map->getTile(_viItem->point.x / TILESIZE, _viItem->point.y / TILESIZE).tileview == TILEVIEW_ALL)
-		_viItem->img->render(getMemDC(), _viItem->rc.left + camera.x, _viItem->rc.top + camera.y);
-	}
-		for (int i = 0; i < 20; i++)
-		{
-			Rectangle(getMemDC(), frozenE[i].rc.left+camera.x, frozenE[i].rc.top + camera.y, frozenE[i].rc.right + camera.x, frozenE[i].rc.bottom + camera.y);
-		}
-	if (_fire)
-	{
-	}
 }
 
 void ItemManager::setItemToBag(ITEMNAME name)
@@ -352,8 +361,11 @@ void ItemManager::setItemToBag(ITEMNAME name, bool identify, bool isCursed, int 
 
 	item.upgrade = upgrade;
 	item.numOfItem = numOfItem;
-	item.contentsHide = identify;
 	item.isCursed = isCursed;
+
+	if( item.type != TYPE_SEED && item.type != TYPE_POTION &&
+		item.type != TYPE_SCROLL && item.type != TYPE_ACC)
+		item.contentsHide = identify;
 
 	if (item.type == TYPE_SPECIAL) overlap = true;
 
@@ -1116,17 +1128,19 @@ void ItemManager::getItem()
 			{
 				if (_viItem->name == NAME_DEW)
 				{
-					for ( _viBag = _vBag.begin(); _viBag < _vBag.end(); ++_viBag)
+					for ( _viBag = _vBag.begin(); _viBag < _vBag.end();++_viBag )
 					{
 						if (_viBag->name == NAME_BOTTLE)
 						{
 							bottle = true;
+							_viItem= _vItem.erase(_viItem);
 							break;
 						}
 					}
 					if (bottle)
 					{
 						setItemToBag(NAME_DEW);
+						
 						return;
 					}
 					else return;

@@ -474,7 +474,7 @@ void Gnoll::update()
 				{
 					int a = RND->getInt(100);
 					if(a < 50)
-						_im->setItemToField(NAME_MONEY, _pointX, _pointY, false, false, 0, RND->getInt(100));
+						_im->setItemToField(NAME_MONEY, _pointX, _pointY, false, false, 0, RND->getInt(100),_map->getCurStageNum());
 				}
 				_isLive = false;
 				_action = false;
