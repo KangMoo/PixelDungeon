@@ -81,6 +81,7 @@ public:
 	void keyControl();
 
 	//============= I T E M ==================
+	void getItem();
 	void equipItem(int position);
 	void unequipItem(int position);
 	void useItem(int position);

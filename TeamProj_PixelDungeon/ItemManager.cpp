@@ -66,7 +66,7 @@ HRESULT ItemManager::init()
 	setItemToBag(NAME_UNKNOWN_MEAT);
 
 	setItemToBag(NAME_IDENTIFY);
-	setItemToBag(NAME_UPGRADE,false,false,0,100);
+	setItemToBag(NAME_UPGRADE,false,false,0,5);
 	setItemToBag(NAME_PURIFY);
 
 	setItemToBag(NAME_SEED_HEAL);
@@ -85,6 +85,7 @@ void ItemManager::update()
 {
 	
 	keyControl();
+	getItem();
 
 	for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
 	{
@@ -1026,6 +1027,7 @@ void ItemManager::setItem(tagItem* item, ITEMNAME name)
 	case NAME_END:
 		break;
 	}
+	item->numOfItem = 1;
 
 }
 
@@ -1101,6 +1103,51 @@ void ItemManager::imgInit()
 
 }
 
+void ItemManager::getItem()
+{
+	for ( _viItem = _vItem.begin(); _viItem != _vItem.end();)
+	{
+		bool bottle = false;
+		if (_viItem->point.x/TILESIZE == _player->getPoint().x/TILESIZE &&
+			_viItem->point.y/TILESIZE == _player->getPoint().y/TILESIZE &&
+			!_player->getIsPlayerMoving())
+		{
+			if (_viItem->type == TYPE_SPECIAL)
+			{
+				if (_viItem->name == NAME_DEW)
+				{
+					for ( _viBag = _vBag.begin(); _viBag < _vBag.end(); ++_viBag)
+					{
+						if (_viBag->name == NAME_BOTTLE)
+						{
+							bottle = true;
+							break;
+						}
+					}
+					if (bottle)
+					{
+						setItemToBag(NAME_DEW);
+						return;
+					}
+					else return;
+				}
+				return;
+
+			}
+			else
+			{
+				setItemToBag(_viItem->name, _viItem->contentsHide,
+				_viItem->isCursed, _viItem->upgrade, _viItem->numOfItem);
+
+				_viItem = _vItem.erase(_viItem);
+				break;
+			}
+
+		}
+		else ++_viItem;
+
+	}
+}
 
 void ItemManager::unequipItem(int position)
 {
