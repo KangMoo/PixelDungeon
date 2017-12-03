@@ -98,10 +98,8 @@ void EnemyManager::action()
 	else if (_vEnemy[_actionCount - 1]->getAction() == false && _actionCount < _vEnemy.size())	//전 차례의 몬스터 행동이 끝났으면
 	{
 		//다음차례 몬스터에게 턴 넘김
-		_delay = 0;
-		_delay += TIMEMANAGER->getElapsedTime() * 1000;
 
-		if(_delay > 20)_vEnemy[_actionCount]->setAction(true);
+		_vEnemy[_actionCount]->setAction(true);
 		//다음차례 몬스터 번호 저장
 		_actionCount++;
 	}

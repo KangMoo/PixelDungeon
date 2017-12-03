@@ -27,7 +27,6 @@ private:
 	vector<Enemy*> _vEnemy;
 	vector<Enemy*>::iterator _viEnemy;
 	
-	float _delay;
 	bool _finish;
 
 	Player* _player;
