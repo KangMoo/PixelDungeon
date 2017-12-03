@@ -65,14 +65,13 @@ HRESULT Mimic::init(POINT point, int floor)
 	//½ºÅÈ ¼³Á¤
 	_statistics.lv = 1;
 	_statistics.maxLv = 8;
-	_statistics.exp = 20;
+	_statistics.exp = 30;
 	_statistics.hp = 12;
 	_currntHp = 12;
-	_statistics.avd_lck = 4;
-	_statistics.def = 2;
-	a = RND->getFromIntTo(2, 5);
-	_statistics.str = a;
-	_statistics.atk_lck = 11;
+	_statistics.avd_lck = 0;
+	_statistics.def = 0;
+	_statistics.str = 20;
+	_statistics.atk_lck = 9;
 
 	//Æ¢¾î³ª¿Ô´Ù!
 	 _myState = ENEMYSTATE_IDLE;
@@ -416,6 +415,7 @@ void Mimic::action()
 			{
 				_myState = ENEMYSTATE_ATTACK;
 				_currntFrameX = 0;
+				_statistics.str = RND->getFromIntTo(1, 9);
 				_player->getDamaged(_statistics.str);
 				
 				//_action = false;
