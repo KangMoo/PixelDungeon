@@ -473,6 +473,7 @@ void goo::update()
 			_action = false;
 			if (_deadAlpha >= 255)
 			{
+				_player->expUp(_statistics.exp);
 				_deadAlpha = 255;
 				_isLive = false;
 				_action = false;

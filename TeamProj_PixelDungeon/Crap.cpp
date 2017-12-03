@@ -138,6 +138,7 @@ void Crap::update()
 			if (_deadAlpha >= 255)
 			{
 				_deadAlpha = 255;
+				_player->expUp(_statistics.exp);
 				if (_isLive)
 				{
 					int a = RND->getInt(100);

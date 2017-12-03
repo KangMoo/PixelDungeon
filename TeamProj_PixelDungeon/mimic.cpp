@@ -481,6 +481,7 @@ void Mimic::update()
 			if (_deadAlpha >= 255)
 			{
 				_deadAlpha = 255;
+				_player->expUp(_statistics.exp);
 				_isLive = false;
 				_action = false;
 				dropitem();
