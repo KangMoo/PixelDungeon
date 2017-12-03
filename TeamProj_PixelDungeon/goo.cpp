@@ -64,7 +64,7 @@ HRESULT goo::init(POINT point, int floor)//인식범위 추기
 
 	//스탯 설정
 	_statistics.lv = 1;
-	_statistics.exp = 2;
+	_statistics.exp = 30;
 	_statistics.hp = 80;
 	_currntHp = _statistics.hp;
 	_statistics.avd_lck = 12;
@@ -73,7 +73,7 @@ HRESULT goo::init(POINT point, int floor)//인식범위 추기
 	a = RND->getFromIntTo(2, 5);
 
 	_statistics.str = 30;
-	_statistics.atk_lck = 11;
+	_statistics.atk_lck = 15;
 
 	//깨어있을지 자고있을지 랜덤 설정
 	_myState = ENEMYSTATE_IDLE;

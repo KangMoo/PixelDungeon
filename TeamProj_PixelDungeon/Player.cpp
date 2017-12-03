@@ -25,8 +25,8 @@ HRESULT Player::init(POINT point)
 	_playerStat.avd_lck = 0;
 	_playerStat.def = 0;
 	_playerStat.exp = 0;
-	_playerStat.hp = 250;
 	_playerStat.maxhp = 250;
+	_playerStat.hp = _playerStat.maxhp;
 	_playerStat.hunger = 100;
 	_playerStat.lv = 1;
 	_playerStat.str = 3;
@@ -110,8 +110,13 @@ void Player::update()
 	//상태처리
 	if (_playerStat.hp <= 0)
 	{
-		_playerState = PLAYERSTATE_DEAD;
-		_image = IMAGEMANAGER->findImage("warrior_Dead");
+		if (_playerState != PLAYERSTATE_DEAD)
+		{
+			_playerState = PLAYERSTATE_DEAD;
+			_image = IMAGEMANAGER->findImage("warrior_Dead");
+			SOUNDMANAGER->play("12.death", 1.0);
+
+		}
 	}
 }
 //그릴 때	x좌표에 camera.x 만큼
@@ -500,6 +505,40 @@ void Player::move()
 	_playerState = PLAYERSTATE_MOVE;
 	_image = IMAGEMANAGER->findImage("warrior_Move");
 
+	for (auto i : _em->getEnemyVector())
+	{
+		if (astar.size() > 1)
+		{
+
+			int x = astar[astar.size() - 1].destX - i->getTilePt().x;
+			int y = astar[astar.size() - 1].destY - i->getTilePt().y;
+			//&& _map->getMap(astar[astar.size() - 1].destX, astar[astar.size() - 1].destY).tileview != TILEVIEW_NO
+			if ((x >= -1 && x <= 1) && (y >= -1 && y <= 1) || (i->getTilePt().x == astar[astar.size() - 1].destX && i->getTilePt().y == astar[astar.size() - 1].destY))
+			{
+				while (!astar.empty())
+				{
+					astar.clear();
+				}
+				astar = _map->aStar(_playerPoint, _playerPoint);
+				_playerState = PLAYERSTATE_IDLE;
+				return;
+			}
+		}
+		else
+		{
+			if ((i->getTilePt().x == astar[astar.size() - 1].destX && i->getTilePt().y == astar[astar.size() - 1].destY))
+			{
+				while (!astar.empty())
+				{
+					astar.clear();
+				}
+				astar = _map->aStar(_playerPoint, _playerPoint);
+				_playerState = PLAYERSTATE_IDLE;
+				return;
+			}
+		}
+	}
+	
 	_playerPoint.x += cosf(getAngle(_playerPoint.x, _playerPoint.y, astar[astar.size() - 1].destX * TILESIZE + TILESIZE / 2, astar[astar.size() - 1].destY*TILESIZE + TILESIZE / 2)) * 3;
 	_playerPoint.y -= sinf(getAngle(_playerPoint.x, _playerPoint.y, astar[astar.size() - 1].destX * TILESIZE + TILESIZE / 2, astar[astar.size() - 1].destY*TILESIZE + TILESIZE / 2)) * 3;
 
@@ -512,6 +551,25 @@ void Player::move()
 		//시야처리
 		fovCheck();
 
+		if (astar.size() > 1)
+		{
+			for (auto i : _em->getEnemyVector())
+			{
+				int x = astar[astar.size() - 1].destX - i->getTilePt().x;
+				int y = astar[astar.size() - 1].destY - i->getTilePt().y;
+				//&& _map->getMap(astar[astar.size() - 1].destX, astar[astar.size() - 1].destY).tileview != TILEVIEW_NO
+				if ((x >= -1 && x <= 1) && (y >= -1 && y <= 1) || (i->getTilePt().x == astar[astar.size() - 1].destX && i->getTilePt().y == astar[astar.size() -  1].destY))
+				{
+					while (!astar.empty())
+					{
+						astar.clear();
+					}
+					astar = _map->aStar(_playerPoint, _playerPoint);
+					_playerState = PLAYERSTATE_IDLE;
+					break;
+				}
+			}
+		}
 		//목표지점 수정
 		astar.erase(astar.begin() + astar.size() - 1);
 
@@ -571,24 +629,30 @@ void Player::mouseClickEvent()
 			_map->getTile(ptMouse.x / TILESIZE, ptMouse.y / TILESIZE).tileview != TILEVIEW_NO && i->getCHP() > 0 && _map->getCurStageNum() == i->getFloor())
 		{
 			//목표 저장
-			_isEnemyTargeted = true;
-			_TargetEnemy = i;
-			astar = _map->aStar(_playerPoint, ptMouse);
-			int a = 0;
-			//길이 있는지 여부 판단
-			if (astar.size() > 0)
-			{
-				//현재 위치는 뺌
-				astar.erase(astar.begin() + 0);
-			}
+			int x = _playerPoint.x / TILESIZE - i->getTilePt().x;
+			int y = _playerPoint.y / TILESIZE - i->getTilePt().y;
 
-			if (astar.size() > 0)
+			if((x <= 1 && x >= -1) && (y <= 1 && y >= -1))
 			{
-				//몬스터위치 뺌
-				astar.erase(astar.begin() + astar.size() - 1);
-			}
+				_isEnemyTargeted = true;
+				_TargetEnemy = i;
+				astar = _map->aStar(_playerPoint, ptMouse);
+				int a = 0;
+				//길이 있는지 여부 판단
+				if (astar.size() > 0)
+				{
+					//현재 위치는 뺌
+					astar.erase(astar.begin() + 0);
+				}
 
-			break;
+				if (astar.size() > 0)
+				{
+					//몬스터위치 뺌
+					astar.erase(astar.begin() + astar.size() - 1);
+				}
+
+				break;
+			}
 		}
 	}
 

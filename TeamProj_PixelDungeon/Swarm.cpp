@@ -52,8 +52,8 @@ HRESULT Swarm::init(POINT point, int floor)
 	_statistics.lv = 1;
 	_statistics.maxLv = 10;
 	_statistics.exp = 1;
-	_statistics.hp = 8;
-	_currntHp = 8;
+	_statistics.hp = 20;
+	_currntHp = 20;
 	_statistics.avd_lck = 5;
 	_statistics.def = 0;
 	a = RND->getFromIntTo(1, 4);
@@ -118,7 +118,7 @@ HRESULT Swarm::init(POINT point, int currntHp, int floor, int drop)
 	_statistics.lv = 1;
 	_statistics.maxLv = 10;
 	_statistics.exp = 30;
-	_statistics.hp = 8;
+	_statistics.hp = 20;
 	_currntHp = currntHp;
 	_statistics.avd_lck = 5;
 	_statistics.def = 0;
