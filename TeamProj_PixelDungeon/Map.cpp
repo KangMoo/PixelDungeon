@@ -21,7 +21,7 @@ HRESULT Map::init()
 	spareTileSetup();
 	spareObjSetup();
 
-	_stageDataList.push_back("map/test.xml");
+	_stageDataList.push_back("map/SavedData.xml");
 	_stageDataList.push_back("map/SavedData2.xml");
 
 

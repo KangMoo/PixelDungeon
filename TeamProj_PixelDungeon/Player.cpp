@@ -499,13 +499,29 @@ void Player::move()
 {
 	_playerState = PLAYERSTATE_MOVE;
 	_image = IMAGEMANAGER->findImage("warrior_Move");
-	if (astar.size() > 1)
+
+	for (auto i : _em->getEnemyVector())
 	{
-		for (auto i : _em->getEnemyVector())
+		if (astar.size() > 1)
 		{
+
 			int x = astar[astar.size() - 1].destX - i->getTilePt().x;
 			int y = astar[astar.size() - 1].destY - i->getTilePt().y;
-			if ((x >= -1 && x <= 1) && (y >= -1 && y <= 1) && _map->getMap(astar[astar.size() - 1].destX, astar[astar.size() - 1].destY).tileview != TILEVIEW_NO)
+			//&& _map->getMap(astar[astar.size() - 1].destX, astar[astar.size() - 1].destY).tileview != TILEVIEW_NO
+			if ((x >= -1 && x <= 1) && (y >= -1 && y <= 1) || (i->getTilePt().x == astar[astar.size() - 1].destX && i->getTilePt().y == astar[astar.size() - 1].destY))
+			{
+				while (!astar.empty())
+				{
+					astar.clear();
+				}
+				astar = _map->aStar(_playerPoint, _playerPoint);
+				_playerState = PLAYERSTATE_IDLE;
+				return;
+			}
+		}
+		else
+		{
+			if ((i->getTilePt().x == astar[astar.size() - 1].destX && i->getTilePt().y == astar[astar.size() - 1].destY))
 			{
 				while (!astar.empty())
 				{
@@ -517,6 +533,7 @@ void Player::move()
 			}
 		}
 	}
+	
 	_playerPoint.x += cosf(getAngle(_playerPoint.x, _playerPoint.y, astar[astar.size() - 1].destX * TILESIZE + TILESIZE / 2, astar[astar.size() - 1].destY*TILESIZE + TILESIZE / 2)) * 3;
 	_playerPoint.y -= sinf(getAngle(_playerPoint.x, _playerPoint.y, astar[astar.size() - 1].destX * TILESIZE + TILESIZE / 2, astar[astar.size() - 1].destY*TILESIZE + TILESIZE / 2)) * 3;
 
@@ -529,6 +546,25 @@ void Player::move()
 		//시야처리
 		fovCheck();
 
+		if (astar.size() > 1)
+		{
+			for (auto i : _em->getEnemyVector())
+			{
+				int x = astar[astar.size() - 1].destX - i->getTilePt().x;
+				int y = astar[astar.size() - 1].destY - i->getTilePt().y;
+				//&& _map->getMap(astar[astar.size() - 1].destX, astar[astar.size() - 1].destY).tileview != TILEVIEW_NO
+				if ((x >= -1 && x <= 1) && (y >= -1 && y <= 1) || (i->getTilePt().x == astar[astar.size() - 1].destX && i->getTilePt().y == astar[astar.size() -  1].destY))
+				{
+					while (!astar.empty())
+					{
+						astar.clear();
+					}
+					astar = _map->aStar(_playerPoint, _playerPoint);
+					_playerState = PLAYERSTATE_IDLE;
+					break;
+				}
+			}
+		}
 		//목표지점 수정
 		astar.erase(astar.begin() + astar.size() - 1);
 
