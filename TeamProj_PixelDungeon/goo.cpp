@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "Map.h"
 #include "UI.h"
+#include "ItemManager.h"
 
 goo::goo()
 {
@@ -65,7 +66,7 @@ HRESULT goo::init(POINT point, int floor)//인식범위 추기
 	_statistics.lv = 1;
 	_statistics.maxLv = 8;
 	_statistics.exp = 2;
-	_statistics.hp = 900;
+	_statistics.hp = 80;
 	_currntHp = _statistics.hp;
 	_statistics.avd_lck = 4;
 	_statistics.def = 2;
@@ -120,7 +121,7 @@ void goo::release()
 
 void goo::getDamaged(int damage)
 {
-	_currntHp -= damage*10;
+	_currntHp -= damage - _statistics.def;
 
 	//_player->getStat().atk_lck 가 0 이상이면 데미지를 입는다
 
@@ -143,12 +144,11 @@ void goo::draw(POINT camera)
 		if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
 			_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
 		_hpBar->render();
-
-
 	}
-	char string[128];
-	sprintf_s(string, "%d", _currntHp);
-	TextOut(getMemDC(), 300, 300, string, strlen(string));
+	char str[128];
+	SetTextColor(getMemDC(), RGB(255, 0, 0));
+	sprintf_s(str, "%d", _trunCount);
+	TextOut(getMemDC() , 500, 200, str, strlen(str));
 
 }
 
@@ -174,7 +174,14 @@ void goo::frameUpdate()
 			if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = 0;
 			_image->setFrameX(_currntFrameX);
 			_image->setFrameY(_currntFrameY);
-			if (_PumpedUP == true) _trunCount++;
+
+			if ((ATTRIBUTE_WATER & _map->getMap(_point.x, _point.y).terrain) == ATTRIBUTE_WATER)
+			{
+				_currntHp += 1;
+				if (_currntHp >= _statistics.hp) _currntHp = _statistics.hp;
+				break;
+			}
+
 			break;
 
 		case ENEMYSTATE_MOVE:
@@ -183,7 +190,15 @@ void goo::frameUpdate()
 			if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = 0;
 			_image->setFrameX(_currntFrameX);
 			_image->setFrameY(_currntFrameY);
-			if (_PumpedUP == true) _trunCount++;
+			//if (_PumpedUP == true) _trunCount++;
+
+			if ((ATTRIBUTE_WATER & _map->getMap(_point.x, _point.y).terrain) == ATTRIBUTE_WATER)
+			{
+				_currntHp += 1;
+				if (_currntHp >= _statistics.hp) _currntHp = _statistics.hp;
+				break;
+			}
+
 			break;
 
 		case ENEMYSTATE_ATTACK:
@@ -198,8 +213,14 @@ void goo::frameUpdate()
 			}
 			_image->setFrameX(_currntFrameX);
 			_image->setFrameY(_currntFrameY);
-			if (_PumpedUP == true) _trunCount++;
+			//if (_PumpedUP == true) _trunCount++;
 
+			if ((ATTRIBUTE_WATER & _map->getMap(_point.x, _point.y).terrain) == ATTRIBUTE_WATER)
+			{
+				_currntHp += 1;
+				if (_currntHp >= _statistics.hp)_currntHp = _statistics.hp;
+				break;
+			}
 			break;
 		}
 	}
@@ -210,6 +231,10 @@ void goo::frameUpdate()
 void goo::action()
 {
 	//if (KEYMANAGER->isOnceKeyDown('E')) getDamaged(3);
+
+	int skill = RND->getInt(1);
+
+	if (skill == 0 && _PumpedUP == false) _PumpedUP = true;
 
 	if (_myState == ENEMYSTATE_IDLE)
 	{
@@ -356,12 +381,14 @@ void goo::action()
 				_currntFrameX = 0;
 				_player->getDamaged(_statistics.str);
 				_player->addDebuff(DEBUFF_BLEEDING, 2000, 1);
+				if (_PumpedUP == true) _trunCount++;
+
 			}
-			else if ((x <= 2 && x >= -2) && (y <= 2 && y >= -2) && _PumpedUP == true && _trunCount == 2)
+			else if ((x <= 2 && x >= -2) && (y <= 2 && y >= -2) && _PumpedUP == true && _trunCount >= 2)
 			{
 				_myState = ENEMYSTATE_ATTACK;
 				_currntFrameX = 0;
-				_player->getDamaged(_statistics.str);
+				_player->getDamaged(_statistics.str*2);
 				_player->addDebuff(DEBUFF_BLEEDING, 2000, 1);
 
 				_PumpedUP = false;
@@ -446,9 +473,27 @@ void goo::update()
 			_action = false;
 			if (_deadAlpha >= 255)
 			{
+				_player->expUp(_statistics.exp);
 				_deadAlpha = 255;
 				_isLive = false;
 				_action = false;
+
+				int identifyPercent = RND->getInt(1);//50% 확률로 확인된 아이템
+				bool identify;
+
+				if (identifyPercent == 0)identify = false;
+				else identify = true;
+
+				int isCursedPercent = RND->getInt(1);//50% 확률로 저주받음
+				bool isCursed;
+				if (isCursedPercent == 0)isCursed = false;
+				else isCursed = true;
+
+				int upgrade = RND->getInt(2);//업그레이드 수치
+
+				int item = RND->getInt(2);
+				if (item == 0)
+					_im->setItemToField(NAME_OLD_SHORT_SWORD, _pointX, _pointY, identify, isCursed, upgrade, 1, _map->getCurStageNum());
 			}
 		}
 

@@ -19,7 +19,7 @@ HRESULT progressBar::init(int x, int y, int width, int height)
 	_rcProgress = RectMake(x, y, width, height);
 
 	_progressBarTop = IMAGEMANAGER->addImage("frontBar", "Img//Enemy//boss_hp_top_bar2.bmp", x , y, width - 60 , height-40, true, RGB(255, 0, 255));
-	_progressBarBottom = IMAGEMANAGER->addImage("backBar", "Img//Enemy//boss_hp_bottom.bmp", x, y, width, height, true, RGB(255, 0, 255));
+	_progressBarBottom = IMAGEMANAGER->addImage("backBar", "Img//Enemy//boss_hp_bottom2.bmp", x, y, width, height, true, RGB(255, 0, 255));
 
 	_width = _progressBarTop->getWidth();
 

@@ -166,7 +166,7 @@ void Rat::getDamaged(int damage)
 	 *그 값이 자신의 회피율 - 플레이어 명중률 보다 크면
 	 *공격 성공
 	*/
-	int a = RND->getInt(_player->getStat().atk_lck);
+	int a = RND->getInt(100);
 
 	//ui에 회피 했다고 전달했으면 좋겠는데
 	if (a < _statistics.avd_lck - _player->getStat().atk_lck) return;
@@ -569,6 +569,7 @@ void Rat::update()
 			_action = false;
 			if (_deadAlpha >= 255)
 			{
+				_player->expUp(_statistics.exp);
 				_deadAlpha = 255;
 				_isLive = false;
 				_action = false;
