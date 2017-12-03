@@ -1870,10 +1870,36 @@ void ItemManager::throwMove()
 			{
 				if (_viBag->position == _viThrow->position)
 				{
-					setItemToField(_viBag->name, _viThrow->x - cosf(_viThrow->angle)*TILESIZE, 
-						_viThrow->y - sinf(_viThrow->angle)*TILESIZE,
-						_viBag->contentsHide, _viBag->isCursed, _viBag->upgrade,
-						_viBag->numOfItem, _map->getCurStageNum());
+					if (_viBag->type != TYPE_SEED)
+					{
+						setItemToField(_viBag->name, _viThrow->x - cosf(_viThrow->angle)*TILESIZE, 
+							_viThrow->y - sinf(_viThrow->angle)*TILESIZE,
+							_viBag->contentsHide, _viBag->isCursed, _viBag->upgrade,
+							_viBag->numOfItem, _map->getCurStageNum());
+
+					}
+					else
+					{
+						switch (_viBag->name)
+						{
+						case NAME_SEED_FIRE:
+							setItemToField(NAME_FLOWER_FIRE, _viThrow->x - cosf(_viThrow->angle)*TILESIZE,
+								_viThrow->y - sinf(_viThrow->angle)*TILESIZE);
+							break;
+						case NAME_SEED_FROST:
+							setItemToField(NAME_FLOWER_FROST, _viThrow->x - cosf(_viThrow->angle)*TILESIZE,
+								_viThrow->y - sinf(_viThrow->angle)*TILESIZE);
+							break;
+						case NAME_SEED_HEAL:
+							setItemToField(NAME_FLOWER_HEAL, _viThrow->x - cosf(_viThrow->angle)*TILESIZE,
+								_viThrow->y - sinf(_viThrow->angle)*TILESIZE);
+							break;
+						case NAME_SEED_SNAKE:
+							setItemToField(NAME_FLOWER_SNAKE, _viThrow->x - cosf(_viThrow->angle)*TILESIZE,
+								_viThrow->y - sinf(_viThrow->angle)*TILESIZE);
+							break;
+						}
+					}
 					
 					_viBag = _vBag.erase(_viBag);
 			

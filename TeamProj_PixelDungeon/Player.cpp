@@ -25,8 +25,8 @@ HRESULT Player::init(POINT point)
 	_playerStat.avd_lck = 0;
 	_playerStat.def = 0;
 	_playerStat.exp = 0;
-	_playerStat.hp = 250;
 	_playerStat.maxhp = 250;
+	_playerStat.hp = _playerStat.maxhp;
 	_playerStat.hunger = 100;
 	_playerStat.lv = 1;
 	_playerStat.str = 3;
@@ -110,8 +110,13 @@ void Player::update()
 	//상태처리
 	if (_playerStat.hp <= 0)
 	{
-		_playerState = PLAYERSTATE_DEAD;
-		_image = IMAGEMANAGER->findImage("warrior_Dead");
+		if (_playerState != PLAYERSTATE_DEAD)
+		{
+			_playerState = PLAYERSTATE_DEAD;
+			_image = IMAGEMANAGER->findImage("warrior_Dead");
+			SOUNDMANAGER->play("12.death", 1.0);
+
+		}
 	}
 }
 //그릴 때	x좌표에 camera.x 만큼
