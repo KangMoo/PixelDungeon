@@ -545,7 +545,7 @@ void Player::getDamaged(int damage)
 		}
 	}
 
-	Sleep(120);
+	//Sleep(120);
 	
 }
 void Player::mouseClickEvent()

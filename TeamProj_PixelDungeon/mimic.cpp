@@ -180,21 +180,36 @@ void Mimic::frameUpdate()
 		//	break;
 		case ENEMYSTATE_IDLE:
 			_image = stay;
-			_currntFrameX++;
+			_frameTime++;
+			if (_frameTime >= _frameFPS)
+			{
+				_currntFrameX++;
+				_frameTime = 0;
+			}
 			if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = 0;
 			_image->setFrameX(_currntFrameX);
 			_image->setFrameY(_currntFrameY);
 			break;
 		case ENEMYSTATE_MOVE:
 			_image = move;
-			_currntFrameX++;
+			_frameTime++;
+			if (_frameTime >= _frameFPS)
+			{
+				_currntFrameX++;
+				_frameTime = 0;
+			}
 			if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = 0;
 			_image->setFrameX(_currntFrameX);
 			_image->setFrameY(_currntFrameY);
 			break;
 		case ENEMYSTATE_ATTACK:
 			_image = move;
-			_currntFrameX++;
+			_frameTime++;
+			if (_frameTime >= _frameFPS)
+			{
+				_currntFrameX++;
+				_frameTime = 0;
+			}
 			if (_currntFrameX > _image->getMaxFrameX())
 			{
 				_currntFrameX = 0;
@@ -208,7 +223,12 @@ void Mimic::frameUpdate()
 		case ENEMYSTATE_DEAD:
 
 			_image = dead;
-			_currntFrameX++;
+			_frameTime++;
+			if (_frameTime >= _frameFPS)
+			{
+				_currntFrameX++;
+				_frameTime = 0;
+			}
 			if (_currntFrameX >= _image->getMaxFrameX())
 			{
 				_currntFrameX = _image->getMaxFrameX();

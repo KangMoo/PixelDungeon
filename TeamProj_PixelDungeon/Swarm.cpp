@@ -144,6 +144,10 @@ HRESULT Swarm::init(POINT point, int currntHp, int floor, int drop)
 	//_hpBar = new progressBar;
 	//_hpBar->init(_pointX - 25, _pointY + _image->getFrameHeight() / 2 + 10, 30, 10);
 
+	_frameFPS = 10;
+	_frameTime = 0;
+
+
 	return S_OK;
 }
 

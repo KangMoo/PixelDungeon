@@ -87,6 +87,9 @@ HRESULT Gnoll::init(POINT point, int floor)
 	_deadAlpha = 0;
 	_active = false;
 
+	_frameFPS = 10;
+	_frameTime = 0;
+
 	/*ENEMYSTATE_SLEEP,	//플레이어를 찾지 못한상태/수면상태
 	ENEMYSTATE_IDLE,	//플레이어를 찾은 상태에서의 기본
 	ENEMYSTATE_MOVE,
@@ -186,21 +189,36 @@ void Gnoll::frameUpdate()
 			break;
 		case ENEMYSTATE_IDLE:
 			_image = _stay;
-			_currntFrameX++;
+			_frameTime++;
+			if (_frameTime >= _frameFPS)
+			{
+				_currntFrameX++;
+				_frameTime = 0;
+			}
 			if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = 0;
 			_image->setFrameX(_currntFrameX);
 			_image->setFrameY(_currntFrameY);
 			break;
 		case ENEMYSTATE_MOVE:
 			_image = _move;
-			_currntFrameX++;
+			_frameTime++;
+			if (_frameTime >= _frameFPS)
+			{
+				_currntFrameX++;
+				_frameTime = 0;
+			}
 			if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = 0;
 			_image->setFrameX(_currntFrameX);
 			_image->setFrameY(_currntFrameY);
 			break;
 		case ENEMYSTATE_ATTACK:
 			_image = _attack;
-			_currntFrameX++;
+			_frameTime++;
+			if (_frameTime >= _frameFPS)
+			{
+				_currntFrameX++;
+				_frameTime = 0;
+			}
 			if (_currntFrameX > _image->getMaxFrameX())
 			{
 				_currntFrameX = 0;

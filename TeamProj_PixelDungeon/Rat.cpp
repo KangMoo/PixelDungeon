@@ -234,7 +234,12 @@ void Rat::frameUpdate()
 			if (_myColor == BROWN)
 			{
 				_image = bIdle;
-				_currntFrameX++;
+				_frameTime++;
+				if (_frameTime >= _frameFPS)
+				{
+					_currntFrameX++;
+					_frameTime = 0;
+				}
 				if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = 0;
 				_image->setFrameX(_currntFrameX);
 				_image->setFrameY(_currntFrameY);
@@ -243,7 +248,12 @@ void Rat::frameUpdate()
 			else if (_myColor == WHITE)
 			{
 				_image = wIdle;
-				_currntFrameX++;
+				_frameTime++;
+				if (_frameTime >= _frameFPS)
+				{
+					_currntFrameX++;
+					_frameTime = 0;
+				}
 				if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = 0;
 				_image->setFrameX(_currntFrameX);
 				_image->setFrameY(_currntFrameY);
@@ -255,7 +265,12 @@ void Rat::frameUpdate()
 			if (_myColor == BROWN)
 			{
 				_image = bMove;
-				_currntFrameX++;
+				_frameTime++;
+				if (_frameTime >= _frameFPS)
+				{
+					_currntFrameX++;
+					_frameTime = 0;
+				}
 				if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = 0;
 				_image->setFrameX(_currntFrameX);
 				_image->setFrameY(_currntFrameY);
@@ -264,7 +279,12 @@ void Rat::frameUpdate()
 			else if (_myColor == WHITE)
 			{
 				_image = wMove;
-				_currntFrameX++;
+				_frameTime++;
+				if (_frameTime >= _frameFPS)
+				{
+					_currntFrameX++;
+					_frameTime = 0;
+				}
 				if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = 0;
 				_image->setFrameX(_currntFrameX);
 				_image->setFrameY(_currntFrameY);
@@ -275,13 +295,18 @@ void Rat::frameUpdate()
 			if (_myColor == BROWN)	_image = bAttack;
 			else if (_myColor == WHITE)_image = wAttack;
 
-			_currntFrameX++;
+			_frameTime++;
+			if (_frameTime >= _frameFPS)
+			{
+				_currntFrameX++;
+				_frameTime = 0;
+			}
 			if (_currntFrameX > _image->getMaxFrameX())
 			{
 				_currntFrameX = 0;
 				_myState = ENEMYSTATE_IDLE;
-				if (_myColor == BROWN)	_image = bDead;
-				else if (_myColor == WHITE)_image = wDead;
+				if (_myColor == BROWN)	_image = wIdle;
+				else if (_myColor == WHITE)_image = bIdle;
 				_action = false;
 			}
 			_image->setFrameX(_currntFrameX);
@@ -293,7 +318,12 @@ void Rat::frameUpdate()
 			if (_myColor == BROWN)	_image = bDead;
 			else if (_myColor == WHITE)_image = wDead;
 
-			_currntFrameX++;
+			_frameTime++;
+			if (_frameTime >= _frameFPS)
+			{
+				_currntFrameX++;
+				_frameTime = 0;
+			}
 			if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = _image->getMaxFrameX();
 
 			_image->setFrameX(_currntFrameX);
