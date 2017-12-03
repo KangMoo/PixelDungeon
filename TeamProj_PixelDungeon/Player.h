@@ -129,6 +129,6 @@ public:
 	int monster_attack_dp = 0;
 
 	bool attack = false;
-	bool test1 = false;
+	bool player_attack_dp = false;
 };
 

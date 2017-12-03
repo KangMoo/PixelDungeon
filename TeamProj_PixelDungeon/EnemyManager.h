@@ -39,6 +39,8 @@ private:
 
 	bool _isSwarmSpawn;
 	tagSwarmSpawn _temp;
+
+	int enemynumber = 0;
 public:
 	HRESULT init();
 	void release();
@@ -75,5 +77,8 @@ public:
 
 	EnemyManager();
 	~EnemyManager();
-};
 
+	//¾È³ç ³ª¾ß
+	int getenemyAtion(int enemyNumber) { return _vEnemy[enemyNumber]->getMyState(); }
+	int getenemyNumber() { return enemynumber = _vEnemy.size(); }
+};
