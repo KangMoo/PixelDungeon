@@ -515,6 +515,26 @@ void Player::move()
 		//목표지점 수정
 		astar.erase(astar.begin() + astar.size() - 1);
 
+		
+		//if (astar.size() >=1)
+		//{
+		for (auto i : _em->getEnemyVector())
+		{
+			int x = _playerPoint.x / TILESIZE - i->getTilePt().x;
+			int y = _playerPoint.y / TILESIZE - i->getTilePt().y;
+
+			if ((x >= -1 && x <= 1) && (y >= -1 && y <= 1))
+			{
+				//while (astar.empty())
+				//{
+				//	astar.clear();
+				//}
+				astar = _map->aStar(_playerPoint, _playerPoint);
+				_playerState = PLAYERSTATE_IDLE;
+				break;
+			}
+		}
+		//}
 		//턴 넘기기
 		endTurn();
 	}
@@ -571,24 +591,30 @@ void Player::mouseClickEvent()
 			_map->getTile(ptMouse.x / TILESIZE, ptMouse.y / TILESIZE).tileview != TILEVIEW_NO && i->getCHP() > 0 && _map->getCurStageNum() == i->getFloor())
 		{
 			//목표 저장
-			_isEnemyTargeted = true;
-			_TargetEnemy = i;
-			astar = _map->aStar(_playerPoint, ptMouse);
-			int a = 0;
-			//길이 있는지 여부 판단
-			if (astar.size() > 0)
-			{
-				//현재 위치는 뺌
-				astar.erase(astar.begin() + 0);
-			}
+			int x = _playerPoint.x / TILESIZE - i->getTilePt().x;
+			int y = _playerPoint.y / TILESIZE - i->getTilePt().y;
 
-			if (astar.size() > 0)
+			if((x <= 1 && x >= -1) && (y <= 1 && y >= -1))
 			{
-				//몬스터위치 뺌
-				astar.erase(astar.begin() + astar.size() - 1);
-			}
+				_isEnemyTargeted = true;
+				_TargetEnemy = i;
+				astar = _map->aStar(_playerPoint, ptMouse);
+				int a = 0;
+				//길이 있는지 여부 판단
+				if (astar.size() > 0)
+				{
+					//현재 위치는 뺌
+					astar.erase(astar.begin() + 0);
+				}
 
-			break;
+				if (astar.size() > 0)
+				{
+					//몬스터위치 뺌
+					astar.erase(astar.begin() + astar.size() - 1);
+				}
+
+				break;
+			}
 		}
 	}
 
