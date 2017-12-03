@@ -166,7 +166,13 @@ void goo::frameUpdate()
 		{
 		case ENEMYSTATE_IDLE:
 			_image = _stay;
-			_currntFrameX++;
+			_frameTime++;
+			if (_frameTime >= _frameFPS)
+			{
+				_currntFrameX++;
+				_frameTime = 0;
+			}
+
 			if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = 0;
 			_image->setFrameX(_currntFrameX);
 			_image->setFrameY(_currntFrameY);
@@ -182,7 +188,13 @@ void goo::frameUpdate()
 
 		case ENEMYSTATE_MOVE:
 			_image = _move;
-			_currntFrameX++;
+			_frameTime++;
+			if (_frameTime >= _frameFPS)
+			{
+				_currntFrameX++;
+				_frameTime = 0;
+			}
+
 			if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = 0;
 			_image->setFrameX(_currntFrameX);
 			_image->setFrameY(_currntFrameY);
@@ -199,7 +211,13 @@ void goo::frameUpdate()
 
 		case ENEMYSTATE_ATTACK:
 			_image = _stay;
-			_currntFrameX++;
+			_frameTime++;
+			if (_frameTime >= _frameFPS)
+			{
+				_currntFrameX++;
+				_frameTime = 0;
+			}
+
 			if (_currntFrameX > _image->getMaxFrameX())
 			{
 				_currntFrameX = 0;
@@ -218,6 +236,25 @@ void goo::frameUpdate()
 				break;
 			}
 			break;
+
+		case ENEMYSTATE_DEAD:
+			_image = _dead;
+
+			_frameTime++;
+			if (_frameTime >= _frameFPS)
+			{
+				_currntFrameX++;
+				_frameTime = 0;
+			}
+
+			if (_currntFrameX > _image->getMaxFrameX())
+			{
+				_currntFrameX = _image->getMaxFrameX();
+			}
+			_image->setFrameX(_currntFrameX);
+			_image->setFrameY(_currntFrameY);
+			//if (_PumpedUP == true) _trunCount++;
+
 		}
 	}
 
@@ -466,6 +503,8 @@ void goo::update()
 	{
 		if (_currntHp <= 0)
 		{
+			_myState = ENEMYSTATE_DEAD;
+
 			_deadAlpha += 25;
 			_action = false;
 			if (_deadAlpha >= 255)

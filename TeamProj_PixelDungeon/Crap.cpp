@@ -98,6 +98,9 @@ HRESULT Crap::init(POINT point, int floor)
 	//_hpBar = new progressBar;
 	//_hpBar->init(_pointX - 25, _pointY + _image->getFrameHeight() / 2 + 10, 30, 10);
 
+	_frameFPS = 10;
+	_frameTime = 0;
+
 	return S_OK;
 
 }
@@ -432,21 +435,39 @@ void Crap::frameUpdate()
 			break;
 		case ENEMYSTATE_IDLE:
 			_image = _stay;
-			_currntFrameX++;
+			_frameTime++;
+			if (_frameTime >= _frameFPS)
+			{
+				_currntFrameX++;
+				_frameTime = 0;
+			}
+
 			if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = 0;
 			_image->setFrameX(_currntFrameX);
 			_image->setFrameY(_currntFrameY);
 			break;
 		case ENEMYSTATE_MOVE:
 			_image = _move;
-			_currntFrameX++;
+			_frameTime++;
+			if (_frameTime >= _frameFPS)
+			{
+				_currntFrameX++;
+				_frameTime = 0;
+			}
+
 			if (_currntFrameX > _image->getMaxFrameX()) _currntFrameX = 0;
 			_image->setFrameX(_currntFrameX);
 			_image->setFrameY(_currntFrameY);
 			break;
 		case ENEMYSTATE_ATTACK:
 			_image = _attack;
-			_currntFrameX++;
+			_frameTime++;
+			if (_frameTime >= _frameFPS)
+			{
+				_currntFrameX++;
+				_frameTime = 0;
+			}
+
 			if (_currntFrameX > _image->getMaxFrameX())
 			{
 				_currntFrameX = 0;
