@@ -89,6 +89,12 @@ HRESULT ItemManager::init()
 	setItemToBag(NAME_UPGRADE,false,false,0,5);
 	setItemToBag(NAME_PURIFY);
 
+	setItemToBag(NAME_RING_POWER);
+	setItemToBag(NAME_RING_RECHARGE);
+	setItemToBag(NAME_DART);
+	setItemToBag(NAME_LIGHTNING);
+	setItemToBag(NAME_COOKED_MEAT);
+
 	return S_OK;
 }
 void ItemManager::release()

@@ -495,21 +495,21 @@ void UI::read_interface()
 	{
 		fream_window_draw(19, 4, 0, 170);
 		char name[] = "감정할 아이템을 선택하시오";
-		PrintFont(name, namehFont, nameoldFont, 280, 468, 18, 0, 255, 0);
+		PrintFont(name, namehFont, nameoldFont, 295, 468, 18, 0, 255, 0);
 	}
 
 	if (isUpgrad)
 	{
 		fream_window_draw(19, 4, 0, 170);
 		char name[] = "강화할 아이템을 선택하시오";
-		PrintFont(name, namehFont, nameoldFont, 280, 468, 18, 0, 255, 0);
+		PrintFont(name, namehFont, nameoldFont, 295, 468, 18, 0, 255, 0);
 	}
 
 	if (ispurify)
 	{
 		fream_window_draw(19, 4, 0, 170);
 		char name[] = "정화할 아이템을 선택하시오";
-		PrintFont(name, namehFont, nameoldFont, 280, 468, 18, 0, 255, 0);
+		PrintFont(name, namehFont, nameoldFont, 295, 468, 18, 0, 255, 0);
 	}
 
 	for (size_t Line = 0; Line < ARRSIZE; Line++)
@@ -611,12 +611,57 @@ void UI::BackPack()
 		int _ix = ((WINSIZEX / 2 - (IMAGEMANAGER->findImage("backpack")->getFrameWidth() / 2)) + 35) + (Line % 6) * 92;
 		int _iy = ((WINSIZEX / 2 - (IMAGEMANAGER->findImage("backpack")->getFrameWidth() / 2)) + 30) + (Line / 6) * 92;
 
-
 		//돈
 		IMAGEMANAGER->findImage("money")->render(getMemDC(),650, 75);
 
 		_inventory[Line].inventoryRect = RectMake(_ix, _iy, 90, 90);
 		Rectangle(getMemDC(), _ix, _iy, _ix + 90, _iy + 90);
+
+		int money[10] = { NULL };
+		int savemoney = _im->getCurMoney();
+
+		int number = 8;
+		int len = 0;
+
+		for (int i = 0; i < 10; i++)
+		{
+			if (_im->getCurMoney() <= pow(10, i))
+			{
+				break;
+			}
+
+			else
+			{
+				len++;
+			}
+		}
+
+		for (int i = 0; i < 10; i++)
+		{
+			if (savemoney > 0)
+			{
+				int checkmoney = (savemoney / pow(10, number));
+				money[number] = checkmoney;
+
+				savemoney = savemoney - (pow(10, number) * checkmoney);
+				number--;
+			}
+
+			if (savemoney == 0)
+			{
+				break;
+			}
+		}
+
+		for (int i = 0; i < len; i++)
+		{
+			IMAGEMANAGER->frameRender("font_yellow", getMemDC(), 630 - (i * 13), 82, money[i], 0);
+		}
+
+		if (len == 0)
+		{
+			IMAGEMANAGER->frameRender("font_yellow", getMemDC(), 630, 82, 0, 0);
+		}
 
 		HBRUSH brush;
 
@@ -1575,7 +1620,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 		char name[] = "전투 도끼";
 		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
 
-		char explanation[] = "";
+		char explanation[] = "보기만해도 강력해 보이는 도끼다.";
 		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
 	}
 
@@ -1617,20 +1662,32 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 
 	if (itemName == NAME_RING_POWER)
 	{
-		char name[] = "저항 반지";
+		char name[] = "힘의 반지";
 		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
 
-		char explanation[] = "";
+		char explanation[] = "이 반지는 착용자의 물리적 특징을 강화하여";
 		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "더 강한 힘과 더 많은 최대 체력을 부여합니다.";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
+
+		char explanationLine3[] = "저하된 반지는 착용자의 힘을 약화시킵니다.";
+		PrintFont(explanationLine3, namehFont, nameoldFont, 220, 320, 15, 255, 255, 255);
 	}
 
 	if (itemName == NAME_RING_RECHARGE)
 	{
-		char name[] = "충전 반지";
+		char name[] = "충전의 반지";
 		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
 
-		char explanation[] = "";
+		char explanation[] = "당신의 마법 막대는 이 반지에서 뿜어져 나오는 비전력에";
 		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "의해 더욱 빨리 충전됩니다. 저주받은 반지는 당신의 마법";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
+
+		char explanationLine3[] = "막대를 늦게 충전 시킵니다.";
+		PrintFont(explanationLine3, namehFont, nameoldFont, 220, 320, 15, 255, 255, 255);
 	}
 
 	if (itemName == NAME_LIOYDS_BEACON)
@@ -1653,8 +1710,11 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 		char name[] = "다트";
 		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
 
-		char explanation[] = "";
+		char explanation[] = "이 간단한 금속 가시는 손목의 튕김으로 쉽게 날려보내 적";
 		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "들을 찌를 수 있도록 만들어졌습니다.";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
 	}
 
 	if (itemName == NAME_PARALYSIS_DART)
@@ -1662,8 +1722,11 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 		char name[] = "마비 다트";
 		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
 
-		char explanation[] = "";
+		char explanation[] = "이 간단한 금속 가시는 손목의 튕김으로 쉽게 날려보내 적";
 		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "들을 찌를 수 있도록 만들어졌습니다.";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
 	}
 
 	if (itemName == NAME_POISON_DART)
@@ -1671,8 +1734,11 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 		char name[] = "독 다트";
 		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
 
-		char explanation[] = "";
+		char explanation[] = "이 간단한 금속 가시는 손목의 튕김으로 쉽게 날려보내 적";
 		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "들을 찌를 수 있도록 만들어졌습니다.";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
 	}
 
 	if (itemName == NAME_LIGHTNING)
@@ -1680,8 +1746,14 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 		char name[] = "전기 완드";
 		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
 
-		char explanation[] = "";
+		char explanation[] = "이 막대는 쇳덩어리로 만들어져 생각보다 엄청 무겁습니";
 		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "다. 두 개의 지치이 끝 부분에 함께 휘어져 있으며 전류가";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
+
+		char explanationLine3[] = "둘 사이에 흐르고 있습니다.";
+		PrintFont(explanationLine3, namehFont, nameoldFont, 220, 320, 15, 255, 255, 255);
 	}
 
 	if (itemName == NAME_NORMAL)
@@ -1704,7 +1776,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 		char name[] = "독 완드";
 		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
 
-		char explanation[] = "";
+		char explanation[] = "이 완드에서 독기가 느껴진다.";
 		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
 	}
 
@@ -1713,8 +1785,11 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 		char name[] = "비상 식량";
 		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
 
-		char explanation[] = "";
+		char explanation[] = "이 비상식량은 평범해 보입니다.";
 		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
+
+		char explanationLine2[] = "말린고기, 비스킷 조금 등이 들어 있습니다.";
+		PrintFont(explanationLine2, namehFont, nameoldFont, 220, 300, 15, 255, 255, 255);
 	}
 
 	if (itemName == NAME_PASTY)
@@ -1722,7 +1797,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 		char name[] = "파스티";
 		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
 
-		char explanation[] = "";
+		char explanation[] = "맛있어 보인다.";
 		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
 	}
 
@@ -1731,7 +1806,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 		char name[] = "알수없는 고기";
 		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
 
-		char explanation[] = "";
+		char explanation[] = "무슨 고기인지 도통 알 수 없는 고기이다.";
 		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
 	}
 
@@ -1740,7 +1815,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 		char name[] = "익힌고기";
 		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
 
-		char explanation[] = "";
+		char explanation[] = "괜찮게 구워진 고기가 된 것 같다.";
 		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
 	}
 
@@ -1749,7 +1824,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 		char name[] = "얼린고기";
 		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
 
-		char explanation[] = "";
+		char explanation[] = "괜찮게 얼린 고기가 된 것 같다.";
 		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
 	}
 
@@ -1836,7 +1911,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 		char name[] = "이슬";
 		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
 
-		char explanation[] = "";
+		char explanation[] = "이슬을 담는 병이다.";
 		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
 	}
 
@@ -1944,7 +2019,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 		char name[] = "치유";
 		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
 
-		char explanation[] = "";
+		char explanation[] = "이 씨앗을 원하는 곳에 던져 식물을 자라게 할 수 있습니다.";
 		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
 	}
 
@@ -1998,7 +2073,7 @@ void UI::button_interface(int itemName, int itemType, int createNumber, int frea
 		char name[] = "이슬";
 		PrintFont(name, namehFont, nameoldFont, 260, 245, 25, 255, 255, 0);
 
-		char explanation[] = "";
+		char explanation[] = "마시면 기분이 좋아지는 이슬이다.";
 		PrintFont(explanation, namehFont, nameoldFont, 220, 280, 15, 255, 255, 255);
 	}
 
