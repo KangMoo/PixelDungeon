@@ -90,6 +90,10 @@ HRESULT mainGame::init(void)
 	IMAGEMANAGER->addImage("key_iron", "Img/Item/key_iron.bmp", 32, 32, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("key_silver", "Img/Item/key_silver.bmp", 32, 32, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("key_gold", "Img/Item/key_gold.bmp", 32, 32, true, RGB(255, 0, 255));
+	//=========================== E F F E C T =============================
+	IMAGEMANAGER->addImage("effectFrozen", "Img/Item/effect_snow.bmp", 2, 2, true, RGB(255, 0, 255));
+	IMAGEMANAGER->addImage("effectFire", "Img/Item/effect_fire.bmp", 4, 4, true, RGB(255, 0, 255));
+
 
 	SCENEMANAGER->addScene("∞‘¿”æ¿", new GameScene);
 	SCENEMANAGER->addScene("∏ﬁ¿Œ∏ﬁ¥∫æ¿", new MainMenuScene);

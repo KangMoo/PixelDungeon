@@ -33,15 +33,15 @@ HRESULT ItemManager::init()
 	}
 	_fire = false;
 	_frozen = false;
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < 300; i++)
 	{
 		frozenE[i].img = IMAGEMANAGER->findImage("effectFrozen");
-		frozenE[i].size = 10;
+		frozenE[i].size = 4;
 		frozenE[i].Trans = RND->getFromIntTo(0, 255);
 		frozenE[i].isSee = true;
 		fireE[i].img = IMAGEMANAGER->findImage("effectFire");
 		fireE[i].size = RND->getFromIntTo(1,5);
-		fireE[i].Trans = RND->getFromIntTo(0, 150);
+		fireE[i].Trans = RND->getFromIntTo(0, 100);
 		fireE[i].isSee = true;
 
 	}
@@ -62,6 +62,7 @@ HRESULT ItemManager::init()
 	setItemToBag(NAME_FROZEN);
 	setItemToBag(NAME_FROZEN);
 
+	setItemToBag(NAME_LIQUID_FIRE);
 	setItemToBag(NAME_LIQUID_FIRE);
 	setItemToBag(NAME_UNKNOWN_MEAT);
 
@@ -84,6 +85,55 @@ void ItemManager::release()
 void ItemManager::update()
 {
 	
+	for (int i = 0; i < _vBag.size(); i++)
+	{
+		_vBag[i].position = i;
+	}
+	for (_viItem = _vItem.begin(); _viItem != _vItem.end(); ++_viItem)
+	{
+		_viItem->rc = RectMakeCenter(_viItem->point.x, _viItem->point.y,
+			_viItem->img->getWidth(), _viItem->img->getHeight());
+	}
+
+
+	if (_frozen)
+	{
+		int count = 0;
+		for (int i = 0; i < 300; i++)
+		{
+			frozenE[i].point.y += 1;
+			frozenE[i].Trans += 4;
+			if (frozenE[i].point.y >= frozenE[0].rc.bottom)
+			{
+				frozenE[i].point.y = frozenE[0].rc.top;
+			}
+			if (frozenE[i].Trans >= 255)
+			{
+				frozenE[i].isSee = false;
+				count++;
+			}
+		}
+
+
+
+	}
+	if (_fire)
+	{
+		for (int i = 0; i < 50; i++)
+		{
+			fireE[i].point.y -= 1;
+			fireE[i].Trans += 4;
+			if (fireE[i].point.y <= fireE[0].rc.top)
+			{
+				fireE[i].point.y = fireE[0].rc.bottom;
+			}
+			if (fireE[i].Trans >= 255)
+			{
+				fireE[i].isSee = false;
+			}
+
+		}
+	}
 
 	//================== I T E M   D R O P =========================
 	for ( _viItem = _vItem.begin(); _viItem != _vItem.end(); ++_viItem)
@@ -134,12 +184,21 @@ void ItemManager::draw(POINT camera)
 		if (_viItem->floor == _map->getCurStageNum() && _map->getTile(_viItem->point.x / TILESIZE, _viItem->point.y / TILESIZE).tileview == TILEVIEW_ALL)
 		_viItem->img->render(getMemDC(), _viItem->rc.left + camera.x, _viItem->rc.top + camera.y);
 	}
-		for (int i = 0; i < 20; i++)
+	if (_frozen)
+	{
+		for (int i = 0; i < 300; i++)
 		{
-			Rectangle(getMemDC(), frozenE[i].rc.left+camera.x, frozenE[i].rc.top + camera.y, frozenE[i].rc.right + camera.x, frozenE[i].rc.bottom + camera.y);
+			if (frozenE[i].isSee == false) continue;
+			frozenE[i].img->alphaRender(getMemDC(), frozenE[i].point.x + camera.x, frozenE[i].point.y + camera.y, frozenE[i].Trans);
 		}
+	}
 	if (_fire)
 	{
+		for (int i = 0; i < 50; i++)
+		{
+			if (fireE[i].isSee == false) continue;
+			fireE[i].img->alphaRender(getMemDC(), fireE[i].point.x + camera.x, fireE[i].point.y + camera.y, fireE[i].Trans);
+		}
 	}
 }
 
@@ -214,19 +273,6 @@ void ItemManager::itemState()
 			break;
 		}
 	}
-
-	for (int i = 0; i < _vBag.size(); i++)
-	{
-		_vBag[i].position = i;
-	}
-	for (_viItem = _vItem.begin(); _viItem != _vItem.end(); ++_viItem)
-	{
-		_viItem->rc = RectMakeCenter(_viItem->point.x, _viItem->point.y,
-			_viItem->img->getWidth(), _viItem->img->getHeight());
-
-
-	}
-
 }
 
 void ItemManager::setItemToBag(ITEMNAME name)
@@ -1337,7 +1383,7 @@ void ItemManager::useItem(int position)
 				{
 					_potionIdentified[5] = true;
 					_viBag->numOfItem--;
-					frozen(_player->getPoint().x, _player->getPoint().y);
+					frozen(_player->getPoint().x+16, _player->getPoint().y + 16);
 					goto stop;
 				}
 				break;
@@ -1345,7 +1391,7 @@ void ItemManager::useItem(int position)
 				{
 					_potionIdentified[6] = true;
 					_viBag->numOfItem--;
-					liquidFire(_player->getPoint().x, _player->getPoint().y);
+					liquidFire(_player->getPoint().x + 16, _player->getPoint().y + 16);
 					
 					goto stop;
 				}
@@ -1823,8 +1869,8 @@ void ItemManager::liquidFire(float x, float y)
 
 	for (int i = 0; i < 3; i++)
 	{
-		TileX[i] = x / TILESIZE - 2 + i;
-		TileY[i] = y / TILESIZE - 2 + i;
+		TileX[i] = x / TILESIZE - 1 + i;
+		TileY[i] = y / TILESIZE - 1 + i;
 	}
 	for (int i = 0; i < 3; i++)
 	{
@@ -1859,8 +1905,13 @@ void ItemManager::liquidFire(float x, float y)
 
 				}
 			}
-			liquidFireEffect(TileX[i], TileY[i]);
+			if (_map->getTile(TileX[i]-1, TileY[j]-1).terrain & ATTRIBUTE_FLAMMABLE)
+			{
+				_map->setTile_Flame(TileX[i]-1, TileY[j]-1);
+			}
+			liquidFireEffect(TileX[i]-1.5, TileY[j]-1.5);
 			_fire = true;
+
 		}
 	}
 
@@ -1876,7 +1927,6 @@ void ItemManager::frozen(float x, float y)
 		TileX[i] = x/TILESIZE-2  + i;
 		TileY[i] = y/TILESIZE-2 + i;
 	}
-
 	for (int i = 0; i < 5; i++)
 	{
 		for (int j = 0; j < 5; j++)
@@ -1911,8 +1961,8 @@ void ItemManager::frozen(float x, float y)
 
 				}
 			}
+			frozenEffect(TileX[i]-2, TileY[j]-2);
 			_frozen = true;
-			frozenEffect(TileX[i], TileY[i]);
 		}
 	}
 }
@@ -1920,17 +1970,26 @@ void ItemManager::frozen(float x, float y)
 
 void ItemManager::liquidFireEffect(float x, float y)
 {
-	for (int i = 0; i < 20; i++)
+	fireE[0].rc = RectMakeCenter(x*TILESIZE, y*TILESIZE, TILESIZE *3, TILESIZE * 3);
+	for (int i = 0; i < 300; i++)
 	{
-		fireE[i].rc = RectMakeCenter(RND->getFromIntTo(x*TILESIZE - TILESIZE / 2, x*TILESIZE + TILESIZE / 2), RND->getFromIntTo(y*TILESIZE - TILESIZE / 2, y*TILESIZE + TILESIZE / 2), frozenE[i].size, frozenE[i].size);
+		fireE[i].point = PointMake(RND->getFromIntTo(fireE[0].rc.left, fireE[0].rc.right), RND->getFromIntTo(fireE[0].rc.top, fireE[0].rc.bottom));
+
 	}
+
 }
 void ItemManager::frozenEffect(float x, float y)
 {
-	for (int i = 0; i < 20; i++)
+	frozenE[0].rc = RectMakeCenter(x*TILESIZE,y*TILESIZE, TILESIZE*5, TILESIZE * 5);
+	for (int i = 0; i < 300; i++)
 	{
-		frozenE[i].rc = RectMakeCenter(RND->getFromIntTo(x*TILESIZE - TILESIZE / 2, x*TILESIZE + TILESIZE / 2), RND->getFromIntTo(y*TILESIZE - TILESIZE / 2, y*TILESIZE + TILESIZE / 2), frozenE[i].size, frozenE[i].size);
+		frozenE[i].point = PointMake(RND->getFromIntTo(frozenE[0].rc.left, frozenE[0].rc.right), RND->getFromIntTo(frozenE[0].rc.top, frozenE[0].rc.bottom));
+
 	}
+
+
+
+
 }
 
 
@@ -1983,7 +2042,7 @@ void ItemManager::keyControl()
 		{
 			if (_viBag->name == NAME_FROZEN)
 			{
-				useItem(_viBag->position);
+				useItem(_viBag->position,_ptMouse.x, _ptMouse.y);
 				break;
 			}
 			else ++_viBag;
