@@ -62,6 +62,12 @@ public:
 	float _interface_button_timer3;
 	float _uitimer;
 
+	float p_damage_font = 0.f;
+	float p_damage_font_time = 0.f;
+
+	float p_attack_font = 0.f;
+	float p_attack_font_time = 0.f;
+
 private:
 	float timer = 0;
 
@@ -155,6 +161,6 @@ private:
 	HFONT namehFont;
 	HFONT nameoldFont;
 
-	//int itemposition = 0;
+	POINT Savepos;
 };
 

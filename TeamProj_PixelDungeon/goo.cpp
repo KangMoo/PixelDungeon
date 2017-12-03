@@ -71,7 +71,7 @@ HRESULT goo::init(POINT point, int floor)//인식범위 추기
 	_statistics.avd_lck = 4;
 	_statistics.def = 2;
 	a = RND->getFromIntTo(2, 5);
-	_statistics.str = a;
+	_statistics.str = 30;
 	_statistics.atk_lck = 11;
 
 	//깨어있을지 자고있을지 랜덤 설정
