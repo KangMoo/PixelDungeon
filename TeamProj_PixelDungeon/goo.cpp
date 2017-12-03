@@ -69,6 +69,9 @@ HRESULT goo::init(POINT point, int floor)//인식범위 추기
 	_currntHp = _statistics.hp;
 	_statistics.avd_lck = 12;
 	_statistics.def = 2;
+
+	a = RND->getFromIntTo(2, 5);
+
 	_statistics.str = 30;
 	_statistics.atk_lck = 11;
 

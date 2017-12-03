@@ -1198,7 +1198,9 @@ void ItemManager::getItem()
 				{
 					_curMoney += _viItem->numOfItem;
 					_viItem = _vItem.erase(_viItem);
+
 					SOUNDMANAGER->play("22.gold", 1.0);
+
 					return;
 				}
 				return;
@@ -1322,7 +1324,9 @@ void ItemManager::useItem(int position)
 				break;
 			case TYPE_POTION:
 			{
+
 				SOUNDMANAGER->play("17.drink", 1.0);
+
 				PLAYERSTAT temp = _player->getStat();
 
 				switch (_viBag->name)
@@ -1529,7 +1533,9 @@ void ItemManager::useItem(int position, float x, float y)
 					break;
 				}
 				_viBag->numOfItem--;
+
 				SOUNDMANAGER->play("32.plant", 1.0);
+
 				break;
 			case TYPE_POTION:
 			{
@@ -1670,6 +1676,7 @@ void ItemManager::useItem(int position, int target)
 							break;
 						}
 					}
+
 					SOUNDMANAGER->play("35.read", 1.0);
 
 					break;
@@ -1679,6 +1686,7 @@ void ItemManager::useItem(int position, int target)
 					{
 						if (_vBag[i].position == target)
 						{
+
 							SOUNDMANAGER->play("37.secret", 1.0);
 
 							switch (_vBag[i].name)
@@ -1940,6 +1948,7 @@ void ItemManager::liquidFire(float x, float y)
 			}
 			liquidFireEffect(TileX[i]-1.5, TileY[j]-1.5);
 			_fire = true;
+
 			SOUNDMANAGER->play("07.burning", 1.0);
 
 		}

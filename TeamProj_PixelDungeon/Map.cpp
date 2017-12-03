@@ -564,6 +564,7 @@ void Map::setTile_UnlockDoor(int i, int j) {
 		_map[i][j].terrain = newTile->terrain;
 
 		SOUNDMANAGER->play("43.unlock", 1.0);
+
 	}
 }
 

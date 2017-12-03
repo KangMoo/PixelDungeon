@@ -74,6 +74,7 @@ HRESULT MapToolScene::init()
 	paletteSetup();
 
 	SOUNDMANAGER->play("48.map", 1.0);
+
 	return S_OK;
 }
 void MapToolScene::release()

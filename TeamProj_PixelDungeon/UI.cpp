@@ -72,7 +72,9 @@ HRESULT UI::init()
 
 	//폰트
 	IMAGEMANAGER->addFrameImage("font", "Img/UI/numberfont.bmp", 130, 19, 10, 1, true, RGB(255, 0, 255));
-	IMAGEMANAGER->addFrameImage("font_green", "Img/UI/numberfontgreen.bmp", 130, 19, 10, 1, true, RGB(255, 0, 255)); //그린
+	IMAGEMANAGER->addFrameImage("font_green", "Img/UI/numberfontgreen.bmp", 130, 19, 10, 1, true, RGB(255, 0, 255)); //녹색
+	IMAGEMANAGER->addFrameImage("font_red", "Img/UI/numberfontred.bmp", 130, 19, 10, 1, true, RGB(255, 0, 255)); //빨강
+	IMAGEMANAGER->addFrameImage("font_orange", "Img/UI/numberfontorange.bmp", 130, 19, 10, 1, true, RGB(255, 0, 255)); //주황
 	IMAGEMANAGER->addFrameImage("special_font", "Img/UI/specialfont.bmp", 36, 19, 3, 1, true, RGB(255, 0, 255)); //특수문자
 
 	_backPackRect = RectMake(437, WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight(), 72, (WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight()));
@@ -96,6 +98,8 @@ HRESULT UI::init()
 	_Menu_WindowRect[GAMEMENU_MAIN] = RectMake(278, 287, 130, 45);
 	_Menu_WindowRect[GAMEMENU_EXIT] = RectMake(408, 287, 130, 45);
 	_Menu_WindowRect[GAMEMENU_BACK] = RectMake(278, 332, 260, 45);
+
+	//testtime = TIMEMANAGER->getWorldTime();
 
 	return S_OK;
 }
@@ -127,6 +131,68 @@ void UI::draw(POINT camera)
 
 	_playerHP = (_player->getHP() / _player->getStat().maxhp) * 150;
 	_playerEXP = (_player->getStat().exp / 100) * 384;
+
+	if (_player->damaged == true)
+	{
+		p_damage_font += 0.01f;
+		p_damage_font_time += 1;
+
+		if (_player->monster_attack_dp < 10)
+		{
+			IMAGEMANAGER->frameRender("font_orange", getMemDC(), (_player->getPoint().x - 6) + camera.x, ((_player->getPoint().y - p_damage_font_time) - 30) + camera.y, _player->monster_attack_dp, 0);
+		}
+
+		for (int damage = 10; damage < 100; damage += 10)
+		{
+			if (_player->monster_attack_dp >= damage)
+			{
+				IMAGEMANAGER->frameRender("font_orange", getMemDC(), (_player->getPoint().x - 12) + camera.x, ((_player->getPoint().y - p_damage_font_time) - 30) + camera.y, damage / 10, 0);
+				IMAGEMANAGER->frameRender("font_orange", getMemDC(), (_player->getPoint().x) + camera.x, ((_player->getPoint().y - p_damage_font_time) - 30) + camera.y, _player->monster_attack_dp - damage, 0);
+			}
+		}
+
+		if (p_damage_font > 0.3)
+		{
+			_player->damaged = false;
+			p_damage_font = 0;
+			p_damage_font_time = 0;
+		}
+	}
+
+	//여기야 인마
+	if (_player->attack == true)
+	{
+		p_attack_font += 0.01f;
+		p_attack_font_time += 1;
+
+		if (_player->test1 == true)
+		{
+			Savepos.x = ((_ptMouse.x / TILESIZE) * TILESIZE) + 10;
+			Savepos.y = ((_ptMouse.y / TILESIZE) * TILESIZE) - 20;
+			_player->test1 = false;
+		}
+
+		if (_player->getStat().str < 10)
+		{
+			IMAGEMANAGER->frameRender("font_red", getMemDC(), Savepos.x, Savepos.y - p_attack_font_time, _player->getStat().str, 0);
+		}
+
+		for (int damage = 10; damage < 100; damage += 10)
+		{
+			if (_player->getStat().str >= damage)
+			{
+				IMAGEMANAGER->frameRender("font_red", getMemDC(), (Savepos.x - 6), Savepos.y - p_attack_font_time, damage / 10, 0);
+				IMAGEMANAGER->frameRender("font_red", getMemDC(), (Savepos.x + 6), Savepos.y - p_attack_font_time, _player->getStat().str - damage, 0);
+			}
+		}
+
+		if (p_attack_font > 0.3)
+		{
+			_player->attack = false;
+			p_attack_font = 0;
+			p_attack_font_time = 0;
+		}
+	}
 
 	IMAGEMANAGER->render("hp_bar", getMemDC(), _playerHP - 60, 9);
 	IMAGEMANAGER->render("exp_bar", getMemDC(), _playerEXP - 384, 0);

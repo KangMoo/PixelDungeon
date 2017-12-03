@@ -44,6 +44,7 @@ private:
 	vector<TILE> astar;
 	//~test
 
+
 public:
 	HRESULT init();
 	HRESULT init(POINT point);
@@ -97,6 +98,7 @@ public:
 
 	void activeTurn();
 
+	//PLAYERSTATE getAction() { return _playerState; }
 	PLAYERSTAT getStat() { return _playerStat; }
 	void setStat(PLAYERSTAT stat) { _playerStat = stat; }
 	POINT getPoint() { return _playerPoint; }
@@ -121,5 +123,12 @@ public:
 	void setChangeFoor();
 	Player();
 	~Player();
+
+	//³ªÀÓ
+	bool damaged = false;
+	int monster_attack_dp = 0;
+
+	bool attack = false;
+	bool test1 = false;
 };
 
