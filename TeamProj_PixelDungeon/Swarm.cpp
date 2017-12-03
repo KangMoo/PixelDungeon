@@ -117,7 +117,7 @@ HRESULT Swarm::init(POINT point, int currntHp, int floor, int drop)
 
 	_statistics.lv = 1;
 	_statistics.maxLv = 10;
-	_statistics.exp = 1;
+	_statistics.exp = 30;
 	_statistics.hp = 8;
 	_currntHp = currntHp;
 	_statistics.avd_lck = 5;

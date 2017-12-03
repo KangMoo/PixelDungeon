@@ -64,14 +64,12 @@ HRESULT goo::init(POINT point, int floor)//인식범위 추기
 
 	//스탯 설정
 	_statistics.lv = 1;
-	_statistics.maxLv = 8;
 	_statistics.exp = 2;
 	_statistics.hp = 80;
 	_currntHp = _statistics.hp;
-	_statistics.avd_lck = 4;
+	_statistics.avd_lck = 12;
 	_statistics.def = 2;
-	a = RND->getFromIntTo(2, 5);
-	_statistics.str = a;
+	_statistics.str = 30;
 	_statistics.atk_lck = 11;
 
 	//깨어있을지 자고있을지 랜덤 설정
@@ -145,11 +143,6 @@ void goo::draw(POINT camera)
 			_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
 		_hpBar->render();
 	}
-	char str[128];
-	SetTextColor(getMemDC(), RGB(255, 0, 0));
-	sprintf_s(str, "%d", _trunCount);
-	TextOut(getMemDC() , 500, 200, str, strlen(str));
-
 }
 
 void goo::frameUpdate()
@@ -232,7 +225,7 @@ void goo::action()
 {
 	//if (KEYMANAGER->isOnceKeyDown('E')) getDamaged(3);
 
-	int skill = RND->getInt(1);
+	int skill = RND->getInt(2);
 
 	if (skill == 0 && _PumpedUP == false) _PumpedUP = true;
 
@@ -379,15 +372,16 @@ void goo::action()
 			{
 				_myState = ENEMYSTATE_ATTACK;
 				_currntFrameX = 0;
+				_statistics.str = RND->getFromIntTo(2, 12);
 				_player->getDamaged(_statistics.str);
 				_player->addDebuff(DEBUFF_BLEEDING, 2000, 1);
 				if (_PumpedUP == true) _trunCount++;
-
 			}
 			else if ((x <= 2 && x >= -2) && (y <= 2 && y >= -2) && _PumpedUP == true && _trunCount >= 2)
 			{
 				_myState = ENEMYSTATE_ATTACK;
 				_currntFrameX = 0;
+				_statistics.str = RND->getFromIntTo(11, 30);
 				_player->getDamaged(_statistics.str*2);
 				_player->addDebuff(DEBUFF_BLEEDING, 2000, 1);
 

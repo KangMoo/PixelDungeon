@@ -84,7 +84,7 @@ HRESULT Rat::init(POINT point, int floor)
 
 		_statistics.lv		= 1;			 //레벨
 		_statistics.maxLv	= 5;			 //최대레벨
-		_statistics.exp		= 1;			 //제공할 경험치
+		_statistics.exp		= 10;			 //제공할 경험치
 		_statistics.hp		= 15;			 //최대 체력
 		_currntHp			= _statistics.hp;//현재 체력
 

@@ -67,7 +67,7 @@ HRESULT Gnoll::init(POINT point, int floor)
 	//Ω∫≈» º≥¡§
 	_statistics.lv = 1;
 	_statistics.maxLv = 8;
-	_statistics.exp = 2;
+	_statistics.exp = 20;
 	_statistics.hp = 12;
 	_currntHp = 12;
 	_statistics.avd_lck = 4;

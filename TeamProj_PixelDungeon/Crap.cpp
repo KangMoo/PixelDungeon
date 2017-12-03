@@ -68,7 +68,7 @@ HRESULT Crap::init(POINT point, int floor)
 	//Ω∫≈» º≥¡§
 	_statistics.lv = 1;
 	_statistics.maxLv = 9;
-	_statistics.exp = 3;
+	_statistics.exp = 30;
 	_statistics.hp = 15;
 	_currntHp = 15;
 	_statistics.avd_lck = 4;

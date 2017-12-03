@@ -138,11 +138,6 @@ void Player::draw(POINT camera)
 	//~test
 	_image->alphaFrameRender(getMemDC(), _playerPoint.x - _image->getFrameWidth() / 2 + camera.x, _playerPoint.y - _image->getFrameHeight() / 2 + camera.y, _currentFrameX, _currentFrameY, 0);
 	//IMAGEMANAGER->render("blactkTile", getMemDC(), 50, 50, 0, 0, 100, 100);
-	char str[128];
-	SetTextColor(getMemDC(), RGB(255, 0, 0));
-	sprintf_s(str, "%d", _playerStat.exp);
-	TextOut(getMemDC(), 500, 250, str, strlen(str));
-
 }
 
 void Player::addCanTSeeAngle(float sangle, float eangle)
