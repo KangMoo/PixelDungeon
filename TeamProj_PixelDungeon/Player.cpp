@@ -25,7 +25,8 @@ HRESULT Player::init(POINT point)
 	_playerStat.avd_lck = 0;
 	_playerStat.def = 0;
 	_playerStat.exp = 0;
-	_playerStat.hp = 1000000;
+	_playerStat.hp = 20000;
+	_playerStat.maxhp = 20000;
 	_playerStat.hunger = 300;
 	_playerStat.lv = 1;
 	_playerStat.str = 10;
@@ -137,7 +138,6 @@ void Player::draw(POINT camera)
 	//~test
 	_image->alphaFrameRender(getMemDC(), _playerPoint.x - _image->getFrameWidth() / 2 + camera.x, _playerPoint.y - _image->getFrameHeight() / 2 + camera.y, _currentFrameX, _currentFrameY, 0);
 	//IMAGEMANAGER->render("blactkTile", getMemDC(), 50, 50, 0, 0, 100, 100);
-
 }
 
 void Player::addCanTSeeAngle(float sangle, float eangle)

@@ -67,7 +67,7 @@ HRESULT Gnoll::init(POINT point, int floor)
 	//½ºÅÈ ¼³Á¤
 	_statistics.lv = 1;
 	_statistics.maxLv = 8;
-	_statistics.exp = 2;
+	_statistics.exp = 20;
 	_statistics.hp = 12;
 	_currntHp = 12;
 	_statistics.avd_lck = 4;
@@ -470,6 +470,7 @@ void Gnoll::update()
 			if (_deadAlpha >= 255)
 			{
 				_deadAlpha = 255;
+				_player->expUp(_statistics.exp);
 				if (_isLive)
 				{
 					int a = RND->getInt(100);

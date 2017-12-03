@@ -60,6 +60,9 @@ HRESULT UI::init()
 
 	//hp바
 	IMAGEMANAGER->addImage("hp_bar", "Img/UI/hp_bar.bmp", 192, 12, true, RGB(255, 0, 255));
+	
+	//exp바
+	IMAGEMANAGER->addImage("exp_bar", "Img/UI/exp_bar.bmp", 384, 3, true, RGB(255, 0, 255));
 
 	//메인메뉴바
 	IMAGEMANAGER->addImage("select_menu_bar2", "Img/UI/select_menu_bar2.bmp", 260, 129, true, RGB(255, 0, 255));
@@ -122,8 +125,22 @@ void UI::draw(POINT camera)
 		_uitimer = TIMEMANAGER->getWorldTime();
 	}
 
+	_playerHP = (_player->getHP() / _player->getStat().maxhp) * 150;
+	_playerEXP = (_player->getStat().exp / 100) * 384;
+
+	IMAGEMANAGER->render("hp_bar", getMemDC(), _playerHP - 60, 9);
+	IMAGEMANAGER->render("exp_bar", getMemDC(), _playerEXP - 384, 0);
+
 	IMAGEMANAGER->render("status_pane", getMemDC(), 0, 0);
-	IMAGEMANAGER->render("hp_bar", getMemDC(), 90, 9);
+
+	int a = _player->getStat().exp;
+	int test = 0;
+
+	//플레이어 레벨
+	if (_player->getStat().lv < 10)
+	{
+		IMAGEMANAGER->frameRender("font", getMemDC(), 75, 75, _player->getStat().lv, 0);
+	}
 
 	IMAGEMANAGER->render("toolbar", getMemDC(), WINSIZEX / 2 - (IMAGEMANAGER->findImage("toolbar")->getFrameWidth() / 2), WINSIZEY - (IMAGEMANAGER->findImage("toolbar")->getFrameHeight()));
 

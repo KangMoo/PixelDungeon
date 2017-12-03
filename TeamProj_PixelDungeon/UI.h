@@ -65,6 +65,9 @@ public:
 private:
 	float timer = 0;
 
+	float _playerHP = 0;
+	float _playerEXP = 0;
+
 	bool throwcheck = false;
 	bool isthrow = false;
 	bool islaunch = false;

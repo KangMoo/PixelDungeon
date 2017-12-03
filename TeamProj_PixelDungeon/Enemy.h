@@ -80,6 +80,7 @@ public:
 	void setHP(int hp) { _statistics.hp = hp; }
 	int getCHP() { return _currntHp; }
 	int getFloor() { return _floor; }
+	int getExp() { return _statistics.exp; }
 
 	//타일 좌표 받아오기
 	virtual POINT getTilePt() { return _point; }
