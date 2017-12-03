@@ -111,7 +111,7 @@ void ItemManager::update()
 			_viItem->img->getWidth(), _viItem->img->getHeight());
 	}
 
-
+	// 서리포션 이펙트 =======================
 	if (_frozen)
 	{
 		int count = 0;
@@ -130,11 +130,25 @@ void ItemManager::update()
 			}
 		}
 
+		if (count >= 200)
+		{
+			_frozen = false;
+		}
 
 
 	}
+	if (!_frozen)
+	{
+		for (int i = 0; i < 300; i++)
+		{
+			frozenE[i].Trans = RND->getFromIntTo(0, 255);
+			frozenE[i].isSee = true;
+		}
+	}
+	// 액체 화염 이펙트 ======================
 	if (_fire)
 	{
+		int count = 0;
 		for (int i = 0; i < 50; i++)
 		{
 			fireE[i].point.y -= 1;
@@ -146,8 +160,23 @@ void ItemManager::update()
 			if (fireE[i].Trans >= 255)
 			{
 				fireE[i].isSee = false;
+				count++;
 			}
 
+		}
+
+		if (count >= 30)
+		{
+			_fire = false;
+		}
+
+	}
+	if (!_fire)
+	{
+		for (int i = 0; i < 50; i++)
+		{
+			fireE[i].Trans = RND->getFromIntTo(0, 100);
+			fireE[i].isSee = true;
 		}
 	}
 
