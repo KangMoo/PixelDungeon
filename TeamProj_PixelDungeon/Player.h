@@ -101,7 +101,7 @@ public:
 	void setStat(PLAYERSTAT stat) { _playerStat = stat; }
 	POINT getPoint() { return _playerPoint; }
 	void setPoint(POINT point) { _playerPoint = point; }
-	int getHP() { return _playerStat.hp; }
+	float getHP() { return _playerStat.hp; }
 	void setHP(int hp) { _playerStat.hp = hp; }
 
 	vector<tagDebuff> getPlayerDebuffList() { return _vdebuff; }

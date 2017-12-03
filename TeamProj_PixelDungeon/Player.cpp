@@ -25,7 +25,8 @@ HRESULT Player::init(POINT point)
 	_playerStat.avd_lck = 0;
 	_playerStat.def = 0;
 	_playerStat.exp = 0;
-	_playerStat.hp = 1000000;
+	_playerStat.hp = 20000;
+	_playerStat.maxhp = 20000;
 	_playerStat.hunger = 300;
 	_playerStat.lv = 1;
 	_playerStat.str = 10;
