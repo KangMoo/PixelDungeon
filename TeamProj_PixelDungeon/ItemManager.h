@@ -136,6 +136,8 @@ public:
 	vector<tagBullet> getVThrow() { return _vThrow; }
 	vector<tagBullet>::iterator getVThrowIter() { return _viThrow; }
 
+	int getCurMoney() { return _curMoney; }
+
 	ItemManager();
 	~ItemManager();
 
