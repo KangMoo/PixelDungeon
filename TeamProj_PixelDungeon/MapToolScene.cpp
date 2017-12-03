@@ -72,11 +72,13 @@ HRESULT MapToolScene::init()
 	_inputCountdown = 0;
 
 	paletteSetup();
+
+	SOUNDMANAGER->play("48.map", 1.0);
 	return S_OK;
 }
 void MapToolScene::release()
 {
-
+	SOUNDMANAGER->stop("48.map");
 }
 
 void MapToolScene::imageSetup() {

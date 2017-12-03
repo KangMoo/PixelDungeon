@@ -49,24 +49,27 @@ private:
 
 private:
 	EnemyManager* _em;
-	Map* _map;
-	UI* _ui;
 	Player* _player;
 	Item* _item;
+	Map* _map;
+	UI* _ui;
+
 	tagEffect frozenE[300];
 	tagEffect fireE[300];
 
 
 private:
 	int _potion[7];
-	int _wand[3];
 	int _scroll[5];
+	int _wand[3];
 	int _acc[2];
+	int _curMoney;
 
 	bool _potionIdentified[7];
 	bool _scrollIdentified[5];
 	bool _fire;
 	bool _frozen;
+
 public:
 	HRESULT init();
 	void release();

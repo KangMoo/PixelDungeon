@@ -177,6 +177,7 @@ void EnemyManager::setEnemy(POINT point, int type, int floor)
 		temp->setMapAddressLink(_map);
 
 		temp->setEnemyManagerAddressLink(this);
+		SOUNDMANAGER->play("30.mimic", 1.0);
 		_vEnemy.push_back(temp);
 
 		//นฬนอ, Mimic

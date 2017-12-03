@@ -31,6 +31,8 @@ HRESULT ItemManager::init()
 	{
 		_scrollIdentified[i] = false;
 	}
+
+	//================= FROZEN & FIRE ======================
 	_fire = false;
 	_frozen = false;
 	for (int i = 0; i < 300; i++)
@@ -45,9 +47,12 @@ HRESULT ItemManager::init()
 		fireE[i].isSee = true;
 
 	}
-	
-
 	//==================================================
+	_curMoney = 0;
+
+
+
+	//==================== T E S T =====================
 	setItemToBag(NAME_EMERGENCY);
 	setItemToBag(NAME_OLD_SHORT_SWORD, false, false, 9, 1);
 	setItemToBag(NAME_CLOTH,false,false,6,1);
@@ -70,21 +75,18 @@ HRESULT ItemManager::init()
 	setItemToBag(NAME_UPGRADE,false,false,0,5);
 	setItemToBag(NAME_PURIFY);
 
-	setItemToBag(NAME_SEED_HEAL);
-	setItemToBag(NAME_SEED_FIRE);
-	setItemToBag(NAME_SEED_SNAKE);
-
-	setItemToBag(NAME_BOTTLE);
-
 	return S_OK;
 }
 void ItemManager::release()
 {
-
 }
 void ItemManager::update()
 {
+	//=========================  S O U N D ============================
 	
+
+	//=================================================================
+
 	for (int i = 0; i < _vBag.size(); i++)
 	{
 		_vBag[i].position = i;
@@ -171,6 +173,7 @@ void ItemManager::render(POINT camera)
 }
 void ItemManager::draw(POINT camera)
 {
+
 	for ( _viBullet = _vBullet.begin(); _viBullet < _vBullet.end(); ++_viBullet)
 	{
 		_viBullet->img->render(getMemDC(), _viBullet->x + camera.x, _viBullet->y + camera.y);
@@ -1191,6 +1194,13 @@ void ItemManager::getItem()
 					}
 					else return;
 				}
+				else if (_viItem->name == NAME_MONEY)
+				{
+					_curMoney += _viItem->numOfItem;
+					_viItem = _vItem.erase(_viItem);
+					SOUNDMANAGER->play("22.gold", 1.0);
+					return;
+				}
 				return;
 
 			}
@@ -1307,10 +1317,12 @@ void ItemManager::useItem(int position)
 				temp.hunger +=_viBag->minPoint;
 				_player->setStat(temp);
 				if (_viBag->numOfItem <= 0) _viBag = _vBag.erase(_viBag);
+				SOUNDMANAGER->play("18.eat", 1.0);
 				goto stop;
 				break;
 			case TYPE_POTION:
 			{
+				SOUNDMANAGER->play("17.drink", 1.0);
 				PLAYERSTAT temp = _player->getStat();
 
 				switch (_viBag->name)
@@ -1403,6 +1415,9 @@ void ItemManager::useItem(int position)
 			{
 				switch (_viBag->name)
 				{
+
+					SOUNDMANAGER->play("35.read", 1.0);
+
 					case NAME_IDENTIFY: // 사용 x
 					{
 
@@ -1491,7 +1506,7 @@ void ItemManager::useItem(int position, float x, float y)
 			case TYPE_WAND:
 				if (_viBag->currentCharge > 0)
 				{
-					fire(_viBag->throwImg, x, y);
+					fire(_viBag->throwImg, _ptMouse.x - _ui->getCamera().x, _ptMouse.y - _ui->getCamera().y);
 					_viBag->currentCharge--;
 				}
 				break;
@@ -1513,6 +1528,8 @@ void ItemManager::useItem(int position, float x, float y)
 				default:
 					break;
 				}
+				_viBag->numOfItem--;
+				SOUNDMANAGER->play("32.plant", 1.0);
 				break;
 			case TYPE_POTION:
 			{
@@ -1640,63 +1657,72 @@ void ItemManager::useItem(int position, int target)
 			switch (_viBag->type)
 			{
 			case TYPE_SCROLL:
+			{
 				switch (_viBag->name)
 				{
-					case NAME_UPGRADE:
-						for (int i = 0; i < _vBag.size(); i++)
+				case NAME_UPGRADE:
+					for (int i = 0; i < _vBag.size(); i++)
+					{
+						if (_vBag[i].position == target)
 						{
-							if (_vBag[i].position == target)
-							{
-								_vBag[i].upgrade++;	
-								_scrollIdentified[1] = true;
-								break;
-							}
-						}
-					break;
-
-					case NAME_IDENTIFY:
-						for (int i = 0; i < _vBag.size(); i++)
-						{
-							if (_vBag[i].position == target)
-							{
-								switch (_vBag[i].name)
-								{
-								case NAME_UPGRADE:
-									_scrollIdentified[1] = true;
-									break;
-								case NAME_PURIFY:
-									_scrollIdentified[2] = true;
-									break;
-								case NAME_MAP:
-									_scrollIdentified[3] = true;
-									break;
-								case NAME_HEAL:
-									_potionIdentified[0] = true;
-									break;
-								case NAME_STR:
-									_potionIdentified[1] = true;
-									break;
-								case NAME_EX:
-									_potionIdentified[2] = true;
-									break;
-								case NAME_INVISIBLE:
-									_potionIdentified[3] = true;
-									break;
-								case NAME_LEVITATION:
-									_potionIdentified[4] = true;
-									break;
-								case NAME_FROZEN:
-									_potionIdentified[5] = true;
-									break;
-								case NAME_LIQUID_FIRE:
-									_potionIdentified[6] = true;
-									break;
-								}
-								_vBag[i].contentsHide = false;
-								_scrollIdentified[0] = true;
-							}
+							_vBag[i].upgrade++;
+							_scrollIdentified[1] = true;
 							break;
 						}
+					}
+					SOUNDMANAGER->play("35.read", 1.0);
+
+					break;
+
+				case NAME_IDENTIFY:
+					for (int i = 0; i < _vBag.size(); i++)
+					{
+						if (_vBag[i].position == target)
+						{
+							SOUNDMANAGER->play("37.secret", 1.0);
+
+							switch (_vBag[i].name)
+							{
+							case NAME_UPGRADE:
+								_scrollIdentified[1] = true;
+								break;
+							case NAME_PURIFY:
+								_scrollIdentified[2] = true;
+								break;
+							case NAME_MAP:
+								_scrollIdentified[3] = true;
+								break;
+							case NAME_HEAL:
+								_potionIdentified[0] = true;
+								break;
+							case NAME_STR:
+								_potionIdentified[1] = true;
+								break;
+							case NAME_EX:
+								_potionIdentified[2] = true;
+								break;
+							case NAME_INVISIBLE:
+								_potionIdentified[3] = true;
+								break;
+							case NAME_LEVITATION:
+								_potionIdentified[4] = true;
+								break;
+							case NAME_FROZEN:
+								_potionIdentified[5] = true;
+								break;
+							case NAME_LIQUID_FIRE:
+								_potionIdentified[6] = true;
+								break;
+							default:
+								break;
+							}
+
+							_vBag[i].contentsHide = false;
+							_scrollIdentified[0] = true;
+
+						}
+					}
+				}
 					break;
 
 					case NAME_PURIFY:
@@ -1714,6 +1740,8 @@ void ItemManager::useItem(int position, int target)
 							}
 							break;
 						}
+						SOUNDMANAGER->play("35.read", 1.0);
+
 					break;
 				}
 				break;
@@ -1795,6 +1823,7 @@ void ItemManager::bulletMove()
 			getDistance(_viBullet->initX, _viBullet->initY, _viBullet->destX, _viBullet->destY))
 		{
 			_viBullet = _vBullet.erase(_viBullet);
+			
 			break;
 		}
 		else ++_viBullet;
@@ -1911,6 +1940,7 @@ void ItemManager::liquidFire(float x, float y)
 			}
 			liquidFireEffect(TileX[i]-1.5, TileY[j]-1.5);
 			_fire = true;
+			SOUNDMANAGER->play("07.burning", 1.0);
 
 		}
 	}
@@ -1963,6 +1993,7 @@ void ItemManager::frozen(float x, float y)
 			}
 			frozenEffect(TileX[i]-2, TileY[j]-2);
 			_frozen = true;
+			
 		}
 	}
 }

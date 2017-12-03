@@ -49,6 +49,7 @@ HRESULT GameScene::init()
 	_em->init();
 	_im->init();
 
+	SOUNDMANAGER->play("47.game", 1.0);
 
 	_player->setAction(true);
 	_camera = PointMake(WINSIZEX, WINSIZEY);
@@ -57,7 +58,7 @@ HRESULT GameScene::init()
 }
 void GameScene::release()
 {
-
+	SOUNDMANAGER->stop("47.game");
 }
 void GameScene::update()
 {

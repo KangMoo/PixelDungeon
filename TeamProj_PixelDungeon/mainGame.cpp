@@ -94,7 +94,61 @@ HRESULT mainGame::init(void)
 	IMAGEMANAGER->addImage("effectFrozen", "Img/Item/effect_snow.bmp", 2, 2, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("effectFire", "Img/Item/effect_fire.bmp", 4, 4, true, RGB(255, 0, 255));
 
+	//============================= S O U N D ================================
 
+	SOUNDMANAGER->addSound("00.alert", "sound/snd_alert.mp3", false, false);
+	SOUNDMANAGER->addSound("01.badge", "sound/snd_badge.mp3", false, false);
+	SOUNDMANAGER->addSound("02.beacon", "sound/snd_beacon.mp3", false, false);
+	SOUNDMANAGER->addSound("03.bee", "sound/snd_bee.mp3", false, false);
+	SOUNDMANAGER->addSound("04.blast", "sound/snd_blast.mp3", false, false);
+	SOUNDMANAGER->addSound("05.bonse", "sound/snd_bonse.mp3", false, false);
+	SOUNDMANAGER->addSound("06.boss", "sound/snd_boss.mp3", false, false);
+	SOUNDMANAGER->addSound("07.burning", "sound/snd_burning.mp3", true, false);
+	SOUNDMANAGER->addSound("08.challenge", "sound/snd_challenge.mp3", false, false);
+	SOUNDMANAGER->addSound("09.charms", "sound/snd_charms.mp3", false, false);
+	SOUNDMANAGER->addSound("10.click", "sound/snd_click.mp3", false, false);
+	SOUNDMANAGER->addSound("11.cursed", "sound/snd_cursed.mp3", false, false);
+	SOUNDMANAGER->addSound("12.death", "sound/snd_death.mp3", false, false);
+	SOUNDMANAGER->addSound("13.degrade", "sound/snd_degrade.mp3", false, false);
+	SOUNDMANAGER->addSound("14.descend", "sound/snd_descend.mp3", false, false);
+	SOUNDMANAGER->addSound("15.dewdrop", "sound/snd_dewdrop.mp3", false, false);
+	SOUNDMANAGER->addSound("16.door_open", "sound/snd_door_open.mp3", false, false);
+	SOUNDMANAGER->addSound("17.drink", "sound/snd_drink.mp3", false, false);
+	SOUNDMANAGER->addSound("18.eat", "sound/snd_eat.mp3", false, false);
+	SOUNDMANAGER->addSound("19.evoke", "sound/snd_evoke.mp3", false, false);
+	SOUNDMANAGER->addSound("20.falling", "sound/snd_falling.mp3", false, false);
+	SOUNDMANAGER->addSound("21.ghost", "sound/snd_ghost.mp3", false, false);
+	SOUNDMANAGER->addSound("22.gold", "sound/snd_gold.mp3", false, false);
+	SOUNDMANAGER->addSound("23.hit", "sound/snd_hit.mp3", false, false);
+	SOUNDMANAGER->addSound("24.item", "sound/snd_item.mp3", false, false);
+	SOUNDMANAGER->addSound("25.levelup", "sound/snd_levelup.mp3", false, false);
+	SOUNDMANAGER->addSound("26.lightning", "sound/snd_lightning.mp3", false, false);
+	SOUNDMANAGER->addSound("27.lullaby", "sound/snd_lullaby.mp3", false, false);
+	SOUNDMANAGER->addSound("28.mastery", "sound/snd_mastery.mp3", false, false);
+	SOUNDMANAGER->addSound("29.meld", "sound/snd_meld.mp3", false, false);
+	SOUNDMANAGER->addSound("30.mimic", "sound/snd_mimic.mp3", false, false);
+	SOUNDMANAGER->addSound("31.miss", "sound/snd_miss.mp3", false, false);
+	SOUNDMANAGER->addSound("32.plant", "sound/snd_plant.mp3", false, false);
+	SOUNDMANAGER->addSound("33.puff", "sound/snd_puff.mp3", false, false);
+	SOUNDMANAGER->addSound("34.ray", "sound/snd_ray.mp3", false, false);
+	SOUNDMANAGER->addSound("35.read", "sound/snd_read.mp3", false, false);
+	SOUNDMANAGER->addSound("36.rocks", "sound/snd_rocks.mp3", false, false);
+	SOUNDMANAGER->addSound("37.secret", "sound/snd_secret.mp3", false, false);
+	SOUNDMANAGER->addSound("38.shatter", "sound/snd_shatter.mp3", false, false);
+	SOUNDMANAGER->addSound("39.step", "sound/snd_step.mp3", false, false);
+	SOUNDMANAGER->addSound("40.teleport", "sound/snd_teleport.mp3", false, false);
+	SOUNDMANAGER->addSound("41.tomb", "sound/snd_tomb.mp3", false, false);
+	SOUNDMANAGER->addSound("42.trap", "sound/snd_trap.mp3", false, false);
+	SOUNDMANAGER->addSound("43.unlock", "sound/snd_unlock.mp3", false, false);
+	SOUNDMANAGER->addSound("44.water", "sound/snd_water.mp3", false, false);
+	SOUNDMANAGER->addSound("45.zap", "sound/snd_zap.mp3", false, false);
+	SOUNDMANAGER->addSound("46.main", "sound/bgm_background_main.mp3", true, true);
+	SOUNDMANAGER->addSound("47.game", "sound/bgm_background_game.mp3", true, true);
+	SOUNDMANAGER->addSound("48.map", "sound/bgm_background_map.mp3", true, true);
+
+
+
+	//=========================== S C E N E   M A N A G E R ============================
 	SCENEMANAGER->addScene("°ÔÀÓ¾À", new GameScene);
 	SCENEMANAGER->addScene("¸ŞÀÎ¸Ş´º¾À", new MainMenuScene);
 	SCENEMANAGER->addScene("¸ÊÅø¾À", new MapToolScene);
@@ -113,7 +167,7 @@ void mainGame::update(void)
 	gameNode::update();
 
 	SCENEMANAGER->update();
-
+	SOUNDMANAGER->update();
 }
 
 

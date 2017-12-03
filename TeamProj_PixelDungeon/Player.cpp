@@ -472,12 +472,15 @@ void Player::action_Attack()
 	//목표 몬스터 공격
 	if (_isEnemyTargeted)
 	{
-
 		// 데미지 주기 (임시)
 		_TargetEnemy->getDamaged(RND->getFromIntTo(3,3));
-		
+
+		SOUNDMANAGER->play("23.hit", 1.0);
+
 		//_TargetEnemy->setHP(_TargetEnemy->getHP() -RND->getFromIntTo(_playerStat.mindmg,_playerStat.maxdmg));
 		_isEnemyTargeted = false;
+
+		Sleep(120);
 	}
 }
 void Player::action_Scroll()
@@ -517,6 +520,8 @@ void Player::move()
 }
 void Player::getDamaged(int damage)
 {
+
+
 	if (RND->getFloat(1.0)<_playerStat.atk_lck)
 	{
 		//빗나감
@@ -527,6 +532,9 @@ void Player::getDamaged(int damage)
 		{
 			//방어
 			_playerStat.hp -= damage;
+
+			SOUNDMANAGER->play("23.hit", 1.0);
+
 		}
 		else
 		{
@@ -534,6 +542,7 @@ void Player::getDamaged(int damage)
 
 		}
 	}
+	Sleep(120);
 }
 void Player::mouseClickEvent()
 {
