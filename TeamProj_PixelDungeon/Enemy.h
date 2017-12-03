@@ -114,7 +114,7 @@ public:
 
 	//~A*
 
-
+	int getMyState() { return _myState; }
 
 
 

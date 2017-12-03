@@ -25,9 +25,9 @@ HRESULT Player::init(POINT point)
 	_playerStat.avd_lck = 0;
 	_playerStat.def = 0;
 	_playerStat.exp = 0;
-	_playerStat.hp = 100000000;
-	_playerStat.maxhp = 100000000;
-	_playerStat.hunger = 300;
+	_playerStat.hp = 250;
+	_playerStat.maxhp = 250;
+	_playerStat.hunger = 100;
 	_playerStat.lv = 1;
 	_playerStat.str = 3;
 
@@ -478,7 +478,7 @@ void Player::action_Attack()
 	if (_isEnemyTargeted)
 	{
 		attack = true;
-		test1 = true;
+		player_attack_dp = true;
 
 		// 데미지 주기 (임시)
 		_TargetEnemy->getDamaged(RND->getFromIntTo(3,3));
@@ -638,7 +638,15 @@ void Player::endTurn()
 	}
 	else if (_playerStat.hunger > 100)
 	{
-		_playerStat.hp++;
+		if (_playerStat.maxhp < 250)
+		{
+			_playerStat.hp++;
+		}
+
+		if (_playerStat.hp >= 250)
+		{
+			_playerStat.hp = _playerStat.maxhp;
+		}
 	}
 
 	//턴 종료

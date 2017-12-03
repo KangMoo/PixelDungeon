@@ -17,7 +17,6 @@ UI::~UI()
 
 HRESULT UI::init()
 {
-
 	_camera = _player->getPoint();
 
 	IMAGEMANAGER->addImage("status_pane", "Img/UI/status_pane.bmp", 384, 192, true, RGB(255, 0, 255));
@@ -70,11 +69,18 @@ HRESULT UI::init()
 	//타일 선택
 	IMAGEMANAGER->addImage("tile_select", "Img/UI/tile_select.bmp", 32, 32, true, RGB(255, 0, 255));
 
+	//상태이상
+	IMAGEMANAGER->addFrameImage("condition", "Img/UI/condition.bmp", 18, 8, 2, 1, true, RGB(255, 0, 255));
+
+	//몬스터 대가리
+	IMAGEMANAGER->addImage("monster_ui", "Img/UI/monster.bmp", 32, 32, true, RGB(255, 0, 255));
+
 	//폰트
 	IMAGEMANAGER->addFrameImage("font", "Img/UI/numberfont.bmp", 130, 19, 10, 1, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("font_green", "Img/UI/numberfontgreen.bmp", 130, 19, 10, 1, true, RGB(255, 0, 255)); //녹색
 	IMAGEMANAGER->addFrameImage("font_red", "Img/UI/numberfontred.bmp", 130, 19, 10, 1, true, RGB(255, 0, 255)); //빨강
 	IMAGEMANAGER->addFrameImage("font_orange", "Img/UI/numberfontorange.bmp", 130, 19, 10, 1, true, RGB(255, 0, 255)); //주황
+	IMAGEMANAGER->addFrameImage("font_yellow", "Img/UI/numberfontyellow.bmp", 130, 19, 10, 1, true, RGB(255, 0, 255)); //노란색
 	IMAGEMANAGER->addFrameImage("special_font", "Img/UI/specialfont.bmp", 36, 19, 3, 1, true, RGB(255, 0, 255)); //특수문자
 
 	_backPackRect = RectMake(437, WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight(), 72, (WINSIZEY - IMAGEMANAGER->findImage("toolbar")->getFrameHeight()));
@@ -165,11 +171,11 @@ void UI::draw(POINT camera)
 		p_attack_font += 0.01f;
 		p_attack_font_time += 1;
 
-		if (_player->test1 == true)
+		if (_player->player_attack_dp == true)
 		{
 			Savepos.x = ((_ptMouse.x / TILESIZE) * TILESIZE) + 10;
 			Savepos.y = ((_ptMouse.y / TILESIZE) * TILESIZE) - 20;
-			_player->test1 = false;
+			_player->player_attack_dp = false;
 		}
 
 		if (_player->getStat().str < 10)
@@ -235,13 +241,17 @@ void UI::draw(POINT camera)
 	//Rectangle(getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Special_Button")->getFrameWidth(), 380, (WINSIZEX - IMAGEMANAGER->findImage("Special_Button")->getFrameWidth()) + IMAGEMANAGER->findImage("Special_Button")->getFrameWidth(), 380 + IMAGEMANAGER->findImage("Special_Button")->getFrameHeight());
 
 //if (/*몬스터가 근처에 있을시*/)
-	IMAGEMANAGER->render("Target_button", getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), 460);
+	//IMAGEMANAGER->render("Target_button", getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), 460);
 	//Rectangle(getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), 460, (WINSIZEX - IMAGEMANAGER->findImage("Target_button")->getFrameWidth()) + IMAGEMANAGER->findImage("Target_button")->getFrameWidth(), 460 + IMAGEMANAGER->findImage("Target_button")->getFrameHeight());
 
 
 //Rectangle(getMemDC(), 5, 5, 85,88);
 
-
+	if (_em->getenemyNumber() >= 1)
+	{
+		IMAGEMANAGER->render("monster_ui", getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Monster_Display")->getFrameWidth() + 8, 48);
+		IMAGEMANAGER->frameRender("font", getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Monster_Display")->getFrameWidth() + 48, 54, _em->getenemyNumber(), 0);
+	}
 
 	//
 	//if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && (TIMEMANAGER->getWorldTime() - _interface_button_timer1) > 0.3 && _selectInterface == INTERFACEMENU_END && !_player->getIsPlayerMoving())
@@ -600,7 +610,11 @@ void UI::BackPack()
 
 		int _ix = ((WINSIZEX / 2 - (IMAGEMANAGER->findImage("backpack")->getFrameWidth() / 2)) + 35) + (Line % 6) * 92;
 		int _iy = ((WINSIZEX / 2 - (IMAGEMANAGER->findImage("backpack")->getFrameWidth() / 2)) + 30) + (Line / 6) * 92;
-		
+
+
+		//돈
+		IMAGEMANAGER->findImage("money")->render(getMemDC(),650, 75);
+
 		_inventory[Line].inventoryRect = RectMake(_ix, _iy, 90, 90);
 		Rectangle(getMemDC(), _ix, _iy, _ix + 90, _iy + 90);
 

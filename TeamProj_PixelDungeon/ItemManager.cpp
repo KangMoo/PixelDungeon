@@ -49,6 +49,10 @@ HRESULT ItemManager::init()
 
 	//==================================================
 	setItemToBag(NAME_EMERGENCY);
+	setItemToBag(NAME_EMERGENCY);
+	setItemToBag(NAME_EMERGENCY);
+	setItemToBag(NAME_EMERGENCY);
+	setItemToBag(NAME_EMERGENCY);
 	setItemToBag(NAME_OLD_SHORT_SWORD, false, false, 9, 1);
 	setItemToBag(NAME_CLOTH,false,false,6,1);
 	setItemToBag(NAME_NORMAL, false, false, 3, 1);
@@ -61,6 +65,16 @@ HRESULT ItemManager::init()
 	setItemToBag(NAME_FROZEN);
 	setItemToBag(NAME_FROZEN);
 	setItemToBag(NAME_FROZEN);
+
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_HEAL);
+	setItemToBag(NAME_HEAL);
 
 	setItemToBag(NAME_LIQUID_FIRE);
 	setItemToBag(NAME_LIQUID_FIRE);
