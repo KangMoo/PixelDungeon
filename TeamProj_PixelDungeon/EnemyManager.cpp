@@ -91,16 +91,20 @@ void EnemyManager::action()
 	if (_actionCount == 0)
 	{
 		//첫번째 몬스터에게 턴 넘김
-		_vEnemy[_actionCount]->setAction(true);
+		if (_vEnemy[_actionCount]->getFloor() == _map->getCurStageNum()) {
+			_vEnemy[_actionCount]->setAction(true);
+		}
 		//다음차례 몬스터 번호 저장
 		_actionCount++;
+		
 	}
 	else if (_vEnemy[_actionCount - 1]->getAction() == false && _actionCount < _vEnemy.size())	//전 차례의 몬스터 행동이 끝났으면
 	{
 		//다음차례 몬스터에게 턴 넘김
 
-		_vEnemy[_actionCount]->setAction(true);
-		//다음차례 몬스터 번호 저장
+		if (_vEnemy[_actionCount]->getFloor() == _map->getCurStageNum()) {
+			_vEnemy[_actionCount]->setAction(true);
+		}//다음차례 몬스터 번호 저장
 		_actionCount++;
 	}
 

@@ -480,6 +480,25 @@ void MapToolScene::render()
 		_paletSelected[0].img->alphaFrameRender(getMemDC(), _mapRect[_showTileIndex].rc.left, _mapRect[_showTileIndex].rc.top, _vPaletTile[_paletSelected[0].index].sourX, _vPaletTile[_paletSelected[0].index].sourY, 150);
 	}
 
+	if (KEYMANAGER->isStayKeyDown(VK_LSHIFT)) {
+
+		for (int i = 0; i < _vMapTile.size(); i++) {
+			if (_vMapTile[i].destX - _cameraX < 0 || _vMapTile[i].destY - _cameraY < 0 ||
+				_vMapTile[i].destX - _cameraX >= GRIDX || _vMapTile[i].destY - _cameraY >= GRIDY) continue;
+
+			int index = _vMapTile[i].destX - _cameraX + (_vMapTile[i].destY - _cameraY) * GRIDX;
+
+			int destX = _mapRect[index].rc.left;
+			int destY = _mapRect[index].rc.top;
+
+			char page[128];
+			sprintf(page, "%d,%d", _vMapTile[i].destX, _vMapTile[i].destY);
+			TextOut(getMemDC(), destX+ 3, destY + 3, page, strlen(page));
+
+
+		}
+	
+	}
 
 	//선택 내용 색칠 등
 
@@ -891,6 +910,8 @@ void MapToolScene::load()
 	//기존 타일 삭제
 	_vMapTile.clear();
 	_vDecoTile.clear();
+	_vObj.clear();
+	_vMon.clear();
 
 	//xml 로드
 	XMLDocument xmlDoc;

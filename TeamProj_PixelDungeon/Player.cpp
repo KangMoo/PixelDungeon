@@ -481,7 +481,7 @@ void Player::action_Attack()
 		player_attack_dp = true;
 
 		// 데미지 주기 (임시)
-		_TargetEnemy->getDamaged(RND->getFromIntTo(3,3));
+		_TargetEnemy->getDamaged(RND->getFromIntTo(10,10));
 
 		SOUNDMANAGER->play("23.hit", 1.0);
 

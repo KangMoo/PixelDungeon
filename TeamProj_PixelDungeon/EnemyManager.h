@@ -80,5 +80,13 @@ public:
 
 	//¾È³ç ³ª¾ß
 	int getenemyAtion(int enemyNumber) { return _vEnemy[enemyNumber]->getMyState(); }
-	int getenemyNumber() { return enemynumber = _vEnemy.size(); }
+	int getenemyNumber() {
+		int count = 0;
+		for (int i = 0; i < _vEnemy.size(); i++) {
+			if (_vEnemy[i]->getFloor() == _map->getCurStageNum())
+				count++;
+
+		}
+		return count;
+	}
 };

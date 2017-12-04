@@ -1138,87 +1138,6 @@
             <imgNum>0</imgNum>
         </tile>
         <tile>
-            <destX>20</destX>
-            <destY>27</destY>
-            <sourX>4</sourX>
-            <sourY>6</sourY>
-            <obj>0</obj>
-            <terrain>97</terrain>
-            <imgNum>0</imgNum>
-        </tile>
-        <tile>
-            <destX>21</destX>
-            <destY>27</destY>
-            <sourX>4</sourX>
-            <sourY>6</sourY>
-            <obj>0</obj>
-            <terrain>97</terrain>
-            <imgNum>0</imgNum>
-        </tile>
-        <tile>
-            <destX>22</destX>
-            <destY>27</destY>
-            <sourX>4</sourX>
-            <sourY>6</sourY>
-            <obj>0</obj>
-            <terrain>97</terrain>
-            <imgNum>0</imgNum>
-        </tile>
-        <tile>
-            <destX>23</destX>
-            <destY>27</destY>
-            <sourX>4</sourX>
-            <sourY>6</sourY>
-            <obj>0</obj>
-            <terrain>97</terrain>
-            <imgNum>0</imgNum>
-        </tile>
-        <tile>
-            <destX>20</destX>
-            <destY>26</destY>
-            <sourX>4</sourX>
-            <sourY>6</sourY>
-            <obj>0</obj>
-            <terrain>97</terrain>
-            <imgNum>0</imgNum>
-        </tile>
-        <tile>
-            <destX>20</destX>
-            <destY>25</destY>
-            <sourX>4</sourX>
-            <sourY>6</sourY>
-            <obj>0</obj>
-            <terrain>97</terrain>
-            <imgNum>0</imgNum>
-        </tile>
-        <tile>
-            <destX>21</destX>
-            <destY>25</destY>
-            <sourX>4</sourX>
-            <sourY>6</sourY>
-            <obj>0</obj>
-            <terrain>97</terrain>
-            <imgNum>0</imgNum>
-        </tile>
-        <tile>
-            <destX>22</destX>
-            <destY>25</destY>
-            <sourX>4</sourX>
-            <sourY>6</sourY>
-            <obj>0</obj>
-            <terrain>97</terrain>
-            <imgNum>0</imgNum>
-        </tile>
-        <tile>
-            <destX>23</destX>
-            <destY>25</destY>
-            <sourX>4</sourX>
-            <sourY>6</sourY>
-            <obj>0</obj>
-            <terrain>97</terrain>
-            <imgNum>0</imgNum>
-        </tile>
-        <tile>
             <destX>19</destX>
             <destY>26</destY>
             <sourX>0</sourX>
@@ -4369,24 +4288,6 @@
             <imgNum>2</imgNum>
         </tile>
         <tile>
-            <destX>23</destX>
-            <destY>3</destY>
-            <sourX>6</sourX>
-            <sourY>10</sourY>
-            <obj>0</obj>
-            <terrain>97</terrain>
-            <imgNum>0</imgNum>
-        </tile>
-        <tile>
-            <destX>24</destX>
-            <destY>3</destY>
-            <sourX>6</sourX>
-            <sourY>10</sourY>
-            <obj>0</obj>
-            <terrain>97</terrain>
-            <imgNum>0</imgNum>
-        </tile>
-        <tile>
             <destX>17</destX>
             <destY>3</destY>
             <sourX>4</sourX>
@@ -4591,6 +4492,105 @@
             <sourY>4</sourY>
             <obj>0</obj>
             <terrain>7</terrain>
+            <imgNum>0</imgNum>
+        </tile>
+        <tile>
+            <destX>20</destX>
+            <destY>25</destY>
+            <sourX>4</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+            <imgNum>0</imgNum>
+        </tile>
+        <tile>
+            <destX>21</destX>
+            <destY>25</destY>
+            <sourX>4</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+            <imgNum>0</imgNum>
+        </tile>
+        <tile>
+            <destX>22</destX>
+            <destY>25</destY>
+            <sourX>4</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+            <imgNum>0</imgNum>
+        </tile>
+        <tile>
+            <destX>23</destX>
+            <destY>25</destY>
+            <sourX>4</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+            <imgNum>0</imgNum>
+        </tile>
+        <tile>
+            <destX>20</destX>
+            <destY>26</destY>
+            <sourX>4</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+            <imgNum>0</imgNum>
+        </tile>
+        <tile>
+            <destX>20</destX>
+            <destY>27</destY>
+            <sourX>4</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+            <imgNum>0</imgNum>
+        </tile>
+        <tile>
+            <destX>21</destX>
+            <destY>27</destY>
+            <sourX>4</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+            <imgNum>0</imgNum>
+        </tile>
+        <tile>
+            <destX>22</destX>
+            <destY>27</destY>
+            <sourX>4</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+            <imgNum>0</imgNum>
+        </tile>
+        <tile>
+            <destX>23</destX>
+            <destY>27</destY>
+            <sourX>4</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+            <imgNum>0</imgNum>
+        </tile>
+        <tile>
+            <destX>23</destX>
+            <destY>3</destY>
+            <sourX>4</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
+            <imgNum>0</imgNum>
+        </tile>
+        <tile>
+            <destX>24</destX>
+            <destY>3</destY>
+            <sourX>4</sourX>
+            <sourY>6</sourY>
+            <obj>0</obj>
+            <terrain>99</terrain>
             <imgNum>0</imgNum>
         </tile>
     </TileList>
@@ -4805,13 +4805,13 @@
         </tile>
     </DecoList>
     <ObjList>
-        <size>2</size>
+        <size>19</size>
         <obj>
-            <destX>14</destX>
-            <destY>26</destY>
+            <destX>24</destX>
+            <destY>3</destY>
             <sourX>1</sourX>
             <sourY>1</sourY>
-            <obj>48</obj>
+            <obj>80</obj>
             <imgNum>0</imgNum>
         </obj>
         <obj>
@@ -4821,6 +4821,142 @@
             <sourY>1</sourY>
             <obj>48</obj>
             <imgNum>0</imgNum>
+        </obj>
+        <obj>
+            <destX>13</destX>
+            <destY>12</destY>
+            <sourX>0</sourX>
+            <sourY>2</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>15</destX>
+            <destY>27</destY>
+            <sourX>3</sourX>
+            <sourY>1</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>15</destX>
+            <destY>28</destY>
+            <sourX>3</sourX>
+            <sourY>1</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>17</destX>
+            <destY>28</destY>
+            <sourX>3</sourX>
+            <sourY>1</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>16</destX>
+            <destY>28</destY>
+            <sourX>3</sourX>
+            <sourY>1</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>17</destX>
+            <destY>27</destY>
+            <sourX>3</sourX>
+            <sourY>1</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>17</destX>
+            <destY>26</destY>
+            <sourX>3</sourX>
+            <sourY>1</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>17</destX>
+            <destY>25</destY>
+            <sourX>3</sourX>
+            <sourY>1</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>15</destX>
+            <destY>25</destY>
+            <sourX>3</sourX>
+            <sourY>0</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>15</destX>
+            <destY>24</destY>
+            <sourX>3</sourX>
+            <sourY>0</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>14</destX>
+            <destY>25</destY>
+            <sourX>3</sourX>
+            <sourY>0</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>13</destX>
+            <destY>25</destY>
+            <sourX>3</sourX>
+            <sourY>0</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>13</destX>
+            <destY>24</destY>
+            <sourX>3</sourX>
+            <sourY>0</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>13</destX>
+            <destY>27</destY>
+            <sourX>3</sourX>
+            <sourY>0</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>14</destX>
+            <destY>27</destY>
+            <sourX>3</sourX>
+            <sourY>0</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>12</destX>
+            <destY>27</destY>
+            <sourX>3</sourX>
+            <sourY>0</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>12</destX>
+            <destY>28</destY>
+            <sourX>3</sourX>
+            <sourY>0</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
         </obj>
     </ObjList>
     <ItemList>

@@ -23,6 +23,7 @@ HRESULT Map::init()
 
 	_stageDataList.push_back("map/SavedData.xml");
 	_stageDataList.push_back("map/SavedData2.xml");
+	_stageDataList.push_back("map/SavedData7.xml");
 
 
 	_renderStartX = 0;
@@ -413,7 +414,7 @@ void Map::load(int stageNum) {
 		{
 			_em->setEnemy(PointMake(destX, destY), 5, stageNum);
 		}
-		else if (name == "0")
+		else if (name == "goo")
 		{
 			_em->setEnemy(PointMake(destX, destY), 4, stageNum);
 		}
@@ -613,7 +614,7 @@ void Map::setObj_OpenChest(int i) {
 			_im->setItemToField(drop, _vObj[i].destX * TILESIZE + TILESIZE * 0.5, _vObj[i].destY * TILESIZE + TILESIZE * 0.5);
 		}
 		else { // ╧л╧м©К(юс╫ц)
-			_em->setEnemy(PointMake(_vObj[i].destX, _vObj[i].destY), 1, 0);
+			_em->setEnemy(PointMake(_vObj[i].destX, _vObj[i].destY), 1, _curStageNum);
 		}
 	}
 }
@@ -637,6 +638,10 @@ void Map::setObj_ActivTrap(int i) {
 	_vObj[i].obj = (OBJ)((long)_vObj[i].obj ^ ATTRIBUTE_ACTIVE);
 
 	_map[_vObj[i].destX][_vObj[i].destY].terrain = (TERRAIN)((long)_map[_vObj[i].destX][_vObj[i].destY].terrain ^ ATTRIBUTE_HIDDEN);
+	
+	_player->getDamaged(10);
+	
+
 }
 
 
@@ -680,7 +685,7 @@ void Map::changeFloor(int floor, bool firstTime){
 		}
 	}
 	for (int i = 0; i < _vObj.size(); i++) {
-		if (_vObj[i].obj == OBJ_STAIR_START) {
+		if (_vObj[i].obj == OBJ_STAIR_START && _vObj[i].floor == floor) {
 			POINT playerPoint = PointMake(_vObj[i].destX*TILESIZE + TILESIZE / 2, _vObj[i].destY*TILESIZE + TILESIZE / 2);
 			_player->setPoint(playerPoint);
 			break;
@@ -714,16 +719,17 @@ void Map::playerTurnEnd() {
 	for (int i = 0; i < _vObj.size(); i++) {
 		if (playerX == _vObj[i].destX && playerY == _vObj[i].destY && _vObj[i].floor == _curStageNum) {
 			if (_vObj[i].obj == OBJ_STAIR_END && !isMoving) {
-				if (_curStageNum == 0)
+				changeFloor(_curStageNum + 1, false);
+				break;
+			}
+			if (_vObj[i].obj == OBJ_STAIR_START && !isMoving) {
+				if (_curStageNum != 0)
 				{
-					changeFloor(1, false);
-					break;
-				}
-				else if (_curStageNum == 1) {
-					changeFloor(0, false);
+					changeFloor(_curStageNum - 1, false);
 					break;
 				}
 			}
+			
 
 			if (_vObj[i].obj == OBJ_CHEST && !isMoving) {
 				setObj_OpenChest(i);
@@ -750,6 +756,5 @@ void Map::playerTurnEnd() {
 	if ((_map[playerX][playerY].terrain == TERRAIN_DOOR_CLOSED)) {
 		setTile_OpenDoor(playerX, playerY);
 	}
-
 
 }

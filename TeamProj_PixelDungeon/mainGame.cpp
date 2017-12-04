@@ -167,7 +167,6 @@ void mainGame::update(void)
 	gameNode::update();
 
 	SCENEMANAGER->update();
-
 	SOUNDMANAGER->update();
 }
 
