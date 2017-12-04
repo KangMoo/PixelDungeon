@@ -96,6 +96,38 @@ HRESULT ItemManager::init()
 	setItemToBag(NAME_LIGHTNING);
 	setItemToBag(NAME_COOKED_MEAT);
 
+	//================== S E T   I T E M =======================
+
+	setItemToField(NAME_UPGRADE, 29 * TILESIZE, 6 * TILESIZE, false, false, 0, 1, 2);
+	setItemToField(NAME_SPEAR, 34 * TILESIZE, 22 * TILESIZE, true, false, 0, 1, 2);
+	setItemToField(NAME_LEATHER, 13 * TILESIZE, 28 * TILESIZE, true, false, 0, 1, 2);
+	setItemToField(NAME_HEAL, 6 * TILESIZE,14 * TILESIZE, true, false, 0, 1, 2);
+	setItemToField(NAME_LIQUID_FIRE, 14 * TILESIZE, 12 * TILESIZE, true, false, 0, 1, 2);
+	setItemToField(NAME_EMERGENCY, 10 * TILESIZE, 5 * TILESIZE, true, false, 0, 2, 2);
+	setItemToField(NAME_UNKNOWN_MEAT, 28 * TILESIZE, 29 * TILESIZE, true, false, 0, 1, 2);
+	setItemToField(NAME_UNKNOWN_MEAT, 8 * TILESIZE, 20 * TILESIZE, true, false, 0, 1, 2);
+
+	setItemToField(NAME_UPGRADE, 8 * TILESIZE, 17 * TILESIZE, true, false, 0, 2, 3);
+	setItemToField(NAME_UPGRADE, 13 * TILESIZE, 12 * TILESIZE, true, false, 0, 1, 3);
+	setItemToField(NAME_UPGRADE, 3 * TILESIZE, 12 * TILESIZE, true, false, 0, 1, 3);
+	setItemToField(NAME_SWORD, 5 * TILESIZE, 24 * TILESIZE, true, false, 1, 1, 3);
+	setItemToField(NAME_HEAL, 3 * TILESIZE, 8 * TILESIZE, true, false, 0, 1, 3);
+	setItemToField(NAME_HEAL, 11* TILESIZE, 5* TILESIZE, true, false, 0, 1, 3);
+	setItemToField(NAME_MAIL, 33* TILESIZE, 8* TILESIZE, true, false, 2, 1, 3);
+	setItemToField(NAME_MONEY, 34* TILESIZE, 21* TILESIZE, true, false, 0, 120, 3);
+	setItemToField(NAME_MONEY, 34* TILESIZE, 20* TILESIZE, true, false, 0, 200, 3);
+	setItemToField(NAME_MONEY, 32* TILESIZE, 20* TILESIZE, true, false, 0, 58, 3);
+	
+	setItemToField(NAME_BATTLE_AXE, 23 * TILESIZE, 1 * TILESIZE, true, false, 3, 1, 4);
+	setItemToField(NAME_UPGRADE, 25* TILESIZE, 2* TILESIZE, true, false, 0, 1, 4);
+	setItemToField(NAME_UPGRADE, 28* TILESIZE, 7* TILESIZE, true, false, 0, 1, 4);
+	setItemToField(NAME_HEAL, 27 * TILESIZE, 7* TILESIZE, true, false, 0, 1, 4);
+	setItemToField(NAME_UNKNOWN_MEAT, 15* TILESIZE, 5* TILESIZE, true, false, 0, 1, 4);
+	setItemToField(NAME_UNKNOWN_MEAT, 17* TILESIZE, 7* TILESIZE, true, false, 0, 1, 4);
+	setItemToField(NAME_EMERGENCY, 3 * TILESIZE, 14 * TILESIZE, true, false, 0, 1, 4);
+	setItemToField(NAME_UPGRADE, 13 * TILESIZE, 19 * TILESIZE, true, false, 0, 1, 4);
+
+
 	return S_OK;
 }
 void ItemManager::release()

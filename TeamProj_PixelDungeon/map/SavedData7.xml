@@ -4805,7 +4805,7 @@
         </tile>
     </DecoList>
     <ObjList>
-        <size>19</size>
+        <size>30</size>
         <obj>
             <destX>24</destX>
             <destY>3</destY>
@@ -4955,6 +4955,94 @@
             <destY>28</destY>
             <sourX>3</sourX>
             <sourY>0</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>11</destX>
+            <destY>3</destY>
+            <sourX>7</sourX>
+            <sourY>5</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>12</destX>
+            <destY>3</destY>
+            <sourX>7</sourX>
+            <sourY>5</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>11</destX>
+            <destY>4</destY>
+            <sourX>7</sourX>
+            <sourY>5</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>12</destX>
+            <destY>4</destY>
+            <sourX>7</sourX>
+            <sourY>5</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>11</destX>
+            <destY>5</destY>
+            <sourX>7</sourX>
+            <sourY>5</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>12</destX>
+            <destY>5</destY>
+            <sourX>7</sourX>
+            <sourY>5</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>11</destX>
+            <destY>6</destY>
+            <sourX>7</sourX>
+            <sourY>5</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>12</destX>
+            <destY>6</destY>
+            <sourX>7</sourX>
+            <sourY>5</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>11</destX>
+            <destY>7</destY>
+            <sourX>7</sourX>
+            <sourY>5</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>12</destX>
+            <destY>7</destY>
+            <sourX>7</sourX>
+            <sourY>5</sourY>
+            <obj>65536</obj>
+            <imgNum>3</imgNum>
+        </obj>
+        <obj>
+            <destX>5</destX>
+            <destY>2</destY>
+            <sourX>7</sourX>
+            <sourY>5</sourY>
             <obj>65536</obj>
             <imgNum>3</imgNum>
         </obj>

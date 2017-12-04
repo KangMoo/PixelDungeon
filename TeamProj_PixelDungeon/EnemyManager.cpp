@@ -30,6 +30,7 @@ HRESULT EnemyManager::init()
 	//setEnemy(PointMake(6, 6), 5, 0);
 	//setEnemy(PointMake(12, 12), 1,1);
 	setEnemy(PointMake(12, 12), 2, 1);
+	setEnemy(PointMake(30, 5), 4, 5);
 
 	//setEnemy(PointMake(TILESIZE*14, TILESIZE*13), 0);
 	//setEnemy(PointMake(TILESIZE*13, TILESIZE*11), 0);

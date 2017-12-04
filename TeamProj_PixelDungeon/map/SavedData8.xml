@@ -4931,7 +4931,7 @@
         </tile>
     </DecoList>
     <ObjList>
-        <size>5</size>
+        <size>6</size>
         <obj>
             <destX>25</destX>
             <destY>10</destY>
@@ -4972,12 +4972,20 @@
             <obj>48</obj>
             <imgNum>0</imgNum>
         </obj>
+        <obj>
+            <destX>23</destX>
+            <destY>3</destY>
+            <sourX>0</sourX>
+            <sourY>1</sourY>
+            <obj>48</obj>
+            <imgNum>0</imgNum>
+        </obj>
     </ObjList>
     <ItemList>
         <size>0</size>
     </ItemList>
     <MonsterList>
-        <size>9</size>
+        <size>8</size>
         <monster>
             <destX>7</destX>
             <destY>7</destY>
@@ -4991,11 +4999,6 @@
         <monster>
             <destX>15</destX>
             <destY>7</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>23</destX>
-            <destY>3</destY>
             <name>gnoll</name>
         </monster>
         <monster>
