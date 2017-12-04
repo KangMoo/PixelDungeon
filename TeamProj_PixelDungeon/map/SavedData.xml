@@ -7748,7 +7748,7 @@
         </tile>
     </DecoList>
     <ObjList>
-        <size>40</size>
+        <size>39</size>
         <obj>
             <destX>5</destX>
             <destY>6</destY>
@@ -7808,14 +7808,6 @@
         <obj>
             <destX>13</destX>
             <destY>4</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>1</obj>
-            <imgNum>1</imgNum>
-        </obj>
-        <obj>
-            <destX>13</destX>
-            <destY>13</destY>
             <sourX>0</sourX>
             <sourY>0</sourY>
             <obj>1</obj>
@@ -8055,7 +8047,7 @@
         </obj>
         <obj>
             <destX>13</destX>
-            <destY>13</destY>
+            <destY>14</destY>
             <sourX>4</sourX>
             <sourY>3</sourY>
             <obj>65536</obj>
@@ -8063,11 +8055,11 @@
         </obj>
         <obj>
             <destX>13</destX>
-            <destY>14</destY>
-            <sourX>4</sourX>
-            <sourY>3</sourY>
-            <obj>65536</obj>
-            <imgNum>3</imgNum>
+            <destY>13</destY>
+            <sourX>0</sourX>
+            <sourY>0</sourY>
+            <obj>1</obj>
+            <imgNum>1</imgNum>
         </obj>
     </ObjList>
     <ItemList>

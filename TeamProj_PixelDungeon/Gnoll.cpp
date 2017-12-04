@@ -396,7 +396,7 @@ void Gnoll::action()
 		}
 		else
 		{
-			//적을 발견했으면 A*를 이용해 최적루트로 이동한다
+			//적을 발견했으면 A*를 이용해 최적루트로 이FF동한다
 			//바로 옆칸이면 공격 가능하다
 			int x = _point.x - _player->getPoint().x / TILESIZE;
 			int y = _point.y - _player->getPoint().y / TILESIZE;

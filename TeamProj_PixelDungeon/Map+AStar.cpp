@@ -225,7 +225,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			//몬스터가 있는타일 제외
 			for (auto i : _em->getEnemyVector())
 			{
-				if ((v.x - 1 == i->getPoint().x / TILESIZE && v.y == i->getPoint().y / TILESIZE))
+				if ((v.x - 1 == i->getPoint().x / TILESIZE && v.y == i->getPoint().y / TILESIZE) && i->getFloor() == getCurStageNum())
 				{
 					addlist = false;
 				}
@@ -250,7 +250,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			//몬스터가 있는타일 제외
 			for (auto i : _em->getEnemyVector())
 			{
-				if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y == i->getPoint().y / TILESIZE))
+				if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y == i->getPoint().y / TILESIZE) && i->getFloor() == getCurStageNum())
 				{
 					addlist = false;
 				}
@@ -276,7 +276,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			//몬스터가 있는타일 제외
 			for (auto i : _em->getEnemyVector())
 			{
-				if ((v.x == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE))
+				if ((v.x == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE) && i->getFloor() == getCurStageNum())
 				{
 					addlist = false;
 				}
@@ -302,7 +302,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			//몬스터가 있는타일 제외
 			for (auto i : _em->getEnemyVector())
 			{
-				if ((v.x == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE))
+				if ((v.x == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE) && i->getFloor() == getCurStageNum())
 				{
 					addlist = false;
 				}
@@ -330,7 +330,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			//몬스터가 있는타일 제외
 			for (auto i : _em->getEnemyVector())
 			{
-				if ((v.x - 1 == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE))
+				if ((v.x - 1 == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE) && i->getFloor() == getCurStageNum())
 				{
 					addlist = false;
 				}
@@ -355,7 +355,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			//몬스터가 있는타일 제외
 			for (auto i : _em->getEnemyVector())
 			{
-				if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE))
+				if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE) && i->getFloor() == getCurStageNum())
 				{
 					addlist = false;
 				}
@@ -380,7 +380,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			//몬스터가 있는타일 제외
 			for (auto i : _em->getEnemyVector())
 			{
-				if ((v.x - 1 == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE))
+				if ((v.x - 1 == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE) && i->getFloor() == getCurStageNum())
 				{
 					addlist = false;
 				}
@@ -404,7 +404,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			//몬스터가 있는타일 제외
 			for (auto i : _em->getEnemyVector())
 			{
-				if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE))
+				if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE) && i->getFloor() == getCurStageNum())
 				{
 					addlist = false;
 				}
@@ -452,7 +452,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			//몬스터가 있는타일 제외
 			for (auto i : _em->getEnemyVector())
 			{
-				if ((v.x - 1 == i->getPoint().x / TILESIZE && v.y == i->getPoint().y / TILESIZE))
+				if ((v.x - 1 == i->getPoint().x / TILESIZE && v.y == i->getPoint().y / TILESIZE) && i->getFloor() == getCurStageNum())
 				{
 					addlist = false;
 				}
@@ -495,7 +495,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			//몬스터가 있는타일 제외
 			for (auto i : _em->getEnemyVector())
 			{
-				if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y == i->getPoint().y / TILESIZE))
+				if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y == i->getPoint().y / TILESIZE) && i->getFloor() == getCurStageNum())
 				{
 					addlist = false;
 				}
@@ -536,7 +536,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			//몬스터가 있는타일 제외
 			for (auto i : _em->getEnemyVector())
 			{
-				if ((v.x == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE))
+				if ((v.x == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE) && i->getFloor() == getCurStageNum())
 				{
 					addlist = false;
 				}
@@ -577,7 +577,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			//몬스터가 있는타일 제외
 			for (auto i : _em->getEnemyVector())
 			{
-				if ((v.x == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE))
+				if ((v.x == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE) && i->getFloor() == getCurStageNum())
 				{
 					addlist = false;
 				}
@@ -621,7 +621,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			//몬스터가 있는타일 제외
 			for (auto i : _em->getEnemyVector())
 			{
-				if ((v.x - 1 == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE))
+				if ((v.x - 1 == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE) && i->getFloor() == getCurStageNum())
 				{
 					addlist = false;
 				}
@@ -662,7 +662,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			//몬스터가 있는타일 제외
 			for (auto i : _em->getEnemyVector())
 			{
-				if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE))
+				if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y - 1 == i->getPoint().y / TILESIZE) && i->getFloor() == getCurStageNum())
 				{
 					addlist = false;
 				}
@@ -703,7 +703,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			//몬스터가 있는타일 제외
 			for (auto i : _em->getEnemyVector())
 			{
-				if ((v.x - 1 == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE))
+				if ((v.x - 1 == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE) && i->getFloor() == getCurStageNum())
 				{
 					addlist = false;
 				}
@@ -745,7 +745,7 @@ void Map::add_eightway(vertex v, POINT goalPoint)
 			//몬스터가 있는타일 제외
 			for (auto i : _em->getEnemyVector())
 			{
-				if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE))
+				if ((v.x + 1 == i->getPoint().x / TILESIZE && v.y + 1 == i->getPoint().y / TILESIZE) && i->getFloor() == getCurStageNum())
 				{
 					addlist = false;
 				}

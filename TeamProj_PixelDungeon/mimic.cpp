@@ -257,7 +257,7 @@ void Mimic::action()
 		return;
 	}
 
-	if (KEYMANAGER->isOnceKeyDown('E')) getDamaged(500);
+	//if (KEYMANAGER->isOnceKeyDown('E')) getDamaged(500);
 
 	//if (_myState == ENEMYSTATE_SLEEP)
 	//{

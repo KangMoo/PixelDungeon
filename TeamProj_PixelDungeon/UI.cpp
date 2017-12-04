@@ -247,11 +247,9 @@ void UI::draw(POINT camera)
 
 //Rectangle(getMemDC(), 5, 5, 85,88);
 
-	if (_em->getenemyNumber() >= 1)
-	{
 		IMAGEMANAGER->render("monster_ui", getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Monster_Display")->getFrameWidth() + 8, 48);
 		IMAGEMANAGER->frameRender("font", getMemDC(), WINSIZEX - IMAGEMANAGER->findImage("Monster_Display")->getFrameWidth() + 48, 54, _em->getenemyNumber(), 0);
-	}
+	
 
 	//
 	//if (KEYMANAGER->isStayKeyDown(VK_LBUTTON) && (TIMEMANAGER->getWorldTime() - _interface_button_timer1) > 0.3 && _selectInterface == INTERFACEMENU_END && !_player->getIsPlayerMoving())

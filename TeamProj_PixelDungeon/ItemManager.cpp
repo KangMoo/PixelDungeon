@@ -2176,7 +2176,7 @@ void ItemManager::keyControl()
 
 		}
 	}
-	if (KEYMANAGER->isOnceKeyDown('W'))
+	if (KEYMANAGER->isOnceKeyDown('E'))
 	{
 		for (_viBag = _vBag.begin(); _viBag != _vBag.end();)
 		{

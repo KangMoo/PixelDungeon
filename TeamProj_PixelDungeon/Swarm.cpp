@@ -118,7 +118,7 @@ HRESULT Swarm::init(POINT point, int currntHp, int floor, int drop)
 	_statistics.lv = 1;
 	_statistics.maxLv = 10;
 	_statistics.exp = 30;
-	_statistics.hp = 20;
+	_statistics.hp = 80;
 	_currntHp = currntHp;
 	_statistics.avd_lck = 5;
 	_statistics.def = 0;
@@ -513,9 +513,9 @@ void Swarm::draw(POINT camera)
 	{
 		if (_map->getTile(_pointX / TILESIZE, _pointY / TILESIZE).tileview == TILEVIEW_ALL)
 			_image->alphaFrameRender(getMemDC(), _hitBox.left + camera.x, _hitBox.top + camera.y, _deadAlpha);
-		char string[128];
-		sprintf_s(string, "%d", _statistics.hp);
-		TextOut(getMemDC(), 300, 300, string, strlen(string));
+		//char string[128];
+		//sprintf_s(string, "%d", _statistics.hp);
+		//TextOut(getMemDC(), 300, 300, string, strlen(string));
 	}
 	//RectangleMakeCenter(getMemDC(), _pointX + camera.x, _pointY + camera.y, _currntHp, _currntHp);
 	//if(_findPlayer)
