@@ -92,9 +92,7 @@ void EnemyManager::action()
 	if (_actionCount == 0)
 	{
 		//첫번째 몬스터에게 턴 넘김
-		if (_vEnemy[_actionCount]->getFloor() == _map->getCurStageNum()) {
 			_vEnemy[_actionCount]->setAction(true);
-		}
 		//다음차례 몬스터 번호 저장
 		_actionCount++;
 		
@@ -103,9 +101,7 @@ void EnemyManager::action()
 	{
 		//다음차례 몬스터에게 턴 넘김
 
-		if (_vEnemy[_actionCount]->getFloor() == _map->getCurStageNum()) {
 			_vEnemy[_actionCount]->setAction(true);
-		}//다음차례 몬스터 번호 저장
 		_actionCount++;
 	}
 
