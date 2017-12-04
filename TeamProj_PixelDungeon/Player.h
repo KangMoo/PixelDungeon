@@ -37,6 +37,7 @@ private:
 	bool _keepMove;
 	bool _isUsingUI;
 	bool _isEnemyTargeted;
+	int _curDmg;
 	
 	//test~
 	vector<TILE> tileCanSee;
@@ -121,6 +122,9 @@ public:
 	void setUiAddressLink(UI* ui) { _ui = ui; }
 	void setItemManagerAddressLink(ItemManager* im) { _im = im; }
 	void setChangeFoor();
+	
+	int getCurDmg() { return _curDmg; }
+
 	Player();
 	~Player();
 

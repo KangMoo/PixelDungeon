@@ -178,17 +178,17 @@ void UI::draw(POINT camera)
 			_player->player_attack_dp = false;
 		}
 
-		if (_player->getStat().str < 10)
+		if (_player->getCurDmg()< 10)
 		{
-			IMAGEMANAGER->frameRender("font_red", getMemDC(), Savepos.x, Savepos.y - p_attack_font_time, _player->getStat().str, 0);
+			IMAGEMANAGER->frameRender("font_red", getMemDC(), Savepos.x, Savepos.y - p_attack_font_time, _player->getCurDmg(), 0);
 		}
 
 		for (int damage = 10; damage < 100; damage += 10)
 		{
-			if (_player->getStat().str >= damage)
+			if (_player->getCurDmg()>= damage)
 			{
-				IMAGEMANAGER->frameRender("font_red", getMemDC(), (Savepos.x - 6), Savepos.y - p_attack_font_time, damage / 10, 0);
-				IMAGEMANAGER->frameRender("font_red", getMemDC(), (Savepos.x + 6), Savepos.y - p_attack_font_time, _player->getStat().str - damage, 0);
+				IMAGEMANAGER->frameRender("font_red", getMemDC(), (Savepos.x - 6), Savepos.y - p_attack_font_time, _player->getCurDmg() / 10, 0);
+				IMAGEMANAGER->frameRender("font_red", getMemDC(), (Savepos.x + 6), Savepos.y - p_attack_font_time, _player->getCurDmg() - damage, 0);
 			}
 		}
 

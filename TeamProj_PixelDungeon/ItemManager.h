@@ -69,6 +69,7 @@ private:
 	bool _scrollIdentified[5];
 	bool _fire;
 	bool _frozen;
+	bool _rehearsal;
 
 public:
 	HRESULT init();

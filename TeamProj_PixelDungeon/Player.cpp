@@ -30,6 +30,10 @@ HRESULT Player::init(POINT point)
 	_playerStat.hunger = 100;
 	_playerStat.lv = 1;
 	_playerStat.str = 3;
+	_playerStat.mindef = 0;
+	_playerStat.maxdef = 0;
+	_playerStat.mindmg = 3;
+	_playerStat.maxdmg = 5;
 
 
 
@@ -481,7 +485,8 @@ void Player::action_Attack()
 		player_attack_dp = true;
 
 		// 데미지 주기 (임시)
-		_TargetEnemy->getDamaged(RND->getFromIntTo(3,3));
+		_curDmg = RND->getFromIntTo(_playerStat.mindmg, _playerStat.maxdmg);
+		_TargetEnemy->getDamaged(_curDmg);
 
 		SOUNDMANAGER->play("23.hit", 1.0);
 

@@ -23,7 +23,9 @@ HRESULT Map::init()
 
 	_stageDataList.push_back("map/SavedData.xml");
 	_stageDataList.push_back("map/SavedData2.xml");
-
+	_stageDataList.push_back("map/SavedData7.xml");
+	_stageDataList.push_back("map/SavedData6.xml");
+	_stageDataList.push_back("map/SavedData8.xml");
 
 	_renderStartX = 0;
 	_renderStartY = 0;
@@ -297,14 +299,14 @@ void Map::load(int stageNum) {
 		tile.floor = stageNum;
 		tile.tileview = TILEVIEW_NO;
 		
-		if (tile.terrain == TERRAIN_DOOR_CLOSED) {
-			TILE* newTile = _spareTile.find("HiddenDoor")->second;
-
-			tile.sourX = newTile->sourX;
-			tile.sourY = newTile->sourY;
-			tile.terrain = newTile->terrain;
-
-		}
+		//if (tile.terrain == TERRAIN_DOOR_CLOSED) {
+		//	TILE* newTile = _spareTile.find("HiddenDoor")->second;
+		//
+		//	tile.sourX = newTile->sourX;
+		//	tile.sourY = newTile->sourY;
+		//	tile.terrain = newTile->terrain;
+		//
+		//}
 
 
 		_vMapTile.push_back(tile);

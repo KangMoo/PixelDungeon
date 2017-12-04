@@ -49,6 +49,7 @@ HRESULT ItemManager::init()
 	}
 	//==================================================
 	_curMoney = 0;
+	_rehearsal = false;
 
 
 
@@ -104,6 +105,16 @@ void ItemManager::update()
 {
 	//=========================  S O U N D ============================
 	
+	//========================= T E S T ===============================
+	if (_map->getCurStageNum() == 2 && !_rehearsal)
+	{
+		_rehearsal = true;
+		_vBag.clear();
+		setItemToBag(NAME_OLD_SHORT_SWORD);
+		setItemToBag(NAME_CLOTH);
+		setItemToBag(NAME_EMERGENCY);
+		setItemToBag(NAME_DART, true, false, 0, 8);
+	}
 
 	//=================================================================
 

@@ -6677,7 +6677,7 @@
         </tile>
     </DecoList>
     <ObjList>
-        <size>1</size>
+        <size>3</size>
         <obj>
             <destX>21</destX>
             <destY>3</destY>
@@ -6686,11 +6686,97 @@
             <obj>80</obj>
             <imgNum>0</imgNum>
         </obj>
+        <obj>
+            <destX>8</destX>
+            <destY>16</destY>
+            <sourX>6</sourX>
+            <sourY>1</sourY>
+            <obj>1052672</obj>
+            <imgNum>0</imgNum>
+        </obj>
+        <obj>
+            <destX>33</destX>
+            <destY>15</destY>
+            <sourX>6</sourX>
+            <sourY>1</sourY>
+            <obj>1052672</obj>
+            <imgNum>0</imgNum>
+        </obj>
     </ObjList>
     <ItemList>
         <size>0</size>
     </ItemList>
     <MonsterList>
-        <size>0</size>
+        <size>14</size>
+        <monster>
+            <destX>4</destX>
+            <destY>9</destY>
+            <name>gnoll</name>
+        </monster>
+        <monster>
+            <destX>12</destX>
+            <destY>12</destY>
+            <name>rat</name>
+        </monster>
+        <monster>
+            <destX>14</destX>
+            <destY>16</destY>
+            <name>rat</name>
+        </monster>
+        <monster>
+            <destX>6</destX>
+            <destY>22</destY>
+            <name>rat</name>
+        </monster>
+        <monster>
+            <destX>17</destX>
+            <destY>25</destY>
+            <name>rat</name>
+        </monster>
+        <monster>
+            <destX>19</destX>
+            <destY>15</destY>
+            <name>crap</name>
+        </monster>
+        <monster>
+            <destX>19</destX>
+            <destY>11</destY>
+            <name>crap</name>
+        </monster>
+        <monster>
+            <destX>18</destX>
+            <destY>11</destY>
+            <name>crap</name>
+        </monster>
+        <monster>
+            <destX>19</destX>
+            <destY>4</destY>
+            <name>gnoll</name>
+        </monster>
+        <monster>
+            <destX>22</destX>
+            <destY>7</destY>
+            <name>gnoll</name>
+        </monster>
+        <monster>
+            <destX>27</destX>
+            <destY>9</destY>
+            <name>gnoll</name>
+        </monster>
+        <monster>
+            <destX>34</destX>
+            <destY>7</destY>
+            <name>gnoll</name>
+        </monster>
+        <monster>
+            <destX>29</destX>
+            <destY>15</destY>
+            <name>gnoll</name>
+        </monster>
+        <monster>
+            <destX>33</destX>
+            <destY>21</destY>
+            <name>swarm</name>
+        </monster>
     </MonsterList>
 </map>
