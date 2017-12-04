@@ -100,14 +100,6 @@ void Map::update()
 			}
 		}
 	}
-	if (KEYMANAGER->isOnceKeyDown('D')) {
-		for (int i = 0; i < _vObj.size(); i++) {
-			if ((_vObj[i].obj & ATTRIBUTE_CHEST) == ATTRIBUTE_CHEST)
-			{
-				setObj_OpenChest(i);
-			}
-		}
-	}
 
 	if (KEYMANAGER->isOnceKeyDown('Q')) {
 
@@ -116,6 +108,17 @@ void Map::update()
 				if (_map[playerX + i][playerY + j].terrain == TERRAIN_DOOR_LOCKED)
 				{
 					setTile_UnlockDoor(playerX + i, playerY + j);
+				}
+				if (_map[playerX + i][playerY + j].terrain == TERRAIN_OBJECT)
+				{
+					for (int k = 0; k < _vObj.size(); k++) {
+						if (_vObj[k].destX == playerX + i && _vObj[k].destY == playerY + j && _vObj[k].obj == OBJ_CHEST)
+						{
+							setObj_OpenChest(k);
+							break;
+						}
+					}
+
 				}
 			}
 		}
@@ -686,10 +689,19 @@ void Map::changeFloor(int floor, bool firstTime){
 		}
 	}
 	for (int i = 0; i < _vObj.size(); i++) {
-		if (_vObj[i].obj == OBJ_STAIR_START && _vObj[i].floor == floor) {
-			POINT playerPoint = PointMake(_vObj[i].destX*TILESIZE + TILESIZE / 2, _vObj[i].destY*TILESIZE + TILESIZE / 2);
-			_player->setPoint(playerPoint);
-			break;
+		if (_curStageNum <= floor) {
+			if (_vObj[i].obj == OBJ_STAIR_START && _vObj[i].floor == floor) {
+				POINT playerPoint = PointMake(_vObj[i].destX*TILESIZE + TILESIZE / 2, _vObj[i].destY*TILESIZE + TILESIZE / 2);
+				_player->setPoint(playerPoint);
+				break;
+			}
+		}
+		else {
+			if (_vObj[i].obj == OBJ_STAIR_END && _vObj[i].floor == floor) {
+				POINT playerPoint = PointMake(_vObj[i].destX*TILESIZE + TILESIZE / 2, _vObj[i].destY*TILESIZE + TILESIZE / 2);
+				_player->setPoint(playerPoint);
+				break;
+			}
 		}
 	}
 
@@ -720,8 +732,10 @@ void Map::playerTurnEnd() {
 	for (int i = 0; i < _vObj.size(); i++) {
 		if (playerX == _vObj[i].destX && playerY == _vObj[i].destY && _vObj[i].floor == _curStageNum) {
 			if (_vObj[i].obj == OBJ_STAIR_END && !isMoving) {
-				changeFloor(_curStageNum + 1, false);
-				break;
+				if (_curStageNum < _stageDataList.size()) {
+					changeFloor(_curStageNum + 1, false);
+					break;
+				}
 			}
 			if (_vObj[i].obj == OBJ_STAIR_START && !isMoving) {
 				if (_curStageNum != 0)
@@ -732,10 +746,10 @@ void Map::playerTurnEnd() {
 			}
 			
 
-			if (_vObj[i].obj == OBJ_CHEST && !isMoving) {
-				setObj_OpenChest(i);
-				break;
-			}
+			//if (_vObj[i].obj == OBJ_CHEST && !isMoving) {
+			//	setObj_OpenChest(i);
+			//	break;
+			//}
 
 			if ((_vObj[i].obj & ATTRIBUTE_WELL) == ATTRIBUTE_WELL && (_vObj[i].obj & ATTRIBUTE_ACTIVE) == ATTRIBUTE_ACTIVE && !isMoving) {
 				setObj_UseWell(i);

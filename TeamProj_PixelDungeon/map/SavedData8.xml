@@ -4977,7 +4977,7 @@
         <size>0</size>
     </ItemList>
     <MonsterList>
-        <size>9</size>
+        <size>8</size>
         <monster>
             <destX>7</destX>
             <destY>7</destY>
@@ -5016,11 +5016,6 @@
         <monster>
             <destX>25</destX>
             <destY>12</destY>
-            <name>rat</name>
-        </monster>
-        <monster>
-            <destX>28</destX>
-            <destY>9</destY>
             <name>rat</name>
         </monster>
     </MonsterList>
