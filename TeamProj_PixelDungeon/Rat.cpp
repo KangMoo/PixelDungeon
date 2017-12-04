@@ -305,8 +305,8 @@ void Rat::frameUpdate()
 			{
 				_currntFrameX = 0;
 				_myState = ENEMYSTATE_IDLE;
-				if (_myColor == BROWN)	_image = wIdle;
-				else if (_myColor == WHITE)_image = bIdle;
+				if (_myColor == BROWN)	_image = bIdle;
+				else if (_myColor == WHITE)_image = wIdle;
 				_action = false;
 			}
 			_image->setFrameX(_currntFrameX);

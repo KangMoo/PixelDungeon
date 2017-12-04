@@ -15,7 +15,15 @@ mainGame::~mainGame()
 HRESULT mainGame::init(void)
 {
 	gameNode::init(true);
-	
+
+	//=========================== S C E N E   M A N A G E R ============================
+	SCENEMANAGER->addScene("∞‘¿”æ¿", new GameScene);
+	SCENEMANAGER->addScene("∏ﬁ¿Œ∏ﬁ¥∫æ¿", new MainMenuScene);
+	SCENEMANAGER->addScene("∏ ≈¯æ¿", new MapToolScene);
+	SCENEMANAGER->changeScene("∏ﬁ¿Œ∏ﬁ¥∫æ¿");
+
+
+
 	IMAGEMANAGER->addFrameImage("mapTiles", "Img/Map/tiles_sewers.bmp", 0, 0, 512, 512, 16, 16, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("chest", "Img/Map/chest.bmp", 0, 0, 32, 32, 1, 1, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addFrameImage("water", "Img/Map/water0.bmp", 0, 0, 32, 32, 1, 1, true, RGB(255, 0, 255));
@@ -148,11 +156,6 @@ HRESULT mainGame::init(void)
 
 
 
-	//=========================== S C E N E   M A N A G E R ============================
-	SCENEMANAGER->addScene("∞‘¿”æ¿", new GameScene);
-	SCENEMANAGER->addScene("∏ﬁ¿Œ∏ﬁ¥∫æ¿", new MainMenuScene);
-	SCENEMANAGER->addScene("∏ ≈¯æ¿", new MapToolScene);
-	SCENEMANAGER->changeScene("∏ﬁ¿Œ∏ﬁ¥∫æ¿");
 	return S_OK;
 }
 

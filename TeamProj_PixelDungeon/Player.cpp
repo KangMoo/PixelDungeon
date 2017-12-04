@@ -140,10 +140,10 @@ void Player::draw(POINT camera)
 	//	LineTo(getMemDC(), _playerPoint.x + cosf(i.eangle) * 100, _playerPoint.y - sinf(i.eangle) * 100);
 	//	LineTo(getMemDC(), _playerPoint.x, _playerPoint.y);
 	//}
-	for (auto i : astar)
-	{
-		RectangleMakeCenter(getMemDC(), i.destX * 32 + 16 + camera.x, i.destY * 32 + 16 + camera.y, 5, 5);
-	}
+	//for (auto i : astar)
+	//{
+	//	RectangleMakeCenter(getMemDC(), i.destX * 32 + 16 + camera.x, i.destY * 32 + 16 + camera.y, 5, 5);
+	//}
 	//~test
 	_image->alphaFrameRender(getMemDC(), _playerPoint.x - _image->getFrameWidth() / 2 + camera.x, _playerPoint.y - _image->getFrameHeight() / 2 + camera.y, _currentFrameX, _currentFrameY, 0);
 	//IMAGEMANAGER->render("blactkTile", getMemDC(), 50, 50, 0, 0, 100, 100);

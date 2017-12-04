@@ -115,10 +115,8 @@ void Map::update()
 						if (_vObj[k].destX == playerX + i && _vObj[k].destY == playerY + j && _vObj[k].obj == OBJ_CHEST)
 						{
 							setObj_OpenChest(k);
-							break;
 						}
 					}
-
 				}
 			}
 		}
