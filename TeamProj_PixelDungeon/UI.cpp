@@ -475,7 +475,7 @@ void UI::throw_interface()
 		_inventory[_itemPosition].itemNumber = NAME_END;
 
 		if (isthrow)
-			_im->throwItem(_itemPosition - 4, _ptMouse.x - _camera.x, _ptMouse.y - _camera.y);
+			_im->throwItem(_itemPosition - 4, _ptMouse.x , _ptMouse.y );
 
 		if (islaunch)
 			_im->fire(_im->getvBag()[_itemPosition - 4].throwImg, _ptMouse.x - _camera.x, _ptMouse.y - _camera.y);
@@ -2144,24 +2144,6 @@ void UI::cameraSet()
 {
 	_camera = _player->getPoint();
 
-	//카메라 위치 재조정
-	if (_camera.x < WINSIZEX / 2)
-	{
-		_camera.x = WINSIZEX / 2;
-	}
-	//else if (_camera.x > IMAGEMANAGER->findImage("bg")->getWidth() - WINSIZEX / 2)
-	//{
-	//	_camera.x = IMAGEMANAGER->findImage("bg")->getWidth() - WINSIZEX / 2;
-	//}
-	if (_camera.y < WINSIZEY / 2)
-	{
-		_camera.y = WINSIZEY / 2;
-	}
-
-	//else if (_camera.y > IMAGEMANAGER->findImage("bg")->getHeight() - WINSIZEY / 2)
-	//{
-	//	_camera.y = IMAGEMANAGER->findImage("bg")->getHeight() - WINSIZEY / 2;
-	//}
 	_camera.x = WINSIZEX / 2 - _camera.x;
 	_camera.y = WINSIZEY / 2 - _camera.y;
 

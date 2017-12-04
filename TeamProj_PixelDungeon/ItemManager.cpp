@@ -249,7 +249,7 @@ void ItemManager::update()
 
 
 	//================== F U N C T I O N =========================
-	getItem();
+	//getItem();
 	itemState();
 	bulletMove();
 	throwMove();
@@ -2174,6 +2174,12 @@ void ItemManager::frozenEffect(float x, float y)
 
 void ItemManager::keyControl()
 {
+	if (KEYMANAGER->isOnceKeyDown('Z'))
+	{
+		getItem();
+	}
+
+
 	if (KEYMANAGER->isOnceKeyDown('T'))
 	{
 		for ( _viBag = _vBag.begin(); _viBag != _vBag.end(); ++_viBag)
