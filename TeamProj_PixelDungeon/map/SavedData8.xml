@@ -5021,10 +5021,5 @@
             <destY>12</destY>
             <name>rat</name>
         </monster>
-        <monster>
-            <destX>28</destX>
-            <destY>9</destY>
-            <name>rat</name>
-        </monster>
     </MonsterList>
 </map>

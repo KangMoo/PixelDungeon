@@ -509,9 +509,11 @@ void Player::move()
 {
 	_playerState = PLAYERSTATE_MOVE;
 	_image = IMAGEMANAGER->findImage("warrior_Move");
-
+	/*
 	for (auto i : _em->getEnemyVector())
 	{
+		if (i->getFloor() != _map->getCurStageNum()) continue;
+
 		if (astar.size() > 1)
 		{
 
@@ -531,7 +533,7 @@ void Player::move()
 		}
 		else
 		{
-			if ((i->getTilePt().x == astar[astar.size() - 1].destX && i->getTilePt().y == astar[astar.size() - 1].destY))
+			if ((i->getTilePt().x == astar[astar.size() - 1].destX && i->getTilePt().y == astar[astar.size() - 1].destY&& i->getFloor() == _map->getCurStageNum()))
 			{
 				while (!astar.empty())
 				{
@@ -543,6 +545,8 @@ void Player::move()
 			}
 		}
 	}
+	*/
+	
 	
 	_playerPoint.x += cosf(getAngle(_playerPoint.x, _playerPoint.y, astar[astar.size() - 1].destX * TILESIZE + TILESIZE / 2, astar[astar.size() - 1].destY*TILESIZE + TILESIZE / 2)) * 3;
 	_playerPoint.y -= sinf(getAngle(_playerPoint.x, _playerPoint.y, astar[astar.size() - 1].destX * TILESIZE + TILESIZE / 2, astar[astar.size() - 1].destY*TILESIZE + TILESIZE / 2)) * 3;
@@ -555,7 +559,7 @@ void Player::move()
 		_playerPoint.y = astar[astar.size() - 1].destY*TILESIZE + TILESIZE / 2;
 		//시야처리
 		fovCheck();
-
+		/*
 		if (astar.size() > 1)
 		{
 			for (auto i : _em->getEnemyVector())
@@ -563,7 +567,7 @@ void Player::move()
 				int x = astar[astar.size() - 1].destX - i->getTilePt().x;
 				int y = astar[astar.size() - 1].destY - i->getTilePt().y;
 				//&& _map->getMap(astar[astar.size() - 1].destX, astar[astar.size() - 1].destY).tileview != TILEVIEW_NO
-				if ((x >= -1 && x <= 1) && (y >= -1 && y <= 1) || (i->getTilePt().x == astar[astar.size() - 1].destX && i->getTilePt().y == astar[astar.size() -  1].destY))
+				if ((x >= -1 && x <= 1) && (y >= -1 && y <= 1) || (i->getTilePt().x == astar[astar.size() - 1].destX && i->getTilePt().y == astar[astar.size() -  1].destY && i->getFloor() == _map->getCurStageNum()))
 				{
 					while (!astar.empty())
 					{
@@ -575,6 +579,7 @@ void Player::move()
 				}
 			}
 		}
+		*/
 		//목표지점 수정
 		astar.erase(astar.begin() + astar.size() - 1);
 
