@@ -72,6 +72,7 @@ public:
 	//게터세터~
 	bool getAction() { return _action; }
 	void setAction(bool action) { _action = action; }
+	bool getFindPlayer() { return _findPlayer;  }
 	ENEMYSTAT getStat() { return _statistics; }
 	void setStat(ENEMYSTAT stat) { _statistics = stat; }
 	virtual POINT getPoint() { return PointMake(_point.x*TILESIZE + TILESIZE / 2, _point.y*TILESIZE + TILESIZE / 2); }

@@ -7447,15 +7447,6 @@
             <imgNum>0</imgNum>
         </tile>
         <tile>
-            <destX>12</destX>
-            <destY>12</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-            <imgNum>0</imgNum>
-        </tile>
-        <tile>
             <destX>13</destX>
             <destY>12</destY>
             <sourX>0</sourX>
@@ -7671,6 +7662,15 @@
             <terrain>75</terrain>
             <imgNum>0</imgNum>
         </tile>
+        <tile>
+            <destX>12</destX>
+            <destY>12</destY>
+            <sourX>0</sourX>
+            <sourY>0</sourY>
+            <obj>0</obj>
+            <terrain>1</terrain>
+            <imgNum>0</imgNum>
+        </tile>
     </TileList>
     <DecoList>
         <size>4</size>
@@ -7790,6 +7790,11 @@
         <size>0</size>
     </ItemList>
     <MonsterList>
-        <size>0</size>
+        <size>1</size>
+        <monster>
+            <destX>12</destX>
+            <destY>12</destY>
+            <name>swarm</name>
+        </monster>
     </MonsterList>
 </map>

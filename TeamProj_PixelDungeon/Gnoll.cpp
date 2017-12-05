@@ -500,7 +500,7 @@ void Gnoll::update()
 			}
 		}
 
-		if (_action && _currntHp > 0 && _isLive) action();
-	}
+	}		if (_action && _currntHp > 0 && _isLive) action();
+
 	else _action = false;
 }

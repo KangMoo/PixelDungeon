@@ -29,8 +29,8 @@ HRESULT EnemyManager::init()
 	//setEnemy(PointMake(4, 5), 5, 0);
 	//setEnemy(PointMake(6, 6), 5, 0);
 	//setEnemy(PointMake(12, 12), 1,1);
-	setEnemy(PointMake(12, 12), 2, 1);
-	setEnemy(PointMake(30, 5), 4, 5);
+	//setEnemy(PointMake(12, 12), 2, 1);
+	//setEnemy(PointMake(30, 5), 4, 5);
 
 	//setEnemy(PointMake(TILESIZE*14, TILESIZE*13), 0);
 	//setEnemy(PointMake(TILESIZE*13, TILESIZE*11), 0);
@@ -58,7 +58,8 @@ void EnemyManager::update()
 	{
 		if (!(*_viEnemy)->getLive())
 		{
-			(*_viEnemy)->release();
+			SAFE_DELETE(*_viEnemy);
+			SAFE_RELEASE(*_viEnemy);
 			_viEnemy = _vEnemy.erase(_viEnemy);
 			_actionCount--;
 			continue;
@@ -89,9 +90,14 @@ void EnemyManager::update()
 }
 void EnemyManager::action()
 {
+
+
 	if (_actionCount == 0)
 	{
 		//첫번째 몬스터에게 턴 넘김
+		float dis = getDistance(_player->getPoint().x, _player->getPoint().y, _vEnemy[_actionCount]->getPoint().x, _vEnemy[_actionCount]->getPoint().y) / (TILESIZE);
+
+		if (_vEnemy[_actionCount]->getFloor() == _map->getCurStageNum() && dis < 10)
 			_vEnemy[_actionCount]->setAction(true);
 		//다음차례 몬스터 번호 저장
 		_actionCount++;
@@ -101,18 +107,26 @@ void EnemyManager::action()
 	{
 		//다음차례 몬스터에게 턴 넘김
 
-			_vEnemy[_actionCount]->setAction(true);
+		if (_vEnemy[_actionCount]->getFloor() == _map->getCurStageNum())
+		{
+			float dis = getDistance(_player->getPoint().x, _player->getPoint().y, _vEnemy[_actionCount]->getPoint().x, _vEnemy[_actionCount]->getPoint().y) / (TILESIZE);
+			if (dis < 10)
+				_vEnemy[_actionCount]->setAction(true);
+
+		}
 		_actionCount++;
 	}
 
+	if (_actionCount < _vEnemy.size()) return;
+
 	bool allEnemyTurnOver = true;	//모든 적이 행동 마쳤는지 확인하기 위한 함수
+
 	for (auto i : _vEnemy)
 	{
 		//차례를 마치지 않은 적이 있으면 allEnemyTurnOver = false
 		if (i->getAction()) allEnemyTurnOver = false;
 	}
 
-	//모든 적이 행동을 마쳤으면
 	if (allEnemyTurnOver)
 	{
 		//몬스터 차례 false 대입
@@ -122,7 +136,6 @@ void EnemyManager::action()
 		_player->activeTurn();
 		_finish = true;
 	}
-
 
 	//for (auto i : _vEnemy) {
 	//	i->setAction(true);

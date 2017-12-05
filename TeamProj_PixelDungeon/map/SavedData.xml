@@ -184,24 +184,6 @@
             <imgNum>0</imgNum>
         </tile>
         <tile>
-            <destX>6</destX>
-            <destY>3</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-            <imgNum>0</imgNum>
-        </tile>
-        <tile>
-            <destX>7</destX>
-            <destY>3</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-            <imgNum>0</imgNum>
-        </tile>
-        <tile>
             <destX>10</destX>
             <destY>3</destY>
             <sourX>0</sourX>
@@ -256,24 +238,6 @@
             <imgNum>0</imgNum>
         </tile>
         <tile>
-            <destX>6</destX>
-            <destY>4</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-            <imgNum>0</imgNum>
-        </tile>
-        <tile>
-            <destX>7</destX>
-            <destY>4</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-            <imgNum>0</imgNum>
-        </tile>
-        <tile>
             <destX>10</destX>
             <destY>4</destY>
             <sourX>0</sourX>
@@ -320,24 +284,6 @@
         </tile>
         <tile>
             <destX>4</destX>
-            <destY>5</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-            <imgNum>0</imgNum>
-        </tile>
-        <tile>
-            <destX>6</destX>
-            <destY>5</destY>
-            <sourX>0</sourX>
-            <sourY>0</sourY>
-            <obj>0</obj>
-            <terrain>1</terrain>
-            <imgNum>0</imgNum>
-        </tile>
-        <tile>
-            <destX>7</destX>
             <destY>5</destY>
             <sourX>0</sourX>
             <sourY>0</sourY>
@@ -7671,6 +7617,60 @@
             <terrain>75</terrain>
             <imgNum>0</imgNum>
         </tile>
+        <tile>
+            <destX>6</destX>
+            <destY>3</destY>
+            <sourX>6</sourX>
+            <sourY>0</sourY>
+            <obj>0</obj>
+            <terrain>1</terrain>
+            <imgNum>0</imgNum>
+        </tile>
+        <tile>
+            <destX>7</destX>
+            <destY>3</destY>
+            <sourX>6</sourX>
+            <sourY>0</sourY>
+            <obj>0</obj>
+            <terrain>1</terrain>
+            <imgNum>0</imgNum>
+        </tile>
+        <tile>
+            <destX>6</destX>
+            <destY>4</destY>
+            <sourX>6</sourX>
+            <sourY>0</sourY>
+            <obj>0</obj>
+            <terrain>1</terrain>
+            <imgNum>0</imgNum>
+        </tile>
+        <tile>
+            <destX>7</destX>
+            <destY>4</destY>
+            <sourX>6</sourX>
+            <sourY>0</sourY>
+            <obj>0</obj>
+            <terrain>1</terrain>
+            <imgNum>0</imgNum>
+        </tile>
+        <tile>
+            <destX>6</destX>
+            <destY>5</destY>
+            <sourX>6</sourX>
+            <sourY>0</sourY>
+            <obj>0</obj>
+            <terrain>1</terrain>
+            <imgNum>0</imgNum>
+        </tile>
+        <tile>
+            <destX>7</destX>
+            <destY>5</destY>
+            <sourX>6</sourX>
+            <sourY>0</sourY>
+            <obj>0</obj>
+            <terrain>1</terrain>
+            <imgNum>0</imgNum>
+        </tile>
     </TileList>
     <DecoList>
         <size>8</size>
@@ -8069,7 +8069,17 @@
         <size>6</size>
         <monster>
             <destX>6</destX>
-            <destY>5</destY>
+            <destY>3</destY>
+            <name>gnoll</name>
+        </monster>
+        <monster>
+            <destX>7</destX>
+            <destY>3</destY>
+            <name>gnoll</name>
+        </monster>
+        <monster>
+            <destX>7</destX>
+            <destY>4</destY>
             <name>gnoll</name>
         </monster>
         <monster>
@@ -8079,22 +8089,12 @@
         </monster>
         <monster>
             <destX>6</destX>
-            <destY>3</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>7</destX>
             <destY>5</destY>
             <name>gnoll</name>
         </monster>
         <monster>
             <destX>7</destX>
-            <destY>4</destY>
-            <name>gnoll</name>
-        </monster>
-        <monster>
-            <destX>7</destX>
-            <destY>3</destY>
+            <destY>5</destY>
             <name>gnoll</name>
         </monster>
     </MonsterList>

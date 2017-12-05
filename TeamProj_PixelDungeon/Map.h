@@ -56,6 +56,7 @@ private:
 	vector<image*> _imgList;
 
 	vector<string> _stageDataList;
+	vector<bool> _stageOpenList;
 	int _curStageNum;
 
 	//그림자테스트

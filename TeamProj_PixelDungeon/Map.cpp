@@ -26,6 +26,11 @@ HRESULT Map::init()
 	_stageDataList.push_back("map/SavedData7.xml");
 	_stageDataList.push_back("map/SavedData6.xml");
 	_stageDataList.push_back("map/SavedData8.xml");
+	_stageOpenList.push_back(true);
+	_stageOpenList.push_back(true);
+	_stageOpenList.push_back(true);
+	_stageOpenList.push_back(true);
+	_stageOpenList.push_back(true);
 
 	_renderStartX = 0;
 	_renderStartY = 0;
@@ -34,12 +39,8 @@ HRESULT Map::init()
 
 	_curStageNum = 0;
 	start = true;
-
-	for (int i = 0; i < _stageDataList.size(); i++) {
-		load(i);
-	}
-
-	changeFloor(0, true);
+	
+	changeFloor(0, _stageOpenList[0]);
 
 	IMAGEMANAGER->addImage("blackLineVertical", "Img//Map//blackdot.bmp", 1, 32, true, RGB(255, 0, 255));
 	IMAGEMANAGER->addImage("blackLineHorizontal", "Img//Map//blackdot.bmp", 32, 1, true, RGB(255, 0, 255));
@@ -649,6 +650,11 @@ void Map::setObj_ActivTrap(int i) {
 
 void Map::changeFloor(int floor, bool firstTime){
 
+	if (firstTime) {
+		load(floor);
+		_stageOpenList[floor] = true;
+	}
+
 	// 변화한 타일 저장
 	if (!firstTime) {
 		for (int i = 0; i < _vMapTile.size(); i++) {
@@ -731,14 +737,14 @@ void Map::playerTurnEnd() {
 		if (playerX == _vObj[i].destX && playerY == _vObj[i].destY && _vObj[i].floor == _curStageNum) {
 			if (_vObj[i].obj == OBJ_STAIR_END && !isMoving) {
 				if (_curStageNum < _stageDataList.size()) {
-					changeFloor(_curStageNum + 1, false);
+					changeFloor(_curStageNum + 1, _stageOpenList[_curStageNum + 1]);
 					break;
 				}
 			}
 			if (_vObj[i].obj == OBJ_STAIR_START && !isMoving) {
 				if (_curStageNum != 0)
 				{
-					changeFloor(_curStageNum - 1, false);
+					changeFloor(_curStageNum + 1, _stageOpenList[_curStageNum + 1]);
 					break;
 				}
 			}
